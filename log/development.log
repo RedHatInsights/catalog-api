@@ -1,0 +1,201 @@
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+  [1m[35m (5.0ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (3.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(6820089222326863455);[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to InitTables (0)
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE TABLE "catalog_items" ("provider_id" character varying, "catalog_id" character varying, "name" character varying, "description" character varying, "image_url" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE TABLE "catalog_parameters" ("type" character varying, "title" character varying, "name" character varying, "description" character varying, "default" character varying, "pattern" character varying, "example" character varying, "required" boolean, "format" character varying, "enum" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "orders" ("id" character varying, "user_id" character varying, "state" character varying, "created_at" timestamp NOT NULL, "ordered_at" timestamp, "completed_at" timestamp, "order_items" character varying, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "order_items" ("id" character varying, "count" integer, "parameters" character varying, "catalog_id" character varying, "provider_id" character varying, "order_id" character varying, "state" character varying, "created_at" timestamp NOT NULL, "ordered_at" timestamp, "completed_at" timestamp, "updated_at" timestamp NOT NULL, "external_ref" character varying)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "parameter_values" ("name" character varying, "value" character varying, "type" character varying, "format" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "progress_messages" ("received_at" timestamp, "level" character varying, "message" character varying, "order_item_id" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE TABLE "providers" ("id" character varying, "name" character varying, "description" character varying, "url" character varying, "user" character varying, "password" character varying, "token" character varying, "verify_ssl" boolean, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "0"]]
+  [1m[35m (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "development"], ["created_at", "2018-07-24 19:19:09.111540"], ["updated_at", "2018-07-24 19:19:09.111540"]]
+  [1m[35m (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_advisory_unlock(6820089222326863455)[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 11:00:01 -0400
+  [1m[35m (2.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 200 OK in 0ms (Views: 0.3ms | ActiveRecord: 0.0ms)
+
+
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 11:40:53 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 19278ms (ActiveRecord: 0.0ms)
+
+
+  
+LoadError (cannot load such file -- rest_client):
+  
+app/models/provider.rb:12:in `<top (required)>'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 11:41:50 -0400
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 30507ms (ActiveRecord: 0.0ms)
+
+
+  
+NameError (undefined local variable or method `providers_url' for Provider:Class):
+  
+app/models/provider.rb:27:in `all'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 11:44:29 -0400
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 42091ms (ActiveRecord: 0.0ms)
+
+
+  
+RestClient::NotFound (404 Not Found):
+  
+app/models/provider.rb:80:in `get_response'
+app/models/provider.rb:27:in `all'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 11:47:42 -0400
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 97994ms (ActiveRecord: 0.0ms)
+
+
+  
+RestClient::Unauthorized (401 Unauthorized):
+  
+app/models/provider.rb:80:in `get_response'
+app/models/provider.rb:27:in `all'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 11:55:22 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 47220ms (ActiveRecord: 0.0ms)
+
+
+  
+RestClient::Unauthorized (401 Unauthorized):
+  
+app/models/provider.rb:80:in `get_response'
+app/models/provider.rb:27:in `all'
+app/controllers/users_controller.rb:29:in `catalog_items'
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 11:59:16 -0400
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 29988ms (ActiveRecord: 0.0ms)
+
+
+  
+RestClient::Unauthorized (401 Unauthorized):
+  
+app/models/provider.rb:80:in `get_response'
+app/models/provider.rb:27:in `all'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 12:00:23 -0400
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 38347ms (ActiveRecord: 0.0ms)
+
+
+  
+NameError (undefined local variable or method `catalog_url' for #<Provider:0x00007fbb778b6980>
+Did you mean?  catalog_id):
+  
+app/models/provider.rb:51:in `fetch_catalog_items'
+app/controllers/users_controller.rb:29:in `block in catalog_items'
+app/controllers/users_controller.rb:29:in `collect'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 12:01:46 -0400
+  [1m[35m (0.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 23441ms (ActiveRecord: 0.0ms)
+
+
+  
+NameError (undefined local variable or method `catalog_url' for #<Provider:0x00007f8a924fa398>
+Did you mean?  catalog_id):
+  
+app/models/provider.rb:52:in `fetch_catalog_items'
+app/controllers/users_controller.rb:29:in `block in catalog_items'
+app/controllers/users_controller.rb:29:in `collect'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 12:03:34 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 15365ms (ActiveRecord: 0.0ms)
+
+
+  
+NoMethodError (undefined method `get_response' for #<Provider:0x00007fccc7c75ee8>):
+  
+app/models/provider.rb:52:in `fetch_catalog_items'
+app/controllers/users_controller.rb:29:in `block in catalog_items'
+app/controllers/users_controller.rb:29:in `collect'
+app/controllers/users_controller.rb:29:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 12:04:18 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 18025ms (Views: 1.2ms | ActiveRecord: 0.0ms)
+
+
+  
+AbstractController::DoubleRenderError (Render and/or redirect were called multiple times in this action. Please note that you may only call render OR redirect, and at most once per action. Also note that neither redirect nor render terminate execution of the action, so if you want to exit an action after redirecting, you need to do something like "redirect_to(...) and return".):
+  
+app/controllers/users_controller.rb:33:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for 127.0.0.1 at 2018-07-26 12:05:33 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 200 OK in 361ms (Views: 0.5ms | ActiveRecord: 0.0ms)
+
+
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for ::1 at 2018-07-27 16:53:32 -0400
+  [1m[35m (1.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 200 OK in 494ms (Views: 0.6ms | ActiveRecord: 0.0ms)
+
+
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for ::1 at 2018-07-27 17:08:04 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 500 Internal Server Error in 26726ms (ActiveRecord: 0.0ms)
+
+
+  
+NoMethodError (undefined method `to_a' for #<Provider:0x00007f9cfb5dfc88>
+Did you mean?  to_s):
+  
+app/models/provider.rb:41:in `all'
+app/controllers/users_controller.rb:27:in `catalog_items'
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for ::1 at 2018-07-27 17:09:08 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 200 OK in 6429ms (Views: 1.3ms | ActiveRecord: 0.0ms)
+
+
+DEPRECATION WARNING: ActiveSupport.halt_callback_chains_on_return_false= is deprecated and will be removed in Rails 5.2. (called from <top (required)> at /Users/madhukanoor/devsrc/swagger/rails_server/config/initializers/callback_terminator.rb:6)
+Started GET "/mkanoor/InsightsCatalog/1.0.0/catalog_items" for ::1 at 2018-07-27 17:09:51 -0400
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by UsersController#catalog_items as JSON
+Completed 200 OK in 497ms (Views: 0.6ms | ActiveRecord: 0.0ms)
+
+
