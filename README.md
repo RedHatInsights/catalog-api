@@ -29,7 +29,7 @@ env PORT=4000 rails s
 
 ## Rails server with SSL
 
-Assuming port 3000
+Example uses port 3000
 
 ```
 bin/rails s -b 'ssl://localhost:3000?key=config/ssl/localhost.key&cert=config/ssl/localhost.crt'
