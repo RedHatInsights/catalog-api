@@ -18,6 +18,25 @@ bin/rake db:create db:migrate
 bin/rails s
 ```
 
+
+## Force Puma to use another port
+
+Puma ignores the `-p` flag with `bin/rails s`
+
+```
+env PORT=4000 rails s
+```
+
+## Rails server with SSL
+
+Assuming port 3000
+
+```
+bin/rails s -b 'ssl://localhost:3000?key=config/ssl/localhost.key&cert=config/ssl/localhost.crt'
+```
+
+## Routes
+
 To list all your routes, use:
 
 ```
