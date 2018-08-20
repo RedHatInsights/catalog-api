@@ -83,7 +83,7 @@ class Provider
     URI::HTTP.build(
       :host => ENV["MANAGEIQ_HOST"],
       :port => ENV["MANAGEIQ_PORT"],
-      :path => "/api"
+      :path => "/api/"
     ).to_s
   end
 
