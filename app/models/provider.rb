@@ -80,14 +80,18 @@ class Provider
   end
 
   def self.api_url
-    "http://localhost:3000/api/"
+    URI::HTTP.build(
+      :host => ENV["MANAGEIQ_HOST"],
+      :port => ENV["MANAGEIQ_PORT"],
+      :path => "/api"
+    ).to_s
   end
 
   def self.get_response(url)
     result = RestClient::Request.new(:method     => :get,
                                      :url        => url,
-                                     :user       => "admin",
-                                     :password   => "smartvm",
+                                     :user       => ENV["MANAGEIQ_USER"],
+                                     :password   => ENV["MANAGEIQ_PASSWORD"],
                                      :verify_ssl => false).execute
     JSON.parse(result.body)
   end
@@ -95,8 +99,8 @@ class Provider
   def self.post_data(url, payload)
     result = RestClient::Request.new(:method     => :post,
                                      :url        => url,
-                                     :user       => "admin",
-                                     :password   => "smartvm",
+                                     :user       => ENV["MANAGEIQ_USER"],
+                                     :password   => ENV["MANAGEIQ_PASSWORD"],
                                      :payload    => payload,
                                      :verify_ssl => false).execute
     JSON.parse(result.body)
