@@ -84,8 +84,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "providers", id: false, force: :cascade do |t|
-    t.string "id"
+  create_table "providers", id: :serial, force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.string "url"

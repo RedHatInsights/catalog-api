@@ -83,8 +83,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "provider".pluralize.to_sym, id: false do |t|
-      t.string :id
+    create_table "provider".pluralize.to_sym do |t|
       t.string :name
       t.string :description
       t.string :url
