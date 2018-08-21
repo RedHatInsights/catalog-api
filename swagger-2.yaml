@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   description: This is a API to fetch and order catalog items from different cloud sources 
   version: 1.0.0
-  title: Insights HSDM API
+  title: Insights Service Catalog API
   # put the contact info for your development or API team
   contact:
     email: you@your-company.com
@@ -594,9 +594,4 @@ host: virtserver.swaggerhub.com
 schemes:
  - https
  - http
-# Added by API Auto Mocking Plugin
-# basePath: /HSDM/1.0.0
-# Added by API Auto Mocking Plugin
-# basePath: /HSDM/1.0.0
-# Added by API Auto Mocking Plugin
-basePath: /mkanoor/InsightsCatalog/1.0.0
+basePath: /r/insights/platform/service-catalog/1.0.0

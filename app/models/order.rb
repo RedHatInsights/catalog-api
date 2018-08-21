@@ -1,5 +1,5 @@
 =begin
-Insights HSDM API
+Insights Service Catalog API
 
 This is a API to fetch and order catalog items from different cloud sources
 

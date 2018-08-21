@@ -1,5 +1,5 @@
 =begin
-Insights HSDM API
+Insights Service Catalog API
 
 This is a API to fetch and order catalog items from different cloud sources
 
@@ -15,17 +15,17 @@ Rails.application.routes.draw do
     match full_path, to: "#{opts.fetch(:controller_name)}##{opts[:action_name]}", via: http_method
   end
 
-  add_swagger_route 'POST', '/mkanoor/InsightsCatalog/1.0.0/providers', controller_name: 'users', action_name: 'add_provider'
-  add_swagger_route 'POST', '/mkanoor/InsightsCatalog/1.0.0/orders/{order_id}/items', controller_name: 'users', action_name: 'add_to_order'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/catalog_items', controller_name: 'users', action_name: 'catalog_items'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/providers/{provider_id}/catalog_items/{catalog_id}/parameters', controller_name: 'users', action_name: 'catalog_parameters'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/providers/{provider_id}/catalog_items', controller_name: 'users', action_name: 'fetch_catalog_item_with_provider'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/providers/{provider_id}/catalog_items/{catalog_id}', controller_name: 'users', action_name: 'fetch_catalog_item_with_provider_and_catalog_id'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/orders/{order_id}/items/{order_item_id}', controller_name: 'users', action_name: 'list_order_item'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/orders/{order_id}/items', controller_name: 'users', action_name: 'list_order_items'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/orders', controller_name: 'users', action_name: 'list_orders'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/order_items/{order_item_id}/progress_messages', controller_name: 'users', action_name: 'list_progress_messages'
-  add_swagger_route 'GET', '/mkanoor/InsightsCatalog/1.0.0/providers', controller_name: 'users', action_name: 'list_providers'
-  add_swagger_route 'POST', '/mkanoor/InsightsCatalog/1.0.0/orders', controller_name: 'users', action_name: 'new_order'
-  add_swagger_route 'POST', '/mkanoor/InsightsCatalog/1.0.0/orders/{order_id}', controller_name: 'users', action_name: 'submit_order'
+  add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/providers', controller_name: 'users', action_name: 'add_provider'
+  add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/orders/{order_id}/items', controller_name: 'users', action_name: 'add_to_order'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/catalog_items', controller_name: 'users', action_name: 'catalog_items'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/providers/{provider_id}/catalog_items/{catalog_id}/parameters', controller_name: 'users', action_name: 'catalog_parameters'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/providers/{provider_id}/catalog_items', controller_name: 'users', action_name: 'fetch_catalog_item_with_provider'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/providers/{provider_id}/catalog_items/{catalog_id}', controller_name: 'users', action_name: 'fetch_catalog_item_with_provider_and_catalog_id'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/orders/{order_id}/items/{order_item_id}', controller_name: 'users', action_name: 'list_order_item'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/orders/{order_id}/items', controller_name: 'users', action_name: 'list_order_items'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/orders', controller_name: 'users', action_name: 'list_orders'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/order_items/{order_item_id}/progress_messages', controller_name: 'users', action_name: 'list_progress_messages'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/providers', controller_name: 'users', action_name: 'list_providers'
+  add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/orders', controller_name: 'users', action_name: 'new_order'
+  add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/orders/{order_id}', controller_name: 'users', action_name: 'submit_order'
 end
