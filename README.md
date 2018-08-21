@@ -11,6 +11,18 @@ bundle install
 
 ## Getting started
 
+## Environmental variables
+```
+export SERVICE_CATALOG_USERNAME=<<database_user>>
+export SERVICE_CATALOG_DATABASE_PASSSOWRD=<<database_password>>
+or
+export DATABASE_URL=postgres://pguser:pgpass@localhost/somedatabase
+export MANAGEIQ_USER=admin
+export MANAGEIQ_PASSWORD=smartvm
+export MANAGEIQ_HOST=localhost
+export MANAGEIQ_PORT=3000
+```
+
 This sample was generated with the [swagger-codegen](https://github.com/swagger-api/swagger-codegen) project.
 
 ```
