@@ -28,10 +28,11 @@ class Provider < ApplicationRecord
     parsed_data = JSON.parse(response.body)
     parsed_data['items'].each.collect do |item|
       next if catalog_id && catalog_id != item['metadata']['name']
+      external = item['spec']['externalMetadata'] || {}
       {
          :catalog_id  => item['metadata']['name'],
-         :name        => item['spec']['externalMetadata']['displayName'],
-         :description => item['spec']['externalMetadata']['longDescription'],
+         :name        => external['displayName'] || "Not provided",
+         :description => external['longDescription'] || "Not provided",
          :provider_id => id
       }
     end.compact
