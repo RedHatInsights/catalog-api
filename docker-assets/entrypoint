@@ -1,0 +1,12 @@
+#!/bin/bash
+
+export RAILS_ENV=production
+export DATABASE_URL="postgresql://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?encoding=utf8&pool=5&wait_timeout=5"
+
+# TODO: REMOVE THIS -> Move to Operator?
+bundle exec rake db:create db:migrate
+
+# TODO: REMOVE THIS -> Move to OpenShift secret
+export SECRET_KEY_BASE=2e13a003477a557ba3fcc6260c2ec69e411238b9b8b530c3c70e71f7cfc905b5f746f5c195a0282342a77ad6acd4e6ef8949106723200a99414fe83393d67344
+
+bundle exec rails server
