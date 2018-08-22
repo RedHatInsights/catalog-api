@@ -10,11 +10,11 @@ WORKDIR $RAILS_ROOT
 
 COPY Gemfile Gemfile
 
-COPY Gemfile.lock Gemfile.lock
-
 RUN gem install bundler
 
 RUN bundle install
+
+COPY Gemfile.lock Gemfile.lock
 
 COPY . .
 
