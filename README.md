@@ -13,7 +13,7 @@ bundle install
 
 ## Environmental variables
 ```
-export SERVICE_CATALOG_USERNAME=<<database_user>>
+export SERVICE_CATALOG_DATABASE_USERNAME=<<database_user>>
 export SERVICE_CATALOG_DATABASE_PASSSWORD=<<database_password>>
 or
 export DATABASE_URL=postgres://pguser:pgpass@localhost/somedatabase
