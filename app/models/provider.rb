@@ -33,9 +33,18 @@ class Provider < ApplicationRecord
          :catalog_id  => item['metadata']['name'],
          :name        => external['displayName'] || "Not provided",
          :description => external['longDescription'] || "Not provided",
-         :provider_id => id
+         :provider_id => id,
+         :imageUrl    => imageUrl(external)
       }
     end.compact
+  end
+
+  def imageUrl(metadata)
+    iconClass = metadata['console.openshift.io/iconClass']
+    if iconClass
+      icon = iconClass.split('icon-').last
+      URI.join(url, "console/images/logos/#{icon}.svg").to_s
+    end
   end
 
   def fetch_catalog_plans(catalog_id)
