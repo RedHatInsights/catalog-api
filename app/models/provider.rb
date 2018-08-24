@@ -42,7 +42,7 @@ class Provider < ApplicationRecord
   def imageUrl(metadata)
     iconClass = metadata['console.openshift.io/iconClass']
     if iconClass
-      icon = iconClass.split('-').last
+      icon = iconClass.split('icon-').last
       URI.join(url, "console/images/logos/#{icon}.svg").to_s
     end
   end
