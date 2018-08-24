@@ -1,5 +1,5 @@
 =begin
-render json: result
+Insights Service Catalog API
 
 This is a API to fetch and order catalog items from different cloud sources
 
@@ -42,7 +42,7 @@ class Provider < ApplicationRecord
   def imageUrl(metadata)
     iconClass = metadata['console.openshift.io/iconClass']
     if iconClass
-      icon = iconClass.split('icon-').last
+      icon = iconClass.split('-').last
       URI.join(url, "console/images/logos/#{icon}.svg").to_s
     end
   end

@@ -25,17 +25,12 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "catalog_parameters", id: false, force: :cascade do |t|
-    t.string "type"
-    t.string "title"
+  create_table "catalog_plans", id: false, force: :cascade do |t|
+    t.string "plan_id"
     t.string "name"
     t.string "description"
-    t.string "default"
-    t.string "pattern"
-    t.string "example"
-    t.boolean "required"
-    t.string "format"
-    t.string "enum"
+    t.string "catalog_id"
+    t.string "provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -44,6 +39,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "id"
     t.integer "count"
     t.string "parameters"
+    t.string "plan_id"
     t.string "catalog_id"
     t.string "provider_id"
     t.string "order_id"
@@ -71,6 +67,21 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "value"
     t.string "type"
     t.string "format"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "plan_parameters", id: false, force: :cascade do |t|
+    t.string "type"
+    t.string "title"
+    t.string "name"
+    t.string "description"
+    t.string "default"
+    t.string "pattern"
+    t.string "example"
+    t.boolean "required"
+    t.string "format"
+    t.string "enum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -27,27 +27,30 @@ class UsersController < ApplicationController
   end
 
   def catalog_items
-    # Your code here
     result = Provider.all.collect { |prov| prov.fetch_catalog_items }.flatten
     render json: result
   end
 
-  def catalog_parameters
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+  def catalog_plan_parameters
+    prov = Provider.where(:id => params['provider_id']).first
+    result = prov.fetch_catalog_plan_parameters(params['catalog_id'], params['plan_id']) if prov
+    render json: result
   end
 
   def fetch_catalog_item_with_provider
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+    prov = Provider.where(:id => params['provider_id']).first
+    result = prov.fetch_catalog_items(params['catalog_id']) if prov
+    render json: result
   end
 
   def fetch_catalog_item_with_provider_and_catalog_id
-    # Your code here
+    fetch_catalog_item_with_provider
+  end
 
-    render json: {"message" => "yes, it worked"}
+  def fetch_plans_with_provider_and_catalog_id
+    prov = Provider.where(:id => params['provider_id']).first
+    result = prov.fetch_catalog_plans(params['catalog_id']) if prov
+    render json: result
   end
 
   def list_order_item

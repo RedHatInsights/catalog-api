@@ -21,17 +21,12 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "catalog_parameter".pluralize.to_sym, id: false do |t|
-      t.string :type
-      t.string :title
+    create_table "catalog_plan".pluralize.to_sym, id: false do |t|
+      t.string :plan_id
       t.string :name
       t.string :description
-      t.string :default
-      t.string :pattern
-      t.string :example
-      t.boolean :required
-      t.string :format
-      t.string :enum
+      t.string :catalog_id
+      t.string :provider_id
 
       t.timestamps
     end
@@ -52,6 +47,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.string :id
       t.integer :count
       t.string :parameters
+      t.string :plan_id
       t.string :catalog_id
       t.string :provider_id
       t.string :order_id
@@ -70,6 +66,21 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.string :value
       t.string :type
       t.string :format
+
+      t.timestamps
+    end
+
+    create_table "plan_parameter".pluralize.to_sym, id: false do |t|
+      t.string :type
+      t.string :title
+      t.string :name
+      t.string :description
+      t.string :default
+      t.string :pattern
+      t.string :example
+      t.boolean :required
+      t.string :format
+      t.string :enum
 
       t.timestamps
     end
