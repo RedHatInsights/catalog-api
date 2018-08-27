@@ -2,7 +2,7 @@ FROM ruby:2.4-slim-stretch
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-ENV RAILS_ROOT /var/www/svccat
+ENV RAILS_ROOT /var/www/service_catalog
 
 RUN mkdir -p $RAILS_ROOT/tmp/pids
 
@@ -14,6 +14,8 @@ RUN gem install bundler
 
 RUN bundle install
 
+COPY docker-assets/dev_entrypoint /usr/bin
+
 COPY . .
 
-CMD [ "config/containers/app_cmd.sh" ]
+CMD [ "dev_entrypoint" ]
