@@ -11,8 +11,11 @@ info:
 securityDefinitions:
   UserSecurity:
     type: basic
+  AdminSecurity:
+    type: basic
 security:
   - UserSecurity: []
+  - AdminSecurity: []
 tags:
   - name: admins
     description: Secured Admin-only calls
@@ -383,6 +386,75 @@ parameters:
     description: The Provider ID
     type: integer
 definitions:
+  Portfolio:
+    type: object
+    required:
+      - name
+      - description
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      name:
+        type: string
+        title: Name
+        example: Sample Portfolio
+      description:
+        type: string
+        title: Description
+        example: This is a sample description for a portfolio
+      enabled:
+        type: boolean
+        title: Enabled
+        example: Is the portfolio enabled
+      image_url:
+        type: string
+        title: Image URL
+        format: url
+        example: The public facing image url for a portfolio
+  Organization:
+    type: object
+    properties:
+      id:
+        type: string
+        readOnly: true
+        title: Id
+        example: Id of the sample organization
+  PortfolioItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+        title: Id
+        example: Id of the portfolio item object
+      portfolio_id:
+        type: integer
+        readOnly: true
+        title: PortfolioId
+        example: Id of the portfolio object
+      favorite:
+        type: boolean
+        title: Favorite
+        example: Definition of a favorite portfolio item
+      name:
+        type: string
+        title: Name
+        example: Name of the portfolio item
+      description:
+        type: string
+        title: Description
+        example: Description of a portfolio item
+      orphan:
+        type: boolean
+        readOnly: true
+        title: Orphan
+        example: Boolean if an associated catalog item no longer exists
+      state:
+        type: string
+        readOnly: true
+        title: State
+        example: The current state of a portfolio item
   CatalogItem:
     type: object
     required:
@@ -394,6 +466,11 @@ definitions:
         format: uuid
         description: ID of the provider object
         title: Provider ID
+        readOnly: true
+      portfolio_item_id:
+        type: integer
+        description: ID of the portfolio item object
+        title: Portfolio Item ID
         readOnly: true
       catalog_id:
         type: string
