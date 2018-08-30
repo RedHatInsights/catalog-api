@@ -22,6 +22,54 @@ tags:
   - name: users
     description: Operations available to regular authenticated users
 paths:
+  /portfolios:
+    get:
+      tags:
+        - users
+        - admins
+      summary: API to list portfolios
+      operationId: listPortfolios
+      description: |
+        Returns an array of portfolio objects
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: Portfolio Info
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Portfolio'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admins
+      summary: API to add a new portfolio
+      operationId: addPortfolio
+      description: |
+        Returns the added portfolio object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Portfolio'
+      responses:
+        '200':
+          description: Portfolio Info
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Portfolio'
+        '400':
+          description: bad input parameter
   /providers:
     get:
       tags:
@@ -433,7 +481,7 @@ definitions:
         readOnly: true
         title: PortfolioId
         example: Id of the portfolio object
-      favorite:
+      favorite: 
         type: boolean
         title: Favorite
         example: Definition of a favorite portfolio item
@@ -441,16 +489,16 @@ definitions:
         type: string
         title: Name
         example: Name of the portfolio item
-      description:
+      description: 
         type: string
         title: Description
         example: Description of a portfolio item
-      orphan:
+      orphan: 
         type: boolean
         readOnly: true
         title: Orphan
         example: Boolean if an associated catalog item no longer exists
-      state:
+      state: 
         type: string
         readOnly: true
         title: State
