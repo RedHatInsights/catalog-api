@@ -13,6 +13,7 @@ class InitTables < ActiveRecord::Migration[5.0]
   def change
     create_table "catalog_item".pluralize.to_sym, id: false do |t|
       t.string :provider_id
+      t.integer :portfolio_item_id
       t.string :catalog_id
       t.string :name
       t.string :description
@@ -61,6 +62,12 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
+    create_table "organization".pluralize.to_sym, id: false do |t|
+      t.string :id
+
+      t.timestamps
+    end
+
     create_table "parameter_value".pluralize.to_sym, id: false do |t|
       t.string :name
       t.string :value
@@ -81,6 +88,28 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.boolean :required
       t.string :format
       t.string :enum
+
+      t.timestamps
+    end
+
+    create_table "portfolio".pluralize.to_sym, id: false do |t|
+      t.integer :id
+      t.string :name
+      t.string :description
+      t.boolean :enabled
+      t.string :image_url
+
+      t.timestamps
+    end
+
+    create_table "portfolio_item".pluralize.to_sym, id: false do |t|
+      t.integer :id
+      t.integer :portfolio_id
+      t.boolean :favorite
+      t.string :name
+      t.string :description
+      t.boolean :orphan
+      t.string :state
 
       t.timestamps
     end

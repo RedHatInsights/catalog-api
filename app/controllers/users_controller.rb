@@ -71,6 +71,12 @@ class UsersController < ApplicationController
     render json: {"message" => "yes, it worked"}
   end
 
+  def list_portfolios
+    # Your code here
+
+    render json: {"message" => "yes, it worked"}
+  end
+
   def list_progress_messages
     # Your code here
 
