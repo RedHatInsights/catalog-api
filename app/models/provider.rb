@@ -51,7 +51,7 @@ class Provider < ApplicationRecord
     response = get_response(plan_url)
     parsed_data = JSON.parse(response.body)
     parsed_data['items'].each.collect do |item|
-      next if catalog_id && catalog_id != item['metadata']['name']
+      next if catalog_id && catalog_id != item['spec']['clusterServiceClassRef']['name']
       {
          :plan_id     => item['metadata']['name'],
          :catalog_id  => catalog_id,
