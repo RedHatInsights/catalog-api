@@ -21,9 +21,19 @@ class UsersController < ApplicationController
   end
 
   def add_to_order
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+    order = Order.find(params['order_id'])
+    hash_parameters = []
+    params['parameters'].each do |p|
+      hash_parameters << {:name => p['name'], :value => p['value'], :format => p['format'],
+                          :type => p['type'] }
+    end
+    order_item = OrderItem.create(:order_id    => order.id,
+                                  :catalog_id  => params['catalog_id'],
+                                  :plan_id     => params['plan_id'],
+                                  :provider_id => params['provider_id'],
+                                  :count       => params['count'] || 1,
+                                  :parameters  => hash_parameters)
+    render json: {"item_id" => order_item.id}
   end
 
   def catalog_items
@@ -54,21 +64,17 @@ class UsersController < ApplicationController
   end
 
   def list_order_item
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+    item = OrderItem.where('id = ? and order_id = ?',
+                           params['order_item_id'], params['order_id']).first
+    render json: item.to_hash
   end
 
   def list_order_items
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+    render json: OrderItem.where(:order_id => params['order_id']).collect(&:to_hash)
   end
 
   def list_orders
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+    render json: Order.all.collect(&:to_hash)
   end
 
   def list_portfolios
@@ -77,9 +83,7 @@ class UsersController < ApplicationController
   end
 
   def list_progress_messages
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+    render json: ProgressMessage.where(:order_item_id => params['order_item_id']).collect(&:to_hash)
   end
 
   def list_providers
@@ -87,14 +91,16 @@ class UsersController < ApplicationController
   end
 
   def new_order
-    # Your code here
-
-    render json: {"message" => "yes, it worked"}
+    render json: Order.create.to_hash
   end
 
   def submit_order
-    # Your code here
+    order = Order.find(params['order_id'])
+    OrderItem.where(:order_id => params['order_id']).each(&:submit)
+    order.update_attributes(:state => 'Ordered', :ordered_at => DateTime.now())
+    order.reload
 
-    render json: {"message" => "yes, it worked"}
+    OrderItem.where(:order_id => params['order_id']).each{ |item| item.update_message('info', 'Initialized') }
+    render json: order.to_hash
   end
 end

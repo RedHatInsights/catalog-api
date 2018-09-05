@@ -32,8 +32,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "order".pluralize.to_sym, id: false do |t|
-      t.string :id
+    create_table "order".pluralize.to_sym do |t|
       t.string :user_id
       t.string :state
       t.datetime :created_at
@@ -44,8 +43,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "order_item".pluralize.to_sym, id: false do |t|
-      t.string :id
+    create_table "order_item".pluralize.to_sym do |t|
       t.integer :count
       t.string :parameters
       t.string :plan_id
@@ -114,7 +112,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "progress_message".pluralize.to_sym, id: false do |t|
+    create_table "progress_message".pluralize.to_sym do |t|
       t.datetime :received_at
       t.string :level
       t.string :message
@@ -134,6 +132,5 @@ class InitTables < ActiveRecord::Migration[5.0]
 
       t.timestamps
     end
-
   end
 end

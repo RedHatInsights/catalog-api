@@ -14,5 +14,37 @@ class OrderItem < ApplicationRecord
   validates_presence_of :count
   validates_presence_of :parameters
 
+  belongs_to :order
+  has_many :progress_messages
+  after_initialize :set_defaults, unless: :persisted?
+
   serialize :parameters, Array
+  NON_DATE_ATTRIBUTES = %w(order_id catalog_id plan_id provider_id state parameters )
+  DATE_ATTRIBUTES     = %w(created_at ordered_at completed_at updated_at)
+
+  def to_hash
+    attributes.slice(*NON_DATE_ATTRIBUTES).tap do |hash|
+      DATE_ATTRIBUTES.each do |attr| 
+        hash[attr] = self.send(attr.to_sym).iso8601 if self.send(attr.to_sym)
+      end
+    end.merge(:id => id.to_s)
+  end
+
+  def submit
+    self.state = 'Ordered'
+    self.ordered_at = DateTime.now
+    prov = Provider.find(provider_id)
+    self.external_ref = prov.order_catalog(catalog_id, plan_id, parameters)
+  end
+
+  def set_defaults
+    self.state = "Created"
+  end
+
+  def update_message(level, message)
+    self.updated_at = DateTime.now
+    ProgressMessage.create(:level         => level,
+                           :message       => message,
+                           :order_item_id => id)
+  end
 end

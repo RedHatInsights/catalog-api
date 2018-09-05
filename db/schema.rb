@@ -36,8 +36,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "order_items", id: false, force: :cascade do |t|
-    t.string "id"
+  create_table "order_items", id: :serial, force: :cascade do |t|
     t.integer "count"
     t.string "parameters"
     t.string "plan_id"
@@ -52,8 +51,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "external_ref"
   end
 
-  create_table "orders", id: false, force: :cascade do |t|
-    t.string "id"
+  create_table "orders", id: :serial, force: :cascade do |t|
     t.string "user_id"
     t.string "state"
     t.datetime "created_at", null: false
@@ -115,7 +113,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "progress_messages", id: false, force: :cascade do |t|
+  create_table "progress_messages", id: :serial, force: :cascade do |t|
     t.datetime "received_at"
     t.string "level"
     t.string "message"
