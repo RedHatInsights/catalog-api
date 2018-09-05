@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 0) do
 
   create_table "catalog_items", id: false, force: :cascade do |t|
     t.string "provider_id"
+    t.integer "portfolio_item_id"
     t.string "catalog_id"
     t.string "name"
     t.string "description"
@@ -62,6 +63,12 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "organizations", id: false, force: :cascade do |t|
+    t.string "id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "parameter_values", id: false, force: :cascade do |t|
     t.string "name"
     t.string "value"
@@ -82,6 +89,28 @@ ActiveRecord::Schema.define(version: 0) do
     t.boolean "required"
     t.string "format"
     t.string "enum"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "portfolio_items", id: false, force: :cascade do |t|
+    t.integer "id"
+    t.integer "portfolio_id"
+    t.boolean "favorite"
+    t.string "name"
+    t.string "description"
+    t.boolean "orphan"
+    t.string "state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "portfolios", id: false, force: :cascade do |t|
+    t.integer "id"
+    t.string "name"
+    t.string "description"
+    t.boolean "enabled"
+    t.string "image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
