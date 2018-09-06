@@ -91,7 +91,6 @@ class InitTables < ActiveRecord::Migration[5.0]
     end
 
     create_table "portfolio".pluralize.to_sym, id: false do |t|
-      t.integer :id
       t.string :name
       t.string :description
       t.boolean :enabled

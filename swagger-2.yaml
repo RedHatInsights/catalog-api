@@ -440,9 +440,6 @@ definitions:
       - name
       - description
     properties:
-      id:
-        type: integer
-        readOnly: true
       name:
         type: string
         title: Name
@@ -481,7 +478,7 @@ definitions:
         readOnly: true
         title: PortfolioId
         example: Id of the portfolio object
-      favorite: 
+      favorite:
         type: boolean
         title: Favorite
         example: Definition of a favorite portfolio item
@@ -489,16 +486,16 @@ definitions:
         type: string
         title: Name
         example: Name of the portfolio item
-      description: 
+      description:
         type: string
         title: Description
         example: Description of a portfolio item
-      orphan: 
+      orphan:
         type: boolean
         readOnly: true
         title: Orphan
         example: Boolean if an associated catalog item no longer exists
-      state: 
+      state:
         type: string
         readOnly: true
         title: State

@@ -103,8 +103,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "portfolios", id: false, force: :cascade do |t|
-    t.integer "id"
+  create_table "portfolios", id: :serial, force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "enabled"
