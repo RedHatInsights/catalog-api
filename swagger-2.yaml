@@ -806,7 +806,7 @@ definitions:
         description: >-
           Verify the servers certificate, you can disable it for servers with
           self signed certificates.
-host: 10.0.1.13:3000
+host: virtserver.swaggerhub.com
 schemes:
   - https
   - http
