@@ -17,6 +17,8 @@ Rails.application.routes.draw do
 
   add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/portfolios', controller_name: 'admins', action_name: 'add_portfolio'
   add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios', controller_name: 'admins', action_name: 'list_portfolios'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}', controller_name: 'admins', action_name: 'fetch_portfolio_with_id'
+  add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}', controller_name: 'users', action_name: 'fetch_portfolio_with_id'
   add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/providers', controller_name: 'users', action_name: 'add_provider'
   add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/orders/{order_id}/items', controller_name: 'users', action_name: 'add_to_order'
   add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/catalog_items', controller_name: 'users', action_name: 'catalog_items'

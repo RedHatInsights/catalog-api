@@ -70,6 +70,25 @@ paths:
               $ref: '#/definitions/Portfolio'
         '400':
           description: bad input parameter
+  '/portfolio/{portfolio_id}':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetch a specific Portfolio
+      operationId: fetchPortfolioWithId
+      description: >
+        By passing in the portfolio id you can fetch a specific
+        portfolio.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+      responses:
+        '200':
+          description: portfolio results matching the portfolio id
+          schema:
+            $ref: '#/definitions/Portfolio'
   /providers:
     get:
       tags:
@@ -403,6 +422,12 @@ parameters:
     required: true
     type: string
     format: uuid
+  PortfolioID:
+    name: portfolio_id
+    in: path
+    description: The Portfolio ID
+    required: true
+    type: integer
   OrderID:
     name: order_id
     in: path
@@ -468,11 +493,6 @@ definitions:
   PortfolioItem:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
-        title: Id
-        example: Id of the portfolio item object
       portfolio_id:
         type: integer
         readOnly: true
@@ -786,7 +806,7 @@ definitions:
         description: >-
           Verify the servers certificate, you can disable it for servers with
           self signed certificates.
-host: virtserver.swaggerhub.com
+host: 10.0.1.13:3000
 schemes:
   - https
   - http

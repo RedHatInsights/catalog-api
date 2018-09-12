@@ -82,6 +82,11 @@ class UsersController < ApplicationController
     render json: portfolios
   end
 
+  def fetch_portfolio_with_id
+    item = Portfolio.where(:id => params[:portfolio_id]).first
+    render json: item
+  end
+
   def list_progress_messages
     render json: ProgressMessage.where(:order_item_id => params['order_item_id']).collect(&:to_hash)
   end

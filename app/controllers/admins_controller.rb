@@ -22,4 +22,9 @@ class AdminsController < ApplicationController
     portfolios = Portfolio.all
     render json: portfolios
   end
+
+  def fetch_portfolio_with_id
+    item = Portfolio.where(:id => params[:portfolio_id]).first
+    render json: item
+  end
 end
