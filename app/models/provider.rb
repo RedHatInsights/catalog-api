@@ -70,6 +70,14 @@ class Provider < ApplicationRecord
     collect_plan_parameters(result['spec']['instanceCreateParameterSchema'])
   end
 
+  def fetch_catalog_plan_schema(catalog_id, plan_id)
+    response = get_response(plan_url)
+    parsed_data = JSON.parse(response.body)
+    result = parsed_data['items'].each.detect { |item| item['spec']['clusterServiceClassRef']['name'] == catalog_id }
+    return nil unless result
+    {'schema' => result['spec']['instanceCreateParameterSchema']}
+  end
+
   def collect_plan_parameters(parameters)
     attributes = %w(default description title type enum format)
     keys = parameters['properties'].keys

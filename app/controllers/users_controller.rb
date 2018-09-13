@@ -47,6 +47,12 @@ class UsersController < ApplicationController
     render json: result
   end
 
+  def catalog_plan_schema
+    prov = Provider.where(:id => params['provider_id']).first
+    result = prov.fetch_catalog_plan_schema(params['catalog_id'], params['plan_id']) if prov
+    render json: result
+  end
+
   def fetch_catalog_item_with_provider
     prov = Provider.where(:id => params['provider_id']).first
     result = prov.fetch_catalog_items(params['catalog_id']) if prov

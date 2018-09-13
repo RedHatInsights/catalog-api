@@ -77,9 +77,8 @@ paths:
         - admins
       summary: Fetch a specific Portfolio
       operationId: fetchPortfolioWithId
-      description: >
-        By passing in the portfolio id you can fetch a specific
-        portfolio.
+      description: |
+        By passing in the portfolio id you can fetch a specific portfolio.
       produces:
         - application/json
       parameters:
@@ -265,6 +264,32 @@ paths:
             type: array
             items:
               $ref: '#/definitions/PlanParameter'
+        '400':
+          description: bad input parameter
+        '404':
+          description: catalog item doesn't exist
+  '/providers/{provider_id}/catalog_items/{catalog_id}/plans/{plan_id}/json_schema':
+    get:
+      tags:
+        - users
+      summary: >-
+        Fetches catalog json schema, it needs the provider id, the catalog_id
+        and the plan_id
+      operationId: catalogPlanSchema
+      description: >
+        Return a JSON schema with the parameters needed for a specific plan of a
+        catalog item
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ProviderID'
+        - $ref: '#/parameters/CatalogID'
+        - $ref: '#/parameters/PlanID'
+      responses:
+        '200':
+          description: A JSON Schema Object
+          schema:
+            $ref: '#/definitions/JSONSchema'
         '400':
           description: bad input parameter
         '404':
@@ -520,6 +545,12 @@ definitions:
         readOnly: true
         title: State
         example: The current state of a portfolio item
+  JSONSchema:
+    type: object
+    properties:
+      schema:
+        type: object
+        additionalProperties: true
   CatalogItem:
     type: object
     required:
