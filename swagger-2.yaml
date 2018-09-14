@@ -88,6 +88,121 @@ paths:
           description: portfolio results matching the portfolio id
           schema:
             $ref: '#/definitions/Portfolio'
+  '/portfolios/{portfolio_id}/portfolio_items':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetch all portfolio items from a specific portfolio
+      operationId: fetchPortfolioItemsWithProvider
+      description: >
+        By passing in the portfolio id you can fetch all the portfolio items in the portfolio.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+      responses:
+        '200':
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
+  '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetch a portfolio items from a specific portfolio
+      operationId: fetchPortfolioItemFromProvider
+      description: >
+        By passing in the portfolio id you can fetch all the portfolio items in the portfolio.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+      responses:
+        '200':
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admins
+      summary: Add Portfolio item to a portfolio
+      operationId: addPortfolioItemToPortfolio
+      description: |
+        Add new portfolio item to an existing portfolio
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters: 
+        - $ref: '#/parameters/PortfolioItemID'
+        - in: body
+          name: item
+          required: true
+          schema:
+            $ref: '#/definitions/PortfolioItem'
+      responses:
+        '200':
+          description: Successfully added a portfolio item to portfolio
+        '400':
+          description: bad input parameter
+  /portfolio_items:
+    get:
+      tags:
+        - users
+        - admins
+      summary: API to list portfolio_items
+      operationId: listPortfolioItems
+      description: |
+        Returns an array of portfolio item objects
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: Portfolio Item Info
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admin
+      summary: API to add a new portfolio item
+      operationId: addPortfolioItem
+      description: |
+        Returns the added portfolio item object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PortfolioItem'
+      responses:
+        '200':
+          description: Portfolio Item Info
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
   /providers:
     get:
       tags:
@@ -451,6 +566,12 @@ parameters:
     name: portfolio_id
     in: path
     description: The Portfolio ID
+    required: true
+    type: integer
+  PortfolioItemID:
+    name: portfolio_item_id
+    in: path
+    description: The Portfolio Item ID
     required: true
     type: integer
   OrderID:
