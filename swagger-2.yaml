@@ -103,7 +103,7 @@ paths:
         - $ref: '#/parameters/PortfolioID'
       responses:
         '200':
-          description: search results matching criteria
+          description: returns matching criteria
           schema:
             type: array
             items:
@@ -115,10 +115,10 @@ paths:
       tags:
         - users
         - admins
-      summary: Fetch a portfolio items from a specific portfolio
+      summary: Fetch a portfolio item from a specific portfolio
       operationId: fetchPortfolioItemFromProvider
       description: >
-        By passing in the portfolio id you can fetch all the portfolio items in the portfolio.
+        By passing in the portfolio id and portfolio_item_id you can fetch the portfolio items in the portfolio.
       produces:
         - application/json
       parameters:
