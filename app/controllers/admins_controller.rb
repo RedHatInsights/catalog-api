@@ -40,10 +40,10 @@ class AdminsController < ApplicationController
     render json: portfolio_item
   end
 
-  def add_portfolio_item_with_portfolio
+  def add_portfolio_item_to_portfolio
     portfolio = Portfolio.where(id: params[:portfolio_id]).first
     portfolio_item = PortfolioItem.where(id: params[:portfolio_item_id]).first
-    portfolio << portfolio_item
+    portfolio.portfolio_items << portfolio_item
     render json: portfolio_item
   end
 

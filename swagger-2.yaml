@@ -125,6 +125,7 @@ paths:
         - application/json
       parameters:
         - $ref: '#/parameters/PortfolioID'
+        - $ref: '#/parameters/PortfolioItemID'
       responses:
         '200':
           description: search results matching criteria
@@ -146,6 +147,7 @@ paths:
       consumes:
         - application/json
       parameters:
+        - $ref: '#/parameters/PortfolioID'
         - $ref: '#/parameters/PortfolioItemID'
         - in: body
           name: item
