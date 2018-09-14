@@ -96,7 +96,8 @@ paths:
       summary: Fetch all portfolio items from a specific portfolio
       operationId: fetchPortfolioItemsWithProvider
       description: >
-        By passing in the portfolio id you can fetch all the portfolio items in the portfolio.
+        By passing in the portfolio id you can fetch all the portfolio items in
+        the portfolio.
       produces:
         - application/json
       parameters:
@@ -116,9 +117,10 @@ paths:
         - users
         - admins
       summary: Fetch a portfolio item from a specific portfolio
-      operationId: fetchPortfolioItemFromProvider
+      operationId: fetchPortfolioItemFromPortfolio
       description: >
-        By passing in the portfolio id and portfolio_item_id you can fetch the portfolio items in the portfolio.
+        By passing in the portfolio id and portfolio_item_id you can fetch the
+        portfolio items in the portfolio.
       produces:
         - application/json
       parameters:
@@ -139,11 +141,11 @@ paths:
       operationId: addPortfolioItemToPortfolio
       description: |
         Add new portfolio item to an existing portfolio
-      produces: 
+      produces:
         - application/json
       consumes:
         - application/json
-      parameters: 
+      parameters:
         - $ref: '#/parameters/PortfolioItemID'
         - in: body
           name: item
