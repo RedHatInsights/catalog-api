@@ -60,9 +60,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "organization".pluralize.to_sym, id: false do |t|
-      t.string :id
-
+    create_table "organization".pluralize.to_sym do |t|
       t.timestamps
     end
 
@@ -90,7 +88,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "portfolio".pluralize.to_sym, id: false do |t|
+    create_table "portfolio".pluralize.to_sym do |t|
       t.string :name
       t.string :description
       t.boolean :enabled
@@ -99,8 +97,7 @@ class InitTables < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    create_table "portfolio_item".pluralize.to_sym, id: false do |t|
-      t.integer :id
+    create_table "portfolio_item".pluralize.to_sym do |t|
       t.integer :portfolio_id
       t.boolean :favorite
       t.string :name

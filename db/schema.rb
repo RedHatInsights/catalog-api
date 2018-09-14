@@ -61,8 +61,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "organizations", id: false, force: :cascade do |t|
-    t.string "id"
+  create_table "organizations", id: :serial, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -91,8 +90,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "portfolio_items", id: false, force: :cascade do |t|
-    t.integer "id"
+  create_table "portfolio_items", id: :serial, force: :cascade do |t|
     t.integer "portfolio_id"
     t.boolean "favorite"
     t.string "name"
