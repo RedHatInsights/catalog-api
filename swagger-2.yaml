@@ -70,7 +70,7 @@ paths:
               $ref: '#/definitions/Portfolio'
         '400':
           description: bad input parameter
-  '/portfolio/{portfolio_id}':
+  '/portfolios/{portfolio_id}':
     get:
       tags:
         - users
