@@ -179,7 +179,7 @@ paths:
           description: bad input parameter
     post:
       tags:
-        - admin
+        - admins
       summary: API to add a new portfolio item
       operationId: addPortfolioItem
       description: |
