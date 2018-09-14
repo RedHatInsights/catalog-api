@@ -27,4 +27,39 @@ class AdminsController < ApplicationController
     item = Portfolio.where(:id => params[:portfolio_id]).first
     render json: item
   end
+
+  def fetch_portfolio_items_with_portfolio
+    portfolio_items = Portfolio.where(id: params[:portfolio_id]).first
+                               .portfolio_items
+    render json: portfolio_items
+  end
+
+  def fetch_portfolio_item_from_portfolio
+    portfolio_item = Portfolio.where(id: params[:portfolio_id], porfolio_item_id: params[:portfolio_item_id])
+                              .includes(:portfolio_items)
+    render json: portfolio_item
+  end
+
+  def add_portfolio_item_with_portfolio
+    portfolio = Portfolio.where(id: params[:portfolio_id]).first
+    portfolio_item = PortfolioItem.where(id: params[:portfolio_item_id]).first
+    portfolio << portfolio_item
+    render json: portfolio_item
+  end
+
+  def add_portfolio_item
+    portfolio_item = PortfolioItem.create!(
+        favorite: params[:favorite],
+        name: params[:name],
+        description: params[:description],
+        orphan: params[:orphan],
+        state: params[:state]
+    )
+    render json: portfolio_item
+  end
+
+  def list_portfolio_items
+    portfolio_items = PortfolioItem.all
+    render json: portfolio_items
+  end
 end

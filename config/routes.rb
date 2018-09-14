@@ -22,7 +22,6 @@ Rails.application.routes.draw do
   add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}', controller_name: 'users', action_name: 'fetch_portfolio_with_id'
   add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios', controller_name: 'admins', action_name: 'list_portfolios'
   add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}/portfolio_items', controller_name: 'admins', action_name: 'fetch_portfolio_items_with_portfolio'
-  add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}/portfolio_items', controller_name: 'admins', action_name: 'fetch_portfolio_items_with_portfolio'
   add_swagger_route 'POST', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admins', action_name: 'add_portfolio_item_to_portfolio'
   add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admins', action_name: 'fetch_portfolio_item_from_portfolio'
   add_swagger_route 'GET', '/r/insights/platform/service-catalog/1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'users', action_name: 'fetch_portfolio_item_from_portfolio'

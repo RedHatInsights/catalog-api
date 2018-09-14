@@ -94,7 +94,7 @@ paths:
         - users
         - admins
       summary: Fetch all portfolio items from a specific portfolio
-      operationId: fetchPortfolioItemsWithProvider
+      operationId: fetchPortfolioItemsWithPortfolio
       description: >
         By passing in the portfolio id you can fetch all the portfolio items in
         the portfolio.
