@@ -33,7 +33,7 @@ objects:
   spec:
     ports:
     - name: service-portal-api
-      port: 3000
+      port: 8080
       targetPort: 3000
     selector:
       name: service-portal-api
