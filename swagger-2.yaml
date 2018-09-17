@@ -966,4 +966,4 @@ host: virtserver.swaggerhub.com
 schemes:
   - https
   - http
-basePath: /r/insights/platform/service-catalog/1.0.0
+basePath: /r/insights/platform/service-portal/1.0.0
