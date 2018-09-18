@@ -2,8 +2,10 @@ default: &default
   adapter: postgresql
   encoding: utf8
   pool: 5
-  username: <%= ENV['SERVICE_CATALOG_DATABASE_USERNAME'] %>
-  password: <%= ENV['SERVICE_CATALOG_DATABASE_PASSWORD'] %>
+  #username: <%= ENV['SERVICE_CATALOG_DATABASE_USERNAME'] %>
+  #password: <%= ENV['SERVICE_CATALOG_DATABASE_PASSWORD'] %>
+  username: root
+  password: buttons
   wait_timeout: 5
   min_messages: warning
   host: localhost

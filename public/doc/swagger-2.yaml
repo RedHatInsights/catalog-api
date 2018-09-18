@@ -1,0 +1,969 @@
+swagger: '2.0'
+info:
+  description: This is a API to fetch and order catalog items from different cloud sources
+  version: 1.0.0
+  title: Insights Service Catalog API
+  contact:
+    email: you@your-company.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+securityDefinitions:
+  UserSecurity:
+    type: basic
+  AdminSecurity:
+    type: basic
+security:
+  - UserSecurity: []
+  - AdminSecurity: []
+tags:
+  - name: admins
+    description: Secured Admin-only calls
+  - name: users
+    description: Operations available to regular authenticated users
+paths:
+  /portfolios:
+    get:
+      tags:
+        - users
+        - admins
+      summary: API to list portfolios
+      operationId: listPortfolios
+      description: |
+        Returns an array of portfolio objects
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: Portfolio Info
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Portfolio'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admins
+      summary: API to add a new portfolio
+      operationId: addPortfolio
+      description: |
+        Returns the added portfolio object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Portfolio'
+      responses:
+        '200':
+          description: Portfolio Info
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Portfolio'
+        '400':
+          description: bad input parameter
+  '/portfolios/{portfolio_id}':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetch a specific Portfolio
+      operationId: fetchPortfolioWithId
+      description: |
+        By passing in the portfolio id you can fetch a specific portfolio.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+      responses:
+        '200':
+          description: portfolio results matching the portfolio id
+          schema:
+            $ref: '#/definitions/Portfolio'
+  '/portfolios/{portfolio_id}/portfolio_items':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetch all portfolio items from a specific portfolio
+      operationId: fetchPortfolioItemsWithPortfolio
+      description: >
+        By passing in the portfolio id you can fetch all the portfolio items in
+        the portfolio.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+      responses:
+        '200':
+          description: returns matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
+  '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetch a portfolio item from a specific portfolio
+      operationId: fetchPortfolioItemFromPortfolio
+      description: >
+        By passing in the portfolio id and portfolio_item_id you can fetch the
+        portfolio items in the portfolio.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+        - $ref: '#/parameters/PortfolioItemID'
+      responses:
+        '200':
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admins
+      summary: Add Portfolio item to a portfolio
+      operationId: addPortfolioItemToPortfolio
+      description: |
+        Add new portfolio item to an existing portfolio
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+        - $ref: '#/parameters/PortfolioItemID'
+        - in: body
+          name: item
+          required: true
+          schema:
+            $ref: '#/definitions/PortfolioItem'
+      responses:
+        '200':
+          description: Successfully added a portfolio item to portfolio
+        '400':
+          description: bad input parameter
+  /portfolio_items:
+    get:
+      tags:
+        - users
+        - admins
+      summary: API to list portfolio_items
+      operationId: listPortfolioItems
+      description: |
+        Returns an array of portfolio item objects
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: Portfolio Item Info
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admins
+      summary: API to add a new portfolio item
+      operationId: addPortfolioItem
+      description: |
+        Returns the added portfolio item object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PortfolioItem'
+      responses:
+        '200':
+          description: Portfolio Item Info
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/PortfolioItem'
+        '400':
+          description: bad input parameter
+  /providers:
+    get:
+      tags:
+        - users
+      summary: Temporary API to list provider
+      operationId: listProviders
+      description: |
+        Returns an array of provider objects
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: Provider Info
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Provider'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - users
+      summary: Temporary API to add a new provider
+      operationId: addProvider
+      description: |
+        Returns the added provider object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Provider'
+      responses:
+        '200':
+          description: Provider Info
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Provider'
+        '400':
+          description: bad input parameter
+  /catalog_items:
+    get:
+      tags:
+        - users
+      summary: fetches catalog items from all providers
+      operationId: catalogItems
+      description: |
+        Fetch catalog item from all defined providers
+      produces:
+        - application/json
+      parameters:
+        - name: limit
+          in: query
+          description: How many catalog items to return at one time (max 1000)
+          required: false
+          type: integer
+          format: int32
+          minimum: 20
+          maximum: 100
+        - name: offset
+          in: query
+          description: Starting Offset
+          required: false
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      responses:
+        '200':
+          description: all known catalog items
+          headers:
+            X-total-count:
+              type: integer
+              description: Total number of items
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CatalogItem'
+  '/providers/{provider_id}/catalog_items':
+    get:
+      tags:
+        - users
+      summary: Fetch all or a specific catalog item from a specific provider
+      operationId: fetchCatalogItemWithProvider
+      description: >
+        By passing in the provider id you can fetch all the catalog items in the
+        provider. You can limit to a specific catalog item by passing its id
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ProviderID'
+        - $ref: '#/parameters/OptionalCatalogID'
+      responses:
+        '200':
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CatalogItem'
+        '400':
+          description: bad input parameter
+  '/providers/{provider_id}/catalog_items/{catalog_id}':
+    get:
+      tags:
+        - users
+      summary: Fetches a specific catalog item for a provider
+      operationId: fetchCatalogItemWithProviderAndCatalogID
+      description: |
+        Fetch a catalog item by its ID and provider ID
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ProviderID'
+        - $ref: '#/parameters/CatalogID'
+      responses:
+        '200':
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CatalogItem'
+        '400':
+          description: bad input parameter
+  '/providers/{provider_id}/catalog_items/{catalog_id}/plans':
+    get:
+      tags:
+        - users
+      summary: Fetches all the plans for a specific catalog item for a provider
+      operationId: fetchPlansWithProviderAndCatalogID
+      description: |
+        Fetch all plans for catalog item by its ID and provider ID
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ProviderID'
+        - $ref: '#/parameters/CatalogID'
+      responses:
+        '200':
+          description: All Plans
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CatalogPlan'
+        '400':
+          description: bad input parameter
+  '/providers/{provider_id}/catalog_items/{catalog_id}/plans/{plan_id}/parameters':
+    get:
+      tags:
+        - users
+      summary: >-
+        Fetches catalog parameters, it needs the provider id, the catalog_id and
+        the plan_id
+      operationId: catalogPlanParameters
+      description: >
+        Return a JSON object with the parameters needed for a specific plan of a
+        catalog item
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ProviderID'
+        - $ref: '#/parameters/CatalogID'
+        - $ref: '#/parameters/PlanID'
+      responses:
+        '200':
+          description: Parameters for the given catalog item
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PlanParameter'
+        '400':
+          description: bad input parameter
+        '404':
+          description: catalog item doesn't exist
+  '/providers/{provider_id}/catalog_items/{catalog_id}/plans/{plan_id}/json_schema':
+    get:
+      tags:
+        - users
+      summary: >-
+        Fetches catalog json schema, it needs the provider id, the catalog_id
+        and the plan_id
+      operationId: catalogPlanSchema
+      description: >
+        Return a JSON schema with the parameters needed for a specific plan of a
+        catalog item
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ProviderID'
+        - $ref: '#/parameters/CatalogID'
+        - $ref: '#/parameters/PlanID'
+      responses:
+        '200':
+          description: A JSON Schema Object
+          schema:
+            $ref: '#/definitions/JSONSchema'
+        '400':
+          description: bad input parameter
+        '404':
+          description: catalog item doesn't exist
+  /orders:
+    get:
+      tags:
+        - users
+      summary: Get a list of orders
+      operationId: listOrders
+      description: |
+        Get a list of orders associated with the logged in user.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Returns an array of Order objects
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+    post:
+      tags:
+        - users
+      summary: Create a new order
+      operationId: newOrder
+      description: |
+        Create a new order.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Returns a newly created order object
+          schema:
+            $ref: '#/definitions/Order'
+  '/orders/{order_id}/items':
+    get:
+      tags:
+        - users
+      summary: Get a list of items in a given order
+      operationId: listOrderItems
+      description: |
+        Get a list of items associated with an order.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/OrderID'
+      responses:
+        '200':
+          description: Returns an array of OrderIem objects
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OrderItem'
+    post:
+      tags:
+        - users
+      summary: Add a Catalog to the Order in Pending State
+      operationId: addToOrder
+      description: |
+        Add a catalog item to the order in Pending State
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/OrderID'
+        - in: body
+          name: item
+          required: true
+          schema:
+            $ref: '#/definitions/OrderItem'
+      responses:
+        '200':
+          description: Successfully added an item to order
+        '400':
+          description: bad input parameter
+        '404':
+          description: cannot add to a order which has already been ordered.
+  '/orders/{order_id}/items/{order_item_id}':
+    get:
+      tags:
+        - users
+      summary: Get an individual item from a given order
+      operationId: listOrderItem
+      description: |
+        Get an item associated with an order.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/OrderID'
+        - $ref: '#/parameters/OrderItemID'
+      responses:
+        '200':
+          description: Returns a single OrderIem object
+          schema:
+            $ref: '#/definitions/OrderItem'
+  '/orders/{order_id}':
+    post:
+      tags:
+        - users
+      summary: Submit the given order
+      operationId: submitOrder
+      description: |
+        Returns an updated order object
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/OrderID'
+      responses:
+        '200':
+          description: Updated Order object
+          schema:
+            $ref: '#/definitions/Order'
+        '400':
+          description: 'Order is empty, nothing to order'
+  '/order_items/{order_item_id}/progress_messages':
+    get:
+      tags:
+        - users
+      summary: Get a list of progress messages in an item
+      operationId: listProgressMessages
+      description: >
+        Get a list of progress messages associated with an order item. As the
+        item is being processed the provider can update the progress messages
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/OrderItemID'
+      responses:
+        '200':
+          description: Returns an array of ProgressMessage objects
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProgressMessage'
+parameters:
+  PlanID:
+    name: plan_id
+    in: path
+    description: The Plan ID
+    required: true
+    type: string
+  CatalogID:
+    name: catalog_id
+    in: path
+    description: The Catalog ID
+    required: true
+    type: string
+    format: uuid
+  ProviderID:
+    name: provider_id
+    in: path
+    description: The Provider ID
+    required: true
+    type: string
+    format: uuid
+  PortfolioID:
+    name: portfolio_id
+    in: path
+    description: The Portfolio ID
+    required: true
+    type: integer
+  PortfolioItemID:
+    name: portfolio_item_id
+    in: path
+    description: The Portfolio Item ID
+    required: true
+    type: integer
+  OrderID:
+    name: order_id
+    in: path
+    description: The Order ID
+    required: true
+    type: string
+    format: uuid
+  OrderItemID:
+    name: order_item_id
+    in: path
+    description: The Order Item ID
+    required: true
+    type: string
+    format: uuid
+  OptionalPlanID:
+    name: plan_id
+    in: query
+    description: The Plan ID
+    type: string
+  OptionalCatalogID:
+    name: catalog_id
+    in: query
+    description: The Catalog ID
+    type: string
+    format: uuid
+  OptionalProviderID:
+    name: provider_id
+    in: query
+    description: The Provider ID
+    type: integer
+definitions:
+  Portfolio:
+    type: object
+    required:
+      - name
+      - description
+    properties:
+      name:
+        type: string
+        title: Name
+        example: Sample Portfolio
+      description:
+        type: string
+        title: Description
+        example: This is a sample description for a portfolio
+      enabled:
+        type: boolean
+        title: Enabled
+        example: Is the portfolio enabled
+      image_url:
+        type: string
+        title: Image URL
+        format: url
+        example: The public facing image url for a portfolio
+  Organization:
+    type: object
+    properties:
+      id:
+        type: string
+        readOnly: true
+        title: Id
+        example: Id of the sample organization
+  PortfolioItem:
+    type: object
+    properties:
+      portfolio_id:
+        type: integer
+        readOnly: true
+        title: PortfolioId
+        example: Id of the portfolio object
+      favorite:
+        type: boolean
+        title: Favorite
+        example: Definition of a favorite portfolio item
+      name:
+        type: string
+        title: Name
+        example: Name of the portfolio item
+      description:
+        type: string
+        title: Description
+        example: Description of a portfolio item
+      orphan:
+        type: boolean
+        readOnly: true
+        title: Orphan
+        example: Boolean if an associated catalog item no longer exists
+      state:
+        type: string
+        readOnly: true
+        title: State
+        example: The current state of a portfolio item
+  JSONSchema:
+    type: object
+    properties:
+      schema:
+        type: object
+        additionalProperties: true
+  CatalogItem:
+    type: object
+    required:
+      - name
+      - description
+    properties:
+      provider_id:
+        type: string
+        format: uuid
+        description: ID of the provider object
+        title: Provider ID
+        readOnly: true
+      portfolio_item_id:
+        type: integer
+        description: ID of the portfolio item object
+        title: Portfolio Item ID
+        readOnly: true
+      catalog_id:
+        type: string
+        format: uuid
+        title: Catalog ID
+        description: Stores the Catalog ID from the provider
+        readOnly: true
+      name:
+        type: string
+        example: Sample Catalog Item
+      description:
+        type: string
+        example: Sample Catalog Item collected from your cloud provider
+      imageUrl:
+        type: string
+        format: url
+        example: 'http://www.example.com/1.jpg'
+  PlanParameter:
+    type: object
+    properties:
+      type:
+        type: string
+        title: Type of Parameter
+      title:
+        type: string
+        title: Title of Parameter
+      name:
+        type: string
+        title: Parameter Name
+      description:
+        type: string
+        title: Parameter Description
+      default:
+        type: string
+        title: Default String Value
+      pattern:
+        type: string
+        title: Regexp pattern
+      example:
+        type: string
+        title: Example of sample data
+      required:
+        type: boolean
+        title: Mandatory Parameter
+      format:
+        type: string
+        title: Format for the data type
+        enum:
+          - password
+          - url
+          - uuid
+      enum:
+        type: array
+        items:
+          type: string
+  ParameterValue:
+    type: object
+    required:
+      - name
+      - value
+    properties:
+      name:
+        type: string
+        title: Name of Parameter
+      value:
+        type: string
+        title: Value of Parameter
+      type:
+        type: string
+        title: Type of Value
+      format:
+        type: string
+        title: Format of Value
+  Order:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        readOnly: true
+      user_id:
+        type: string
+        format: uuid
+        readOnly: true
+      state:
+        type: string
+        enum:
+          - Created
+          - Ordered
+          - Failed
+          - Completed
+        title: State
+        description: Current State of the order
+      created_at:
+        type: string
+        format: date-time
+        title: Created at
+      ordered_at:
+        type: string
+        format: date-time
+        title: Ordered at
+      completed_at:
+        type: string
+        format: date-time
+        title: Completed at
+      order_items:
+        type: array
+        items:
+          $ref: '#/definitions/OrderItem'
+  OrderItem:
+    type: object
+    required:
+      - parameters
+      - count
+    properties:
+      id:
+        type: string
+        format: uuid
+        readOnly: true
+      count:
+        type: integer
+        default: 1
+        title: Item Count
+      parameters:
+        type: array
+        items:
+          $ref: '#/definitions/ParameterValue'
+      plan_id:
+        type: string
+        format: uuid
+        title: Plan ID
+        description: Stores the Plan ID from the catalog
+        readOnly: true
+      catalog_id:
+        type: string
+        format: uuid
+        title: Catalog ID
+        description: Stores the Catalog ID from the provider
+        readOnly: true
+      provider_id:
+        type: string
+        format: uuid
+        description: ID of the provider object
+        title: Provider ID
+        readOnly: true
+      order_id:
+        type: string
+        format: uuid
+        description: ID of the order object
+        title: Order ID
+        readOnly: true
+      state:
+        type: string
+        enum:
+          - Created
+          - Ordered
+          - Failed
+          - Completed
+        title: State
+        description: Current State of this order item
+      created_at:
+        type: string
+        format: date-time
+        title: Created at
+      ordered_at:
+        type: string
+        format: date-time
+        title: Ordered at
+      completed_at:
+        type: string
+        format: date-time
+        title: Completed at
+      updated_at:
+        type: string
+        format: date-time
+        title: Completed at
+      external_ref:
+        type: string
+        description: >-
+          An external reference from the provider that can be used to track the
+          progress of the order item
+        title: External Reference
+        readOnly: true
+  ProgressMessage:
+    type: object
+    properties:
+      received_at:
+        type: string
+        format: date-time
+        title: Message Received At
+        readOnly: true
+      level:
+        type: string
+        readOnly: true
+        enum:
+          - info
+          - error
+          - warning
+          - debug
+      message:
+        type: string
+        example: This is a sample message
+        title: Message
+        readOnly: true
+      order_item_id:
+        type: string
+        title: Order Item ID
+        readOnly: true
+        format: uuid
+  CatalogPlan:
+    type: object
+    properties:
+      plan_id:
+        type: string
+        readOnly: true
+      name:
+        type: string
+        readOnly: true
+      description:
+        type: string
+        readOnly: true
+      catalog_id:
+        type: string
+        readOnly: true
+      provider_id:
+        type: string
+        readOnly: true
+  Provider:
+    type: object
+    required:
+      - name
+      - url
+      - token
+    properties:
+      id:
+        type: string
+        readOnly: true
+        format: uuid
+      name:
+        type: string
+        example: Sample Provider
+        title: Name
+      description:
+        type: string
+        example: This is a sample description for a provider
+        title: Description
+      url:
+        type: string
+        format: url
+        example: The REST API end point for the provider
+        title: Provider URL
+      user:
+        type: string
+        title: User
+        description: The user used to connect to the provider
+      password:
+        type: string
+        title: Password
+        description: The password used to connect to the provider
+      token:
+        type: string
+        title: Token
+        description: The token used to connect to the provider
+      verify_ssl:
+        type: boolean
+        default: true
+        title: Verify Server Certificate
+        description: >-
+          Verify the servers certificate, you can disable it for servers with
+          self signed certificates.
+host: virtserver.swaggerhub.com/
+schemes:
+  - https
+  - http
+basePath: "1.0.0"
