@@ -30,6 +30,13 @@ bin/rake db:create db:migrate
 bin/rails s
 ```
 
+## Viewable API url
+
+https://domain-or-ip-running-the-service-portal-api.test/api
+
+The `swagger-2.yaml` file is located at `public/doc` which
+is rendered by the `/api` endpoint.
+
 
 ## Force Puma to use another port
 
