@@ -35,6 +35,8 @@ class OrderItem < ApplicationRecord
     self.ordered_at = DateTime.now
     prov = Provider.find(provider_id)
     self.external_ref = prov.order_catalog(catalog_id, plan_id, parameters)
+    save!
+    Thread.new { monitor }
   end
 
   def set_defaults
@@ -46,5 +48,50 @@ class OrderItem < ApplicationRecord
     ProgressMessage.create(:level         => level,
                            :message       => message,
                            :order_item_id => id)
+  end
+
+  def monitor
+    prov = Provider.find(provider_id)
+    reason = "Provisioning"
+    inflight = %w(Provisioning ProvisionRequestInFlight)
+    parsed_data = {}
+    while inflight.include?(reason) do
+      sleep(5)
+      response = prov.service_status(external_ref)
+      parsed_data = JSON.parse(response.body)
+      async = parsed_data['status']['asyncOpInProgress']
+
+      message = parsed_data['status']['conditions'][0]['message']
+      # puts "Status : #{parsed_data['status']['conditions'][0]['status']}"
+      # puts "Type : #{parsed_data['status']['conditions'][0]['type']}"
+      reason = parsed_data['status']['conditions'][0]['reason']
+      level = reason == 'ProvisionCallFailed' ? 'error' : 'info'
+      update_message(level, message)
+    end
+    set_final_state(reason)
+    order.finalize_order
+  end
+
+  def set_final_state(reason)
+    case reason
+    when "ProvisionCallFailed"
+      mark_failed
+    when "ProvisionedSuccessfully"
+      mark_finished
+    else
+      mark_finished
+    end
+  end
+
+  def mark_failed
+    self.completed_at = DateTime.now
+    self.state = 'Failed'
+    save!
+  end
+
+  def mark_finished
+    self.completed_at = DateTime.now
+    self.state = 'Completed'
+    save!
   end
 end
