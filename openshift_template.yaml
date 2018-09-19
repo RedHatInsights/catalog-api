@@ -107,7 +107,7 @@ objects:
       spec:
         containers:
         - name: service-portal-api
-          image: "docker.io/fryguy9/insights-api-service_catalog:latest"
+          image: service-portal-ci/service-portal-api:latest
           ports:
           - containerPort: 3000
           env:
@@ -128,6 +128,15 @@ objects:
             timeoutSeconds: 1
             tcpSocket:
               port: 3000
+    triggers:
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - service-portal-api
+          from:
+            kind: ImageStreamTag
+            name: service-portal-api:latest
 parameters:
 - name: DATABASE_SERVICE_NAME
   displayName: PostgreSQL Service Name
