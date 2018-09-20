@@ -107,11 +107,10 @@ class UsersController < ApplicationController
 
   def submit_order
     order = Order.find(params['order_id'])
-    OrderItem.where(:order_id => params['order_id']).each(&:submit)
     order.update_attributes(:state => 'Ordered', :ordered_at => DateTime.now())
-    order.reload
-
     OrderItem.where(:order_id => params['order_id']).each{ |item| item.update_message('info', 'Initialized') }
+    order.reload
+    OrderItem.where(:order_id => params['order_id']).each(&:submit)
     render json: order.to_hash
   end
 end
