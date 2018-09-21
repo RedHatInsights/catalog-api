@@ -6,6 +6,8 @@ gem 'rails', '>= 5.0.0.racecar1', '< 5.1'
 
 group :development, :test do
   gem 'byebug', platform: :mri
+  gem 'factory_bot_rails'
+  gem 'rspec-mocks'
   gem 'rspec-rails'
 end
 
