@@ -5,8 +5,6 @@ class CreateJoinTablePortfolioPortfolioItem < ActiveRecord::Migration[5.1]
       t.index [:portfolio_item_id, :portfolio_id], name: 'index_items_on_portfolio_item_id_and_portfolio_id'
     end
 
-    if column_exists? :portfolio_items, :portfolio_id
-      remove_column :portfolio_items, :portfolio_id
-    end
+    remove_column :portfolio_items, :portfolio_id
   end
 end

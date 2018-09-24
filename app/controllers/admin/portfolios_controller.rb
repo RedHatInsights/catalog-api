@@ -1,9 +1,6 @@
 class Admin::PortfoliosController < AdminsController
   def add_portfolio
-    portfolio = Portfolio.create(:name        => params[:name],
-                                 :description => params[:description],
-                                 :image_url   => params[:url],
-                                 :enabled     => params[:enabled])
+    portfolio = Portfolio.create!(portfolio_params)
     render json: portfolio
   end
 
@@ -13,12 +10,12 @@ class Admin::PortfoliosController < AdminsController
   end
 
   def fetch_portfolio_with_id
-    item = Portfolio.where(:id => params[:portfolio_id]).first
+    item = Portfolio.find_by(:id => params[:portfolio_id])
     render json: item
   end
 
   def fetch_portfolio_items_with_portfolio
-    portfolio_items = Portfolio.where(id: params[:portfolio_id]).first
+    portfolio_items = Portfolio.find_by(id: params[:portfolio_id])
                                .portfolio_items
     render json: portfolio_items
   end
@@ -35,13 +32,7 @@ class Admin::PortfoliosController < AdminsController
   end
 
   def add_portfolio_item
-    portfolio_item = PortfolioItem.create!(
-        favorite: params[:favorite],
-        name: params[:name],
-        description: params[:description],
-        orphan: params[:orphan],
-        state: params[:state]
-    )
+    portfolio_item = PortfolioItem.create!(portfolio_item_params)
     render json: portfolio_item
   end
 
@@ -49,4 +40,13 @@ class Admin::PortfoliosController < AdminsController
     portfolio_items = PortfolioItem.all
     render json: portfolio_items
   end
+
+  private
+    def portfolio_item_params
+      params.permit(:favorite, :name, :description, :orphan, :state, :portfolio_id)
+    end
+
+    def portfolio_params
+      params.permit(:name, :description, :image_url, :enabled)
+    end
 end
