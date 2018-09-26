@@ -26,17 +26,17 @@ Rails.application.routes.draw do
   end
 
   # Portfolio Routes
-  add_swagger_route 'POST', '1.0.0/portfolios', controller_name: 'admin/portfolios', action_name: 'add_portfolio'
+  add_swagger_route 'POST', '1.0.0/portfolios', controller_name: 'admins', action_name: 'add_portfolio'
   add_swagger_route 'GET', '1.0.0/portfolios', controller_name: 'users', action_name: 'list_portfolios'
-  add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}', controller_name: 'admin/portfolios', action_name: 'fetch_portfolio_with_id'
+  add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}', controller_name: 'admins', action_name: 'fetch_portfolio_with_id'
   add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}', controller_name: 'users', action_name: 'fetch_portfolio_with_id'
-  add_swagger_route 'GET', '1.0.0/portfolios', controller_name: 'admin/portfolios', action_name: 'list_portfolios'
-  add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}/portfolio_items', controller_name: 'admin/portfolios', action_name: 'fetch_portfolio_items_with_portfolio'
-  add_swagger_route 'POST', '1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admin/portfolios', action_name: 'add_portfolio_item_to_portfolio'
-  add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admin/portfolios', action_name: 'fetch_portfolio_item_from_portfolio'
+  add_swagger_route 'GET', '1.0.0/portfolios', controller_name: 'admins', action_name: 'list_portfolios'
+  add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}/portfolio_items', controller_name: 'admins', action_name: 'fetch_portfolio_items_with_portfolio'
+  add_swagger_route 'POST', '1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admins', action_name: 'add_portfolio_item_to_portfolio'
+  add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admins', action_name: 'fetch_portfolio_item_from_portfolio'
   add_swagger_route 'GET', '1.0.0/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'users', action_name: 'fetch_portfolio_item_from_portfolio'
-  add_swagger_route 'POST', '1.0.0/portfolio_items', controller_name: 'admin/portfolios', action_name: 'add_portfolio_item'
-  add_swagger_route 'GET', '1.0.0/portfolio_items', controller_name: 'admin/portfolios', action_name: 'list_portfolio_items'
+  add_swagger_route 'POST', '1.0.0/portfolio_items', controller_name: 'admins', action_name: 'add_portfolio_item'
+  add_swagger_route 'GET', '1.0.0/portfolio_items', controller_name: 'admins', action_name: 'list_portfolio_items'
   add_swagger_route 'GET', '1.0.0/portfolio_items', controller_name: 'users', action_name: 'list_portfolio_items'
 
   # Catalog / Provider Routes
