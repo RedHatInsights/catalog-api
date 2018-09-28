@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20180920200522) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,7 +91,6 @@ ActiveRecord::Schema.define(version: 0) do
   end
 
   create_table "portfolio_items", id: :serial, force: :cascade do |t|
-    t.integer "portfolio_id"
     t.boolean "favorite"
     t.string "name"
     t.string "description"
@@ -99,6 +98,13 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "portfolio_items_portfolios", id: false, force: :cascade do |t|
+    t.bigint "portfolio_id", null: false
+    t.bigint "portfolio_item_id", null: false
+    t.index ["portfolio_id", "portfolio_item_id"], name: "index_items_on_portfolio_id_and_portfolio_item_id"
+    t.index ["portfolio_item_id", "portfolio_id"], name: "index_items_on_portfolio_item_id_and_portfolio_id"
   end
 
   create_table "portfolios", id: :serial, force: :cascade do |t|

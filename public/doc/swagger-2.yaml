@@ -570,7 +570,7 @@ parameters:
     name: portfolio_id
     in: path
     description: The Portfolio ID
-    required: true
+    required: false
     type: integer
   PortfolioItemID:
     name: portfolio_item_id
@@ -645,7 +645,6 @@ definitions:
     properties:
       portfolio_id:
         type: integer
-        readOnly: true
         title: PortfolioId
         example: Id of the portfolio object
       favorite:
