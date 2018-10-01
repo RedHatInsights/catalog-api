@@ -61,3 +61,16 @@ To list all your routes, use:
 ```
 bin/rake routes
 ```
+
+## swagger-codegen example
+
+Definitions of the flags used in the below example
+
+1. -l type of generator to use
+2. -i input file
+3. -o output directory
+4. -t templates location ( directories only )
+
+```
+swagger-codegen generate -l rails5 -i public/doc/swagger-2.yaml -o /tmp/sp -t swagger-codegen-templates/'
+```
