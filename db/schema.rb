@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180920200522) do
+ActiveRecord::Schema.define(version: 20181003135506) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,8 @@ ActiveRecord::Schema.define(version: 20180920200522) do
     t.datetime "completed_at"
     t.datetime "updated_at", null: false
     t.string "external_ref"
+    t.bigint "tenant_id"
+    t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
   create_table "orders", id: :serial, force: :cascade do |t|
@@ -59,11 +61,8 @@ ActiveRecord::Schema.define(version: 20180920200522) do
     t.datetime "completed_at"
     t.string "order_items"
     t.datetime "updated_at", null: false
-  end
-
-  create_table "organizations", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "tenant_id"
+    t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
   create_table "parameter_values", id: false, force: :cascade do |t|
@@ -98,6 +97,8 @@ ActiveRecord::Schema.define(version: 20180920200522) do
     t.string "state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "tenant_id"
+    t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
 
   create_table "portfolio_items_portfolios", id: false, force: :cascade do |t|
@@ -114,6 +115,8 @@ ActiveRecord::Schema.define(version: 20180920200522) do
     t.string "image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "tenant_id"
+    t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end
 
   create_table "progress_messages", id: :serial, force: :cascade do |t|
@@ -123,6 +126,8 @@ ActiveRecord::Schema.define(version: 20180920200522) do
     t.string "order_item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "tenant_id"
+    t.index ["tenant_id"], name: "index_progress_messages_on_tenant_id"
   end
 
   create_table "providers", id: :serial, force: :cascade do |t|
@@ -135,6 +140,13 @@ ActiveRecord::Schema.define(version: 20180920200522) do
     t.boolean "verify_ssl"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "tenants", id: :serial, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "ref_id"
+    t.index ["ref_id"], name: "index_tenants_on_ref_id"
   end
 
 end

@@ -17,6 +17,7 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+gem 'acts_as_tenant'
 gem 'jbuilder', '~> 2.0'
 gem "pg", "~>0.18.2", :require => false
 gem 'puma', '~> 3.0'
