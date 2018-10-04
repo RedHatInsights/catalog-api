@@ -922,8 +922,8 @@ definitions:
         description: >-
           Verify the servers certificate, you can disable it for servers with
           self signed certificates.
-host: virtserver.swaggerhub.com
+host: localhost
 schemes:
   - https
   - http
-basePath: "/r/insights/platform/service-portal/1.0.0"
+basePath: "/"
