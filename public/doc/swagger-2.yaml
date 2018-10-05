@@ -604,10 +604,6 @@ definitions:
   PortfolioItem:
     type: object
     properties:
-      portfolio_id:
-        type: integer
-        title: PortfolioId
-        example: Id of the portfolio object
       favorite:
         type: boolean
         title: Favorite
