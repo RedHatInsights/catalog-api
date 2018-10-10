@@ -37,7 +37,7 @@ app/models/portfolio.rb
 app/models/portfolio_item.rb
 app/models/progress_message.rb
 app/models/provider.rb
-app/controllers/defaults_controller.rb
+app/controllers/users_controller.rb
 app/controllers/admins_controller.rb
 config/application.rb
 config/database.yml
