@@ -971,4 +971,4 @@ host: localhost
 schemes:
   - https
   - http
-basePath: ""
+basePath: "/r/insights/platform/service-portal"

@@ -6,7 +6,11 @@ Rails.application.routes.draw do
   mount SwaggerUiEngine::Engine, at: '/api'
 
   def add_swagger_route http_method, path, opts = {}
+    # Convert codegen substitutions into Symbols
     full_path = path.gsub(/{(.*?)}/, ':\1')
+    # Add back in a custom base path if required
+    full_path = File.join(ENV["BASE_PATH"], full_path) if ENV["BASE_PATH"]
+
     constraint = opts[:constraint_name].camelize.constantize
     match full_path, to: "#{opts.fetch(:controller_name)}##{opts[:action_name]}", constraints: constraint, via: http_method
   end
@@ -15,7 +19,7 @@ Rails.application.routes.draw do
 {{#apis}}
 {{#operations}}
 {{#operation}}
-  add_swagger_route '{{httpMethod}}', '{{basePathWithoutHost}}{{path}}', controller_name: '{{classVarName}}', constraint_name: '{{classVarName}}Constraint', action_name: {{#isRestfulIndex}}'index'{{/isRestfulIndex}}{{#isRestfulCreate}}'create'{{/isRestfulCreate}}{{#isRestfulUpdate}}'update'{{/isRestfulUpdate}}{{#isRestfulShow}}'show'{{/isRestfulShow}}{{#isRestfulDestroy}}'destroy'{{/isRestfulDestroy}}{{^isRestful}}'{{nickname}}'{{/isRestful}}
+  add_swagger_route '{{httpMethod}}', '{{path}}', controller_name: '{{classVarName}}', constraint_name: '{{classVarName}}Constraint', action_name: {{#isRestfulIndex}}'index'{{/isRestfulIndex}}{{#isRestfulCreate}}'create'{{/isRestfulCreate}}{{#isRestfulUpdate}}'update'{{/isRestfulUpdate}}{{#isRestfulShow}}'show'{{/isRestfulShow}}{{#isRestfulDestroy}}'destroy'{{/isRestfulDestroy}}{{^isRestful}}'{{nickname}}'{{/isRestful}}
 {{/operation}}
 {{/operations}}
 {{/apis}}
