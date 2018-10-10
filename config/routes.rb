@@ -13,7 +13,11 @@ Rails.application.routes.draw do
   mount SwaggerUiEngine::Engine, at: '/api'
 
   def add_swagger_route http_method, path, opts = {}
+    # Convert codegen substitutions into Symbols
     full_path = path.gsub(/{(.*?)}/, ':\1')
+    # Add back in a custom base path if required
+    full_path = File.join(ENV["BASE_PATH"], full_path) if ENV["BASE_PATH"]
+
     constraint = opts[:constraint_name].camelize.constantize
     match full_path, to: "#{opts.fetch(:controller_name)}##{opts[:action_name]}", constraints: constraint, via: http_method
   end
