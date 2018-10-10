@@ -7,10 +7,7 @@ Rails.application.routes.draw do
 
   def add_swagger_route http_method, path, opts = {}
     full_path = path.gsub(/{(.*?)}/, ':\1')
-    constraint = DefaultsConstraint
-    if opts[:constraint_name] != 'defaultConstraint' 
-      constraint = opts[:constraint_name].camelize.constantize
-    end
+    constraint = opts[:constraint_name].camelize.constantize
     match full_path, to: "#{opts.fetch(:controller_name)}##{opts[:action_name]}", constraints: constraint, via: http_method
   end
 

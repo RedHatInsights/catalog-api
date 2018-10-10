@@ -1,4 +1,4 @@
-class DefaultsConstraint
+class UsersConstraint
   def self.matches?(req)
     true
   end

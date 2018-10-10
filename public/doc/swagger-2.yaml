@@ -19,9 +19,14 @@ security:
 tags:
   - name: admins
     description: Secured Admin-only calls
+  - name: users
+    description: Calls available to both regular users and admins
 paths:
   /portfolios:
     get:
+      tags:
+        - users
+        - admins
       summary: API to list portfolios
       operationId: listPortfolios
       description: |
@@ -67,6 +72,9 @@ paths:
           description: bad input parameter
   '/portfolios/{portfolio_id}':
     get:
+      tags:
+        - users
+        - admins
       summary: Fetch a specific Portfolio
       operationId: fetchPortfolioWithId
       description: |
@@ -82,6 +90,9 @@ paths:
             $ref: '#/definitions/Portfolio'
   '/portfolios/{portfolio_id}/portfolio_items':
     get:
+      tags:
+        - users
+        - admins
       summary: Fetch all portfolio items from a specific portfolio
       operationId: fetchPortfolioItemsWithPortfolio
       description: >
@@ -102,6 +113,9 @@ paths:
           description: bad input parameter
   '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}':
     get:
+      tags:
+        - users
+        - admins
       summary: Fetch a portfolio item from a specific portfolio
       operationId: fetchPortfolioItemFromPortfolio
       description: >
@@ -147,6 +161,9 @@ paths:
           description: bad input parameter
   /portfolio_items:
     get:
+      tags:
+        - users
+        - admins
       summary: API to list portfolio_items
       operationId: listPortfolioItems
       description: |
@@ -192,6 +209,8 @@ paths:
           description: bad input parameter
   /providers:
     get:
+      tags:
+        - admins
       summary: Temporary API to list provider
       operationId: listProviders
       description: |
@@ -237,6 +256,9 @@ paths:
           description: bad input parameter
   /catalog_items:
     get:
+      tags:
+        - users
+        - admins
       summary: fetches catalog items from all providers
       operationId: catalogItems
       description: |
@@ -273,6 +295,9 @@ paths:
               $ref: '#/definitions/CatalogItem'
   '/providers/{provider_id}/catalog_items':
     get:
+      tags:
+        - users
+        - admins
       summary: Fetch all or a specific catalog item from a specific provider
       operationId: fetchCatalogItemWithProvider
       description: >
@@ -294,6 +319,9 @@ paths:
           description: bad input parameter
   '/providers/{provider_id}/catalog_items/{catalog_id}':
     get:
+      tags:
+        - users
+        - admins
       summary: Fetches a specific catalog item for a provider
       operationId: fetchCatalogItemWithProviderAndCatalogID
       description: |
@@ -314,6 +342,9 @@ paths:
           description: bad input parameter
   '/providers/{provider_id}/catalog_items/{catalog_id}/plans':
     get:
+      tags:
+        - users
+        - admins
       summary: Fetches all the plans for a specific catalog item for a provider
       operationId: fetchPlansWithProviderAndCatalogID
       description: |
@@ -334,6 +365,9 @@ paths:
           description: bad input parameter
   '/providers/{provider_id}/catalog_items/{catalog_id}/plans/{plan_id}/parameters':
     get:
+      tags:
+        - users
+        - admins
       summary: >-
         Fetches catalog parameters, it needs the provider id, the catalog_id and
         the plan_id
@@ -360,6 +394,9 @@ paths:
           description: catalog item doesn't exist
   '/providers/{provider_id}/catalog_items/{catalog_id}/plans/{plan_id}/json_schema':
     get:
+      tags:
+        - users
+        - admins
       summary: >-
         Fetches catalog json schema, it needs the provider id, the catalog_id
         and the plan_id
@@ -384,6 +421,9 @@ paths:
           description: catalog item doesn't exist
   /orders:
     get:
+      tags:
+        - users
+        - admins
       summary: Get a list of orders
       operationId: listOrders
       description: |
@@ -413,6 +453,9 @@ paths:
             $ref: '#/definitions/Order'
   '/orders/{order_id}/items':
     get:
+      tags:
+        - users
+        - admins
       summary: Get a list of items in a given order
       operationId: listOrderItems
       description: |
@@ -455,6 +498,9 @@ paths:
           description: cannot add to a order which has already been ordered.
   '/orders/{order_id}/items/{order_item_id}':
     get:
+      tags:
+        - users
+        - admins
       summary: Get an individual item from a given order
       operationId: listOrderItem
       description: |
@@ -490,6 +536,9 @@ paths:
           description: 'Order is empty, nothing to order'
   '/order_items/{order_item_id}/progress_messages':
     get:
+      tags:
+        - users
+        - admins
       summary: Get a list of progress messages in an item
       operationId: listProgressMessages
       description: >
@@ -922,4 +971,4 @@ host: localhost
 schemes:
   - https
   - http
-basePath: "/"
+basePath: ""
