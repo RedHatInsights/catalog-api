@@ -3,5 +3,11 @@ FactoryBot.define do
     sequence(:name)                 { |n| "PortfolioItem_name_#{n}" }
     sequence(:description)          { |n| "PortfolioItem_description_#{n}" }
     sequence(:service_offering_ref) { |n| "#{rand(0)+n}" }
+
+    trait :with_portfolio do
+      after(:create) do |portfolio, _evaluator|
+        create_list(:portfolio_item, portfolios: [portfolio])
+      end
+    end
   end
 end

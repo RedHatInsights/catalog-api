@@ -1,5 +1,5 @@
 describe Portfolio do
-  let(:portfolio)      { create(:portfolio) }
+  let(:portfolio)      { create(:portfolio, :without_tenant) }
   let(:portfolio_item) { create(:portfolio_item) }
   let(:tenant)         { create(:tenant) }
 
