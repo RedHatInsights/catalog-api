@@ -10,13 +10,13 @@ group :development, :test do
   gem 'rspec-mocks'
   gem 'rspec-rails'
   gem 'simplecov'
+  gem 'webmock'
 end
 
 group :development do
   gem 'listen', '~> 3.0.5'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
-  gem 'webmock'
 end
 
 gem 'acts_as_tenant'
