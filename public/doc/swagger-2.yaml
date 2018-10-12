@@ -623,6 +623,9 @@ definitions:
       - name
       - description
     properties:
+      id:
+        type: string
+        readOnly: true
       name:
         type: string
         title: Name
@@ -651,6 +654,9 @@ definitions:
   PortfolioItem:
     type: object
     properties:
+      id:
+        type: string
+        readOnly: true
       favorite:
         type: boolean
         title: Favorite
