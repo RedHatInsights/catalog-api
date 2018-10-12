@@ -51,9 +51,22 @@ class BaseController < ApplicationController
     render json: portfolios
   end
 
+  def list_portfolio_items
+    render json: PortfolioItem.all
+  end
+
   def fetch_portfolio_with_id
-    item = Portfolio.where(:id => params[:portfolio_id]).first
-    render json: item
+    render json: Portfolio.find_by(:id => params[:portfolio_id])
+  end
+
+  def fetch_portfolio_item_from_portfolio
+    items = Portfolio.find(params[:portfolio_id])
+                     .portfolio_items.find_by(:id => params[:portfolio_item_id])
+    render json: items
+  end
+
+  def fetch_portfolio_items_with_portfolio
+    render json: Portfolio.find(params[:portfolio_id]).portfolio_items
   end
 
   def list_progress_messages
