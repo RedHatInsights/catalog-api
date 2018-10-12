@@ -594,14 +594,12 @@ parameters:
     description: The Order ID
     required: true
     type: string
-    format: uuid
   OrderItemID:
     name: order_item_id
     in: path
     description: The Order Item ID
     required: true
     type: string
-    format: uuid
   OptionalPlanID:
     name: plan_id
     in: query
@@ -971,4 +969,4 @@ host: localhost
 schemes:
   - https
   - http
-basePath: "/r/insights/platform/service-portal"
+basePath: /r/insights/platform/service-portal
