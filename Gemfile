@@ -20,9 +20,11 @@ end
 
 gem 'acts_as_tenant'
 gem 'jbuilder', '~> 2.0'
+gem 'manageiq-messaging'
 gem "pg", "~>0.18.2", :require => false
 gem 'puma', '~> 3.0'
 gem 'rack-cors'
 gem 'rest-client'
+gem 'sidekiq'
 gem 'swagger_ui_engine'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
