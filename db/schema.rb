@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181017200423) do
+ActiveRecord::Schema.define(version: 20181022121618) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "catalog_items", id: false, force: :cascade do |t|
     t.string "provider_id"
-    t.integer "portfolio_item_id"
+    t.bigint "portfolio_item_id"
     t.string "catalog_id"
     t.string "name"
     t.string "description"
@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 20181017200423) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "order_items", id: :serial, force: :cascade do |t|
+  create_table "order_items", force: :cascade do |t|
     t.integer "count"
     t.string "parameters"
     t.string "plan_id"
@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 20181017200423) do
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
-  create_table "orders", id: :serial, force: :cascade do |t|
+  create_table "orders", force: :cascade do |t|
     t.string "user_id"
     t.string "state"
     t.datetime "created_at", null: false
@@ -89,7 +89,7 @@ ActiveRecord::Schema.define(version: 20181017200423) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "portfolio_items", id: :serial, force: :cascade do |t|
+  create_table "portfolio_items", force: :cascade do |t|
     t.boolean "favorite"
     t.string "name"
     t.string "description"
@@ -109,7 +109,7 @@ ActiveRecord::Schema.define(version: 20181017200423) do
     t.index ["portfolio_item_id", "portfolio_id"], name: "index_items_on_portfolio_item_id_and_portfolio_id"
   end
 
-  create_table "portfolios", id: :serial, force: :cascade do |t|
+  create_table "portfolios", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.boolean "enabled"
@@ -120,7 +120,7 @@ ActiveRecord::Schema.define(version: 20181017200423) do
     t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end
 
-  create_table "progress_messages", id: :serial, force: :cascade do |t|
+  create_table "progress_messages", force: :cascade do |t|
     t.datetime "received_at"
     t.string "level"
     t.string "message"
@@ -131,7 +131,7 @@ ActiveRecord::Schema.define(version: 20181017200423) do
     t.index ["tenant_id"], name: "index_progress_messages_on_tenant_id"
   end
 
-  create_table "providers", id: :serial, force: :cascade do |t|
+  create_table "providers", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.string "url"
@@ -143,7 +143,7 @@ ActiveRecord::Schema.define(version: 20181017200423) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tenants", id: :serial, force: :cascade do |t|
+  create_table "tenants", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "ref_id"
