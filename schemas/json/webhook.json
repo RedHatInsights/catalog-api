@@ -55,23 +55,58 @@
                    "$ref": "#/definitions/Authentications",
                    "title": "Authentication",
 		   "default": "none"
-                },
-		"userid": {
-			"type": "string",
-			"title": "Username",
-			"description": "For basic authentication please provide a userid"
-		},
-		"password": {
-			"type": "string",
-			"title": "Password",
-			"format": "password",
-			"description": "For basic authentication please provide a password"
-		},
-		"token": {
-			"type": "string",
-			"title": "Bearer Token",
-			"description": "For OAuth 2.0 authentication please provide a token"
-		}
+                }
+	},
+	"dependencies": {
+           "authentication": {
+	     "oneOf": [
+		     {
+                       "properties": {
+                         "authentication": {
+                             "enum": [
+                                 "none"
+                              ]
+                          }
+                        }
+                     },
+		     {
+                       "properties": {
+                         "authentication": {
+                             "enum": [
+                                 "oauth"
+                              ]
+                          },
+		          "token": {
+			    "type": "string",
+			    "title": "Bearer Token",
+			    "description": "For OAuth 2.0 authentication please provide a token"
+		          }
 
-	}
+
+                        }
+                     },
+		     {
+                       "properties": {
+                         "authentication": {
+                             "enum": [
+                                 "basic"
+                              ]
+                          },
+		          "userid": {
+			     "type": "string",
+			     "title": "Username",
+			     "description": "For basic authentication please provide a userid"
+		          },
+		          "password": {
+			      "type": "string",
+			      "title": "Password",
+			      "format": "password",
+			      "description": "For basic authentication please provide a password"
+		          }
+
+                        }
+                     }
+	          ]
+	     }
+	 }
 }
