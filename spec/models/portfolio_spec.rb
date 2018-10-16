@@ -1,6 +1,6 @@
 describe Portfolio do
   let(:portfolio)      { create(:portfolio, :without_tenant) }
-  let(:portfolio_item) { create(:portfolio_item) }
+  let(:portfolio_item) { create(:portfolio_item, :without_tenant) }
   let(:tenant)         { create(:tenant) }
 
   context "without current_tenant" do

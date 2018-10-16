@@ -16,10 +16,10 @@ describe 'Portfolios API' do
 
   # Gah, Acts as Tenancy is killing me
   before { allow_any_instance_of(ApplicationController).to receive(:set_current_tenant).and_return(tenant) }
-  ['admin', 'user'].each do |namespace|
-    describe 'GET #{namespace} tagged /portfolios/:portfolio_id' do
+  %w(admin user).each do |tag|
+    describe "GET #{tag} tagged /portfolios/:portfolio_id" do
       before do
-        get "/portfolios/#{portfolio_id}", headers: send("#{namespace}_encode_key_with_tenant")
+        get "/portfolios/#{portfolio_id}", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       context 'when portfolios exist' do
@@ -34,9 +34,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe 'GET #{namespace} tagged /portfolios/:portfolio_id/portfolio_items' do
+    describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items" do
       before do
-        get "/portfolios/#{portfolio_id}/portfolio_items", headers: send("#{namespace}_encode_key_with_tenant")
+        get "/portfolios/#{portfolio_id}/portfolio_items", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       it 'returns all associated portfolio_items' do
@@ -47,9 +47,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe 'GET #{namespace} tagged /portfolios/:portfolio_id/portfolio_items/:portfolio_item_id' do
+    describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items/:portfolio_item_id" do
       before do
-        get "/portfolios/#{portfolio_id}/portfolio_items/#{portfolio_item_id}", headers: send("#{namespace}_encode_key_with_tenant")
+        get "/portfolios/#{portfolio_id}/portfolio_items/#{portfolio_item_id}", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       it 'returns an associated portfolio_item for a specific portfolio' do
@@ -58,9 +58,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe 'GET #{namespace} tagged /portfolios' do
+    describe "GET #{tag} tagged /portfolios" do
       before do
-        get "/portfolios", headers: send("#{namespace}_encode_key_with_tenant")
+        get "/portfolios", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       context 'when portfolios exist' do
