@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 
-gem 'rails', '>= 5.0.0.racecar1', '< 5.1'
+gem 'rails', '~> 5.1.0'
 
 
 group :development, :test do
@@ -20,7 +20,7 @@ end
 
 gem 'acts_as_tenant'
 gem 'jbuilder', '~> 2.0'
-gem "pg", "~>0.18.2", :require => false
+gem "pg", "~> 1.0", :require => false
 gem 'puma', '~> 3.0'
 gem 'rack-cors'
 gem 'rest-client'
