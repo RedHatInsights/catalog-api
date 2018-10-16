@@ -4,10 +4,14 @@ FactoryBot.define do
     sequence(:description)          { |n| "PortfolioItem_description_#{n}" }
     sequence(:service_offering_ref) { |n| "#{rand(0)+n}" }
 
+    tenant
     trait :with_portfolio do
       after(:create) do |portfolio, _evaluator|
         create_list(:portfolio_item, portfolios: [portfolio])
       end
+    end
+    trait :without_tenant do
+      tenant_id { nil }
     end
   end
 end
