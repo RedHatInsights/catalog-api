@@ -4,6 +4,20 @@ describe HeaderUtility do
   # Encoded Header: { 'identity' => { 'is_org_admin':true, 'org_id':111 } }
   let(:admin_encode_key_with_tenant) { { 'x-rh-auth-identity': 'eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWUsIm9yZ19pZCI6MTExfX0=' } }
 
+  describe "#{described_class}.admin?" do
+    it 'returns true if is_org_admin returns true' do
+      expect(HeaderUtility.admin?(admin_encode_key_with_tenant)).to be_truthy
+    end
+
+    it 'returns false if is_org_admin returns false' do
+      expect(HeaderUtility.admin?(user_encode_key_with_tenant)).to be_falsey
+    end
+
+    it 'returns false if garbage is passed in' do
+      expect(HeaderUtility.admin?({'is_just_wrong': '123'})).to be_falsey
+    end
+  end
+
   describe '#decode' do
     it 'returns the hash representation of Base64 encoded key' do
       request = double(headers: admin_encode_key_with_tenant, host: 'api.localhost')
