@@ -30,6 +30,15 @@ describe 'PortfolioItems API' do
     end
   end
 
+  describe 'admin tagged /portfolio_items', :type => :routing  do
+    let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description' } }
+    context 'with wrong header' do
+      it 'returns a 404' do
+        expect(:post => "/portfolio_items").not_to be_routable
+      end
+    end
+  end
+
   describe 'POST admin tagged /portfolio_items' do
     let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description' } }
     context 'when portfolio attributes are valid' do
