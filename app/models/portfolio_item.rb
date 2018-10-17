@@ -15,4 +15,6 @@ class PortfolioItem < ApplicationRecord
 
   attr_accessor :portfolio_id
   has_and_belongs_to_many :portfolios
+
+  validates :service_offering_ref, :presence => true
 end
