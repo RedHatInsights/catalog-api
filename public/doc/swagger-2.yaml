@@ -193,6 +193,7 @@ paths:
       consumes:
         - application/json
       parameters:
+        - $ref: '#/parameters/ServiceOfferingRef'
         - name: body
           in: body
           required: true
@@ -588,6 +589,12 @@ parameters:
     description: The Portfolio Item ID
     required: true
     type: integer
+  ServiceOfferingRef:
+    name: service_offering_ref
+    in: path
+    description: The Service Offering Reference
+    required: true
+    type: string
   OrderID:
     name: order_id
     in: path
