@@ -89,4 +89,8 @@ class BaseController < ApplicationController
     OrderItem.where(:order_id => params['order_id']).each(&:submit)
     render json: order.to_hash
   end
+
+  def fetch_plans_with_portfolio_item_id
+    render json: ServicePlans.new(params).process
+  end
 end

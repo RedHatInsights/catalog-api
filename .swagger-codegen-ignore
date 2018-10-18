@@ -45,3 +45,4 @@ config/environments/production.rb
 config/initializers/cors.rb
 config/initializers/load_extensions.rb
 db/migrate/0_init_tables.rb
+app/models/service_plan.rb

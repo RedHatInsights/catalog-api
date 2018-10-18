@@ -10,6 +10,7 @@ group :development, :test do
   gem 'rspec-mocks'
   gem 'rspec-rails'
   gem 'simplecov'
+  gem 'climate_control'
 end
 
 group :development do
@@ -25,4 +26,5 @@ gem 'puma', '~> 3.0'
 gem 'rack-cors'
 gem 'rest-client'
 gem 'swagger_ui_engine'
+gem 'topological_inventory-api-client', :git => "https://github.com/mkanoor/topological_inventory-api-client", :branch => "master"
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
