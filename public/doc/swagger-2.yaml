@@ -207,6 +207,28 @@ paths:
               $ref: '#/definitions/PortfolioItem'
         '400':
           description: bad input parameter
+  '/portfolio_items/{portfolio_item_id}/service_plans':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetches all the service plans for a specific portfolio item
+      operationId: fetchPlansWithPortfolioItemId
+      description: |
+        Fetch all service plans for a portfolio item
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioItemID'
+      responses:
+        '200':
+          description: All Service Plans
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ServicePlan'
+        '400':
+          description: bad input parameter        
   /providers:
     get:
       tags:
@@ -928,6 +950,30 @@ definitions:
       provider_id:
         type: string
         readOnly: true
+  ServicePlan:
+    type: object
+    properties:
+      name:
+        type: string
+        title: Name
+        description: The name of the Service Plan
+        readOnly: true
+      description:
+        type: string
+        title: Description
+        description: The Service Plan description
+        readOnly: true
+      id:
+        type: string
+        title: ID
+        description: The unique identifier for this Service Plan
+        readOnly: true
+      create_json_schema:
+        type: object
+        title: JSON Schema
+        description: JSON Schema for the object
+        readOnly: true
+        
   Provider:
     type: object
     required:
