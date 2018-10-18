@@ -1,4 +1,8 @@
-# Swagger for Rails 5
+# Insights Service Portal API
+
+[![Build Status](https://api.travis-ci.org/ManageIQ/insights-api-service_portal.svg)](https://travis-ci.org/ManageIQ/insights-api-service_portal)
+
+## Swagger for Rails 5
 
 This is a project to provide Swagger support inside the [Ruby on Rails](http://rubyonrails.org/) framework.
 
