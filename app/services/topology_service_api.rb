@@ -8,7 +8,7 @@ class TopologyServiceApi
       config.username = 'YOUR USERNAME'
       config.password = 'YOUR PASSWORD'
       config.host     = ENV['TOPOLOGY_SERVICE_URL']
-      config.scheme   = 'http'
+      config.scheme   = URI.parse(ENV['TOPOLOGY_SERVICE_URL']).try(:scheme)
     end
     @api_instance = TopologicalInventoryApiClient::DefaultApi.new
   end
