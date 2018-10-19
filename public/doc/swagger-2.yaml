@@ -581,13 +581,13 @@ parameters:
     in: path
     description: The Portfolio ID
     required: true
-    type: integer
+    type: string
   PortfolioItemID:
     name: portfolio_item_id
     in: path
     description: The Portfolio Item ID
     required: true
-    type: integer
+    type: string
   OrderID:
     name: order_id
     in: path
