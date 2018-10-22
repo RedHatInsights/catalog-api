@@ -4,9 +4,6 @@ class TopologyServiceApi
   def initialize(options)
     @params = options
     TopologicalInventoryApiClient.configure do |config|
-      # Configure HTTP basic authorization: UserSecurity
-      config.username = 'YOUR USERNAME'
-      config.password = 'YOUR PASSWORD'
       config.host     = ENV['TOPOLOGY_SERVICE_URL']
       config.scheme   = URI.parse(ENV['TOPOLOGY_SERVICE_URL']).try(:scheme)
     end
