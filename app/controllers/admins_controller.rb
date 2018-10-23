@@ -25,19 +25,7 @@ class AdminsController < BaseController
   end
 
   def add_to_order
-    order = Order.find(params['order_id'])
-    hash_parameters = []
-    params['parameters'].each do |p|
-      hash_parameters << {:name => p['name'], :value => p['value'], :format => p['format'],
-                          :type => p['type'] }
-    end
-    order_item = OrderItem.create(:order_id    => order.id,
-                                  :catalog_id  => params['catalog_id'],
-                                  :plan_id     => params['plan_id'],
-                                  :provider_id => params['provider_id'],
-                                  :count       => params['count'] || 1,
-                                  :parameters  => hash_parameters)
-    render json: {"item_id" => order_item.id}
+    render json: AddToOrder.new(params).process.to_hash
   end
 
   private

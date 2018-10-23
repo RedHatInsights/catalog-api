@@ -228,7 +228,7 @@ paths:
             items:
               $ref: '#/definitions/ServicePlan'
         '400':
-          description: bad input parameter        
+          description: bad input parameter
   /providers:
     get:
       tags:
@@ -495,8 +495,9 @@ paths:
               $ref: '#/definitions/OrderItem'
     post:
       tags:
+        - users
         - admins
-      summary: Add a Catalog to the Order in Pending State
+      summary: Add a Portfolio Item to the Order in Pending State
       operationId: addToOrder
       description: |
         Add a catalog item to the order in Pending State
@@ -835,45 +836,39 @@ definitions:
   OrderItem:
     type: object
     required:
-      - parameters
+      - service_parameters
       - count
+      - service_plan_ref
+      - portfolio_item_id
+      - order_id
+      - provider_control_parameters
     properties:
       id:
         type: string
-        format: uuid
         readOnly: true
       count:
         type: integer
         default: 1
         title: Item Count
-      parameters:
-        type: array
-        items:
-          $ref: '#/definitions/ParameterValue'
-      plan_id:
+      service_parameters:
+        type: object
+        title: JSON object with provisioning parameters
+      provider_control_parameters:
+        type: object
+        title: Provider Control Parameters
+        description: The provider specific parameters needed to provision this service. This might include namespaces, special keys
+      service_plan_ref:
         type: string
-        format: uuid
-        title: Plan ID
-        description: Stores the Plan ID from the catalog
-        readOnly: true
-      catalog_id:
+        title: The Service Plan ref
+        description: Stores the Plan ref from the Topology Service
+      portfolio_item_id:
         type: string
-        format: uuid
-        title: Catalog ID
-        description: Stores the Catalog ID from the provider
-        readOnly: true
-      provider_id:
-        type: string
-        format: uuid
-        description: ID of the provider object
-        title: Provider ID
-        readOnly: true
+        title: Portfolio Item ID
+        description: Stores the Portfolio Item ID
       order_id:
         type: string
-        format: uuid
         description: ID of the order object
         title: Order ID
-        readOnly: true
       state:
         type: string
         enum:
@@ -883,22 +878,27 @@ definitions:
           - Completed
         title: State
         description: Current State of this order item
+        readOnly: true
       created_at:
         type: string
         format: date-time
         title: Created at
+        readOnly: true
       ordered_at:
         type: string
         format: date-time
         title: Ordered at
+        readOnly: true
       completed_at:
         type: string
         format: date-time
         title: Completed at
+        readOnly: true
       updated_at:
         type: string
         format: date-time
         title: Completed at
+        readOnly: true
       external_ref:
         type: string
         description: >-
@@ -973,7 +973,6 @@ definitions:
         title: JSON Schema
         description: JSON Schema for the object
         readOnly: true
-        
   Provider:
     type: object
     required:
