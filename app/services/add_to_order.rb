@@ -7,10 +7,11 @@ class AddToOrder
 
   def process
     order.order_items << OrderItem.create!(order_item_params)
+    order
   end
 
   def order_item_params
-    params.permit(:order_id, :portfolio_item_id, :service_plan_id, :count, service_parameters: {}, provider_control_parameters: {})
+    params.permit(:order_id, :portfolio_item_id, :service_plan_ref, :count, service_parameters: {}, provider_control_parameters: {})
   end
 
   def order

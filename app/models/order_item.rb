@@ -17,7 +17,7 @@ class OrderItem < ApplicationRecord
   validates_presence_of :service_parameters
   validates_presence_of :provider_control_parameters
   validates_presence_of :order_id
-  validates_presence_of :service_plan_id
+  validates_presence_of :service_plan_ref
   validates_presence_of :portfolio_item_id
 
   belongs_to :order
@@ -27,7 +27,7 @@ class OrderItem < ApplicationRecord
   serialize :service_parameters, JSON
   serialize :provider_control_parameters, JSON
 
-  NON_DATE_ATTRIBUTES = %w(order_id service_plan_id portfolio_item_id state service_parameters provider_control_parameters external_ref)
+  NON_DATE_ATTRIBUTES = %w(order_id service_plan_ref portfolio_item_id state service_parameters provider_control_parameters external_ref)
   DATE_ATTRIBUTES     = %w(created_at ordered_at completed_at updated_at)
 
   def to_hash

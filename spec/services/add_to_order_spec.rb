@@ -14,7 +14,7 @@ describe AddToOrder do
      'count' => 1,
      'service_parameters' =>  {'name' => 'fred'},
      'provider_control_parameters' => {'age' => 50},
-     'service_plan_id' =>   "10")
+     'service_plan_ref' =>   "10")
   end
 
   let(:invalid_params) do
@@ -25,7 +25,7 @@ describe AddToOrder do
 
   it "add order item" do
       AddToOrder.new(params).process
-      expect(order.order_items.first.portfolio_item_id).to eq(portfolio_item.id.to_s)
+      expect(order.order_items.first.portfolio_item_id).to eq(portfolio_item.id)
   end
 
   it "invalid parameters" do

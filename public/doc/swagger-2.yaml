@@ -838,7 +838,7 @@ definitions:
     required:
       - service_parameters
       - count
-      - service_plan_id
+      - service_plan_ref
       - portfolio_item_id
       - order_id
       - provider_control_parameters
@@ -857,10 +857,10 @@ definitions:
         type: object
         title: Provider Control Parameters
         description: The provider specific parameters needed to provision this service. This might include namespaces, special keys
-      service_plan_id:
+      service_plan_ref:
         type: string
-        title: The Service Plan ID
-        description: Stores the Plan ID from the Topology Service
+        title: The Service Plan ref
+        description: Stores the Plan ref from the Topology Service
       portfolio_item_id:
         type: string
         title: Portfolio Item ID
