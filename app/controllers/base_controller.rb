@@ -82,12 +82,7 @@ class BaseController < ApplicationController
   end
 
   def submit_order
-    order = Order.find(params['order_id'])
-    order.update_attributes(:state => 'Ordered', :ordered_at => DateTime.now())
-    OrderItem.where(:order_id => params['order_id']).each{ |item| item.update_message('info', 'Initialized') }
-    order.reload
-    OrderItem.where(:order_id => params['order_id']).each(&:submit)
-    render json: order.to_hash
+    render json: SubmitOrder.new(params).process.to_hash
   end
 
   def fetch_plans_with_portfolio_item_id

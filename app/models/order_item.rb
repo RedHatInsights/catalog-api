@@ -14,14 +14,20 @@ class OrderItem < ApplicationRecord
   acts_as_tenant(:tenant)
 
   validates_presence_of :count
-  validates_presence_of :parameters
+  validates_presence_of :service_parameters
+  validates_presence_of :provider_control_parameters
+  validates_presence_of :order_id
+  validates_presence_of :service_plan_id
+  validates_presence_of :portfolio_item_id
 
   belongs_to :order
   has_many :progress_messages
   after_initialize :set_defaults, unless: :persisted?
 
-  serialize :parameters, Array
-  NON_DATE_ATTRIBUTES = %w(order_id catalog_id plan_id provider_id state parameters )
+  serialize :service_parameters, JSON
+  serialize :provider_control_parameters, JSON
+
+  NON_DATE_ATTRIBUTES = %w(order_id service_plan_id portfolio_item_id state service_parameters provider_control_parameters external_ref)
   DATE_ATTRIBUTES     = %w(created_at ordered_at completed_at updated_at)
 
   def to_hash
@@ -30,15 +36,6 @@ class OrderItem < ApplicationRecord
         hash[attr] = self.send(attr.to_sym).iso8601 if self.send(attr.to_sym)
       end
     end.merge(:id => id.to_s)
-  end
-
-  def submit
-    self.state = 'Ordered'
-    self.ordered_at = DateTime.now
-    prov = Provider.find(provider_id)
-    self.external_ref = prov.order_catalog(catalog_id, plan_id, parameters)
-    save!
-    Thread.new { monitor }
   end
 
   def set_defaults
