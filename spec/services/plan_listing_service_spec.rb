@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe ServicePlans do
+describe PlanListingService do
   let(:service_offering_ref) { "998" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
-  let(:service_plans) { ServicePlans.new(params) }
+  let(:plan_listing_service) { PlanListingService.new(params) }
   let(:api_instance) { double() }
   let(:params) { {'portfolio_item_id' => portfolio_item.id} }
 
@@ -12,10 +12,10 @@ describe ServicePlans do
       Plan = Struct.new(:name, :id, :description, :create_json_schema)
       plan1 = Plan.new("Plan A", "1", "Plan A", {})
       plan2 = Plan.new("Plan B", "2", "Plan B", {})
-      allow(service_plans).to receive(:api_instance).and_return(api_instance)
+      allow(plan_listing_service).to receive(:api_instance).and_return(api_instance)
     expect(api_instance).to receive(:list_service_offering_service_parameters_sets).with(portfolio_item.service_offering_ref).and_return([plan1, plan2])
 
-      service_plans.process
+      plan_listing_service.process
     end
   end
 
@@ -23,7 +23,7 @@ describe ServicePlans do
     let(:params) { {'portfolio_item_id' => 1 } }
     it "raises exception" do
       with_modified_env TOPOLOGY_SERVICE_URL: 'http://www.example.com' do
-        expect { service_plans.process }.to raise_error(StandardError)
+        expect { plan_listing_service.process }.to raise_error(StandardError)
       end
     end
   end

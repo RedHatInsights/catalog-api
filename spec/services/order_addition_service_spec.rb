@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AddToOrder do
+describe OrderAdditionService do
   let(:service_offering_ref) { "998" }
   let(:order) { create(:order) }
   let(:order_id) { order.id.to_s }
@@ -24,18 +24,18 @@ describe AddToOrder do
   end
 
   it "add order item" do
-      AddToOrder.new(params).process
+      OrderAdditionService.new(params).process
       expect(order.order_items.first.portfolio_item_id).to eq(portfolio_item.id)
   end
 
   it "invalid parameters" do
-    expect { AddToOrder.new(invalid_params).process }.to raise_error(ActiveRecord::RecordInvalid)
+    expect { OrderAdditionService.new(invalid_params).process }.to raise_error(ActiveRecord::RecordInvalid)
   end
 
   context "invalid order" do
     let(:order_id) { "999" }
     it "invalid order" do
-      expect { AddToOrder.new(params).process }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { OrderAdditionService.new(params).process }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end

@@ -1,9 +1,9 @@
-class ServicePlans < TopologyServiceApi
+class PlanListingService < TopologyApiService
   def process
     result = api_instance.list_service_offering_service_parameters_sets(service_offering_ref)
     filter_result(result)
   rescue StandardError => e
-    Rails.logger.error("Service Plans #{e.message}")
+    Rails.logger.error("Plans #{e.message}")
     raise
   end
 

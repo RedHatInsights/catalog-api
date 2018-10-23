@@ -1,4 +1,4 @@
-class SubmitOrder < TopologyServiceApi
+class OrderSubmissionService < TopologyApiService
   def process
     order.order_items.each do |order_item|
       submit_order_item(order_item)

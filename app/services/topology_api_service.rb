@@ -1,5 +1,6 @@
 require 'topological_inventory-api-client'
-class TopologyServiceApi
+
+class TopologyApiService
   attr_accessor :params, :api_instance
   def initialize(options)
     @params = options

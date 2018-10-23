@@ -1,4 +1,4 @@
-class AddToOrder
+class OrderAdditionService
   attr_accessor :params
 
   def initialize(params)
