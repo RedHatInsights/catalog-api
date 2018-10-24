@@ -1,24 +1,27 @@
 ---
-sudo: required
 language: ruby
+sudo: required
 cache: bundler
 rvm:
-- 2.4.4
+- 2.4.5
 services:
 - docker
 addons:
   postgresql: '9.5'
 env:
   global:
-  - SERVICE_CATALOG_DATABASE_USERNAME=root
-  - SERVICE_CATALOG_DATABASE_PASSWORD=smartvm
+  - DATABASE_URL="postgresql://postgres:@localhost:5432/service_portal_test?encoding=utf8&pool=5&wait_timeout=5"
 before_install:
-- gem install bundler -v 1.16.4
-- psql -c "CREATE USER root SUPERUSER PASSWORD 'smartvm';" -U postgres
+- gem install bundler
 before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
 - bundle exec rake db:create db:migrate
+after_script:
+- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
 deploy:
   provider: script
   script: bash .travis/deploy.sh
-  on:
+  'on':
     branch: master

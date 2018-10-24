@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  host: localhost
+  port: 5432
+  username: root
+  pool: 5
+  wait_timeout: 5
+  min_messages: warning
+
+development:
+  <<: *default
+  database: service_portal_development
+  min_messages: notice
+
+test:
+  <<: *default
+  database: service_portal_test
+
+production:
+  <<: *default
+  database: service_portal_production
