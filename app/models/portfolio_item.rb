@@ -17,4 +17,16 @@ class PortfolioItem < ApplicationRecord
   has_and_belongs_to_many :portfolios
 
   validates :service_offering_ref, :presence => true
+
+  SERVICE_OFFERING_KEY = 'service_offering_ref'.freeze
+
+  def self.create!(params)
+    service_offering = ServiceOffering.find(params[SERVICE_OFFERING_KEY])
+    super(service_offering.to_service_params)
+  end
+
+  def self.create(params)
+    service_offering = ServiceOffering.find(params[SERVICE_OFFERING_KEY])
+    super(service_offering.to_service_params)
+  end
 end
