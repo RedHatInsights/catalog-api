@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   description: This is a API to fetch and order catalog items from different cloud sources
   version: 1.0.0
-  title: Insights Service Catalog API
+  title: Service Portal API
   contact:
     email: you@your-company.com
   license:
