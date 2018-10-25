@@ -40,7 +40,7 @@ describe 'PortfolioItems API' do
   end
 
   describe 'POST admin tagged /portfolio_items' do
-    let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description' } }
+    let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description', service_offering_ref: '10' } }
     context 'when portfolio attributes are valid' do
       before { post "/portfolio_items", params: valid_attributes, headers: admin_encode_key_with_tenant }
 

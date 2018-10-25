@@ -30,7 +30,7 @@ class AdminsController < BaseController
 
   private
     def portfolio_item_params
-      params.permit(:favorite, :name, :description, :orphan, :state, :portfolio_id)
+      params.permit(:favorite, :name, :description, :orphan, :state, :portfolio_id, :service_offering_ref)
     end
 
     def portfolio_params
