@@ -149,7 +149,6 @@ paths:
       parameters:
         - $ref: '#/parameters/PortfolioID'
         - $ref: '#/parameters/PortfolioItemID'
-        - in: body
           name: item
           required: true
           schema:
