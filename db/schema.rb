@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181022121618) do
+ActiveRecord::Schema.define(version: 20181023133338) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,10 +38,6 @@ ActiveRecord::Schema.define(version: 20181022121618) do
 
   create_table "order_items", force: :cascade do |t|
     t.integer "count"
-    t.string "parameters"
-    t.string "plan_id"
-    t.string "catalog_id"
-    t.string "provider_id"
     t.string "order_id"
     t.string "state"
     t.datetime "created_at", null: false
@@ -50,6 +46,10 @@ ActiveRecord::Schema.define(version: 20181022121618) do
     t.datetime "updated_at", null: false
     t.string "external_ref"
     t.bigint "tenant_id"
+    t.string "service_plan_ref"
+    t.bigint "portfolio_item_id"
+    t.jsonb "service_parameters"
+    t.jsonb "provider_control_parameters"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
