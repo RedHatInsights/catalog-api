@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 5.1.0'
+gem 'rails', '~> 5.1.5'
 
 group :development, :test do
   gem 'byebug', platform: :mri
@@ -21,8 +21,8 @@ gem 'acts_as_tenant'
 gem 'jbuilder', '~> 2.0'
 gem 'pg', '~> 1.0', :require => false
 gem 'puma', '~> 3.0'
-gem 'rack-cors'
-gem 'rest-client'
+gem 'rack-cors', '>= 0.4.1'
+gem 'rest-client', '>= 1.8.0'
 gem 'swagger_ui_engine'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
