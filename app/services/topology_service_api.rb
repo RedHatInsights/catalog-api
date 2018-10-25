@@ -11,7 +11,7 @@ class TopologyServiceApi
     @api_instance = TopologicalInventoryApiClient::DefaultApi.new
   end
 
-  def to_service_params
+  def to_normalized_params
     hashy = instance_variables.each_with_object({}) do |var, hash|
       next if [:@params, :@api_instance].include?(var)
       hash[var.to_s.delete("@")] = instance_variable_get(var)
