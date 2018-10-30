@@ -13,7 +13,7 @@ describe ServicePlans do
       plan1 = Plan.new("Plan A", "1", "Plan A", {})
       plan2 = Plan.new("Plan B", "2", "Plan B", {})
       allow(service_plans).to receive(:api_instance).and_return(api_instance)
-    expect(api_instance).to receive(:list_service_offering_service_parameters_sets).with(portfolio_item.service_offering_ref).and_return([plan1, plan2])
+    expect(api_instance).to receive(:list_service_offering_service_plans).with(portfolio_item.service_offering_ref).and_return([plan1, plan2])
 
       service_plans.process
     end
