@@ -111,6 +111,29 @@ paths:
               $ref: '#/definitions/PortfolioItem'
         '400':
           description: bad input parameter
+    post:
+      tags:
+        - admins
+      summary: Add Portfolio item to a portfolio
+      operationId: addPortfolioItemToPortfolio
+      description: |
+        Add new portfolio item to an existing portfolio
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AddPortfolioItem'
+      responses:
+        '200':
+          description: Successfully added a portfolio item to portfolio
+        '400':
+          description: bad input parameter
   '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}':
     get:
       tags:
@@ -133,29 +156,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/PortfolioItem'
-        '400':
-          description: bad input parameter
-    post:
-      tags:
-        - admins
-      summary: Add Portfolio item to a portfolio
-      operationId: addPortfolioItemToPortfolio
-      description: |
-        Add new portfolio item to an existing portfolio
-      produces:
-        - application/json
-      consumes:
-        - application/json
-      parameters:
-        - $ref: '#/parameters/PortfolioID'
-        - $ref: '#/parameters/PortfolioItemID'
-          name: item
-          required: true
-          schema:
-            $ref: '#/definitions/PortfolioItem'
-      responses:
-        '200':
-          description: Successfully added a portfolio item to portfolio
         '400':
           description: bad input parameter
   /portfolio_items:
@@ -678,8 +678,15 @@ definitions:
     properties:
       service_offering_ref:
         type: string
-        title: ServiceOfferingRef
+        title: Service Offering Ref
         example: The Service Offering Reference
+  AddPortfolioItem:
+    type: object
+    properties:
+      portfolio_item_id:
+        type: string
+        title: Portfolio Item Id
+        example: The Portfolio Item Id
   PortfolioItem:
     type: object
     properties:
@@ -862,7 +869,9 @@ definitions:
       provider_control_parameters:
         type: object
         title: Provider Control Parameters
-        description: The provider specific parameters needed to provision this service. This might include namespaces, special keys
+        description: >-
+          The provider specific parameters needed to provision this service.
+          This might include namespaces, special keys
       service_plan_ref:
         type: string
         title: The Service Plan ref
