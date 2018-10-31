@@ -196,7 +196,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/PortfolioItem'
+            $ref: '#/definitions/CreatePortfolioItem'
       responses:
         '200':
           description: Portfolio Item Info
@@ -673,6 +673,13 @@ definitions:
         readOnly: true
         title: Id
         example: Id of the sample organization
+  CreatePortfolioItem:
+    type: object
+    properties:
+      service_offering_ref:
+        type: string
+        title: ServiceOfferingRef
+        example: The Service Offering Reference
   PortfolioItem:
     type: object
     properties:

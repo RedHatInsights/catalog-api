@@ -20,8 +20,7 @@ class AdminsController < BaseController
   end
 
   def add_portfolio_item
-    portfolio_item = PortfolioItem.create!(portfolio_item_params)
-    render json: portfolio_item
+    render json: PortfolioItem.create!(portfolio_item_params)
   end
 
   def add_to_order
@@ -30,7 +29,7 @@ class AdminsController < BaseController
 
   private
     def portfolio_item_params
-      params.permit(:favorite, :name, :description, :orphan, :state, :portfolio_id)
+      params.permit(:service_offering_ref)
     end
 
     def portfolio_params
