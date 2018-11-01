@@ -10,31 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181025200205) do
+ActiveRecord::Schema.define(version: 20181101134526) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "catalog_items", id: false, force: :cascade do |t|
-    t.string "provider_id"
-    t.bigint "portfolio_item_id"
-    t.string "catalog_id"
-    t.string "name"
-    t.string "description"
-    t.string "image_url"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "catalog_plans", id: false, force: :cascade do |t|
-    t.string "plan_id"
-    t.string "name"
-    t.string "description"
-    t.string "catalog_id"
-    t.string "provider_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "order_items", force: :cascade do |t|
     t.integer "count"
@@ -63,30 +42,6 @@ ActiveRecord::Schema.define(version: 20181025200205) do
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
-  end
-
-  create_table "parameter_values", id: false, force: :cascade do |t|
-    t.string "name"
-    t.string "value"
-    t.string "type"
-    t.string "format"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "plan_parameters", id: false, force: :cascade do |t|
-    t.string "type"
-    t.string "title"
-    t.string "name"
-    t.string "description"
-    t.string "default"
-    t.string "pattern"
-    t.string "example"
-    t.boolean "required"
-    t.string "format"
-    t.string "enum"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "portfolio_items", force: :cascade do |t|
@@ -129,18 +84,6 @@ ActiveRecord::Schema.define(version: 20181025200205) do
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.index ["tenant_id"], name: "index_progress_messages_on_tenant_id"
-  end
-
-  create_table "providers", force: :cascade do |t|
-    t.string "name"
-    t.string "description"
-    t.string "url"
-    t.string "user"
-    t.string "password"
-    t.string "token"
-    t.boolean "verify_ssl"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "tenants", force: :cascade do |t|
