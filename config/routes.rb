@@ -1,5 +1,5 @@
 =begin
-Insights Service Catalog API
+Service Portal API
 
 This is a API to fetch and order catalog items from different cloud sources
 
@@ -24,7 +24,7 @@ Rails.application.routes.draw do
 
   add_swagger_route 'POST', '/portfolios', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'add_portfolio'
   add_swagger_route 'POST', '/portfolio_items', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'add_portfolio_item'
-  add_swagger_route 'POST', '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'add_portfolio_item_to_portfolio'
+  add_swagger_route 'POST', '/portfolios/{portfolio_id}/portfolio_items', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'add_portfolio_item_to_portfolio'
   add_swagger_route 'POST', '/providers', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'add_provider'
   add_swagger_route 'POST', '/orders/{order_id}/items', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'add_to_order'
   add_swagger_route 'GET', '/catalog_items', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'catalog_items'
@@ -46,6 +46,7 @@ Rails.application.routes.draw do
   add_swagger_route 'GET', '/providers', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'list_providers'
   add_swagger_route 'POST', '/orders', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'new_order'
   add_swagger_route 'POST', '/orders/{order_id}', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'submit_order'
+  add_swagger_route 'POST', '/orders/{order_id}/items', controller_name: 'users', constraint_name: 'usersConstraint', action_name: 'add_to_order'
   add_swagger_route 'GET', '/catalog_items', controller_name: 'users', constraint_name: 'usersConstraint', action_name: 'catalog_items'
   add_swagger_route 'GET', '/providers/{provider_id}/catalog_items/{catalog_id}/plans/{plan_id}/parameters', controller_name: 'users', constraint_name: 'usersConstraint', action_name: 'catalog_plan_parameters'
   add_swagger_route 'GET', '/providers/{provider_id}/catalog_items/{catalog_id}/plans/{plan_id}/json_schema', controller_name: 'users', constraint_name: 'usersConstraint', action_name: 'catalog_plan_schema'
