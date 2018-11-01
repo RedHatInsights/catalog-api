@@ -1,14 +1,4 @@
 class AdminsController < BaseController
-  def add_provider
-    object = Provider.create(:name       => params[:name],
-                             :url        => params[:url],
-                             :token      => params[:token],
-                             :user       => params[:user],
-                             :password   => params[:password],
-                             :verify_ssl => params.fetch(:verify_ssl, true))
-    render json: object.to_hash
-  end
-
   def add_portfolio
     portfolio = Portfolio.create!(portfolio_params)
     render json: portfolio
