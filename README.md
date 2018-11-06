@@ -1,6 +1,9 @@
 # Insights Service Portal API
 
 [![Build Status](https://api.travis-ci.org/ManageIQ/insights-api-service_portal.svg)](https://travis-ci.org/ManageIQ/insights-api-service_portal)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/maintainability)](https://codeclimate.com/github/ManageIQ/service_portal-api/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/test_coverage)](https://codeclimate.com/github/ManageIQ/service_portal-api/test_coverage)
+[![Security](https://hakiri.io/github/ManageIQ/service_portal-api/master.svg)](https://hakiri.io/github/ManageIQ/service_portal-api/master)
 
 ## Swagger for Rails 5
 
@@ -78,3 +81,7 @@ Definitions of the flags used in the below example
 ```
 swagger-codegen generate -l rails5 -i public/doc/swagger-2.yaml -o /tmp/sp -t swagger-codegen-templates/'
 ```
+
+## License
+
+This project is available as open source under the terms of the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
