@@ -30,6 +30,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'topological_inventory-api-client', :git => "https://github.com/mkanoor/topological_inventory-api-client", :branch => "master"
 
+gem 'approval_api_client', :git => "https://github.com/hsong-rh/approval_api_ruby_client", :branch => "master"
 #
 # Custom Gemfile modifications
 #
