@@ -1,21 +1,32 @@
-FROM ruby:2.4-slim-stretch
-RUN apt-get update -qq && apt-get install -y build-essential git libpq-dev postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+FROM manageiq/ruby:latest
 
-ENV RAILS_ROOT /var/www/service_catalog
+RUN yum -y install centos-release-scl-rh && \
+    yum -y install --setopt=tsflags=nodocs \
+                   # To compile native gem extensions
+                   gcc-c++ \
+                   # To compile pg gem
+                   rh-postgresql95-postgresql-devel \
+                   rh-postgresql95-postgresql-libs \
+                   git \
+                   && \
+    yum clean all
 
-RUN mkdir -p $RAILS_ROOT/tmp/pids
+ENV WORKDIR /var/www/service_portal
+WORKDIR $WORKDIR
 
-WORKDIR $RAILS_ROOT
+COPY Gemfile $WORKDIR
+RUN source /opt/rh/rh-postgresql95/enable && \
+    echo "gem: --no-document" > ~/.gemrc && \
+    gem install bundler --conservative --without development:test && \
+    bundle install --jobs 8 --retry 3 && \
+    find ${RUBY_GEMS_ROOT}/gems/ | grep "\.s\?o$" | xargs rm -rvf && \
+    rm -rvf ${RUBY_GEMS_ROOT}/cache/* && \
+    rm -rvf /root/.bundle/cache
 
-COPY Gemfile Gemfile
-
-RUN gem install bundler
-
-RUN bundle install
-
+COPY . $WORKDIR
 COPY docker-assets/dev_entrypoint /usr/bin
 
-COPY . .
+RUN chgrp -R 0 $WORKDIR && \
+    chmod -R g=u $WORKDIR
 
-CMD [ "dev_entrypoint" ]
+CMD ["dev_entrypoint"]
