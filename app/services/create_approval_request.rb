@@ -26,11 +26,11 @@ class CreateApprovalRequest < ApprovalServiceApi
   end
 
   def order
-    @order ||= Order.find_by!(:id => params[:order_id])
+    @order ||= Order.find(params[:order_id])
   end
 
   def portfolio_item(order_item)
-    PortfolioItem.find_by!(:id => order_item.portfolio_item_id)
+    PortfolioItem.find(order_item.portfolio_item_id)
   end
 
   def request_body(pf_item, order_item)

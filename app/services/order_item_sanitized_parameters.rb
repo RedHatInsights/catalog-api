@@ -11,7 +11,7 @@ class OrderItemSanitizedParameters < TopologyServiceApi
   private
 
   def order_item
-    @order_item ||= OrderItem.find_by!(:id => params[:order_item_id])
+    @order_item ||= OrderItem.find(params[:order_item_id])
   end
 
   def service_plan_ref
