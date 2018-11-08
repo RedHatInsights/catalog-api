@@ -7,13 +7,15 @@ describe CreateApprovalRequest do
     end
   end
 
+  let(:username) { "Freddy Kreuger" }
+
   let(:identity) do
-    {'identity' => {'is_org_admin' => true, 'username' => 'Freddy Kreuger'} }
+    {'identity' => {'is_org_admin' => true, 'username' => username} }
   end
 
   let(:request) do
     ActionDispatch::TestRequest.new({}).tap do |obj|
-      obj.headers['x-rh-auth-identity'] = Base64.encode64(identity.to_json)
+      obj.headers['x-rh-auth-identity'] = Base64.urlsafe_encode64(identity.to_json)
     end
   end
 
@@ -53,6 +55,7 @@ describe CreateApprovalRequest do
       allow(api_instance).to receive(:add_request) do |ref, obj|
         expect(ref).to eq(portfolio_item.approval_workflow_ref)
         expect(obj.name).to eq(portfolio_item.name)
+        expect(obj.requester).to eq(username)
       end.and_return(approval_request)
 
       car.process
