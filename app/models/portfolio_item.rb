@@ -21,13 +21,18 @@ class PortfolioItem < ApplicationRecord
   SERVICE_OFFERING_KEY = 'service_offering_ref'.freeze
 
   def self.create!(params)
-    service_offering = ServiceOffering.find(params[SERVICE_OFFERING_KEY])
+    sanitized = sanitize_params(params)
+    service_offering = ServiceOffering.find(sanitized[SERVICE_OFFERING_KEY])
     super(service_offering.to_normalized_params)
   end
 
   def self.create(params)
-    service_offering = ServiceOffering.find(params[SERVICE_OFFERING_KEY])
+    sanitized = sanitize_params(params)
+    service_offering = ServiceOffering.find(sanitized[SERVICE_OFFERING_KEY])
     super(service_offering.to_normalized_params)
   end
 
+  def self.sanitize_params(params)
+    HashWithIndifferentAccess.new(params)
+  end
 end
