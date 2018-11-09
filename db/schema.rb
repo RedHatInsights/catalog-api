@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181101134526) do
+ActiveRecord::Schema.define(version: 20181109165824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,8 @@ ActiveRecord::Schema.define(version: 20181101134526) do
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.string "service_offering_ref"
+    t.bigint "pre_provision_webhook_id"
+    t.bigint "post_provision_webhook_id"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
 
@@ -91,6 +93,14 @@ ActiveRecord::Schema.define(version: 20181101134526) do
     t.datetime "updated_at", null: false
     t.bigint "ref_id"
     t.index ["ref_id"], name: "index_tenants_on_ref_id"
+  end
+
+  create_table "webhooks", force: :cascade do |t|
+    t.bigint "tenant_id"
+    t.string "name"
+    t.jsonb "parameters"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
