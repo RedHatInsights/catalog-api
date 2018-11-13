@@ -4,18 +4,23 @@ info:
   version: 1.0.0
   title: Service Portal API
   contact:
-    email: you@your-company.com
+    email: support@redhat.com
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 securityDefinitions:
-  UserSecurity:
+  BasicAuth:
     type: basic
-  AdminSecurity:
-    type: basic
+    description: The userid/password is needed when accessing this API externally
+  APIKeyAuth:
+    type: apiKey
+    in: header
+    name: x-rh-auth-identity
+    description: This is a base64 encoded string of a collection of attributes, that identify a user. This token is needed when accessing the API internally.
+    example: "eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWV9fQ==\n"
 security:
-  - UserSecurity: []
-  - AdminSecurity: []
+  - BasicAuth: []
+  - APIKeyAuth: []
 tags:
   - name: admins
     description: Secured Admin-only calls
@@ -37,13 +42,15 @@ paths:
         - application/json
       responses:
         '200':
-          description: Portfolio Info
+          description: On success this API returns an array of Portfolio objects. If the array is empty you dont have any portfolios defined in the system or they are inaccessible to you.
           schema:
             type: array
             items:
               $ref: '#/definitions/Portfolio'
-        '400':
-          description: bad input parameter
+        '401':
+            $ref: '#/responses/Unauthorized'
+        '403':
+            $ref: '#/responses/Forbidden'
     post:
       tags:
         - admins
@@ -63,13 +70,15 @@ paths:
             $ref: '#/definitions/Portfolio'
       responses:
         '200':
-          description: Portfolio Info
+          description: Newly added Portfolio Object
           schema:
-            type: object
-            items:
               $ref: '#/definitions/Portfolio'
-        '400':
-          description: bad input parameter
+        '401':
+            $ref: '#/responses/Unauthorized'
+        '403':
+            $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/InvalidEntity'
   '/portfolios/{portfolio_id}':
     get:
       tags:
@@ -85,9 +94,15 @@ paths:
         - $ref: '#/parameters/PortfolioID'
       responses:
         '200':
-          description: portfolio results matching the portfolio id
+          description: The portfolio object matching the portfolio id
           schema:
             $ref: '#/definitions/Portfolio'
+        '401':
+            $ref: '#/responses/Unauthorized'
+        '403':
+            $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/InvalidEntity'
   '/portfolios/{portfolio_id}/portfolio_items':
     get:
       tags:
@@ -411,7 +426,8 @@ definitions:
       enabled:
         type: boolean
         title: Enabled
-        example: Is the portfolio enabled
+        default: false
+        example: false
       image_url:
         type: string
         title: Image URL
@@ -627,6 +643,13 @@ definitions:
         title: JSON Schema
         description: JSON Schema for the object
         readOnly: true
+responses:
+  InvalidEntity:
+    description: The entity being created does not have either all the required parameters specified or the parameter value is invalid
+  Forbidden:
+    description: The caller is forbidden to perform the action
+  Unauthorized:
+    description: The credentials are invalid when accessing the API externally.
 host: localhost
 schemes:
   - https

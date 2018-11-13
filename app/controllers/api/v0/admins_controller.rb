@@ -4,6 +4,8 @@ module Api
       def add_portfolio
         portfolio = Portfolio.create!(portfolio_params)
         render json: portfolio
+      rescue ActiveRecord::RecordInvalid => e
+        render :json => { :errors => e.message }, :status => :unprocessable_entity
       end
 
       def add_portfolio_item_to_portfolio
