@@ -21,6 +21,7 @@ class OrderItem < ApplicationRecord
   validates_presence_of :portfolio_item_id
 
   belongs_to :order
+  belongs_to :portfolio_item
   has_many :progress_messages
   after_initialize :set_defaults, unless: :persisted?
 
