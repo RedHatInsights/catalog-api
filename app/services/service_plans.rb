@@ -8,7 +8,7 @@ class ServicePlans < TopologyServiceApi
   end
 
   def service_offering_ref
-    PortfolioItem.find_by!(:id => params['portfolio_item_id']).service_offering_ref
+    PortfolioItem.find(params['portfolio_item_id']).service_offering_ref
   end
 
   def filter_result(result)
