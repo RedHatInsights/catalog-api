@@ -1,5 +1,5 @@
+include RequestSpecHelper
 describe 'Portfolios API' do
-  include RequestSpecHelper
 
   let!(:portfolio)            { create(:portfolio) }
   let!(:portfolio_item)       { create(:portfolio_item) }
@@ -7,19 +7,18 @@ describe 'Portfolios API' do
   let(:portfolio_id)          { portfolio.id }
   let(:portfolio_item_id)     { portfolio_items.first.id }
   let(:new_portfolio_item_id) { portfolio_item.id }
-  let(:tenant)                { create(:tenant, :with_external_tenant) }
 
   # Encoded Header: { 'identity' => { 'is_org_admin':false, 'org_id':111 } }
-  let(:user_encode_key_with_tenant) { { 'x-rh-auth-identity': 'eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOmZhbHNlLCJvcmdfaWQiOiIxMTEifX0=' } }
+  let(:user_encode_key_with_tenant)  { { 'x-rh-auth-identity': 'eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOmZhbHNlLCJvcmdfaWQiOiIxMTEifX0=' } }
   # Encoded Header: { 'identity' => { 'is_org_admin':true, 'org_id':111 } }
   let(:admin_encode_key_with_tenant) { { 'x-rh-auth-identity': 'eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWUsIm9yZ19pZCI6MTExfX0=' } }
 
   # Gah, Acts as Tenancy is killing me
-  before { allow_any_instance_of(ApplicationController).to receive(:set_current_tenant).and_return(tenant) }
+  #before { allow_any_instance_of(ApplicationController).to receive(:set_current_tenant).and_return(tenant) }
   %w(admin user).each do |tag|
-    describe "GET #{tag} tagged /portfolios/:portfolio_id" do
+    describe "GET #{tag} tagged #{api_version}/portfolios/:portfolio_id" do
       before do
-        get "/portfolios/#{portfolio_id}", headers: send("#{tag}_encode_key_with_tenant")
+        get "#{api_version}/portfolios/#{portfolio_id}", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       context 'when portfolios exist' do
@@ -34,9 +33,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items" do
+    describe "GET #{tag} tagged #{api_version}/portfolios/:portfolio_id/portfolio_items" do
       before do
-        get "/portfolios/#{portfolio_id}/portfolio_items", headers: send("#{tag}_encode_key_with_tenant")
+        get "#{api_version}/portfolios/#{portfolio_id}/portfolio_items", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       it 'returns all associated portfolio_items' do
@@ -47,9 +46,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items/:portfolio_item_id" do
+    describe "GET #{tag} tagged #{api_version}/portfolios/:portfolio_id/portfolio_items/:portfolio_item_id" do
       before do
-        get "/portfolios/#{portfolio_id}/portfolio_items/#{portfolio_item_id}", headers: send("#{tag}_encode_key_with_tenant")
+        get "#{api_version}/portfolios/#{portfolio_id}/portfolio_items/#{portfolio_item_id}", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       it 'returns an associated portfolio_item for a specific portfolio' do
@@ -58,9 +57,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe "GET #{tag} tagged /portfolios" do
+    describe "GET #{tag} tagged #{api_version}/portfolios" do
       before do
-        get "/portfolios", headers: send("#{tag}_encode_key_with_tenant")
+        get "#{api_version}/portfolios", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       context 'when portfolios exist' do
@@ -75,19 +74,19 @@ describe 'Portfolios API' do
     end
   end
 
-  describe 'admin tagged /portfolios', :type => :routing  do
+  describe "admin tagged #{api_version}/portfolios", :type => :routing  do
     let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description' } }
     context 'with wrong header' do
       it 'returns a 404' do
-        expect(:post => "/portfolios").not_to be_routable
+        expect(:post => "#{api_version}/portfolios").not_to be_routable
       end
     end
   end
 
-  describe 'POST admin tagged /portfolios/:portfolio_id/portfolio_items/:portfolio_item_id' do
-    let(:valid_attributes) { { name: 'addPortfolioItem', description: 'description for new portfolio item' } }
+  describe "POST admin tagged #{api_version}/portfolios/:portfolio_id/portfolio_items" do
+    let(:valid_attributes) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
     before do
-      post "/portfolios/#{portfolio_id}/portfolio_items/#{new_portfolio_item_id}", headers: admin_encode_key_with_tenant
+      post "#{api_version}/portfolios/#{portfolio_id}/portfolio_items/", params: valid_attributes, headers: admin_encode_key_with_tenant
     end
     context 'when portfolio and portfolio_item attributes are valid' do
       it 'returns status code 200' do
@@ -101,10 +100,10 @@ describe 'Portfolios API' do
     end
   end
 
-  describe 'POST admin tagged /portfolios' do
+  describe "POST admin tagged #{api_version}/portfolios" do
     let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description' } }
     context 'when portfolio attributes are valid' do
-      before { post "/portfolios", params: valid_attributes, headers: admin_encode_key_with_tenant }
+      before { post "/#{api_version}/portfolios", params: valid_attributes, headers: admin_encode_key_with_tenant }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -116,3 +115,4 @@ describe 'Portfolios API' do
     end
   end
 end
+

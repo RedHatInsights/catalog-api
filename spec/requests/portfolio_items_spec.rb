@@ -1,5 +1,5 @@
+include RequestSpecHelper
 describe 'PortfolioItems API' do
-  include RequestSpecHelper
 
   let!(:portfolio_item)       { create(:portfolio_item) }
   let(:portfolio_item_id)     { portfolio_item.id }
@@ -11,11 +11,11 @@ describe 'PortfolioItems API' do
   let(:admin_encode_key_with_tenant) { { 'x-rh-auth-identity': 'eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWUsIm9yZ19pZCI6MTExfX0=' } }
 
   # Gah, Acts as Tenancy is killing me
-  before { allow_any_instance_of(ApplicationController).to receive(:set_current_tenant).and_return(tenant) }
+  #before { allow_any_instance_of(ApplicationController).to receive(:set_current_tenant).and_return(tenant) }
   %w(admin user).each do |tag|
-    describe "GET #{tag} tagged /portfolio_items" do
+    describe "GET #{tag} tagged #{api_version}/portfolio_items" do
       before do
-        get "/portfolio_items", headers: send("#{tag}_encode_key_with_tenant")
+        get "#{api_version}/portfolio_items", headers: send("#{tag}_encode_key_with_tenant")
       end
 
       context 'when portfolios exist' do
@@ -30,19 +30,19 @@ describe 'PortfolioItems API' do
     end
   end
 
-  describe 'admin tagged /portfolio_items', :type => :routing  do
+  describe 'admin tagged #{api_version}/portfolio_items', :type => :routing  do
     let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description' } }
     context 'with wrong header' do
       it 'returns a 404' do
-        expect(:post => "/portfolio_items").not_to be_routable
+        expect(:post => "#{api_version}/portfolio_items").not_to be_routable
       end
     end
   end
 
-  describe 'POST admin tagged /portfolio_items' do
+  describe 'POST admin tagged #{api_version}/portfolio_items' do
     let(:valid_attributes) { { name: 'rspec 1', description: 'rspec 1 description', service_offering_ref: '10' } }
     context 'when portfolio attributes are valid' do
-      before { post "/portfolio_items", params: valid_attributes, headers: admin_encode_key_with_tenant }
+      before { post "#{api_version}/portfolio_items", params: valid_attributes, headers: admin_encode_key_with_tenant }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
