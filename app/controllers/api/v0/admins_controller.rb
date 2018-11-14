@@ -1,6 +1,8 @@
 module Api
   module V0
     class AdminsController < BaseController
+      before_action :validate_admin
+
       def add_portfolio
         portfolio = Portfolio.create!(portfolio_params)
         render json: portfolio
@@ -9,8 +11,9 @@ module Api
       end
 
       def add_portfolio_item_to_portfolio
-        portfolio = Portfolio.find_by(id: params[:portfolio_id])
-        render json: portfolio.add_portfolio_item(params[:portfolio_item_id])
+        portfolio = Portfolio.find(params[:portfolio_id])
+        portfolio_item = PortfolioItem.find(params[:portfolio_item_id])
+        render json: portfolio.add_portfolio_item(portfolio_item)
       end
 
       def add_portfolio_item
@@ -28,6 +31,12 @@ module Api
 
       def portfolio_params
         params.permit(:name, :description, :image_url, :enabled)
+      end
+
+      def validate_admin
+        unless AdminsConstraint.matches?(request)
+          head(403)
+        end
       end
     end
   end

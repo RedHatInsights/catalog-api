@@ -16,8 +16,11 @@ securityDefinitions:
     type: apiKey
     in: header
     name: x-rh-auth-identity
-    description: This is a base64 encoded string of a collection of attributes, that identify a user. This token is needed when accessing the API internally.
-    example: "eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWV9fQ==\n"
+    description: >-
+      This is a base64 encoded string of a collection of attributes, that
+      identify a user. This token is needed when accessing the API internally.
+    example: |
+      eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWV9fQ==
 security:
   - BasicAuth: []
   - APIKeyAuth: []
@@ -42,15 +45,18 @@ paths:
         - application/json
       responses:
         '200':
-          description: On success this API returns an array of Portfolio objects. If the array is empty you dont have any portfolios defined in the system or they are inaccessible to you.
+          description: >-
+            On success this API returns an array of Portfolio objects. If the
+            array is empty you dont have any portfolios defined in the system or
+            they are inaccessible to you.
           schema:
             type: array
             items:
               $ref: '#/definitions/Portfolio'
         '401':
-            $ref: '#/responses/Unauthorized'
+          $ref: '#/responses/Unauthorized'
         '403':
-            $ref: '#/responses/Forbidden'
+          $ref: '#/responses/Forbidden'
     post:
       tags:
         - admins
@@ -72,11 +78,11 @@ paths:
         '200':
           description: Newly added Portfolio Object
           schema:
-              $ref: '#/definitions/Portfolio'
+            $ref: '#/definitions/Portfolio'
         '401':
-            $ref: '#/responses/Unauthorized'
+          $ref: '#/responses/Unauthorized'
         '403':
-            $ref: '#/responses/Forbidden'
+          $ref: '#/responses/Forbidden'
         '422':
           $ref: '#/responses/InvalidEntity'
   '/portfolios/{portfolio_id}':
@@ -98,11 +104,13 @@ paths:
           schema:
             $ref: '#/definitions/Portfolio'
         '401':
-            $ref: '#/responses/Unauthorized'
+          $ref: '#/responses/Unauthorized'
         '403':
-            $ref: '#/responses/Forbidden'
+          $ref: '#/responses/Forbidden'
         '422':
           $ref: '#/responses/InvalidEntity'
+        '404':
+          description: Portfolio object not found
   '/portfolios/{portfolio_id}/portfolio_items':
     get:
       tags:
@@ -119,13 +127,13 @@ paths:
         - $ref: '#/parameters/PortfolioID'
       responses:
         '200':
-          description: returns matching criteria
+          description: Returns an array of Portfolio Items, if the portfolio is not connected to any portfolio items you would get an empty array.
           schema:
             type: array
             items:
               $ref: '#/definitions/PortfolioItem'
-        '400':
-          description: bad input parameter
+        '404':
+          description: The Portfolio object not found
     post:
       tags:
         - admins
@@ -147,8 +155,8 @@ paths:
       responses:
         '200':
           description: Successfully added a portfolio item to portfolio
-        '400':
-          description: bad input parameter
+        '404':
+          description: The Portfolio Object or the Portfolio Item Object was not found.
   '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}':
     get:
       tags:
@@ -178,7 +186,7 @@ paths:
       tags:
         - users
         - admins
-      summary: API to list portfolio_items
+      summary: API to list all portfolio items
       operationId: listPortfolioItems
       description: |
         Returns an array of portfolio item objects
@@ -201,7 +209,7 @@ paths:
       summary: API to add a new portfolio item
       operationId: addPortfolioItem
       description: |
-        Returns the added portfolio item object
+        This API would connect to the Topology Service to fetch the name and description of the service offering. Returns the added portfolio item object
       produces:
         - application/json
       consumes:
@@ -214,13 +222,17 @@ paths:
             $ref: '#/definitions/CreatePortfolioItem'
       responses:
         '200':
-          description: Portfolio Item Info
+          description: The newly created Portfolio Item object
           schema:
-            type: object
-            items:
-              $ref: '#/definitions/PortfolioItem'
-        '400':
-          description: bad input parameter
+            $ref: '#/definitions/PortfolioItem'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/InvalidEntity'    
+        '404':
+          description: 'Service Offering not found'
   '/portfolio_items/{portfolio_item_id}/service_plans':
     get:
       tags:
@@ -447,14 +459,16 @@ definitions:
       service_offering_ref:
         type: string
         title: Service Offering Ref
-        example: The Service Offering Reference
+        description: The service offering ref should be retrieved from a call to the Topology Service
+        example: "177"
   AddPortfolioItem:
     type: object
     properties:
       portfolio_item_id:
         type: string
         title: Portfolio Item Id
-        example: The Portfolio Item Id
+        example: "100"
+        description: This is the id of the portfolio item object
   PortfolioItem:
     type: object
     properties:
@@ -645,7 +659,9 @@ definitions:
         readOnly: true
 responses:
   InvalidEntity:
-    description: The entity being created does not have either all the required parameters specified or the parameter value is invalid
+    description: >-
+      The entity being created does not have either all the required parameters
+      specified or the parameter value is invalid
   Forbidden:
     description: The caller is forbidden to perform the action
   Unauthorized:

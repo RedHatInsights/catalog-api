@@ -25,7 +25,7 @@ module Api
       end
 
       def fetch_portfolio_with_id
-        render json: Portfolio.find_by(:id => params[:portfolio_id])
+        render json: Portfolio.find(params[:portfolio_id])
       end
 
       def fetch_portfolio_item_from_portfolio
