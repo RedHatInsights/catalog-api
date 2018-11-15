@@ -6,5 +6,8 @@ class AdminsConstraint
     else
       false
     end
+  rescue JSON::ParserError
+    Rails.logger.error("Error parsing x-rh-auth-identity")
+    false
   end
 end

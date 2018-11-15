@@ -2,13 +2,13 @@ module Api
   module V0
     class BaseController < ApplicationController
       def list_order_item
-        item = OrderItem.where('id = ? and order_id = ?',
-                               params['order_item_id'], params['order_id']).first
-        render json: item.to_hash
+        render json: Order.find(params.require(:order_id)).
+          order_items.find(params.require(:order_item_id)).to_hash
       end
 
       def list_order_items
-        render json: OrderItem.where(:order_id => params['order_id']).collect(&:to_hash)
+        render json: Order.find(params.require(:order_id)).
+          order_items.collect(&:to_hash)
       end
 
       def list_orders
@@ -16,8 +16,7 @@ module Api
       end
 
       def list_portfolios
-        portfolios = Portfolio.all
-        render json: portfolios
+        render json: Portfolio.all
       end
 
       def list_portfolio_items
@@ -25,21 +24,21 @@ module Api
       end
 
       def fetch_portfolio_with_id
-        render json: Portfolio.find(params[:portfolio_id])
+        render json: Portfolio.find(params.require(:portfolio_id))
       end
 
       def fetch_portfolio_item_from_portfolio
-        items = Portfolio.find(params[:portfolio_id])
-                         .portfolio_items.find_by(:id => params[:portfolio_item_id])
-        render json: items
+        item = Portfolio.find(params.require(:portfolio_id))
+          .portfolio_items.find(params.require(:portfolio_item_id))
+        render json: item
       end
 
       def fetch_portfolio_items_with_portfolio
-        render json: Portfolio.find(params[:portfolio_id]).portfolio_items
+        render json: Portfolio.find(params.require(:portfolio_id)).portfolio_items
       end
 
       def list_progress_messages
-        render json: ProgressMessage.where(:order_item_id => params['order_item_id']).collect(&:to_hash)
+        render json: OrderItem.find(params.require(:order_item_id)).progress_messages.collect(&:to_hash)
       end
 
       def new_order
