@@ -1,11 +1,9 @@
 ---
 language: ruby
-sudo: required
+sudo: false
 cache: bundler
 rvm:
 - 2.4.5
-services:
-- docker
 addons:
   postgresql: '9.5'
 env:
@@ -20,8 +18,3 @@ before_script:
 - bundle exec rake db:create db:migrate
 after_script:
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
-deploy:
-  provider: script
-  script: bash .travis/deploy.sh
-  'on':
-    branch: master
