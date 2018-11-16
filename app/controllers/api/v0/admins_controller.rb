@@ -1,8 +1,6 @@
 module Api
   module V0
     class AdminsController < BaseController
-      before_action :validate_admin
-
       def add_portfolio
         portfolio = Portfolio.create!(portfolio_params)
         render json: portfolio
@@ -31,12 +29,6 @@ module Api
 
       def portfolio_params
         params.permit(:name, :description, :image_url, :enabled)
-      end
-
-      def validate_admin
-        unless AdminsConstraint.matches?(request)
-          head(403)
-        end
       end
     end
   end

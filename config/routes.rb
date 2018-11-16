@@ -20,7 +20,7 @@ Rails.application.routes.draw do
       namespace :v0x0, :path => "v0.0" do
         full_path = File.join(ENV["BASE_PATH"], full_path) if ENV["BASE_PATH"]
         constraint = opts[:constraint_name].camelize.constantize
-        match full_path, to: "#{opts.fetch(:controller_name)}##{opts[:action_name]}", via: http_method
+        match full_path, to: "#{opts.fetch(:controller_name)}##{opts[:action_name]}", constraints: constraint, via: http_method
       end
     end
   end

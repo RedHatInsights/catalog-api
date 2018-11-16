@@ -712,7 +712,7 @@ responses:
   Forbidden:
     description: The caller is forbidden to perform the action
   Unauthorized:
-    description: The credentials are invalid when accessing the API externally.
+    description: The caller is not authorized to access this resource.
 host: localhost
 schemes:
   - https
