@@ -4,18 +4,26 @@ info:
   version: 1.0.0
   title: Service Portal API
   contact:
-    email: you@your-company.com
+    email: support@redhat.com
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 securityDefinitions:
-  UserSecurity:
+  BasicAuth:
     type: basic
-  AdminSecurity:
-    type: basic
+    description: The userid/password is needed when accessing this API externally
+  APIKeyAuth:
+    type: apiKey
+    in: header
+    name: x-rh-auth-identity
+    description: >-
+      This is a base64 encoded string of a collection of attributes, that
+      identify a user. This token is needed when accessing the API internally.
+    example: |
+      eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWV9fQ==
 security:
-  - UserSecurity: []
-  - AdminSecurity: []
+  - BasicAuth: []
+  - APIKeyAuth: []
 tags:
   - name: admins
     description: Secured Admin-only calls
@@ -37,13 +45,18 @@ paths:
         - application/json
       responses:
         '200':
-          description: Portfolio Info
+          description: >-
+            On success this API returns an array of Portfolio objects. If the
+            array is empty you dont have any portfolios defined in the system or
+            they are inaccessible to you.
           schema:
             type: array
             items:
               $ref: '#/definitions/Portfolio'
-        '400':
-          description: bad input parameter
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
     post:
       tags:
         - admins
@@ -63,13 +76,15 @@ paths:
             $ref: '#/definitions/Portfolio'
       responses:
         '200':
-          description: Portfolio Info
+          description: Newly added Portfolio Object
           schema:
-            type: object
-            items:
-              $ref: '#/definitions/Portfolio'
-        '400':
-          description: bad input parameter
+            $ref: '#/definitions/Portfolio'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/InvalidEntity'
   '/portfolios/{portfolio_id}':
     get:
       tags:
@@ -85,9 +100,17 @@ paths:
         - $ref: '#/parameters/PortfolioID'
       responses:
         '200':
-          description: portfolio results matching the portfolio id
+          description: The portfolio object matching the portfolio id
           schema:
             $ref: '#/definitions/Portfolio'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: Portfolio object not found
+        '422':
+          $ref: '#/responses/InvalidEntity'
   '/portfolios/{portfolio_id}/portfolio_items':
     get:
       tags:
@@ -104,13 +127,19 @@ paths:
         - $ref: '#/parameters/PortfolioID'
       responses:
         '200':
-          description: returns matching criteria
+          description: >-
+            Returns an array of Portfolio Items, if the portfolio is not
+            connected to any portfolio items you would get an empty array.
           schema:
             type: array
             items:
               $ref: '#/definitions/PortfolioItem'
-        '400':
-          description: bad input parameter
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: The Portfolio object not found
     post:
       tags:
         - admins
@@ -132,14 +161,18 @@ paths:
       responses:
         '200':
           description: Successfully added a portfolio item to portfolio
-        '400':
-          description: bad input parameter
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: The Portfolio Object or the Portfolio Item Object was not found.
   '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}':
     get:
       tags:
         - users
         - admins
-      summary: Fetch a portfolio item from a specific portfolio
+      summary: Fetch a single portfolio item from a specific portfolio
       operationId: fetchPortfolioItemFromPortfolio
       description: >
         By passing in the portfolio id and portfolio_item_id you can fetch the
@@ -151,19 +184,21 @@ paths:
         - $ref: '#/parameters/PortfolioItemID'
       responses:
         '200':
-          description: search results matching criteria
+          description: Return a Portfolio Item object
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/PortfolioItem'
-        '400':
-          description: bad input parameter
+            $ref: '#/definitions/PortfolioItem'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: Either the Portfolio ID or the Portfolio Item ID was not found
   /portfolio_items:
     get:
       tags:
         - users
         - admins
-      summary: API to list portfolio_items
+      summary: API to list all portfolio items
       operationId: listPortfolioItems
       description: |
         Returns an array of portfolio item objects
@@ -178,15 +213,19 @@ paths:
             type: array
             items:
               $ref: '#/definitions/PortfolioItem'
-        '400':
-          description: bad input parameter
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
     post:
       tags:
         - admins
       summary: API to add a new portfolio item
       operationId: addPortfolioItem
-      description: |
-        Returns the added portfolio item object
+      description: >
+        This API would connect to the Topology Service to fetch the name and
+        description of the service offering. Returns the added portfolio item
+        object
       produces:
         - application/json
       consumes:
@@ -199,19 +238,23 @@ paths:
             $ref: '#/definitions/CreatePortfolioItem'
       responses:
         '200':
-          description: Portfolio Item Info
+          description: The newly created Portfolio Item object
           schema:
-            type: object
-            items:
-              $ref: '#/definitions/PortfolioItem'
-        '400':
-          description: bad input parameter
+            $ref: '#/definitions/PortfolioItem'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: Service Offering not found
+        '422':
+          $ref: '#/responses/InvalidEntity'
   '/portfolio_items/{portfolio_item_id}/service_plans':
     get:
       tags:
         - users
         - admins
-      summary: Fetches all the service plans for a specific portfolio item
+      summary: Fetches all the service plans for a specific portfolio item, this requires a connection to the topology service.
       operationId: fetchPlansWithPortfolioItemId
       description: |
         Fetch all service plans for a portfolio item
@@ -226,8 +269,14 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ServicePlan'
-        '400':
-          description: bad input parameter
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: Portfolio Item Not found
+        '500':
+          description: Could not access the Topology Service
   /orders:
     get:
       tags:
@@ -246,6 +295,10 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Order'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
     post:
       tags:
         - admins
@@ -260,6 +313,10 @@ paths:
           description: Returns a newly created order object
           schema:
             $ref: '#/definitions/Order'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'    
   '/orders/{order_id}/items':
     get:
       tags:
@@ -280,14 +337,18 @@ paths:
             type: array
             items:
               $ref: '#/definitions/OrderItem'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'      
     post:
       tags:
         - users
         - admins
-      summary: Add a Portfolio Item to the Order in Pending State
+      summary: Add an Order Item to the Order in Pending State
       operationId: addToOrder
       description: |
-        Add a catalog item to the order in Pending State
+        Add an order item to the order in Pending State
       produces:
         - application/json
       consumes:
@@ -302,19 +363,21 @@ paths:
       responses:
         '200':
           description: Successfully added an item to order
-        '400':
-          description: bad input parameter
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'  
         '404':
-          description: cannot add to a order which has already been ordered.
+          description: order not found.
   '/orders/{order_id}/items/{order_item_id}':
     get:
       tags:
         - users
         - admins
-      summary: Get an individual item from a given order
+      summary: Get an individual order item from a given order
       operationId: listOrderItem
       description: |
-        Get an item associated with an order.
+        Get an order item associated with an order.
       produces:
         - application/json
       parameters:
@@ -325,6 +388,12 @@ paths:
           description: Returns a single OrderIem object
           schema:
             $ref: '#/definitions/OrderItem'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'  
+        '404':
+          description: Either the order or the order item could not be found.    
   '/orders/{order_id}':
     post:
       tags:
@@ -342,8 +411,12 @@ paths:
           description: Updated Order object
           schema:
             $ref: '#/definitions/Order'
-        '400':
-          description: 'Order is empty, nothing to order'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'  
+        '404':
+          description: order not found    
   '/order_items/{order_item_id}/progress_messages':
     get:
       tags:
@@ -365,6 +438,12 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ProgressMessage'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'  
+        '404':
+          description: order item not found     
 parameters:
   PortfolioID:
     name: portfolio_id
@@ -411,7 +490,8 @@ definitions:
       enabled:
         type: boolean
         title: Enabled
-        example: Is the portfolio enabled
+        default: false
+        example: false
       image_url:
         type: string
         title: Image URL
@@ -431,14 +511,18 @@ definitions:
       service_offering_ref:
         type: string
         title: Service Offering Ref
-        example: The Service Offering Reference
+        description: >-
+          The service offering ref should be retrieved from a call to the
+          Topology Service
+        example: '177'
   AddPortfolioItem:
     type: object
     properties:
       portfolio_item_id:
         type: string
         title: Portfolio Item Id
-        example: The Portfolio Item Id
+        example: '100'
+        description: This is the id of the portfolio item object
   PortfolioItem:
     type: object
     properties:
@@ -472,11 +556,9 @@ definitions:
     properties:
       id:
         type: string
-        format: uuid
         readOnly: true
       user_id:
         type: string
-        format: uuid
         readOnly: true
       state:
         type: string
@@ -510,7 +592,6 @@ definitions:
       - count
       - service_plan_ref
       - portfolio_item_id
-      - order_id
       - provider_control_parameters
     properties:
       id:
@@ -537,10 +618,6 @@ definitions:
         type: string
         title: Portfolio Item ID
         description: Stores the Portfolio Item ID
-      order_id:
-        type: string
-        description: ID of the order object
-        title: Order ID
       state:
         type: string
         enum:
@@ -627,6 +704,15 @@ definitions:
         title: JSON Schema
         description: JSON Schema for the object
         readOnly: true
+responses:
+  InvalidEntity:
+    description: >-
+      The entity being created does not have either all the required parameters
+      specified or the parameter value is invalid
+  Forbidden:
+    description: The caller is forbidden to perform the action
+  Unauthorized:
+    description: The caller is not authorized to access this resource.
 host: localhost
 schemes:
   - https
