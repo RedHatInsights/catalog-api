@@ -19,6 +19,8 @@ end
 
 gem 'acts_as_tenant'
 gem 'jbuilder', '~> 2.0'
+gem 'json-schema'
+gem 'more_core_extensions', '~>3.5'
 gem 'pg', '~> 1.0', :require => false
 gem 'puma', '~> 3.0'
 gem 'rack-cors', '>= 0.4.1'

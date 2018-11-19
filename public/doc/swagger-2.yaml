@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: This is a API to fetch and order catalog items from different cloud sources
-  version: 1.0.0
+  version: 0.0.1
   title: Service Portal API
   contact:
     email: you@your-company.com
@@ -417,14 +417,6 @@ definitions:
         title: Image URL
         format: url
         example: The public facing image url for a portfolio
-  Organization:
-    type: object
-    properties:
-      id:
-        type: string
-        readOnly: true
-        title: Id
-        example: Id of the sample organization
   CreatePortfolioItem:
     type: object
     properties:
@@ -631,4 +623,4 @@ host: localhost
 schemes:
   - https
   - http
-basePath: /r/insights/platform/service-portal
+basePath: /api/v0.0/
