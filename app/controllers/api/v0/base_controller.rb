@@ -50,7 +50,7 @@ module Api
       end
 
       def fetch_plans_with_portfolio_item_id
-        render json: ServicePlans.new(params).process
+        render json: ServicePlans.new(:params => params, :request => request).process
       end
     end
   end

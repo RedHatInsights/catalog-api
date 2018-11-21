@@ -1,9 +1,10 @@
 require 'topological_inventory-api-client'
 
 class TopologyServiceApi
-  attr_accessor :params, :api_instance
+  attr_accessor :params, :api_instance, :request
   def initialize(options)
-    @params = options
+    @params = options[:params]
+    @request = options[:request]
     TopologicalInventoryApiClient.configure do |config|
       config.host     = ENV['TOPOLOGY_SERVICE_URL']
       config.scheme   = URI.parse(ENV['TOPOLOGY_SERVICE_URL']).try(:scheme)

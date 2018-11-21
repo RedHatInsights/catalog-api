@@ -3,7 +3,7 @@ describe ServicePlans do
 
   let(:service_offering_ref) { "998" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
-  let(:service_plans) { ServicePlans.new(params) }
+  let(:service_plans) { ServicePlans.new(:params => params) }
   let(:api_instance) { double() }
   let(:params) { {'portfolio_item_id' => portfolio_item.id} }
 

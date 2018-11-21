@@ -35,7 +35,7 @@ class CreateApprovalRequest < ApprovalServiceApi
 
   def request_body(pf_item, order_item)
     o_params = ActionController::Parameters.new('order_item_id' => order_item.id)
-    content = OrderItemSanitizedParameters.new(o_params).process
+    content = OrderItemSanitizedParameters.new(:params => o_params, :request => request).process
     ApprovalAPIClient::Request.new(
       'requester' => username,
       'name'      => pf_item.name,

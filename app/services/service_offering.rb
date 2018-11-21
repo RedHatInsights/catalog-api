@@ -1,10 +1,10 @@
 class ServiceOffering < TopologyServiceApi
 
-  def initialize(params)
+  def initialize(options)
     @name = nil
     @description = nil
     @service_offering_ref = nil
-    super(params)
+    super(options)
   end
 
   def self.find(id)
