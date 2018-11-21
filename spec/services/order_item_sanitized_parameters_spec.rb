@@ -7,7 +7,7 @@ describe OrderItemSanitizedParameters do
   let(:service_plan_ref) { "777" }
   let(:oisp) do
     with_modified_env TOPOLOGY_SERVICE_URL: 'http://www.example.com' do
-      OrderItemSanitizedParameters.new(params)
+      OrderItemSanitizedParameters.new(:params => params)
     end
   end
 
