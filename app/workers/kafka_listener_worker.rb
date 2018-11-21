@@ -4,11 +4,11 @@ class KafkaListenerWorker
   include Sidekiq::Worker
   TOPIC = 'Generic_Topic'.freeze
   def initialize(options = {})
-    @portal_ref = 'generic_1'
+    @client_ref = options.fetch(:client_ref, 'generic_1')
   end
 
   def start
-    Thread.new { self.class.perform_async(@portal_ref) }
+    Thread.new { self.class.perform_async(@client_ref) }
   end
 
   def self.perform_async(client_ref)
