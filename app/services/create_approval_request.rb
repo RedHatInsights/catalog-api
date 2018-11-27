@@ -3,7 +3,7 @@ class CreateApprovalRequest < ApprovalServiceApi
     order.order_items.each do |order_item|
       submit_approval_request(order_item)
     end
-    order.update(:state => 'Ordered', :ordered_at => DateTime.now.utc)
+    order.update(:state => 'Ordered', :ordered_at => Time.now.utc)
     order
   rescue StandardError => e
     Rails.logger.error("CreateApprovalRequest #{e.message}")

@@ -2,7 +2,7 @@ describe CreateApprovalRequest do
   include ServiceSpecHelper
 
   let(:car) do
-    with_modified_env APPROVAL_SERVICE_URL: 'http://www.example.com' do
+    with_modified_env :APPROVAL_SERVICE_URL => 'http://www.example.com' do
       CreateApprovalRequest.new(:params => params, :request => request)
     end
   end

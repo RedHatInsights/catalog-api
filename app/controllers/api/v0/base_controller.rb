@@ -46,7 +46,7 @@ module Api
       end
 
       def submit_order
-        render json: CreateApprovalRequest.new(:params => params, :request => request).process.to_hash
+        render :json => CreateApprovalRequest.new(:params => params, :request => request).process.to_hash
       end
 
       def fetch_plans_with_portfolio_item_id
