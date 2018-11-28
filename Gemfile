@@ -19,6 +19,7 @@ end
 
 gem 'acts_as_tenant'
 gem 'jbuilder', '~> 2.0'
+gem "manageiq-password", :git => "https://github.com/ManageIQ/manageiq-password", :branch => "master"
 gem 'pg', '~> 1.0', :require => false
 gem 'puma', '~> 3.0'
 gem 'rack-cors', '>= 0.4.1'

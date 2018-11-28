@@ -3,6 +3,7 @@
 /.ruby-gemset
 /.ruby-version
 /.yardoc
+/v2_key
 /Gemfile.lock
 /_yardoc/
 /bundler.d/*

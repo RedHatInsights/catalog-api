@@ -10,10 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181101134526) do
+ActiveRecord::Schema.define(version: 20181126215611) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "authentications", force: :cascade do |t|
+    t.string "name"
+    t.string "authtype"
+    t.string "status"
+    t.string "status_details"
+    t.bigint "tenant_id"
+  end
+
+  create_table "encryptions", force: :cascade do |t|
+    t.bigint "authentication_id"
+    t.string "password"
+    t.bigint "tenant_id"
+    t.index ["authentication_id"], name: "index_encryptions_on_authentication_id"
+  end
 
   create_table "order_items", force: :cascade do |t|
     t.integer "count"
