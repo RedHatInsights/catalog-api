@@ -4,13 +4,18 @@ RUN yum -y install centos-release-scl-rh && \
     yum -y install --setopt=tsflags=nodocs \
                    # To compile native gem extensions
                    gcc-c++ \
+                   # For git based gems
+                   git \
+                   # For checking service status
+                   nmap-ncat \
                    # To compile pg gem
                    rh-postgresql95-postgresql-devel \
                    rh-postgresql95-postgresql-libs \
                    && \
     yum clean all
 
-ENV WORKDIR /opt/insights-api-service_catalog/
+ENV WORKDIR /opt/service_portal-api/
+ENV RAILS_ROOT $WORKDIR
 WORKDIR $WORKDIR
 
 COPY Gemfile $WORKDIR
@@ -30,4 +35,4 @@ RUN chgrp -R 0 $WORKDIR && \
 
 EXPOSE 3000
 
-CMD ["entrypoint"]
+ENTRYPOINT ["entrypoint"]
