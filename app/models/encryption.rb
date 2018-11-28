@@ -1,5 +1,3 @@
-require "password_concern"
-
 class Encryption < ApplicationRecord
   include PasswordConcern
   acts_as_tenant(:tenant)

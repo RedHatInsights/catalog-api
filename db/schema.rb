@@ -16,17 +16,24 @@ ActiveRecord::Schema.define(version: 20181126215611) do
   enable_extension "plpgsql"
 
   create_table "authentications", force: :cascade do |t|
+    t.string "resource_type"
+    t.bigint "resource_id"
     t.string "name"
     t.string "authtype"
     t.string "status"
     t.string "status_details"
     t.bigint "tenant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resource_type", "resource_id"], name: "index_authentications_on_resource_type_and_resource_id"
   end
 
   create_table "encryptions", force: :cascade do |t|
     t.bigint "authentication_id"
     t.string "password"
     t.bigint "tenant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["authentication_id"], name: "index_encryptions_on_authentication_id"
   end
 

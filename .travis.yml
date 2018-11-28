@@ -14,6 +14,7 @@ before_install:
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
+- "cp v2_key.dev v2_key"
 - "./cc-test-reporter before-build"
 - bundle exec rake db:create db:migrate
 after_script:
