@@ -6,15 +6,15 @@ class Authentication < ApplicationRecord
 
   validates :encryption, :presence => true
 
-  def password=(password)
+  def secret=(secret)
     if encryption.nil?
-      self.encryption = Encryption.new(:password => password)
+      self.encryption = Encryption.new(:secret => secret)
     else
-      encryption.update_attributes(:password => password)
+      encryption.update_attributes(:secret => secret)
     end
   end
 
-  def password
-    encryption.password || nil
+  def secret
+    encryption.secret || nil
   end
 end

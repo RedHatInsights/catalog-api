@@ -1,10 +1,10 @@
 class Encryption < ApplicationRecord
-  include PasswordConcern
+  include EncryptionConcern
   acts_as_tenant(:tenant)
 
-  validates :authentication_id, :password, :presence => true
+  validates :authentication_id, :secret, :presence => true
 
   belongs_to :authentication
 
-  encrypt_column :password
+  encrypt_column :secret
 end

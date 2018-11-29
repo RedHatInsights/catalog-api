@@ -13,7 +13,7 @@ class AddAuthentications < ActiveRecord::Migration[5.1]
 
     create_table :encryptions, :id => :bigserial do |t|
       t.references "authentication", :index => true
-      t.string :password
+      t.string :secret
       t.bigint :tenant_id
 
       t.timestamps

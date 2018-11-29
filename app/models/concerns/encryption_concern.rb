@@ -1,4 +1,4 @@
-module PasswordConcern
+module EncryptionConcern
   extend ActiveSupport::Concern
 
   included do
@@ -25,16 +25,16 @@ module PasswordConcern
       end
 
       mod.send(:define_method, "#{column}=") do |val|
-        val = ManageIQ::Password.try_encrypt(val) unless val.blank?
+        val = ManageIQ::Password.try_encrypt(val) if val.present?
         send("#{column}_encrypted=", val)
       end
 
       mod.send(:define_method, "#{column}_encrypted") do
-        read_attribute(column)
+        self[column]
       end
 
       mod.send(:define_method, "#{column}_encrypted=") do |val|
-        write_attribute(column, val)
+        self[column] = val
       end
     end
 

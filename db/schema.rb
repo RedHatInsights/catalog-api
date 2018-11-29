@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20181126215611) do
 
   create_table "encryptions", force: :cascade do |t|
     t.bigint "authentication_id"
-    t.string "password"
+    t.string "secret"
     t.bigint "tenant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
