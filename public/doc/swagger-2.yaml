@@ -19,8 +19,6 @@ securityDefinitions:
     description: >-
       This is a base64 encoded string of a collection of attributes, that
       identify a user. This token is needed when accessing the API internally.
-    example: |
-      eyJpZGVudGl0eSI6eyJpc19vcmdfYWRtaW4iOnRydWV9fQ==
 security:
   - BasicAuth: []
   - APIKeyAuth: []
