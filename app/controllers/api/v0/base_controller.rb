@@ -50,7 +50,12 @@ module Api
       end
 
       def fetch_plans_with_portfolio_item_id
-        render json: ServicePlans.new(params).process
+        so = ServiceCatalog::ServicePlans.new(params.require(:portfolio_item_id))
+        render json: so.process.items
+      rescue TopologicalInventoryApiClient::ApiError => err
+        Rails.logger.error("TopologicalInventoryApiClient::ApiError #{err.message} ")
+        render :json => {:errors => "Error interacting with Topology Service"}, 
+          :status => :internal_server_error
       end
     end
   end
