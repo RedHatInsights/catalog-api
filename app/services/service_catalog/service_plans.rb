@@ -7,7 +7,7 @@ module ServiceCatalog
 
     def process
       result = api_instance.list_service_offering_service_plans(service_offering_ref)
-      filter_result(result)
+      @items = filter_result(result)
       self
     rescue StandardError => e
       Rails.logger.error("Service Plans #{e.message}")
@@ -19,8 +19,8 @@ module ServiceCatalog
     end
 
     def filter_result(result)
-      @items = result.each_with_object([]) do |obj, array|
-        array << {
+      result.collect do |obj|
+        {
           'name'               => obj.name,
           'description'        => obj.description,
           'id'                 => obj.id,
