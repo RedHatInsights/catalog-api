@@ -48,14 +48,14 @@ module Api
       def submit_order
         so_call do
           so = ServiceCatalog::SubmitOrder.new(params.require(:order_id))
-          render json: so.process.order
+          render :json => so.process.order
         end
       end
 
       def fetch_plans_with_portfolio_item_id
         so_call do
           so = ServiceCatalog::ServicePlans.new(params.require(:portfolio_item_id))
-          render json: so.process.items
+          render :json => so.process.items
         end
       end
 
@@ -63,8 +63,8 @@ module Api
         yield
       rescue TopologicalInventoryApiClient::ApiError => err
         Rails.logger.error("TopologicalInventoryApiClient::ApiError #{err.message} ")
-        render :json => {:errors => "Error interacting with Topology Service"}, 
-          :status => :internal_server_error
+        render :json   => {:errors => "Error interacting with Topology Service"},
+               :status => :internal_server_error
       end
     end
   end
