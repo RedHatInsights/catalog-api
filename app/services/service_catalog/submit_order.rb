@@ -22,8 +22,7 @@ module ServiceCatalog
     private
 
     def submit_order_item(item)
-      result = "fake"
-      result ||= api_instance.order_service_plan(item.service_plan_ref, parameters(item))
+      result = api_instance.order_service_plan(item.service_plan_ref, parameters(item))
       update_item(item, result)
     end
 
@@ -35,7 +34,7 @@ module ServiceCatalog
     end
 
     def update_item(item, result)
-      item.external_ref = result
+      item.external_ref = result.task_id
       item.state        = 'Ordered'
       item.ordered_at   = Time.now.utc
       item.update_message('info', 'Initialized')
