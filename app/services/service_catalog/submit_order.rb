@@ -11,7 +11,7 @@ module ServiceCatalog
       @order.order_items.each do |order_item|
         submit_order_item(order_item)
       end
-      @order.update_attributes(:state => 'Ordered', :ordered_at => Time.now.utc)
+      @order.update(:state => 'Ordered', :ordered_at => Time.now.utc)
       @order.reload
       self
     rescue StandardError => e

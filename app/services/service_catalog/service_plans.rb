@@ -6,16 +6,13 @@ module ServiceCatalog
     end
 
     def process
-      result = api_instance.list_service_offering_service_plans(service_offering_ref)
+      ref = PortfolioItem.find(@portfolio_item_id).service_offering_ref
+      result = api_instance.list_service_offering_service_plans(ref)
       @items = filter_result(result)
       self
     rescue StandardError => e
       Rails.logger.error("Service Plans #{e.message}")
       raise
-    end
-
-    def service_offering_ref
-      PortfolioItem.find(@portfolio_item_id).service_offering_ref
     end
 
     def filter_result(result)
