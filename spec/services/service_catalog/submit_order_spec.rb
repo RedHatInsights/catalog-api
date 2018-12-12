@@ -24,7 +24,7 @@ describe ServiceCatalog::SubmitOrder do
   let(:args) { an_instance_of(TopologicalInventoryApiClient::OrderParameters) }
 
   before do
-    allow(ti_class).to receive(:api).and_return(api_instance)
+    allow(ti_class).to receive(:call).and_yield(api_instance)
   end
 
   it "fetches the array of plans" do

@@ -7,8 +7,10 @@ module ServiceCatalog
 
     def process
       ref = PortfolioItem.find(@portfolio_item_id).service_offering_ref
-      result = api_instance.list_service_offering_service_plans(ref)
-      @items = filter_result(result)
+      TopologicalInventory.call do |api_instance|
+        result = api_instance.list_service_offering_service_plans(ref)
+        @items = filter_result(result)
+      end
       self
     rescue StandardError => e
       Rails.logger.error("Service Plans #{e.message}")
@@ -24,10 +26,6 @@ module ServiceCatalog
           'create_json_schema' => obj.create_json_schema
         }
       end
-    end
-
-    def api_instance
-      @api_instance ||= TopologicalInventory.api
     end
   end
 end

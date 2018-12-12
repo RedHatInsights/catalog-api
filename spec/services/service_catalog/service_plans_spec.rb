@@ -9,7 +9,7 @@ describe ServiceCatalog::ServicePlans do
   let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
 
   before do
-    allow(ti_class).to receive(:api).and_return(api_instance)
+    allow(ti_class).to receive(:call).and_yield(api_instance)
   end
 
   it "fetches the array of plans" do

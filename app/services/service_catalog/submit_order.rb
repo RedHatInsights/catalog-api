@@ -22,8 +22,10 @@ module ServiceCatalog
     private
 
     def submit_order_item(item)
-      result = api_instance.order_service_plan(item.service_plan_ref, parameters(item))
-      update_item(item, result)
+      TopologicalInventory.call do |api_instance|
+        result = api_instance.order_service_plan(item.service_plan_ref, parameters(item))
+        update_item(item, result)
+      end
     end
 
     def parameters(item)
@@ -39,10 +41,6 @@ module ServiceCatalog
       item.ordered_at   = Time.now.utc
       item.update_message('info', 'Initialized')
       item.save!
-    end
-
-    def api_instance
-      @api_instance ||= TopologicalInventory.api
     end
   end
 end

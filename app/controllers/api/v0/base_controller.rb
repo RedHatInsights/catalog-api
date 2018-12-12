@@ -1,6 +1,8 @@
 module Api
   module V0
     class BaseController < ApplicationController
+      rescue_from ServiceCatalog::TopologyError, :with => :topology_service_error
+
       def list_order_item
         render json: Order.find(params.require(:order_id)).
           order_items.find(params.require(:order_item_id)).to_hash
@@ -46,25 +48,17 @@ module Api
       end
 
       def submit_order
-        so_call do
-          so = ServiceCatalog::SubmitOrder.new(params.require(:order_id))
-          render :json => so.process.order
-        end
+        so = ServiceCatalog::SubmitOrder.new(params.require(:order_id))
+        render :json => so.process.order
       end
 
       def fetch_plans_with_portfolio_item_id
-        so_call do
-          so = ServiceCatalog::ServicePlans.new(params.require(:portfolio_item_id))
-          render :json => so.process.items
-        end
+        so = ServiceCatalog::ServicePlans.new(params.require(:portfolio_item_id))
+        render :json => so.process.items
       end
 
-      def so_call
-        yield
-      rescue TopologicalInventoryApiClient::ApiError => err
-        Rails.logger.error("TopologicalInventoryApiClient::ApiError #{err.message} ")
-        render :json   => {:errors => "Error interacting with Topology Service"},
-               :status => :internal_server_error
+      def topology_service_error(err)
+        render :json => {:message => err.message}, :status => :internal_server_error
       end
     end
   end

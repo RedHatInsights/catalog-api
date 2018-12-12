@@ -5,10 +5,8 @@ describe "PortfolioItemRequests", :type => :request do
   let(:order) { create(:order) }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:svc_object) { instance_double("ServiceCatalog::ServicePlans") }
-  let(:plan1) { { 'name' => 'Plan1', 'id' => "1", "description" => "Desc 1", "create_json_schema" => {} } }
-  let(:plan2) { { 'name' => 'Plan2', 'id' => "2", "description" => "Desc 2", "create_json_schema" => {} } }
-  let(:plans) { [plan1, plan2] }
-  let(:topo_ex) { TopologicalInventoryApiClient::ApiError.new("kaboom") }
+  let(:plans) { [{}, {}] }
+  let(:topo_ex) { ServiceCatalog::TopologyError.new("kaboom") }
 
   before do
     allow(ServiceCatalog::ServicePlans).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
