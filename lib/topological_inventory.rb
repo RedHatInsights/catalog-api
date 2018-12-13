@@ -21,10 +21,8 @@ class TopologicalInventory
   end
 
   private_class_method def self.pass_thru_headers
-    # TODO Get headers from request
+    # TODO: Get headers from request
     headers = {}
     api.api_client.default_headers = api.api_client.default_headers.merge(headers)
   end
-
-  
 end
