@@ -1,16 +1,15 @@
-describe ServicePlans do
+describe ServiceCatalog::ServicePlans do
   include ServiceSpecHelper
 
   let(:service_offering_ref) { "998" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
-  let(:service_plans) { ServicePlans.new(params) }
-  let(:api_instance) { double() }
-  let(:params) { {'portfolio_item_id' => portfolio_item.id} }
+  let(:params) { portfolio_item.id }
+  let(:service_plans) { described_class.new(params) }
+  let(:api_instance) { double }
+  let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
 
   before do
-    with_modified_env TOPOLOGY_SERVICE_URL: 'http://www.example.com' do
-      allow(service_plans).to receive(:api_instance).and_return(api_instance)
-    end
+    allow(ti_class).to receive(:call).and_yield(api_instance)
   end
 
   it "fetches the array of plans" do
@@ -19,13 +18,13 @@ describe ServicePlans do
     plan2 = Plan.new("Plan B", "2", "Plan B", {})
     expect(api_instance).to receive(:list_service_offering_service_plans).with(portfolio_item.service_offering_ref).and_return([plan1, plan2])
 
-    service_plans.process
+    expect(service_plans.process.items.count).to eq(2)
   end
 
   context "invalid portfolio item" do
-    let(:params) { {'portfolio_item_id' => 1 } }
+    let(:params) { 1 }
     it "raises exception" do
-      expect { service_plans.process }.to raise_error(StandardError)
+      expect { service_plans.process }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
