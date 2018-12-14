@@ -18,8 +18,7 @@ class SendProvisionWebhook
   private
 
   def post_webhook
-    wh_options = JSON.parse(webhook.parameters)
-    PostWebhook.new(wh_options).process(body.to_json)
+    PostWebhook.new(webhook.attributes).process(body.to_json)
   rescue StandardError => e
     Rails.logger.error("SendProvisionWebhook #{e.message}")
     raise

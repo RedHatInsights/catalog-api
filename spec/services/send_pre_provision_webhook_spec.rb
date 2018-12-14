@@ -23,7 +23,7 @@ describe SendPreProvisionWebhook do
   end
 
   let(:portfolio_item_id) { portfolio_item.id }
-  let(:webhook) { create(:webhook, :parameters => hook_parameters.to_json) }
+  let(:webhook) { create(:webhook, hook_parameters) }
   let!(:order_item) do
     create(:order_item, :portfolio_item_id           => portfolio_item_id,
                         :order_id                    => order.id,
