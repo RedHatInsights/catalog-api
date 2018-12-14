@@ -46,10 +46,10 @@ class SendProvisionWebhook
   end
 
   def webhook
-    raise "webhook should be implemented by subclass"
+    raise NotImplementedError, "webhook should be implemented by subclass"
   end
 
   def exists?
-    raise "exists? should be implemented by subclass"
+    raise NotImplementedError, "exists? should be implemented by subclass"
   end
 end

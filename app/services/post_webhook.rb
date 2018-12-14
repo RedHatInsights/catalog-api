@@ -8,12 +8,12 @@ class PostWebhook
   def initialize(options)
     @options = options
     validate
-    default_headers
-    authorization
+    @headers = default_headers
+    add_authorization_headers
   end
 
   def process(json)
-    hmac(json)
+    add_hmac_headers(json)
     post(json)
   end
 
@@ -35,14 +35,14 @@ class PostWebhook
   end
 
   def default_headers
-    @headers = {
+    {
       'User-Agent'   => USER_AGENT,
       'Content-Type' => "application/json",
       'Accept'       => "application/json"
     }
   end
 
-  def authorization
+  def add_authorization_headers
     case @options['authentication']
     when 'basic'
       @headers['Authorization'] = "Basic " + Base64.encode64("#{@options['username']}:#{@options['password']}")
@@ -51,7 +51,7 @@ class PostWebhook
     end
   end
 
-  def hmac(json)
+  def add_hmac_headers(json)
     @headers[SIGNATURE_KEY] = signature(json) if @options['secret']
   end
 
