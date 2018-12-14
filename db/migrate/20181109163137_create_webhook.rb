@@ -6,10 +6,10 @@ class CreateWebhook < ActiveRecord::Migration[5.1]
       t.string :url
       t.boolean :verify_ssl
       t.string :secret
-      t.string :authentication 
-      t.string :userid 
-      t.string :password 
-      t.string :token 
+      t.string :authentication
+      t.string :userid
+      t.string :password
+      t.string :token
 
       t.timestamps
     end
