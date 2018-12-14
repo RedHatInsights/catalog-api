@@ -646,13 +646,6 @@ definitions:
         format: date-time
         title: Completed at
         readOnly: true
-      external_ref:
-        type: string
-        description: >-
-          An external reference from the provider that can be used to track the
-          progress of the order item
-        title: External Reference
-        readOnly: true
   ProgressMessage:
     type: object
     properties:
