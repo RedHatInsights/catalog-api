@@ -31,7 +31,7 @@ describe ServiceCatalog::SubmitOrder do
     allow(task).to receive(:task_id).and_return("100")
     allow(api_instance).to receive(:order_service_plan).with(service_plan_ref, args).and_return(task)
 
-    expect(submit_order.process.order.order_items.first.external_ref).to eq("100")
+    expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
   end
 
   context "invalid portfolio item" do
