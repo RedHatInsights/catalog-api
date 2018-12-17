@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'webmock/rspec'
 
-describe PostWebhook do
+describe ServiceCatalog::PostWebhook do
   let(:options) { { } }
 
   let(:payload) do

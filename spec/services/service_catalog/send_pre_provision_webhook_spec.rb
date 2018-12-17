@@ -1,19 +1,7 @@
-describe SendPreProvisionWebhook do
+describe ServiceCatalog::SendPreProvisionWebhook do
   include ServiceSpecHelper
 
-  let(:username) { "Freddy Kreuger" }
-
-  let(:identity) do
-    {'identity' => {'is_org_admin' => true, 'username' => username} }
-  end
-
-  let(:request) do
-    ActionDispatch::TestRequest.new({}).tap do |obj|
-      obj.headers['x-rh-auth-identity'] = Base64.urlsafe_encode64(identity.to_json)
-    end
-  end
-
-  let(:post_wh) { instance_double("PostWebhook") }
+  let(:post_wh) { instance_double("ServiceCatalog::PostWebhook") }
 
   let(:service_offering_ref) { "999" }
   let(:service_plan_ref) { "777" }
@@ -38,14 +26,14 @@ describe SendPreProvisionWebhook do
   end
   let(:portfolio_item_id) { portfolio_item.id.to_s }
   let(:params) do
-    ActionController::Parameters.new('order_item_id' => order_item.id.to_s)
+    order_item.id.to_s
   end
 
-  let(:sppw) { SendPreProvisionWebhook.new(params, request) }
+  let(:sppw) { ServiceCatalog::SendPreProvisionWebhook.new(params) }
 
   context "#process" do
     it "sucess" do
-      allow(PostWebhook).to receive(:new).and_return(post_wh)
+      allow(ServiceCatalog::PostWebhook).to receive(:new).and_return(post_wh)
       allow(post_wh).to receive(:process) do |json_body|
         body = JSON.parse(json_body)
         expect(body['title']).to eq(described_class::TITLE)
@@ -56,7 +44,7 @@ describe SendPreProvisionWebhook do
     end
 
     it "raises exception" do
-      allow(PostWebhook).to receive(:new).and_return(post_wh)
+      allow(ServiceCatalog::PostWebhook).to receive(:new).and_return(post_wh)
       allow(post_wh).to receive(:process).and_raise("Kaboom")
 
       expect { sppw.process }.to raise_error(StandardError)
@@ -74,7 +62,7 @@ describe SendPreProvisionWebhook do
 
     context "no order found" do
       let(:params) do
-        ActionController::Parameters.new('order_item_id' => "999")
+        "999"
       end
 
       it "raises error" do

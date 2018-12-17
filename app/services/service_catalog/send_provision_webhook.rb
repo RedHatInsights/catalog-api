@@ -1,54 +1,53 @@
-class SendProvisionWebhook
-  attr_reader :params
-  attr_reader :request
-  TITLE = "Provision Webhook".freeze
-  def initialize(params, request)
-    @params = params
-    @request = request
-  end
-
-  def process
-    if exists?
-      post_webhook
-    else
-      raise ArgumentError, "Webhook not found"
+module ServiceCatalog
+  class SendProvisionWebhook
+    TITLE = "Provision Webhook".freeze
+    def initialize(order_item_id)
+      @order_item_id = order_item_id
     end
-  end
 
-  private
+    def process
+      if exists?
+        @result = post_webhook
+      else
+        raise ArgumentError, "Webhook not found"
+      end
+    end
 
-  def post_webhook
-    PostWebhook.new(webhook.attributes).process(body.to_json)
-  rescue StandardError => e
-    Rails.logger.error("SendProvisionWebhook #{e.message}")
-    raise
-  end
+    private
 
-  def order_item
-    @order_item ||= OrderItem.find(params[:order_item_id])
-  end
+    def post_webhook
+      PostWebhook.new(webhook.attributes).process(body.to_json)
+    rescue StandardError => e
+      Rails.logger.error("SendProvisionWebhook #{e.message}")
+      raise
+    end
 
-  def portfolio_item
-    @portfolio_item ||= PortfolioItem.find(order_item.portfolio_item_id)
-  end
+    def order_item
+      @order_item ||= OrderItem.find(@order_item_id)
+    end
 
-  def body
-    {
-      'title'       => title,
-      'description' => portfolio_item.name,
-      'parameters'  => order_item.service_parameters
-    }
-  end
+    def portfolio_item
+      @portfolio_item ||= PortfolioItem.find(order_item.portfolio_item_id)
+    end
 
-  def title
-    self.class::TITLE
-  end
+    def body
+      {
+        'title'       => title,
+        'description' => portfolio_item.name,
+        'parameters'  => order_item.service_parameters
+      }
+    end
 
-  def webhook
-    raise NotImplementedError, "webhook should be implemented by subclass"
-  end
+    def title
+      self.class::TITLE
+    end
 
-  def exists?
-    raise NotImplementedError, "exists? should be implemented by subclass"
+    def webhook
+      raise NotImplementedError, "webhook should be implemented by subclass"
+    end
+
+    def exists?
+      raise NotImplementedError, "exists? should be implemented by subclass"
+    end
   end
 end
