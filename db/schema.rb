@@ -98,7 +98,13 @@ ActiveRecord::Schema.define(version: 20181109165824) do
   create_table "webhooks", force: :cascade do |t|
     t.bigint "tenant_id"
     t.string "name"
-    t.jsonb "parameters"
+    t.string "url"
+    t.boolean "verify_ssl"
+    t.string "secret"
+    t.string "authentication"
+    t.string "userid"
+    t.string "password"
+    t.string "token"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
