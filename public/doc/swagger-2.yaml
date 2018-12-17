@@ -109,6 +109,35 @@ paths:
           description: Portfolio object not found
         '422':
           $ref: '#/responses/InvalidEntity'
+    patch:
+      tags:
+        - admins
+      summary: Edit an existing portfolio
+      operationId: editPortfolio
+      description: |
+        Returns the edited portfolio object
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Portfolio'
+      responses:
+        '200':
+          description: Edited portfolio object
+          schema:
+            $ref: '#/definitions/Portfolio'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/InvalidEntity'
   '/portfolios/{portfolio_id}/portfolio_items':
     get:
       tags:
