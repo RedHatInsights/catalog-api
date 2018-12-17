@@ -36,9 +36,9 @@ module ServiceCatalog
     end
 
     def update_item(item, result)
-      item.external_ref = result.task_id
-      item.state        = 'Ordered'
-      item.ordered_at   = Time.now.utc
+      item.topology_task_ref = result.task_id
+      item.state             = 'Ordered'
+      item.ordered_at        = Time.now.utc
       item.update_message('info', 'Initialized')
       item.save!
     end
