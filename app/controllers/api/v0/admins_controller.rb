@@ -9,7 +9,12 @@ module Api
       end
 
       def edit_portfolio
-        render json: Portfolio.find(params.require(:portfolio_id)).update(portfolio_params)
+        portfolio = Portfolio.find(params.require(:portfolio_id))
+        portfolio.update!(portfolio_params)
+
+        render :json => portfolio
+      rescue ActiveRecord::RecordInvalid => e
+        render :json => { :errors => e.message }, :status => :unprocessable_entity
       end
 
       def add_portfolio_item_to_portfolio

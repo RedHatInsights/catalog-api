@@ -36,7 +36,7 @@ Rails.application.routes.draw do
   add_swagger_route 'GET', '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'fetch_portfolio_item_from_portfolio'
   add_swagger_route 'GET', '/portfolios/{portfolio_id}/portfolio_items', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'fetch_portfolio_items_with_portfolio'
   add_swagger_route 'GET', '/portfolios/{portfolio_id}', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'fetch_portfolio_with_id'
-  add_swagger_route 'PATCH', '/portfolios/{portfolio_id}', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'edit_portfolio'
+  add_swagger_route 'PATCH', '/portfolios/{portfolio_id}', :controller_name => 'admins', :constraint_name => 'adminsConstraint', :action_name => 'edit_portfolio'
   add_swagger_route 'GET', '/orders/{order_id}/items/{order_item_id}', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'list_order_item'
   add_swagger_route 'GET', '/orders/{order_id}/items', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'list_order_items'
   add_swagger_route 'GET', '/orders', controller_name: 'admins', constraint_name: 'adminsConstraint', action_name: 'list_orders'
