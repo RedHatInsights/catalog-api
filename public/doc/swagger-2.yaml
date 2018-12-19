@@ -138,6 +138,28 @@ paths:
           $ref: '#/responses/Forbidden'
         '422':
           $ref: '#/responses/InvalidEntity'
+    delete:
+      tags:
+        - admins
+      summary: Delete an existing portfolio
+      operationId: destroyPortfolio
+      description: |
+        Deletes the portfolio id passed in as the param.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioID'
+      responses:
+        '200':
+          description: Edited portfolio object
+          schema:
+            $ref: '#/definitions/Portfolio'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/InvalidEntity'
   '/portfolios/{portfolio_id}/portfolio_items':
     get:
       tags:

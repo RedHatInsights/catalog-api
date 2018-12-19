@@ -78,6 +78,20 @@ describe 'Portfolios API' do
     end
   end
 
+  describe 'DELETE admin tagged /portfolios/:portfolio_id' do
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
+
+    context 'when :portfolio_id is valid' do
+      before do
+        delete "#{api}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => valid_attributes
+      end
+
+      it 'deletes the record' do
+        expect(response).to have_http_status(204)
+      end
+    end
+  end
+
   describe 'PATCH admin tagged /portfolios/:portfolio_id' do
     let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
