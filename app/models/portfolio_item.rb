@@ -22,13 +22,13 @@ class PortfolioItem < ApplicationRecord
 
   def self.create!(params)
     sanitized = sanitize_params(params)
-    service_offering = ServiceOffering.find(sanitized[SERVICE_OFFERING_KEY])
+    service_offering = ServiceCatalog::ServiceOffering.find(sanitized[SERVICE_OFFERING_KEY])
     super(service_offering.to_normalized_params)
   end
 
   def self.create(params)
     sanitized = sanitize_params(params)
-    service_offering = ServiceOffering.find(sanitized[SERVICE_OFFERING_KEY])
+    service_offering = ServiceCatalog::ServiceOffering.find(sanitized[SERVICE_OFFERING_KEY])
     super(service_offering.to_normalized_params)
   end
 
