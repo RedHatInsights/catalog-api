@@ -298,6 +298,23 @@ paths:
           description: Service Offering not found
         '422':
           $ref: '#/responses/InvalidEntity'
+  '/portfolio_items/{portfolio_item_id}':
+    delete:
+      tags:
+        - admins
+      summary: Delete an existing portfolio item
+      operationId: destroyPortfolioItem
+      description: |
+        Deletes the portfolio item id passed in as the param.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioItemID'
+      responses:
+        204:
+          description: Portfolio Item deleted
+        404:
+          description: Portfolio Item not Found
   '/portfolio_items/{portfolio_item_id}/service_plans':
     get:
       tags:

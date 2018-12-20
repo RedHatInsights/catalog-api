@@ -34,6 +34,11 @@ module Api
         render json: AddToOrder.new(params).process.to_hash
       end
 
+      def destroy_portfolio_item
+        PortfolioItem.find(params.require(:portfolio_item_id)).destroy
+        head :no_content
+      end
+
       private
       def portfolio_item_params
         params.permit(:service_offering_ref)
