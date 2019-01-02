@@ -4,7 +4,7 @@ describe 'Portfolios API' do
 
   let!(:portfolio)            { create(:portfolio) }
   let!(:portfolio_item)       { create(:portfolio_item) }
-  let!(:portfolio_items)      { create_list(:portfolio_item, 3, :portfolios => [portfolio]) }
+  let!(:portfolio_items)      { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)          { portfolio.id }
   let(:portfolio_item_id)     { portfolio_items.first.id }
   let(:new_portfolio_item_id) { portfolio_item.id }
@@ -35,7 +35,7 @@ describe 'Portfolios API' do
 
       it 'returns all associated portfolio_items' do
         expect(json).not_to be_empty
-        expect(json.count).to eq 3
+        expect(json.count).to eq 1
         portfolio_item_ids = portfolio_items.map(&:id).sort
         expect(json.map { |x| x['id'] }.sort).to eq portfolio_item_ids
       end

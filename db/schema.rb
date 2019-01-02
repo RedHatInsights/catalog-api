@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181212151455) do
+ActiveRecord::Schema.define(version: 20190102182940) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,14 +54,8 @@ ActiveRecord::Schema.define(version: 20181212151455) do
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.string "service_offering_ref"
+    t.bigint "portfolio_id"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
-  end
-
-  create_table "portfolio_items_portfolios", id: false, force: :cascade do |t|
-    t.bigint "portfolio_id", null: false
-    t.bigint "portfolio_item_id", null: false
-    t.index ["portfolio_id", "portfolio_item_id"], name: "index_items_on_portfolio_id_and_portfolio_item_id"
-    t.index ["portfolio_item_id", "portfolio_id"], name: "index_items_on_portfolio_item_id_and_portfolio_id"
   end
 
   create_table "portfolios", force: :cascade do |t|
