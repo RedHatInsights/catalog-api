@@ -15,8 +15,7 @@ class Portfolio < ApplicationRecord
 
   validates_presence_of :name
   validates_presence_of :description
-
-  has_and_belongs_to_many :portfolio_items
+  has_many :portfolio_items
 
   def add_portfolio_item(portfolio_item_id)
     portfolio_item = PortfolioItem.find_by(id: portfolio_item_id)
