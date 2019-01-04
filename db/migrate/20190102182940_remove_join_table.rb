@@ -1,12 +1,12 @@
-class PortfolioItem < ActiveRecord::Base
-  has_and_belongs_to_many :portfolios
-end
-
-class Portfolio < ActiveRecord::Base
-  has_and_belongs_to_many :portfolio_items
-end
-
 class RemoveJoinTable < ActiveRecord::Migration[5.1]
+  class PortfolioItem < ActiveRecord::Base
+    has_and_belongs_to_many :portfolios
+  end
+
+  class Portfolio < ActiveRecord::Base
+    has_and_belongs_to_many :portfolio_items
+  end
+
   def up
     add_column :portfolio_items, :portfolio_id, :bigint
 
