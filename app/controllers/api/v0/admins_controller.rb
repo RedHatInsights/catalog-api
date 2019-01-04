@@ -15,6 +15,11 @@ module Api
         render :json => portfolio
       end
 
+      def destroy_portfolio
+        Portfolio.find(params.require(:portfolio_id)).destroy
+        head :no_content
+      end
+
       def add_portfolio_item_to_portfolio
         portfolio = Portfolio.find(params.require(:portfolio_id))
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
