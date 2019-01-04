@@ -630,10 +630,6 @@ definitions:
         type: string
         format: date-time
         title: Completed at
-      order_items:
-        type: array
-        items:
-          $ref: '#/definitions/OrderItem'
   OrderItem:
     type: object
     required:
