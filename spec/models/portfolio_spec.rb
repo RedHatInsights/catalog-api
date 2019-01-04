@@ -1,23 +1,18 @@
 describe Portfolio do
   let(:portfolio)          { create(:portfolio) }
   let(:portfolio_id)       { portfolio.id }
-  let(:portfolio_two)      { create(:portfolio) }
   let(:portfolio_item)     { create(:portfolio_item) }
   let(:portfolio_item_id)  { portfolio_item.id }
-  let(:portfolio_item_two) { create(:portfolio_item) }
   let(:tenant)             { create(:tenant) }
 
   context "destroy portfolio cascading portfolio_items" do
     before do
       ActsAsTenant.current_tenant = nil
       portfolio.add_portfolio_item(portfolio_item)
-      portfolio.add_portfolio_item(portfolio_item_two)
-      portfolio_two.add_portfolio_item(portfolio_item_two)
     end
 
     it "destroys portfolio_items only associated with the current portfolio" do
       portfolio.destroy
-      expect(portfolio_two.portfolio_items.count).to be 1
       expect(Portfolio.find_by(:id => portfolio_id)).to be_nil
       expect(PortfolioItem.find_by(:id => portfolio_item_id)).to be_nil
     end

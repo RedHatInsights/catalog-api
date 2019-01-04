@@ -15,21 +15,10 @@ class Portfolio < ApplicationRecord
 
   validates_presence_of :name
   validates_presence_of :description
-  has_many :portfolio_items
-  before_destroy { |portfolio| portfolio.send(:manage_associated_portfolio_items) }
+  has_many :portfolio_items, :dependent => :destroy
 
   def add_portfolio_item(portfolio_item_id)
     portfolio_item = PortfolioItem.find_by(id: portfolio_item_id)
     portfolio_items << portfolio_item
-  end
-
-  private
-
-  # Delete portfolio items associated with
-  #   only this instance of portfolio
-  def manage_associated_portfolio_items
-    portfolio_items.each do |portfolio_item|
-      portfolio_item.portfolios.count > 1 ? next : portfolio_item.destroy
-    end
   end
 end
