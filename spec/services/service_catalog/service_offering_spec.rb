@@ -10,30 +10,14 @@ describe ServiceCatalog::ServiceOffering do
     [{:@name => name}, {:@description => description},
      {:@service_offering_ref => service_offering_ref}]
   end
-  let(:topology_service_offering) do
-    TopologicalInventoryApiClient::ServiceOffering.new('name'        => name,
-                                                       'id'          => service_offering_ref,
-                                                       'description' => description,
-                                                       'source_ref'  => '123',
-                                                       'extra'       => {},
-                                                       'source_id'   => '45')
-  end
-
-  let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
-
-  before do
-    allow(ti_class).to receive(:call).and_yield(api_instance)
-  end
 
   it "#{described_class}#find" do
     expect(described_class).to receive(:new).and_return(service_offering)
-    expect(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
     described_class.find(service_offering_ref)
   end
 
   it "#show" do
-    expect(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
-    service_offering.show(service_offering_ref)
+    expect(service_offering.show(service_offering_ref)).to be_a ServiceCatalog::ServiceOffering
   end
 
   it "#to_normalized_params" do

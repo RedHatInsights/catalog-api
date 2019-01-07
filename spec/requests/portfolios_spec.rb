@@ -1,5 +1,4 @@
 describe 'Portfolios API' do
-  include RequestSpecHelper
   include ServiceSpecHelper
 
   let!(:portfolio)            { create(:portfolio) }
