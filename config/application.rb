@@ -27,5 +27,13 @@ module ServiceCatalog
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     config.autoload_paths << Rails.root.join('lib').to_s
+
+    require 'manageiq/loggers'
+    config.logger = if Rails.env.production?
+                      config.colorize_logging = false
+                      ManageIQ::Loggers::Container.new
+                    else
+                      ManageIQ::Loggers::Base.new(Rails.root.join("log", "#{Rails.env}.log"))
+                    end
   end
 end
