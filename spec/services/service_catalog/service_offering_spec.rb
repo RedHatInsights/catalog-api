@@ -47,9 +47,9 @@ describe ServiceCatalog::ServiceOffering do
     expect(service_params).to be_a Hash
     expect(service_params.count).to eql 4
     expect(service_params).to include(
-      'name'                 => name,
-      'description'          => description,
-      'service_offering_ref' => service_offering_ref,
+      'name'                        => name,
+      'description'                 => description,
+      'service_offering_ref'        => service_offering_ref,
       'service_offering_source_ref' => service_offering_source_ref
     )
   end
