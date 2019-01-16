@@ -21,6 +21,7 @@ gem 'acts_as_tenant'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.1'
 gem 'pg', '~> 1.0', :require => false
+gem 'prometheus-client', '~> 0.8.0'
 gem 'puma', '~> 3.0'
 gem 'rack-cors', '>= 0.4.1'
 gem 'rest-client', '>= 1.8.0'
