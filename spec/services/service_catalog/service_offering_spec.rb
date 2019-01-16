@@ -4,11 +4,13 @@ describe ServiceCatalog::ServiceOffering do
   let(:api_instance) { double }
   let(:service_offering) { described_class.new }
   let(:service_offering_ref) { "1" }
+  let(:service_offering_source_ref) { "45" }
   let(:name) { 'test name' }
   let(:description) { 'test description' }
   let(:ivars) do
     [{:@name => name}, {:@description => description},
-     {:@service_offering_ref => service_offering_ref}]
+     {:@service_offering_ref => service_offering_ref},
+     {:@service_offering_source_ref => service_offering_source_ref}]
   end
   let(:topology_service_offering) do
     TopologicalInventoryApiClient::ServiceOffering.new('name'        => name,
@@ -16,7 +18,7 @@ describe ServiceCatalog::ServiceOffering do
                                                        'description' => description,
                                                        'source_ref'  => '123',
                                                        'extra'       => {},
-                                                       'source_id'   => '45')
+                                                       'source_id'   => service_offering_source_ref)
   end
 
   let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
@@ -43,11 +45,12 @@ describe ServiceCatalog::ServiceOffering do
     service_params = service_offering.to_normalized_params
 
     expect(service_params).to be_a Hash
-    expect(service_params.count).to eql 3
+    expect(service_params.count).to eql 4
     expect(service_params).to include(
       'name'                 => name,
       'description'          => description,
-      'service_offering_ref' => service_offering_ref
+      'service_offering_ref' => service_offering_ref,
+      'service_offering_source_ref' => service_offering_source_ref
     )
   end
 end
