@@ -4,6 +4,7 @@ module ServiceCatalog
       @name = nil
       @description = nil
       @service_offering_ref = nil
+      @service_offering_source_ref = nil
     end
 
     def self.find(id)
@@ -14,6 +15,7 @@ module ServiceCatalog
       @service_offering_ref = id
       TopologicalInventory.call do |api_instance|
         obj = api_instance.show_service_offering(id)
+        @service_offering_source_ref = obj.source_id
         apply_instance_vars(obj)
       end
     end

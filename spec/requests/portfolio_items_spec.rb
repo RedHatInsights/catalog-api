@@ -2,8 +2,12 @@ describe "PortfolioItemRequests", :type => :request do
   include ServiceSpecHelper
 
   let(:service_offering_ref) { "998" }
+  let(:service_offering_source_ref) { "568" }
   let(:order)                { create(:order) }
-  let(:portfolio_item)       { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
+  let(:portfolio_item)       do
+    create(:portfolio_item, :service_offering_ref        => service_offering_ref,
+                            :service_offering_source_ref => service_offering_source_ref)
+  end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:svc_object)           { instance_double("ServiceCatalog::ServicePlans") }
   let(:plans)                { [{}, {}] }
