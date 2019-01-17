@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   add_swagger_route 'POST', '/portfolios/{portfolio_id}/portfolio_items', :controller_name => 'admins', :action_name => 'add_portfolio_item_to_portfolio'
   add_swagger_route 'POST', '/orders/{order_id}/items', :controller_name => 'admins', :action_name => 'add_to_order'
   add_swagger_route 'GET', '/portfolio_items/{portfolio_item_id}/service_plans', :controller_name => 'admins', :action_name => 'fetch_plans_with_portfolio_item_id'
+  add_swagger_route 'GET', '/portfolio_items/{portfolio_item_id}/provider_control_parameters', :controller_name => 'admins', :action_name => 'fetch_provider_control_parameters'
   add_swagger_route 'GET', '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}', :controller_name => 'admins', :action_name => 'fetch_portfolio_item_from_portfolio'
   add_swagger_route 'GET', '/portfolios/{portfolio_id}/portfolio_items', :controller_name => 'admins', :action_name => 'fetch_portfolio_items_with_portfolio'
   add_swagger_route 'GET', '/portfolios/{portfolio_id}', :controller_name => 'admins', :action_name => 'fetch_portfolio_with_id'
