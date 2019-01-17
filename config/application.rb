@@ -16,6 +16,9 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require 'prometheus/middleware/collector'
+require 'prometheus/middleware/exporter'
+
 module ServiceCatalog
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
@@ -35,5 +38,8 @@ module ServiceCatalog
                     else
                       ManageIQ::Loggers::Base.new(Rails.root.join("log", "#{Rails.env}.log"))
                     end
+
+    config.middleware.use(Prometheus::Middleware::Collector)
+    config.middleware.use(Prometheus::Middleware::Exporter)
   end
 end
