@@ -16,9 +16,6 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-require 'prometheus/middleware/collector'
-require 'prometheus/middleware/exporter'
-
 module ServiceCatalog
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
@@ -31,15 +28,7 @@ module ServiceCatalog
     config.api_only = true
     config.autoload_paths << Rails.root.join('lib').to_s
 
-    require 'manageiq/loggers'
-    config.logger = if Rails.env.production?
-                      config.colorize_logging = false
-                      ManageIQ::Loggers::Container.new
-                    else
-                      ManageIQ::Loggers::Base.new(Rails.root.join("log", "#{Rails.env}.log"))
-                    end
-
-    config.middleware.use(Prometheus::Middleware::Collector)
-    config.middleware.use(Prometheus::Middleware::Exporter)
+    ManageIQ::API::Common::Logging.activate(config)
+    ManageIQ::API::Common::Metrics.activate(config, "service_portal_api")
   end
 end
