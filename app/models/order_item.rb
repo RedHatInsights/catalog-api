@@ -25,9 +25,6 @@ class OrderItem < ApplicationRecord
   has_many :progress_messages
   after_initialize :set_defaults, unless: :persisted?
 
-  serialize :service_parameters, JSON
-  serialize :provider_control_parameters, JSON
-
   NON_DATE_ATTRIBUTES = %w(order_id service_plan_ref portfolio_item_id state service_parameters provider_control_parameters external_ref)
   DATE_ATTRIBUTES     = %w(created_at ordered_at completed_at updated_at)
 
