@@ -7,7 +7,7 @@ module ServiceCatalog
     end
 
     def process
-      source_ref = service_offering_source_ref
+      source_ref = PortfolioItem.find(@portfolio_item_id).service_offering_source_ref
       TopologicalInventory.call do |api_instance|
         # TODO: Temporay till we get this call in the topology service
         projects = api_instance.list_container_projects.select { |p| p.source_id == source_ref }
@@ -29,10 +29,6 @@ module ServiceCatalog
     def read_control_parameters
       # TODO: This belongs in the topology service, temporarily hosting it in service portal
       File.read(Rails.root.join("schemas", "json", "openshift_control_parameters.json"))
-    end
-
-    def service_offering_source_ref
-      PortfolioItem.find(@portfolio_item_id).service_offering_source_ref
     end
   end
 end
