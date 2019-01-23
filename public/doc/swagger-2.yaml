@@ -311,16 +311,18 @@ paths:
       parameters:
         - $ref: '#/parameters/PortfolioItemID'
       responses:
-        204:
+        '204':
           description: Portfolio Item deleted
-        404:
+        '404':
           description: Portfolio Item not Found
   '/portfolio_items/{portfolio_item_id}/service_plans':
     get:
       tags:
         - users
         - admins
-      summary: Fetches all the service plans for a specific portfolio item, this requires a connection to the topology service.
+      summary: >-
+        Fetches all the service plans for a specific portfolio item, this
+        requires a connection to the topology service.
       operationId: fetchPlansWithPortfolioItemId
       description: |
         Fetch all service plans for a portfolio item
@@ -335,6 +337,33 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ServicePlan'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: Portfolio Item Not found
+        '500':
+          description: Could not access the Topology Service
+  '/portfolio_items/{portfolio_item_id}/provider_control_parameters':
+    get:
+      tags:
+        - users
+        - admins
+      summary: >-
+        Fetches the provider control parameters for this portfolio item, it needs to be provided when provisioning the portfolio item.
+      operationId: fetchProviderControlParameters
+      description: |
+        Fetch provider control parameters for a portfolio item
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioItemID'
+      responses:
+        '200':
+          description: Return Provider control parameters JSON object
+          schema:
+            $ref: '#/definitions/ProviderControlParameters'
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
@@ -382,7 +411,7 @@ paths:
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
-          $ref: '#/responses/Forbidden'    
+          $ref: '#/responses/Forbidden'
   '/orders/{order_id}/items':
     get:
       tags:
@@ -406,7 +435,7 @@ paths:
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
-          $ref: '#/responses/Forbidden'      
+          $ref: '#/responses/Forbidden'
     post:
       tags:
         - users
@@ -432,9 +461,9 @@ paths:
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
-          $ref: '#/responses/Forbidden'  
+          $ref: '#/responses/Forbidden'
         '404':
-          description: order not found.
+          description: Order not found.
   '/orders/{order_id}/items/{order_item_id}':
     get:
       tags:
@@ -457,9 +486,9 @@ paths:
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
-          $ref: '#/responses/Forbidden'  
+          $ref: '#/responses/Forbidden'
         '404':
-          description: Either the order or the order item could not be found.    
+          description: Either the order or the order item could not be found.
   '/orders/{order_id}':
     post:
       tags:
@@ -480,9 +509,9 @@ paths:
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
-          $ref: '#/responses/Forbidden'  
+          $ref: '#/responses/Forbidden'
         '404':
-          description: order not found    
+          description: Order not found
   '/order_items/{order_item_id}/progress_messages':
     get:
       tags:
@@ -507,9 +536,9 @@ paths:
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
-          $ref: '#/responses/Forbidden'  
+          $ref: '#/responses/Forbidden'
         '404':
-          description: order item not found     
+          description: Order item not found
 parameters:
   PortfolioID:
     name: portfolio_id
@@ -759,6 +788,10 @@ definitions:
         title: JSON Schema
         description: JSON Schema for the object
         readOnly: true
+  ProviderControlParameters:
+    type: object
+    title: Provider Control Parameters
+    description: JSON Schema for Provider control parameters
 responses:
   InvalidEntity:
     description: >-
