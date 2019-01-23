@@ -463,7 +463,7 @@ paths:
         '403':
           $ref: '#/responses/Forbidden'
         '404':
-          description: order not found.
+          description: Order not found.
   '/orders/{order_id}/items/{order_item_id}':
     get:
       tags:
@@ -538,7 +538,7 @@ paths:
         '403':
           $ref: '#/responses/Forbidden'
         '404':
-          description: order item not found
+          description: Order item not found
 parameters:
   PortfolioID:
     name: portfolio_id
