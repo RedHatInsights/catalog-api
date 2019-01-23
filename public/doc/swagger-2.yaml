@@ -511,7 +511,7 @@ paths:
         '403':
           $ref: '#/responses/Forbidden'
         '404':
-          description: order not found
+          description: Order not found
   '/order_items/{order_item_id}/progress_messages':
     get:
       tags:
