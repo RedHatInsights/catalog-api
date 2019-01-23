@@ -14,7 +14,7 @@ class PortfolioItem < ApplicationRecord
   acts_as_tenant(:tenant)
 
   attr_accessor :portfolio_id
-  belongs_to :portfolios
+  belongs_to :portfolio
 
   validates :service_offering_ref, :presence => true
 
