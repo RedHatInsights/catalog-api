@@ -14,7 +14,12 @@ class TopologicalInventory
 
   private_class_method def self.raw_api
     TopologicalInventoryApiClient.configure do |config|
-      config.host   = ENV['TOPOLOGICAL_INVENTORY_URL'] || 'localhost'
+      config.host = ENV['TOPOLOGICAL_INVENTORY_URL'] || 'localhost'
+
+      # Set up auth if we need it, mainly for debugging on local workstations
+      config.username = ENV['TOPOLOGICAL_INVENTORY_USERNAME'] || nil
+      config.password = ENV['TOPOLOGICAL_INVENTORY_PASSWORD'] || nil
+
       config.scheme = URI.parse(ENV['TOPOLOGICAL_INVENTORY_URL']).try(:scheme) || 'http'
     end
     TopologicalInventoryApiClient::DefaultApi.new

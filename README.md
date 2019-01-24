@@ -30,6 +30,12 @@ export MANAGEIQ_HOST=localhost
 export MANAGEIQ_PORT=3000
 ```
 
+If the topology inventory requires authentication, basic authentication is supported via these variables:
+```
+export TOPOLOGICAL_INVENTORY_USERNAME=myuser
+export TOPOLOGICAL_INVENTORY_PASSWORD=password
+```
+
 This sample was generated with the [swagger-codegen](https://github.com/swagger-api/swagger-codegen) project.
 
 ```
