@@ -15,9 +15,12 @@ class TopologicalInventory
   private_class_method def self.raw_api
     TopologicalInventoryApiClient.configure do |config|
       config.host = ENV['TOPOLOGICAL_INVENTORY_URL'] || 'localhost'
-      config.username = ENV['TOPOLOGICAL_INVENTORY_USERNAME'] || nil
-      config.password = ENV['TOPOLOGICAL_INVENTORY_PASSWORD'] || nil
       config.scheme = URI.parse(ENV['TOPOLOGICAL_INVENTORY_URL']).try(:scheme) || 'http'
+      # Set up user/pass for basic auth if we're in dev and they exist.
+      if Rails.env.development?
+        config.username = ENV['DEV_TOPOLOGICAL_INVENTORY_USERNAME'] || nil
+        config.password = ENV['DEV_TOPOLOGICAL_INVENTORY_PASSWORD'] || nil
+      end
     end
     TopologicalInventoryApiClient::DefaultApi.new
   end
