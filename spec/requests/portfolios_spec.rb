@@ -28,6 +28,30 @@ describe 'Portfolios API' do
       end
     end
 
+    describe "GET #{tag} tagged /portfolios?portfolio_id=''" do
+      before do
+        get "#{api}/portfolios?portfolio_id=''", :headers => send("#{tag}_headers")
+      end
+
+      context 'empty parameter' do
+        it 'returns status code 422' do
+          expect(response).to have_http_status(422)
+        end
+      end
+    end
+
+    describe "GET #{tag} tagged /portfolios?identity%5Bportfolio_id%5D=" do
+      before do
+        get "#{api}/portfolios?identity%5Bportfolio_id%5D=", :headers => send("#{tag}_headers")
+      end
+
+      context 'empty nested parameter' do
+        it 'returns status code 422' do
+          expect(response).to have_http_status(422)
+        end
+      end
+    end
+
     describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items" do
       before do
         get "#{api}/portfolios/#{portfolio_id}/portfolio_items", :headers => send("#{tag}_headers")

@@ -1,11 +1,11 @@
 module Request
-  def validate_params(_params = nil)
-    req_params = _params || request.params
-    req_params.each do |_, v|
-      if v.instance_of?(ActionController::Parameters)
-        clean_params(v)
+  def validate_params(params = nil)
+    req_params = params || request.params
+    req_params.each_value do |val|
+      if val.kind_of?(ActiveSupport::HashWithIndifferentAccess)
+        validate_params(val)
       end
-      if v.empty? || v == '' || v == "''"
+      if val.empty? || val == '' || val == "''"
         raise ActiveRecord::RecordInvalid
       end
     end
