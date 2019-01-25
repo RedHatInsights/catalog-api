@@ -242,6 +242,8 @@ paths:
           $ref: '#/responses/Forbidden'
         '404':
           description: Either the Portfolio ID or the Portfolio Item ID was not found
+        '422':
+          $ref: '#/responses/InvalidEntity'
   /portfolio_items:
     get:
       tags:

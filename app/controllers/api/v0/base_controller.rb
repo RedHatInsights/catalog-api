@@ -26,13 +26,13 @@ module Api
       end
 
       def fetch_portfolio_with_id
-        render json: Portfolio.find(params.require(:portfolio_id))
+        json_response(Portfolio.find(params.require(:portfolio_id)))
       end
 
       def fetch_portfolio_item_from_portfolio
         item = Portfolio.find(params.require(:portfolio_id))
           .portfolio_items.find(params.require(:portfolio_item_id))
-        render json: item
+        json_response(item)
       end
 
       def fetch_portfolio_items_with_portfolio
