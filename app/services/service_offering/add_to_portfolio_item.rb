@@ -1,11 +1,12 @@
 module ServiceOffering
   class AddToPortfolioItem
-    IGNORE_FIELDS = %w(id created_at updated_at portfolio_id)
+    IGNORE_FIELDS = %w(id created_at updated_at portfolio_id).freeze
 
     attr_reader :params
+    attr_reader :item
 
     def initialize(params)
-      @params = params
+      @params = HashWithIndifferentAccess.new(params)
     end
 
     def process
@@ -15,12 +16,10 @@ module ServiceOffering
       end
 
       # Get the fields that we're going to pull over
-      fields = determine_valid_fields
-      params = create_param_map(fields)
+      create_param_map(determine_valid_fields)
 
-      populate_missing_fields(params)
-
-      PortfolioItem.create!(params)
+      @item = PortfolioItem.create!(populate_missing_fields)
+      self
     end
 
     private
@@ -35,22 +34,19 @@ module ServiceOffering
 
     # Move fields from the ServiceOffering Ojbect to our params hash, from which we build our PortfolioItem
     def create_param_map(fields)
-      params = HashWithIndifferentAccess.new
       # logical AND the column names with the fields we know we have, so we only pull in what is available
       (PortfolioItem.column_names & fields).each do |column|
-        params[column] = @service_offering.instance_variable_get("@" + column)
+        @params[column] = @service_offering.instance_variable_get("@" + column)
       end
-      params
     end
 
     # If certain fields are empty populate them from the other fields that we do have.
-    def populate_missing_fields(params)
-      params[:service_offering_ref] = @params[:service_offering_ref]
-      params[:service_offering_source_ref] = @service_offering.instance_variable_get("@source_ref")
+    def populate_missing_fields
+      @params[:service_offering_source_ref] = @service_offering.instance_variable_get("@source_ref")
       # Fill up empty fields if they're empty with fields we already have, this is really easy with the ||= and subsequent || operators
-      params[:long_description] ||= params[:description] || params[:display_name]
-      params[:display_name] ||= params[:name]
-      params
+      @params[:long_description] ||= @params[:description] || @params[:display_name]
+      @params[:display_name] ||= @params[:name]
+      @params
     end
   end
 end

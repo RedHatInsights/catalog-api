@@ -27,7 +27,7 @@ module Api
       end
 
       def add_portfolio_item
-        render :json => ServiceOffering::AddToPortfolioItem.new(portfolio_item_params).process
+        render :json => ServiceOffering::AddToPortfolioItem.new(portfolio_item_params).process.item
       end
 
       def add_to_order
@@ -40,6 +40,7 @@ module Api
       end
 
       private
+
       def portfolio_item_params
         params.permit(:service_offering_ref)
       end
