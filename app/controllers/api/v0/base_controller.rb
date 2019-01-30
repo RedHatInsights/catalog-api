@@ -35,8 +35,8 @@ module Api
         render json: item
       end
 
-      def fetch_portfolio_items_with_portfolio
-        render json: Portfolio.find(params.require(:portfolio_id)).portfolio_items
+      def fetch_portfolio_items_with_id
+        render :json => PortfolioItem.find(params.require(:portfolio_item_id))
       end
 
       def list_progress_messages
