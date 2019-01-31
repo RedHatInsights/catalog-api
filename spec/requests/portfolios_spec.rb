@@ -52,6 +52,24 @@ describe 'Portfolios API' do
       end
     end
 
+    describe "POST admin tagged /portfolios/:portfolio_id/portfolio_items" do
+      let(:portfolio) { create(:portfolio) }
+      let(:portfolio_item) { create(:portfolio_item) }
+      let(:params) { {:portfolio_item_id => portfolio_item.id} }
+      before do
+        post "#{api}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => send("#{tag}_headers")
+      end
+
+      it 'returns a 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'returns the portfolio_item which now points back to the portfolio' do
+        expect(json.size).to eq 1
+        expect(json.first['portfolio_id']).to eq portfolio.id
+      end
+    end
+
     describe "GET #{tag} tagged /portfolios" do
       before do
         get "#{api}/portfolios", :headers => send("#{tag}_headers")
