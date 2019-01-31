@@ -9,7 +9,7 @@ FactoryBot.define do
 
     trait :with_portfolio do
       after(:create) do |portfolio, _evaluator|
-        create_list(:portfolio_item, portfolios: [portfolio])
+        create_list(:portfolio_item, :portfolios => [portfolio])
       end
     end
 

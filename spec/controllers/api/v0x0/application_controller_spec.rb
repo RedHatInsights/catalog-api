@@ -1,5 +1,4 @@
 RSpec.describe ApplicationController, :type => :request do
-
   let(:tenant)          { Tenant.create!(:external_tenant => external_tenant) }
   let(:portfolio)       { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id) }
   let(:portfolio_id)    { portfolio.id }
@@ -8,7 +7,7 @@ RSpec.describe ApplicationController, :type => :request do
 
   context "with tenancy enforcement" do
     before { stub_const("ENV", "ENFORCE_TENANCY" => "true") }
-    after  { controller.send(:set_current_tenant,  nil) }
+    after  { controller.send(:set_current_tenant, nil) }
 
     it "get /portfolios with tenant" do
       headers = { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity }
@@ -44,7 +43,7 @@ RSpec.describe ApplicationController, :type => :request do
   end
 
   context "without tenancy enforcement" do
-    after { controller.send(:set_current_tenant,  nil) }
+    after { controller.send(:set_current_tenant, nil) }
 
     it "get /portfolios" do
       headers = { "CONTENT_TYPE" => "application/json" }

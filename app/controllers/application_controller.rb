@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
-
   private
+
   set_current_tenant_through_filter
   before_action :set_the_current_tenant
 
