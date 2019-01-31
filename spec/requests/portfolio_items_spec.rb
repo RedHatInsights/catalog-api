@@ -1,5 +1,6 @@
 describe "PortfolioItemRequests", :type => :request do
   include ServiceSpecHelper
+  include RequestSpecHelper
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
@@ -10,6 +11,24 @@ describe "PortfolioItemRequests", :type => :request do
   end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { ServiceCatalog::TopologyError.new("kaboom") }
+
+  %w(admin user).each do |tag|
+    describe "GET #{tag} /portfolio_items/:portfolio_item_id" do
+      before do
+        get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers
+      end
+
+      context 'the portfolio_item exists' do
+        it 'returns status code 200' do
+          expect(response).to have_http_status(200)
+        end
+
+        it 'returns the portfolio_item we asked for' do
+          expect(json["id"]).to eq portfolio_item.id
+        end
+      end
+    end
+  end
 
   describe 'DELETE admin tagged /portfolio_items/:portfolio_item_id' do
     # TODO: https://github.com/ManageIQ/service_portal-api/issues/85

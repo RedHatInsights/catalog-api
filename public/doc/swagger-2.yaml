@@ -280,8 +280,7 @@ paths:
       summary: Fetch a specific Portfolio Item
       operationId: fetchPortfolioItemWithId
       description: >
-        By passing in the portfolio id and portfolio_item_id you can fetch the
-        portfolio items in the portfolio.
+        By passing in the portfolio_item_id you can fetch a specific portfolio item
       produces:
         - application/json
       parameters:
