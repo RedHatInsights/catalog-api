@@ -41,9 +41,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items/:portfolio_item_id" do
+    describe "GET #{tag} tagged /portfolios_items/:portfolio_item_id" do
       before do
-        get "#{api}/portfolios/#{portfolio_id}/portfolio_items/#{portfolio_item_id}", :headers => send("#{tag}_headers")
+        get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => send("#{tag}_headers")
       end
 
       it 'returns an associated portfolio_item for a specific portfolio' do
