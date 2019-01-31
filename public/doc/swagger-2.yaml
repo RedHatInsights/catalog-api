@@ -216,32 +216,6 @@ paths:
           $ref: '#/responses/Forbidden'
         '404':
           description: The Portfolio Object or the Portfolio Item Object was not found.
-  '/portfolios/{portfolio_id}/portfolio_items/{portfolio_item_id}':
-    get:
-      tags:
-        - users
-        - admins
-      summary: Fetch a single portfolio item from a specific portfolio
-      operationId: fetchPortfolioItemFromPortfolio
-      description: >
-        By passing in the portfolio id and portfolio_item_id you can fetch the
-        portfolio items in the portfolio.
-      produces:
-        - application/json
-      parameters:
-        - $ref: '#/parameters/PortfolioID'
-        - $ref: '#/parameters/PortfolioItemID'
-      responses:
-        '200':
-          description: Return a Portfolio Item object
-          schema:
-            $ref: '#/definitions/PortfolioItem'
-        '401':
-          $ref: '#/responses/Unauthorized'
-        '403':
-          $ref: '#/responses/Forbidden'
-        '404':
-          description: Either the Portfolio ID or the Portfolio Item ID was not found
   /portfolio_items:
     get:
       tags:
@@ -299,6 +273,30 @@ paths:
         '422':
           $ref: '#/responses/InvalidEntity'
   '/portfolio_items/{portfolio_item_id}':
+    get:
+      tags:
+        - users
+        - admins
+      summary: Fetch a specific Portfolio Item
+      operationId: fetchPortfolioItemWithId
+      description: >
+        By passing in the portfolio id and portfolio_item_id you can fetch the
+        portfolio items in the portfolio.
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/PortfolioItemID'
+      responses:
+        '200':
+          description: Return a Portfolio Item object
+          schema:
+            $ref: '#/definitions/PortfolioItem'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          description: The Portfolio Item ID was not found
     delete:
       tags:
         - admins
