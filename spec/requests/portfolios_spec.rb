@@ -41,6 +41,19 @@ describe 'Portfolios API' do
       end
     end
 
+    describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items v0.1" do
+      before do
+        get "/api/v0.1/portfolios/#{portfolio_id}/portfolio_items", :headers => send("#{tag}_headers")
+      end
+
+      it 'returns all associated portfolio_items' do
+        expect(json).not_to be_empty
+        expect(json['data'].count).to eq 1
+        portfolio_item_ids = portfolio_items.map(&:id).sort
+        expect(json['data'].map { |x| x['id'] }.sort).to eq portfolio_item_ids
+      end
+    end
+
     describe "GET #{tag} tagged /portfolios_items/:portfolio_item_id" do
       before do
         get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => send("#{tag}_headers")
@@ -82,6 +95,22 @@ describe 'Portfolios API' do
 
         it 'returns all portfolio requests' do
           expect(json.size).to eq(1)
+        end
+      end
+    end
+
+    describe "GET #{tag} tagged /portfolios v0.1" do
+      before do
+        get "/api/v0.1/portfolios", :headers => send("#{tag}_headers")
+      end
+
+      context 'when portfolios exist' do
+        it 'returns status code 200' do
+          expect(response).to have_http_status(200)
+        end
+
+        it 'returns all portfolio requests' do
+          expect(json['data'].size).to eq(1)
         end
       end
     end

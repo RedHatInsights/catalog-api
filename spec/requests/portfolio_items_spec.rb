@@ -45,6 +45,26 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
+  describe 'GET portfolio items' do
+    context "v0.0" do
+      it "success" do
+        portfolio_item
+        get "/api/v0.0/portfolio_items"
+        expect(response).to have_http_status(200)
+        expect(JSON.parse(response.body).count).to eq(1)
+      end
+    end
+
+    context "v0.1" do
+      it "success" do
+        portfolio_item
+        get "/api/v0.1/portfolio_items"
+        expect(response).to have_http_status(200)
+        expect(JSON.parse(response.body)['data'].count).to eq(1)
+      end
+    end
+  end
+
   context "service plans" do
     let(:svc_object)           { instance_double("ServiceCatalog::ServicePlans") }
     let(:plans)                { [{}, {}] }

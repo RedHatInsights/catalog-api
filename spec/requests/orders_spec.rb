@@ -1,7 +1,7 @@
 describe "OrderRequests", :type => :request do
   include ServiceSpecHelper
 
-  let(:order) { create(:order) }
+  let!(:order) { create(:order) }
 
   context "submit order" do
     let(:svc_object) { instance_double("ServiceCatalog::SubmitOrder") }
@@ -43,6 +43,26 @@ describe "OrderRequests", :type => :request do
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
+    end
+  end
+
+  context "list orders" do
+    it "lists orders v0.0" do
+      get "/api/v0.0/orders"
+
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body).first['id']).to eq(order.id.to_s)
+    end
+
+    it "lists orders v0.1" do
+      get "/api/v0.1/orders"
+
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+      result = JSON.parse(response.body)
+      expect(result.keys).to match_array(%w(links meta data))
+      expect(result['data'].first['id']).to eq(order.id.to_s)
     end
   end
 end

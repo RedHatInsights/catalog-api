@@ -19,7 +19,7 @@ class Order < ApplicationRecord
   NON_DATE_ATTRIBUTES = %w(state)
   DATE_ATTRIBUTES     = %w(created_at ordered_at completed_at)
 
-  def to_hash
+  def as_json(options = {})
     attributes.slice(*NON_DATE_ATTRIBUTES).tap do |hash|
       DATE_ATTRIBUTES.each do |attr|
         hash[attr] = self.send(attr.to_sym).iso8601 if self.send(attr.to_sym)
