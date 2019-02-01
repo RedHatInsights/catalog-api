@@ -1,9 +1,9 @@
 RSpec.describe ApplicationController, :type => :request do
-  let(:tenant)          { Tenant.create!(:external_tenant => external_tenant) }
-  let(:portfolio)       { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id) }
-  let(:portfolio_id)    { portfolio.id }
-  let(:external_tenant) { rand(1000).to_s }
-  let(:identity)        { Base64.encode64({'identity' => { 'account_number' => external_tenant}}.to_json) }
+  let(:tenant)            { Tenant.create(:external_tenant => external_tenant) }
+  let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id) }
+  let(:portfolio_id)      { portfolio.id }
+  let!(:external_tenant)  { (Time.zone.now.to_i * rand(1000)).to_s }
+  let(:identity)          { Base64.encode64({'identity' => { 'account_number' => external_tenant}}.to_json) }
 
   context "with tenancy enforcement" do
     before { stub_const("ENV", "ENFORCE_TENANCY" => "true") }

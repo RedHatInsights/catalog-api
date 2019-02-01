@@ -7,7 +7,8 @@ class ApplicationController < ActionController::API
   def set_the_current_tenant
     return unless ENV["ENFORCE_TENANCY"]
 
-    tenant = Tenant.find_by(:external_tenant => user_identity)
+    account_number = identity_account_number
+    tenant = Tenant.find_or_create_by(:external_tenant => account_number) if account_number.present?
     if tenant
       set_current_tenant(tenant)
     else
@@ -15,20 +16,7 @@ class ApplicationController < ActionController::API
     end
   end
 
-  def user_account_number
-    Base64.decode64(request.headers.fetch_path("x-rh-identity", "identity", "account_number"))
-  end
-
-  def user_identity
-    # x-rh-identity = {
-    #     "identity" => {
-    #         "account_number" => 123456,
-    #         "type" => "String"
-    #     },
-    #     "user" => {},
-    #     "system" => {},
-    #     "internal" => {},
-    # }
+  def identity_account_number
     ident_key = "x-rh-identity"
     ManageIQ::API::Common::Headers.current = request.headers
     return unless ManageIQ::API::Common::Headers.current.key?(ident_key)
