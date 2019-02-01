@@ -28,7 +28,7 @@ class OrderItem < ApplicationRecord
   NON_DATE_ATTRIBUTES = %w(order_id service_plan_ref portfolio_item_id state service_parameters provider_control_parameters external_ref)
   DATE_ATTRIBUTES     = %w(created_at ordered_at completed_at updated_at)
 
-  def as_json(options = {})
+  def as_json(_options = {})
     attributes.slice(*NON_DATE_ATTRIBUTES).tap do |hash|
       DATE_ATTRIBUTES.each do |attr|
         hash[attr] = self.send(attr.to_sym).iso8601 if self.send(attr.to_sym)
