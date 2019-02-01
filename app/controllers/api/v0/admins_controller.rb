@@ -27,11 +27,13 @@ module Api
       end
 
       def add_portfolio_item
-        render :json => ServiceOffering::AddToPortfolioItem.new(portfolio_item_params).process.item
+        so = ServiceOffering::AddToPortfolioItem.new(portfolio_item_params)
+        render :json => so.process.item
       end
 
       def add_to_order
-        render :json => AddToOrder.new(params).process.to_hash
+        so = ServiceCatalog::AddToOrder.new(params)
+        render :json => so.process.order.to_hash
       end
 
       def destroy_portfolio_item
