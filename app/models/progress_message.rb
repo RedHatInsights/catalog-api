@@ -17,7 +17,7 @@ class ProgressMessage < ApplicationRecord
   NON_DATE_ATTRIBUTES = %w(level message)
   DATE_ATTRIBUTES     = %w(received_at)
 
-  def to_hash
+  def as_json(_options = {})
     attributes.slice(*NON_DATE_ATTRIBUTES).tap do |hash|
       DATE_ATTRIBUTES.each do |attr|
         hash[attr] = self.send(attr.to_sym).iso8601 if self.send(attr.to_sym)

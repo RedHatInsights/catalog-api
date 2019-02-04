@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: This is a API to fetch and order catalog items from different cloud sources
-  version: 1.0.0
+  version: 0.1.0
   title: Service Portal API
   contact:
     email: support@redhat.com
@@ -36,7 +36,10 @@ paths:
       summary: API to list portfolios
       operationId: listPortfolios
       description: |
-        Returns an array of portfolio objects
+        Returns a PortfoliosCollection object with an embedded array of portfolio objects
+      parameters:
+        - $ref: '#/parameters/QueryLimit'
+        - $ref: '#/parameters/QueryOffset'
       produces:
         - application/json
       consumes:
@@ -44,13 +47,11 @@ paths:
       responses:
         '200':
           description: >-
-            On success this API returns an array of Portfolio objects. If the
+            On success this API returns a PortfoliosCollection object embedded with links and an array of Portfolio objects. If the
             array is empty you dont have any portfolios defined in the system or
             they are inaccessible to you.
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Portfolio'
+            $ref: '#/definitions/PortfoliosCollection'
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
@@ -174,15 +175,15 @@ paths:
         - application/json
       parameters:
         - $ref: '#/parameters/PortfolioID'
+        - $ref: '#/parameters/QueryLimit'
+        - $ref: '#/parameters/QueryOffset'  
       responses:
         '200':
           description: >-
-            Returns an array of Portfolio Items, if the portfolio is not
+            Returns a PortfolioItemsCollection object with links and an embedded array of Portfolio Items, if the portfolio is not
             connected to any portfolio items you would get an empty array.
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/PortfolioItem'
+            $ref: '#/definitions/PortfolioItemsCollection'
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
@@ -224,18 +225,19 @@ paths:
       summary: API to list all portfolio items
       operationId: listPortfolioItems
       description: |
-        Returns an array of portfolio item objects
+        Returns a PortfolioItemsCollection object with an embedded array of portfolio item objects
+      parameters:
+        - $ref: '#/parameters/QueryLimit'
+        - $ref: '#/parameters/QueryOffset'
       produces:
         - application/json
       consumes:
         - application/json
       responses:
         '200':
-          description: Portfolio Item Info
+          description: Portfolio Items Collection object
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/PortfolioItem'
+            $ref: '#/definitions/PortfolioItemsCollection'
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
@@ -378,15 +380,16 @@ paths:
       operationId: listOrders
       description: |
         Get a list of orders associated with the logged in user.
+      parameters:
+        - $ref: '#/parameters/QueryLimit'
+        - $ref: '#/parameters/QueryOffset'
       produces:
         - application/json
       responses:
         '200':
-          description: Returns an array of Order objects
+          description: Returns an OrdersCollection object with an embedded array of Order objects
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Order'
+            $ref: '#/definitions/OrdersCollection'
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
@@ -422,13 +425,13 @@ paths:
         - application/json
       parameters:
         - $ref: '#/parameters/OrderID'
+        - $ref: '#/parameters/QueryLimit'
+        - $ref: '#/parameters/QueryOffset'
       responses:
         '200':
-          description: Returns an array of OrderIem objects
+          description: Returns a OrderItemsCollection object with an embedded array of OrderIem objects
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/OrderItem'
+            $ref: '#/definitions/OrderItemsCollection'
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
@@ -523,13 +526,13 @@ paths:
         - application/json
       parameters:
         - $ref: '#/parameters/OrderItemID'
+        - $ref: '#/parameters/QueryLimit'
+        - $ref: '#/parameters/QueryOffset'
       responses:
         '200':
-          description: Returns an array of ProgressMessage objects
+          description: Returns a ProgressMessagesCollection object with an embedded array of ProgressMessage objects
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/ProgressMessage'
+            $ref: '#/definitions/ProgressMessagesCollection'
         '401':
           $ref: '#/responses/Unauthorized'
         '403':
@@ -561,6 +564,23 @@ parameters:
     description: The Order Item ID
     required: true
     type: string
+  QueryLimit:
+    in: query
+    name: limit
+    type: integer
+    required: false
+    default: 100
+    minimum: 1
+    maximum: 1000 
+    description: The numbers of items to return per page.
+  QueryOffset:
+    in: query
+    name: offset
+    type: integer
+    required: false
+    default: 0
+    minimum: 0
+    description: The number of items to skip before starting to collect the result set.
 definitions:
   Portfolio:
     type: object
@@ -785,6 +805,87 @@ definitions:
         title: JSON Schema
         description: JSON Schema for the object
         readOnly: true
+  PortfoliosCollection:
+    type: object
+    properties:
+      meta:
+        $ref: '#/definitions/CollectionMetadata'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/Portfolio"
+  PortfolioItemsCollection:
+    type: object
+    properties:
+      meta:
+        $ref: '#/definitions/CollectionMetadata'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/PortfolioItem'
+  OrdersCollection:
+    type: object
+    properties:
+      meta:
+        $ref: '#/definitions/CollectionMetadata'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Order'
+  OrderItemsCollection:
+    type: object
+    properties:
+      meta:
+        $ref: '#/definitions/CollectionMetadata'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/OrderItem'
+  ProgressMessagesCollection:
+    type: object
+    properties:
+      meta:
+        $ref: '#/definitions/CollectionMetadata'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/ProgressMessage'
+  CollectionLinks:
+    type: object
+    properties:
+      first:
+        type: string
+        title: First Link
+        description: The link to fetch the first group of items in the result set
+      last:
+        type: string
+        title: Last Link
+        description: The link to fetch the last group of items in the result set
+      prev:
+        type: string
+        title: Previous Link
+        description: The link to fetch the previous group of items in the result set
+      next:
+        type: string
+        title: Next Link
+        description: The link to fetch the next group of items in the result set
+  CollectionMetadata:
+    type: object
+    properties:
+      count:
+        type: integer
+        title: Total number of items in the result set
+        description: This is the total number of items in the result set, of which only a subset is returned defined by the QueryLimit parameter
   ProviderControlParameters:
     type: object
     title: Provider Control Parameters

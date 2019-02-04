@@ -23,6 +23,9 @@ Rails.application.routes.draw do
       namespace :v0x0, :path => "v0.0" do
         match full_path, :to => "#{opts.fetch(:controller_name)}##{opts[:action_name]}", :via => http_method
       end
+      namespace :v0x1, :path => "v0.1" do
+        match full_path, :to => "#{opts.fetch(:controller_name)}##{opts[:action_name]}", :via => http_method
+      end
     end
   end
 

@@ -32,7 +32,7 @@ module Api
 
       def add_to_order
         so = ServiceCatalog::AddToOrder.new(params)
-        render :json => so.process.order.to_hash
+        render :json => so.process.order
       end
 
       def destroy_portfolio_item
