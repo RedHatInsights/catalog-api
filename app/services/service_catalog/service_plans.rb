@@ -9,7 +9,7 @@ module ServiceCatalog
       ref = PortfolioItem.find(@portfolio_item_id).service_offering_ref
       TopologicalInventory.call do |api_instance|
         result = api_instance.list_service_offering_service_plans(ref)
-        @items = filter_result(result)
+        @items = filter_result(result.data)
       end
       self
     rescue StandardError => e

@@ -16,7 +16,8 @@ describe ServiceCatalog::ServicePlans do
     Plan = Struct.new(:name, :id, :description, :create_json_schema)
     plan1 = Plan.new("Plan A", "1", "Plan A", {})
     plan2 = Plan.new("Plan B", "2", "Plan B", {})
-    expect(api_instance).to receive(:list_service_offering_service_plans).with(portfolio_item.service_offering_ref).and_return([plan1, plan2])
+    result = double('links' => {}, 'meta' => {}, 'data' => [plan1, plan2])
+    expect(api_instance).to receive(:list_service_offering_service_plans).with(portfolio_item.service_offering_ref).and_return(result)
 
     expect(service_plans.process.items.count).to eq(2)
   end
