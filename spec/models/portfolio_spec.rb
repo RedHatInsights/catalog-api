@@ -18,6 +18,45 @@ describe Portfolio do
     end
   end
 
+  context "when a tenant tries to create portfolios with the same name" do
+    let(:portfolio_copy) { create(:portfolio, :without_tenant) }
+
+    before do
+      ActsAsTenant.current_tenant = tenant
+    end
+
+    it "will fail validation" do
+      portfolio.update(:name => "samename")
+      portfolio_copy.update(:name => "samename")
+
+      expect(portfolio).to be_valid
+      expect(portfolio_copy).to_not be_valid
+      expect(portfolio_copy.errors.messages[:name]).to_not be_nil
+
+      expect{ portfolio_copy.save! }.to raise_exception(ActiveRecord::RecordInvalid)
+    end
+  end
+
+  context "when different tenants try to create portfolios with the same name" do
+    let(:portfolio_copy) { create(:portfolio, :without_tenant) }
+    let(:second_tenant)  { create(:tenant) }
+
+    before do
+      ActsAsTenant.current_tenant = tenant
+    end
+
+    it "will pass validation" do
+      portfolio.update(:name => "samename")
+      ActsAsTenant.current_tenant = second_tenant
+      portfolio_copy.update(:name => "samename")
+
+      expect(portfolio).to be_valid
+      expect(portfolio_copy).to be_valid
+
+      expect{ portfolio_copy.save! }.to_not raise_error
+    end
+  end
+
   context "without current_tenant" do
 
     before do
