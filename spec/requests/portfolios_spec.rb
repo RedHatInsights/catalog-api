@@ -1,6 +1,5 @@
 describe 'Portfolios API' do
-  include RequestSpecHelper
-  include ServiceSpecHelper
+  before { disable_tenancy }
 
   let!(:portfolio)            { create(:portfolio) }
   let!(:portfolio_item)       { create(:portfolio_item) }

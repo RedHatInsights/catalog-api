@@ -1,6 +1,4 @@
 describe ServiceCatalog::ServiceOffering do
-  include ServiceSpecHelper
-
   let(:api_instance) { double }
   let(:service_offering) { described_class.new }
   let(:service_offering_ref) { "1" }

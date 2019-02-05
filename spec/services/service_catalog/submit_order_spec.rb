@@ -1,6 +1,4 @@
 describe ServiceCatalog::SubmitOrder do
-  include ServiceSpecHelper
-
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }

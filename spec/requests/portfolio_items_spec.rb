@@ -1,6 +1,5 @@
 describe "PortfolioItemRequests", :type => :request do
-  include ServiceSpecHelper
-  include RequestSpecHelper
+  before { disable_tenancy }
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }

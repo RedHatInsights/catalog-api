@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
   before_action :set_the_current_tenant
 
   def set_the_current_tenant
-    return unless ENV["ENFORCE_TENANCY"]
+    return unless Tenant.tenancy_enabled?
 
     account_number = identity_account_number
     tenant = Tenant.find_or_create_by(:external_tenant => account_number) if account_number.present?

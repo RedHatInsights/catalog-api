@@ -1,6 +1,4 @@
 describe ServiceCatalog::ProviderControlParameters do
-  include ServiceSpecHelper
-
   let(:api_instance) { double }
   let(:provider_control) { described_class.new }
   let(:name) { 'project1' }

@@ -1,5 +1,5 @@
 describe "ProgressMessageRequests", :type => :request do
-  include ServiceSpecHelper
+  before { disable_tenancy }
 
   let(:order) { create(:order) }
   let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
