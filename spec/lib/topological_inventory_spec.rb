@@ -1,5 +1,4 @@
 describe TopologicalInventory do
-  include ServiceSpecHelper
   let(:topo_ex) { TopologicalInventoryApiClient::ApiError.new("kaboom") }
 
   it "raises TopologyError" do

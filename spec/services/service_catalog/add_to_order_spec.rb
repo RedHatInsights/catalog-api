@@ -1,6 +1,4 @@
 describe ServiceCatalog::AddToOrder do
-  include ServiceSpecHelper
-
   let(:service_offering_ref) { "998" }
   let(:order) { create(:order) }
   let(:order_id) { order.id.to_s }

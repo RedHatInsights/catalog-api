@@ -21,6 +21,10 @@ RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.include FactoryBot::Syntax::Methods
 
+  config.include RequestSpecHelper
+
+  config.include ServiceSpecHelper
+
   config.use_transactional_fixtures = true
 
   config.infer_spec_type_from_file_location!

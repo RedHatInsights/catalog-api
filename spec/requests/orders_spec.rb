@@ -1,5 +1,5 @@
 describe "OrderRequests", :type => :request do
-  include ServiceSpecHelper
+  before { disable_tenancy }
 
   let!(:order) { create(:order) }
 
