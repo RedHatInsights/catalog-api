@@ -6,6 +6,27 @@ RSpec.describe ApplicationController, :type => :request do
   let!(:external_tenant)  { (Time.zone.now.to_i * rand(1000)).to_s }
   let(:identity)          { Base64.encode64({'identity' => { 'account_number' => external_tenant}}.to_json) }
 
+  context "with api version v0" do
+    let(:api_version)       { api(0) }
+    let(:api_minor_version) { api }
+
+    it "get api/v0/portfolios with tenant" do
+      headers = { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity }
+
+      get("#{api_version}/portfolios/#{portfolio_id}", :headers => headers)
+      expect(response.status).to eq(301)
+      expect(response.headers["Location"]).to eq "#{api_minor_version}/portfolios/#{portfolio_id}"
+    end
+
+    it "get api/v0/portfolios without tenant" do
+      headers = { "CONTENT_TYPE" => "application/json" }
+
+      get("#{api_version}/portfolios/#{portfolio_id}", :headers => headers)
+      expect(response.status).to eq(301)
+      expect(response.headers["Location"]).to eq "#{api_minor_version}/portfolios/#{portfolio_id}"
+    end
+  end
+
   context "with tenancy enforcement" do
     after  { controller.send(:set_current_tenant, nil) }
 

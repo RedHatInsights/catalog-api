@@ -4,8 +4,8 @@ module RequestSpecHelper
     JSON.parse(response.body)
   end
 
-  def api
-    "/api/v0.0"
+  def api(version = 0.0)
+    "/api/v#{version}"
   end
 
   def disable_tenancy
