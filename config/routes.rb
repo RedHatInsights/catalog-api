@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     # Convert codegen substitutions into Symbols
     full_path = path.gsub(/{(.*?)}/, ':\1')
     scope :as => :api, :module => "api", :path => prefix do
+      match "/v0/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v0.0/%{path}", :only_path => true)
       namespace :v0x0, :path => "v0.0" do
         match full_path, :to => "#{opts.fetch(:controller_name)}##{opts[:action_name]}", :via => http_method
       end
