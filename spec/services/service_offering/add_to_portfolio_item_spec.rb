@@ -22,7 +22,7 @@ describe ServiceOffering::AddToPortfolioItem do
     item = add_to_portfolio_item.process.item
 
     expect(item).to be_a(PortfolioItem)
-    expect(item.attributes.count).to eql(17)
+    expect(item.attributes.count).to eql(18)
 
     # Does it have all the attributes transferred over that we set up above?
     # noinspection RubyResolve
@@ -34,7 +34,8 @@ describe ServiceOffering::AddToPortfolioItem do
       'display_name'                => topology_service_offering.display_name,
       'long_description'            => topology_service_offering.long_description,
       'documentation_url'           => topology_service_offering.documentation_url,
-      'support_url'                 => topology_service_offering.support_url
+      'support_url'                 => topology_service_offering.support_url,
+      'service_offering_icon_id'    => topology_service_offering.service_offering_icon_id
     )
   end
 
@@ -52,9 +53,9 @@ describe ServiceOffering::AddToPortfolioItem do
   it "#{described_class}#determine_valid_fields" do
     add_to_portfolio_item.instance_variable_set("@service_offering", topology_service_offering)
 
-    expect(topology_service_offering.instance_variables.count).to eql 9
+    expect(topology_service_offering.instance_variables.count).to eql 10
     filtered = add_to_portfolio_item.send(:determine_valid_fields)
-    expect(filtered.count).to eql 8
+    expect(filtered.count).to eql 9
   end
 
   it "#{described_class}#create_param_map(params)" do
