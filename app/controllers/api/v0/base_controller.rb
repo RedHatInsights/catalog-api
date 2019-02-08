@@ -64,6 +64,12 @@ module Api
         render :json => so.process.data
       end
 
+      def fetch_service_offering_icon_from_portfolio_item
+        portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
+        so = ServiceOffering::Icons.new(portfolio_item.service_offering_icon_id)
+        render :json => so.process.icon
+      end
+
       def topology_service_error(err)
         render :json => {:message => err.message}, :status => :internal_server_error
       end

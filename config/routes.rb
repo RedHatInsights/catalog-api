@@ -61,4 +61,5 @@ Rails.application.routes.draw do
   add_swagger_route 'GET', '/portfolio_items', :controller_name => 'users', :action_name => 'list_portfolio_items'
   add_swagger_route 'GET', '/portfolios', :controller_name => 'users', :action_name => 'list_portfolios'
   add_swagger_route 'GET', '/order_items/{order_item_id}/progress_messages', :controller_name => 'users', :action_name => 'list_progress_messages'
+  add_swagger_route 'GET', '/portfolio_items/{portfolio_item_id}/icon', :controller_name => 'admins', :action_name => 'fetch_service_offering_icon_from_portfolio_item'
 end
