@@ -7,10 +7,12 @@ describe "PortfolioItemRequests", :type => :request do
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
-  let(:order)                { create(:order) }
-  let(:portfolio_item)       do
+  let(:order) { create(:order) }
+  let(:icon_id) { 1 }
+  let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
-                            :service_offering_source_ref => service_offering_source_ref)
+                            :service_offering_source_ref => service_offering_source_ref,
+                            :service_offering_icon_ref   => icon_id)
   end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
@@ -198,6 +200,40 @@ describe "PortfolioItemRequests", :type => :request do
 
       it "does not update the read-only field" do
         expect(json["service_offering_ref"]).to_not eq invalid_attributes[:service_offering_ref]
+      end
+    end
+  end
+
+  context "icons" do
+    let(:api_instance) { double }
+    let(:topological_inventory) do
+      class_double("TopologicalInventory")
+        .as_stubbed_const(:transfer_nested_constants => true)
+    end
+
+    let(:topology_service_offering_icon) do
+      TopologicalInventoryApiClient::ServiceOfferingIcon.new(
+        :id         => icon_id,
+        :source_ref => "src",
+        :data       => "img"
+      )
+    end
+    let(:portfolio_item_without_overriden_icon) do
+      create(:portfolio_item,
+             :service_offering_icon_ref => topology_service_offering_icon.id)
+    end
+
+    before do
+      allow(topological_inventory).to receive(:call).and_yield(api_instance)
+    end
+    context "when we have to hit topology for the icon data" do
+      it "reaches out to topology to get the icon" do
+        expect(api_instance).to receive(:show_service_offering_icon).with(topology_service_offering_icon.id.to_s).and_return(topology_service_offering_icon)
+
+        get "#{api('0.1')}/portfolio_items/#{portfolio_item_without_overriden_icon.id}/icon", :headers => admin_headers
+
+        expect(response).to have_http_status(200)
+        expect(json["id"]).to eq topology_service_offering_icon.id
       end
     end
   end

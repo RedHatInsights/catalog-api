@@ -41,8 +41,8 @@ describe ServiceOffering::AddToPortfolioItem do
     it "#{described_class}#populate_missing_fields(params)" do
       my_params = add_to_portfolio_item.send(:populate_missing_fields)
 
-      # It should have added the extra field (source ref) as well as inferring the values of long_description and display name, giving us 5 total fields.
-      expect(my_params.keys.size).to eql 5
+      # It should have added the extra field (source ref) as well as inferring the values of long_description and display name, giving us 6 total fields.
+      expect(my_params.keys.size).to eql 6
       expect(my_params[:long_description]).to eq(params[:description])
       expect(my_params[:display_name]).to eq(params[:name])
     end
