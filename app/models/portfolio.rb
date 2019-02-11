@@ -14,6 +14,8 @@ class Portfolio < ApplicationRecord
   acts_as_tenant(:tenant)
 
   validates :name, presence: true, :uniqueness => { :scope => :tenant_id }
+  validates :enabled, :inclusion => { :in => [true, false] }
+  validates :image_url, :format => { :with => URI.regexp }
 
   has_many :portfolio_items, :dependent => :destroy
 
