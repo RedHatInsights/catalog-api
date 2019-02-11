@@ -186,6 +186,12 @@ describe 'Portfolios API' do
       it 'returns the new portfolio' do
         expect(json['name']).to eq valid_attributes[:name]
       end
+
+      it 'returns a status code 422 when trying to create with the same name' do
+        post "#{api}/portfolios", :params => valid_attributes, :headers => admin_headers
+
+        expect(response).to have_http_status(422)
+      end
     end
   end
 end
