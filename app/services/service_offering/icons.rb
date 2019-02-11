@@ -13,6 +13,9 @@ module ServiceOffering
       end
 
       self
+    rescue StandardError => e
+      Rails.logger.error("Portfolio Item Icons ID #{icon_id}: #{e.message}")
+      raise
     end
   end
 end

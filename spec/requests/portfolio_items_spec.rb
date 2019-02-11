@@ -3,12 +3,12 @@ describe "PortfolioItemRequests", :type => :request do
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
-  let(:order)                { create(:order) }
+  let(:order) { create(:order) }
   let(:icon_id) { 1 }
-  let(:portfolio_item)       do
+  let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
                             :service_offering_source_ref => service_offering_source_ref,
-                            :service_offering_icon_id => icon_id )
+                            :service_offering_icon_id    => icon_id)
   end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { ServiceCatalog::TopologyError.new("kaboom") }
@@ -129,9 +129,10 @@ describe "PortfolioItemRequests", :type => :request do
 
     let(:topology_service_offering_icon) do
       TopologicalInventoryApiClient::ServiceOfferingIcon.new(
-        :id => icon_id,
+        :id         => icon_id,
         :source_ref => "src",
-        :data => "img")
+        :data       => "img"
+      )
     end
     let(:portfolio_item_without_overriden_icon) do
       create(:portfolio_item,

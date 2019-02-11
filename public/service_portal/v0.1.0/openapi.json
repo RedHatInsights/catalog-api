@@ -428,6 +428,46 @@
                 }
             }
         },
+        "/portfolio_items/{portfolio_item_id}/icon": {
+            "get": {
+                "tags": [
+                    "users",
+                    "admins"
+                ],
+                "summary": "Fetches the specified portfolio item's icon information",
+                "operationId": "fetchServiceOfferingIconFromPortfolioItem",
+                "description": "Fetch the specified portfolio item's icon information.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/PortfolioItemID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Portfolio Item Icon",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceOfferingIcon"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Icon Not Found/Not Present on Portfolio Item"
+                    },
+                    "500": {
+                        "description": "Could not access the Topology Service"
+                    }
+                }
+            }
+        },
         "/portfolio_items/{portfolio_item_id}/service_plans": {
             "get": {
                 "tags": [
@@ -975,6 +1015,11 @@
                         "title": "Orphan",
                         "example": "Boolean if an associated catalog item no longer exists"
                     },
+                    "service_offering_icon_id": {
+                        "type": "integer",
+                        "title": "Service Offering Icon ID",
+                        "example": "The Icon ID for this portfolio item"
+                    },
                     "state": {
                         "type": "string",
                         "readOnly": true,
@@ -1156,6 +1201,29 @@
                         "type": "object",
                         "title": "JSON Schema",
                         "description": "JSON Schema for the object",
+                        "readOnly": true
+                    }
+                }
+            },
+            "ServiceOfferingIcon": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "ID",
+                        "description": "The unique identifier for this Service Plan",
+                        "readOnly": true
+                    },
+                    "data": {
+                        "type": "string",
+                        "title": "Data",
+                        "description": "The raw SVG data for this icon",
+                        "readOnly": false
+                    },
+                    "source_ref": {
+                        "type": "string",
+                        "title": "Source Ref",
+                        "description": "Stores the Source Ref for this icon",
                         "readOnly": true
                     }
                 }
