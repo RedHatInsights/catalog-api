@@ -189,24 +189,11 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Edited portfolio object",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Portfolio"
-                                }
-                            }
-                        }
+                    "204": {
+                        "description": "Portfolio Deleted"
                     },
-                    "401": {
-                        "$ref": "#/components/responses/Unauthorized"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/Forbidden"
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/InvalidEntity"
+                    "404": {
+                        "description": "Portfolio Not Found"
                     }
                 }
             }
