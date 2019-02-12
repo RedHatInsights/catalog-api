@@ -11,10 +11,9 @@ describe Portfolio do
       expect(portfolio).to_not be_valid
     end
 
-    it "defaults to true for bad values due to validation" do
+    it "fails validation with a non %w(true false) value" do
       portfolio.enabled = "tralse"
-      expect(portfolio).to be_valid
-      expect(portfolio.enabled).to be true
+      expect(portfolio).to_not be_valid
     end
   end
 
