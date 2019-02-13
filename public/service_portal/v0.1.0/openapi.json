@@ -806,7 +806,7 @@
                 "description": "The Order ID",
                 "required": true,
                 "schema": {
-                    "type": "string"
+                    "type": "integer"
                 }
             },
             "OrderItemID": {
@@ -815,7 +815,7 @@
                 "description": "The Order Item ID",
                 "required": true,
                 "schema": {
-                    "type": "string"
+                    "type": "integer"
                 }
             },
             "QueryLimit": {
@@ -987,7 +987,7 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string",
+                        "type": "integer",
                         "readOnly": true
                     },
                     "user_id": {
@@ -1033,7 +1033,7 @@
                 ],
                 "properties": {
                     "id": {
-                        "type": "string",
+                        "type": "integer",
                         "readOnly": true
                     },
                     "count": {
