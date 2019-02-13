@@ -1,6 +1,6 @@
 {
-	"title": "Openshift control parameters",
-	"description": "Openshift provider control parameters",
+	"title": "OpenShift control parameters",
+	"description": "OpenShift provider control parameters",
 	"type": "object",
 	"required": [
 		"namespace"
@@ -8,7 +8,7 @@
 	"properties": {
 		"namespace": {
 			"type": "string",
-			"title": "Openshift Project",
+			"title": "OpenShift Project",
 			"enum": [
 					"default"
 				]
