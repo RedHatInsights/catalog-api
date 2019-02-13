@@ -20,6 +20,9 @@ module ServiceOffering
 
       @item = PortfolioItem.create!(populate_missing_fields)
       self
+    rescue StandardError => e
+      Rails.logger.error("Service Offering Ref: #{@params[:service_offering_ref]} #{e.message}")
+      raise
     end
 
     private

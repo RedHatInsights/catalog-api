@@ -29,6 +29,8 @@ module Api
       def add_portfolio_item
         so = ServiceOffering::AddToPortfolioItem.new(portfolio_item_params)
         render :json => so.process.item
+      rescue ServiceCatalog::TopologyError => e
+        render :json => { :errors => e.message }, :status => :not_found
       end
 
       def add_to_order
