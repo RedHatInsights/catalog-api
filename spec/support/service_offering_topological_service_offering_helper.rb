@@ -9,7 +9,8 @@ module ServiceOfferingHelper
       :display_name      => "test display name",
       :long_description  => "test long description",
       :documentation_url => "http://test.docs.io",
-      :support_url       => "800-555-TEST"
+      :support_url       => "800-555-TEST",
+      :distributor       => "Red Hat Inc."
     )
   end
 
