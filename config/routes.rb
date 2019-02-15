@@ -10,13 +10,21 @@ Rails.application.routes.draw do
   scope :as => :api, :module => "api", :path => prefix do
     match "/v0/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v0.0/%{path}", :only_path => true)
     namespace :v0x1, :path => "v0.1" do
-      resources :orders,            :only => [:index, :create, :submit]
-      resources :order_items,       :only => [:index, :show]
-      resources :portfolios,        :only => [:create, :destroy, :index, :show] do
-        resources :portfolio_items,   :only => [:index]
+      post '/orders/:order_id/submit_order', :action => 'submit_order', :as => 'order_submit_order'
+      resources :orders,            :only => [:index, :create, :submit] do
+        resources :order_items, :only => [:index, :create]
       end
-      resources :portfolio_items,   :only => [:create, :destroy, :index, :show]
-      resources :progress_messages, :only => [:show]
+      resources :order_items,       :only => [:index, :show] do
+        resources :progress_messages, :only => [:index]
+      end
+      post '/portfolios/:portfolio_id/portfolio_items', :action => 'add_portfolio_item_to_portfolio', :as => 'add_portfolio_item_to_portfolio'
+      resources :portfolios,        :only => [:create, :destroy, :index, :show, :update] do
+        resources :portfolio_items,   :only => [:index]
+        resources :service_plans,     :only => [:index]
+      end
+      resources :portfolio_items,   :only => [:create, :destroy, :index, :show] do
+        resources :provider_control_parameters, :only => [:index]
+      end
     end
     namespace :v0x0, :path => "v0.0" do
       match '/portfolios', :controller => 'admins', :action => 'add_portfolio', :via => :post

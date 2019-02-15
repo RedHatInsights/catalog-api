@@ -2,7 +2,11 @@ module Api
   module V0x1
     class PortfolioItemsController < ActionController::API
       def index
-        render :json => PortfolioItem.all
+        if params[:portfolio_id]
+          render :json => PortfolioItem.where(:portfolio_id => params.require(:portfolio_id))
+        else
+          render :json => PortfolioItem.all
+        end
       end
 
       def create
