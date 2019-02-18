@@ -810,6 +810,43 @@
                     }
                 }
             }
+        },
+        "/icons/{icon_ids}": {
+            "post": {
+                "tags": [
+                    "admins",
+                    "users"
+                ],
+                "summary": "Get Icon Data in bulk or one at a time",
+                "operationId": "fetchIconsById",
+                "description": "Returns the icon data for the specified id(s)",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/IconIDs"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Icon Objects",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceOfferingIconCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Icon not found"
+                    }
+                }
+            }
         }
     },
     "servers": [
@@ -853,6 +890,15 @@
                 "name": "order_item_id",
                 "in": "path",
                 "description": "The Order Item ID",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "IconIDs": {
+                "name": "icon_ids",
+                "in": "path",
+                "description": "The Icon ID(s)",
                 "required": true,
                 "schema": {
                     "type": "string"
@@ -1292,6 +1338,23 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/OrderItem"
+                        }
+                    }
+                }
+            },
+            "ServiceOfferingIconCollection": {
+                "type": "object",
+                "properties": {
+                    "meta": {
+                        "$ref": "#/components/schemas/CollectionMetadata"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/CollectionLinks"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ServiceOfferingIcon"
                         }
                     }
                 }
