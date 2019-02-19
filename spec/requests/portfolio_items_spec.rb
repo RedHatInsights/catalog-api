@@ -38,8 +38,11 @@ describe "PortfolioItemRequests", :type => :request do
         delete "/api/v0.0/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
       end
 
-      it 'deletes the record' do
+      it 'discards the record' do
         expect(response).to have_http_status(204)
+      end
+      it 'marks the icon as discarded instead of deleting it from the db' do
+        expect(PortfolioItem.find_by(:id => portfolio_item_id).discarded_at).to_not be_nil
       end
     end
   end
