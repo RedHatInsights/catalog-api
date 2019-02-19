@@ -22,7 +22,7 @@ describe ServiceOffering::AddToPortfolioItem do
     item = add_to_portfolio_item.process.item
 
     expect(item).to be_a(PortfolioItem)
-    expect(item.attributes.count).to eql(17)
+    expect(item.attributes.count).to eql(18)
 
     # Does it have all the attributes transferred over that we set up above?
     # noinspection RubyResolve
