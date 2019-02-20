@@ -1,6 +1,8 @@
 module Api
   module V0x1
-    class ServicePlansController < ActionController::API
+    class ServicePlansController < ApplicationController
+      include Api::V0x1::Mixins::IndexMixin
+
       def index
         so = ServiceCatalog::ServicePlans.new(params.require(:portfolio_item_id))
         render :json => so.process.items

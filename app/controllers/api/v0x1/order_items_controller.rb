@@ -1,11 +1,13 @@
 module Api
   module V0x1
-    class OrderItemsController < ActionController::API
+    class OrderItemsController < ApplicationController
+      include Api::V0x1::Mixins::IndexMixin
+
       def index
         if params[:order_id]
-          render :json => Order.find(params.require(:order_id)).order_items
+          collection(Order.find(params.require(:order_id)).order_items)
         else
-          render :json => OrderItem.all
+          collection(OrderItem.all)
         end
       end
 

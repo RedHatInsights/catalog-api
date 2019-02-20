@@ -102,6 +102,24 @@ describe "PortfolioItemRequests", :type => :request do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:items).and_return(plans)
 
+      get "/api/v0.1/portfolio_items/#{portfolio_item.id}/service_plans"
+
+      expect(JSON.parse(response.body).count).to eq(2)
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "raises error" do
+      allow(svc_object).to receive(:process).and_raise(topo_ex)
+
+      get "/api/v0.1/portfolio_items/#{portfolio_item.id}/service_plans"
+      expect(response).to have_http_status(:internal_server_error)
+    end
+
+    it "fetches plans" do
+      allow(svc_object).to receive(:process).and_return(svc_object)
+      allow(svc_object).to receive(:items).and_return(plans)
+
       get "/api/v0.0/portfolio_items/#{portfolio_item.id}/service_plans"
 
       expect(JSON.parse(response.body).count).to eq(2)

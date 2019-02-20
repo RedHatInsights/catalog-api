@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  rescue_from ServiceCatalog::TopologyError, :with => :topology_service_error
   private
 
   set_current_tenant_through_filter
@@ -23,5 +24,9 @@ class ApplicationController < ActionController::API
 
     ident = JSON.parse(Base64.decode64(request.headers[ident_key]))
     ident.fetch_path("identity", "account_number")
+  end
+
+  def topology_service_error(err)
+    render :json => {:message => err.message}, :status => :internal_server_error
   end
 end

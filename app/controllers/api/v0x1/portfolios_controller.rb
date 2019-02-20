@@ -1,8 +1,10 @@
 module Api
   module V0x1
-    class PortfoliosController < ActionController::API
+    class PortfoliosController < ApplicationController
+      include Api::V0x1::Mixins::IndexMixin
+
       def index
-        render :json => Portfolio.all
+        collection(Portfolio.all)
       end
 
       def add_portfolio_item_to_portfolio
