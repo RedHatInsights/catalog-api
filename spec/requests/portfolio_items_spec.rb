@@ -66,6 +66,32 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
+  context "when adding portfolio items" do
+    let(:add_to_portfolio_svc) { double(ServiceOffering::AddToPortfolioItem) }
+    let(:params) { { :service_offering_ref => service_offering_ref } }
+
+    before do
+      allow(ServiceOffering::AddToPortfolioItem).to receive(:new).and_return(add_to_portfolio_svc)
+    end
+
+    it "returns not found when topology doesn't have the service_offering_ref" do
+      allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
+
+      post "#{api}/portfolio_items", :params => params
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "returns the new portfolio item when topology has the service_offering_ref" do
+      allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
+      allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
+
+      post "#{api}/portfolio_items", :params => params
+      expect(response).to have_http_status(:ok)
+      expect(json["id"]).to eq portfolio_item.id
+      expect(json["service_offering_ref"]).to eq service_offering_ref
+    end
+  end
+
   context "service plans" do
     let(:svc_object)           { instance_double("ServiceCatalog::ServicePlans") }
     let(:plans)                { [{}, {}] }
