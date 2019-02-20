@@ -5,6 +5,18 @@ describe Portfolio do
   let(:portfolio_item_id)  { portfolio_item.id }
   let(:tenant)             { create(:tenant) }
 
+  context "when setting portfolio fields" do
+    it "fails validation with a bad uri" do
+      portfolio.image_url = "notreallyaurl"
+      expect(portfolio).to_not be_valid
+    end
+
+    it "fails validation with a non %w(true false) value" do
+      portfolio.enabled = "tralse"
+      expect(portfolio).to_not be_valid
+    end
+  end
+
   context "destroy portfolio cascading portfolio_items" do
     before do
       ActsAsTenant.current_tenant = nil
