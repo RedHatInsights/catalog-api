@@ -127,13 +127,23 @@ describe 'Portfolios API' do
   describe 'DELETE admin tagged /portfolios/:portfolio_id' do
     let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
 
-    context 'when :portfolio_id is valid' do
+    context 'when discarding a portfolio' do
       before do
         delete "#{api}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => valid_attributes
       end
 
       it 'deletes the record' do
         expect(response).to have_http_status(204)
+      end
+
+      it 'sets the discarded_at column' do
+        expect(Portfolio.find_by(:id => portfolio_id).discarded_at).to_not be_nil
+      end
+
+      it 'allows adding portfolios with the same name when one is discarded' do
+        post "#{api}/portfolios", :headers => admin_headers, :params => valid_attributes
+
+        expect(response).to have_http_status(:ok)
       end
     end
   end
