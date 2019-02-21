@@ -29,6 +29,24 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
+  %w(admin user).each do |tag|
+    describe "GET v0.1 #{tag} /portfolio_items/:portfolio_item_id" do
+      before do
+        get "#{api('0.1')}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers
+      end
+
+      context 'the portfolio_item exists' do
+        it 'returns status code 200' do
+          expect(response).to have_http_status(200)
+        end
+
+        it 'returns the portfolio_item we asked for' do
+          expect(json["id"]).to eq portfolio_item.id
+        end
+      end
+    end
+  end
+
   describe 'DELETE admin tagged /portfolio_items/:portfolio_item_id' do
     # TODO: https://github.com/ManageIQ/service_portal-api/issues/85
     let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
@@ -36,6 +54,16 @@ describe "PortfolioItemRequests", :type => :request do
     context 'when :portfolio_item_id is valid' do
       before do
         delete "/api/v0.0/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
+      end
+
+      it 'deletes the record' do
+        expect(response).to have_http_status(204)
+      end
+    end
+
+    context 'when v0.1 :portfolio_item_id is valid' do
+      before do
+        delete "#{api('0.1')}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
       end
 
       it 'deletes the record' do
@@ -90,6 +118,32 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
+  context "v0.1 when adding portfolio items" do
+    let(:add_to_portfolio_svc) { double(ServiceOffering::AddToPortfolioItem) }
+    let(:params) { { :service_offering_ref => service_offering_ref } }
+
+    before do
+      allow(ServiceOffering::AddToPortfolioItem).to receive(:new).and_return(add_to_portfolio_svc)
+    end
+
+    it "returns not found when topology doesn't have the service_offering_ref" do
+      allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
+
+      post "#{api('0.1')}/portfolio_items", :params => params
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "returns the new portfolio item when topology has the service_offering_ref" do
+      allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
+      allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
+
+      post "#{api('0.1')}/portfolio_items", :params => params
+      expect(response).to have_http_status(:ok)
+      expect(json["id"]).to eq portfolio_item.id
+      expect(json["service_offering_ref"]).to eq service_offering_ref
+    end
+  end
+
   context "service plans" do
     let(:svc_object)           { instance_double("ServiceCatalog::ServicePlans") }
     let(:plans)                { [{}, {}] }
@@ -138,6 +192,33 @@ describe "PortfolioItemRequests", :type => :request do
   context "provider control parameters" do
     let(:svc_object)  { instance_double("ServiceCatalog::ProviderControlParameters") }
     let(:url)         { "/api/v0.0/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
+
+    before do
+      allow(ServiceCatalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
+    end
+
+    it "fetches plans" do
+      allow(svc_object).to receive(:process).and_return(svc_object)
+      allow(svc_object).to receive(:data).and_return(:fred => 'bedrock')
+
+      get url
+
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "raises error" do
+      allow(svc_object).to receive(:process).and_raise(topo_ex)
+
+      get url
+
+      expect(response).to have_http_status(:internal_server_error)
+    end
+  end
+
+  context "v0.1 provider control parameters" do
+    let(:svc_object)  { instance_double("ServiceCatalog::ProviderControlParameters") }
+    let(:url)         { "#{api('0.1')}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     before do
       allow(ServiceCatalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)

@@ -10,14 +10,14 @@ Rails.application.routes.draw do
   scope :as => :api, :module => "api", :path => prefix do
     match "/v0/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v0.0/%{path}", :only_path => true)
     namespace :v0x1, :path => "v0.1" do
-      post '/orders/:order_id/submit_order', :action => 'submit_order', :as => 'order_submit_order'
-      resources :orders,                :only => [:create, :index, :submit] do
-        resources :order_items,           :only => [:create, :index]
+      post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
+      resources :orders,                :only => [:create, :index] do
+        resources :order_items,           :only => [:create, :index, :show]
       end
       resources :order_items,           :only => [:index, :show] do
         resources :progress_messages,     :only => [:index]
       end
-      post '/portfolios/:portfolio_id/portfolio_items', :action => 'add_portfolio_item_to_portfolio', :as => 'add_portfolio_item_to_portfolio'
+      post '/portfolios/:portfolio_id/portfolio_items', :action => 'add_portfolio_item_to_portfolio', :controller => 'portfolios', :as => 'add_portfolio_item_to_portfolio'
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
       end

@@ -17,10 +17,10 @@ module Api
       end
 
       def show
-        if params[:order_id] && params[:order_item_id]
-          render :json => Order.find(params.require(:order_id)).order_items.find(params.require(:order_item_id))
+        if params[:order_id] && params[:id]
+          render :json => Order.find(params.require(:order_id)).order_items.find(params.require(:id))
         else
-          render :json => OrderItem.find(params.require(:order_item_id))
+          render :json => OrderItem.find(params.require(:id))
         end
       end
     end

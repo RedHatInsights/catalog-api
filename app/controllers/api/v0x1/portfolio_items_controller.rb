@@ -14,15 +14,23 @@ module Api
       def create
         so = ServiceOffering::AddToPortfolioItem.new(portfolio_item_params)
         render :json => so.process.item
+      rescue ServiceCatalog::TopologyError => e
+        render :json => { :errors => e.message }, :status => :not_found
       end
 
       def show
-        render :json => Portfolio.find(params.require(:portfolio_id))
+        render :json => PortfolioItem.find(params.require(:id))
       end
 
       def destroy
-        PortfolioItem.find(params.require(:portfolio_item_id)).destroy
+        PortfolioItem.find(params.require(:id)).destroy
         head :no_content
+      end
+
+      private
+
+      def portfolio_item_params
+        params.permit(:service_offering_ref)
       end
     end
   end

@@ -100,7 +100,7 @@
                 }
             }
         },
-        "/portfolios/{portfolio_id}": {
+        "/portfolios/{id}": {
             "get": {
                 "tags": [
                     "users",
@@ -111,7 +111,7 @@
                 "description": "By passing in the portfolio id you can fetch a specific portfolio.\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -148,7 +148,7 @@
                 "description": "Returns the edited portfolio object\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -185,7 +185,7 @@
                 "description": "Deletes the portfolio id passed in as the param.\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -249,7 +249,7 @@
                 "description": "Add new portfolio item to an existing portfolio\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -357,7 +357,7 @@
                 }
             }
         },
-        "/portfolio_items/{portfolio_item_id}": {
+        "/portfolio_items/{id}": {
             "get": {
                 "tags": [
                     "users",
@@ -368,7 +368,7 @@
                 "description": "By passing in the portfolio_item_id you can fetch a specific portfolio item\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioItemID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -402,7 +402,7 @@
                 "description": "Deletes the portfolio item id passed in as the param.\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioItemID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -639,7 +639,7 @@
                 }
             }
         },
-        "/orders/{order_id}/order_items/{order_item_id}": {
+        "/orders/{order_id}/order_items/{id}": {
             "get": {
                 "tags": [
                     "users",
@@ -653,7 +653,7 @@
                         "$ref": "#/components/parameters/OrderID"
                     },
                     {
-                        "$ref": "#/components/parameters/OrderItemID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -679,7 +679,7 @@
                 }
             }
         },
-        "/orders/{order_id}": {
+        "/orders/{order_id}/submit_order": {
             "post": {
                 "tags": [
                     "admins"
@@ -769,6 +769,14 @@
     ],
     "components": {
         "parameters": {
+            "ID": {
+                "name": "id",
+                "in": "path",
+                "description": "ID of the resource",
+                "required": true,
+                "type": "string",
+                "pattern": "/^\\d+$/"
+            },
             "PortfolioID": {
                 "name": "portfolio_id",
                 "in": "path",
@@ -926,9 +934,9 @@
             "AddPortfolioItem": {
                 "type": "object",
                 "properties": {
-                    "portfolio_item_id": {
+                    "portfolio_id": {
                         "type": "string",
-                        "title": "Portfolio Item Id",
+                        "title": "Portfolio Id",
                         "example": "100",
                         "description": "This is the id of the portfolio item object"
                     }

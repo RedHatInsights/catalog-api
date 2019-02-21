@@ -21,21 +21,21 @@ module Api
       end
 
       def update
-        portfolio = Portfolio.find(params.require(:portfolio_id))
+        portfolio = Portfolio.find(params.require(:id))
         portfolio.update!(portfolio_params)
 
         render :json => portfolio
       end
 
       def show
-        portfolio = Portfolio.find(params.require(:portfolio_id))
+        portfolio = Portfolio.find(params.require(:id))
         portfolio.update!(portfolio_params)
 
         render :json => portfolio
       end
 
       def destroy
-        Portfolio.find(params.require(:portfolio_id)).destroy
+        Portfolio.find(params.require(:id)).destroy
         head :no_content
       end
 
