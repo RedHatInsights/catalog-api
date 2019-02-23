@@ -72,7 +72,7 @@
                     "admins"
                 ],
                 "summary": "API to add a new portfolio",
-                "operationId": "addPortfolio",
+                "operationId": "createPortfolio",
                 "description": "Returns the added portfolio object\n",
                 "responses": {
                     "200": {
@@ -100,18 +100,18 @@
                 }
             }
         },
-        "/portfolios/{portfolio_id}": {
+        "/portfolios/{id}": {
             "get": {
                 "tags": [
                     "users",
                     "admins"
                 ],
                 "summary": "Fetch a specific Portfolio",
-                "operationId": "fetchPortfolioWithId",
+                "operationId": "showPortfolio",
                 "description": "By passing in the portfolio id you can fetch a specific portfolio.\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -144,11 +144,11 @@
                     "admins"
                 ],
                 "summary": "Edit an existing portfolio",
-                "operationId": "editPortfolio",
+                "operationId": "updatePortfolio",
                 "description": "Returns the edited portfolio object\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -185,7 +185,7 @@
                 "description": "Deletes the portfolio id passed in as the param.\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -249,7 +249,7 @@
                 "description": "Add new portfolio item to an existing portfolio\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -319,7 +319,7 @@
                     "admins"
                 ],
                 "summary": "API to add a new portfolio item",
-                "operationId": "addPortfolioItem",
+                "operationId": "createPortfolioItem",
                 "description": "This API would connect to the Topology Service to fetch the name and description of the service offering. Returns the added portfolio item object\n",
                 "responses": {
                     "200": {
@@ -357,18 +357,18 @@
                 }
             }
         },
-        "/portfolio_items/{portfolio_item_id}": {
+        "/portfolio_items/{id}": {
             "get": {
                 "tags": [
                     "users",
                     "admins"
                 ],
                 "summary": "Fetch a specific Portfolio Item",
-                "operationId": "fetchPortfolioItemWithId",
+                "operationId": "showPortfolioItem",
                 "description": "By passing in the portfolio_item_id you can fetch a specific portfolio item\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioItemID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -402,7 +402,7 @@
                 "description": "Deletes the portfolio item id passed in as the param.\n",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/PortfolioItemID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -422,7 +422,7 @@
                     "admins"
                 ],
                 "summary": "Fetches all the service plans for a specific portfolio item, this requires a connection to the topology service.",
-                "operationId": "fetchPlansWithPortfolioItemId",
+                "operationId": "listServicePlans",
                 "description": "Fetch all service plans for a portfolio item\n",
                 "parameters": [
                     {
@@ -465,7 +465,7 @@
                     "admins"
                 ],
                 "summary": "Fetches the provider control parameters for this portfolio item, it needs to be provided when provisioning the portfolio item.",
-                "operationId": "fetchProviderControlParameters",
+                "operationId": "listProviderControlParameters",
                 "description": "Fetch provider control parameters for a portfolio item\n",
                 "parameters": [
                     {
@@ -539,7 +539,7 @@
                     "admins"
                 ],
                 "summary": "Create a new order",
-                "operationId": "newOrder",
+                "operationId": "createOrder",
                 "description": "Create a new order.\n",
                 "responses": {
                     "200": {
@@ -561,7 +561,7 @@
                 }
             }
         },
-        "/orders/{order_id}/items": {
+        "/orders/{order_id}/order_items": {
             "get": {
                 "tags": [
                     "users",
@@ -639,21 +639,21 @@
                 }
             }
         },
-        "/orders/{order_id}/items/{order_item_id}": {
+        "/orders/{order_id}/order_items/{id}": {
             "get": {
                 "tags": [
                     "users",
                     "admins"
                 ],
                 "summary": "Get an individual order item from a given order",
-                "operationId": "listOrderItem",
+                "operationId": "showOrderItem",
                 "description": "Get an order item associated with an order.\n",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/OrderID"
                     },
                     {
-                        "$ref": "#/components/parameters/OrderItemID"
+                        "$ref": "#/components/parameters/ID"
                     }
                 ],
                 "responses": {
@@ -679,7 +679,7 @@
                 }
             }
         },
-        "/orders/{order_id}": {
+        "/orders/{order_id}/submit_order": {
             "post": {
                 "tags": [
                     "admins"
@@ -769,6 +769,14 @@
     ],
     "components": {
         "parameters": {
+            "ID": {
+                "name": "id",
+                "in": "path",
+                "description": "ID of the resource",
+                "required": true,
+                "type": "string",
+                "pattern": "/^\\d+$/"
+            },
             "PortfolioID": {
                 "name": "portfolio_id",
                 "in": "path",
@@ -926,9 +934,9 @@
             "AddPortfolioItem": {
                 "type": "object",
                 "properties": {
-                    "portfolio_item_id": {
+                    "portfolio_id": {
                         "type": "string",
-                        "title": "Portfolio Item Id",
+                        "title": "Portfolio Id",
                         "example": "100",
                         "description": "This is the id of the portfolio item object"
                     }

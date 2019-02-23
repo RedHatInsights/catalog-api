@@ -27,6 +27,23 @@ describe "OrderRequests", :type => :request do
       post "/api/v0.0/orders/#{order.id}", :headers => admin_headers
       expect(response).to have_http_status(:internal_server_error)
     end
+
+    it "v0.1 successfully adds submits an order" do
+      allow(svc_object).to receive(:process).and_return(svc_object)
+      allow(svc_object).to receive(:order).and_return(order)
+
+      post "#{api('0.1')}/orders/#{order.id}/submit_order", :headers => admin_headers
+
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "v0.1 raises error" do
+      allow(svc_object).to receive(:process).and_raise(topo_ex)
+
+      post "#{api('0.1')}/orders/#{order.id}/submit_order", :headers => admin_headers
+      expect(response).to have_http_status(:internal_server_error)
+    end
   end
 
   context "add to order" do
