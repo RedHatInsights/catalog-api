@@ -1,0 +1,148 @@
+---
+access1: &AllAccess
+  permission: catalog:*:*
+access2: &CatalogFeatureAccess
+  permission: catalog:feature:*
+access3: &ReadAccessPortfolios
+  permission: catalog:portfolios:read
+access4: &WriteAccessPortfolios
+  permission: catalog:portfolios:write
+access5: &OrderAccessPortfolios
+  permission: catalog:portfolios:order
+access6: &ReadAccessPortfolioItems
+  permission: catalog:portfolio_items:read
+access7: &WriteAccessPortfolioItems
+  permission: catalog:portfolio_items:write
+access8: &OrderAccessPortfolioItems
+  permission: catalog:portfolio_items:order
+access9: &ReadAccessOrders
+  permission: catalog:orders:read
+access10: &WriteAccessOrders
+  permission: catalog:orders:write
+access11: &OrderAccessOrders
+  permission: catalog:orders:order
+access12: &ReadAccessOrderItems
+  permission: catalog:order_items:read
+access13: &WriteAccessOrderItems
+  permission: catalog:order_items:write
+access14: &OrderAccessOrderItems
+  permission: catalog:order_items:order
+access15: &ReadAccessProgressMessages
+  permission: catalog:progress_messages:read
+access16: &WriteAccessProgressMessages
+  permission: catalog:progress_messages:write
+role1: &CatalogAdministratorRole
+  name: Catalog Administrator
+  access:
+    - *AllAccess
+role2: &CatalogUserRole
+  name: Catalog User
+  access:
+    - *ReadAccessPortfolios
+    - *OrderAccessPortfolios
+    - *ReadAccessPortfolioItems
+    - *OrderAccessPortfolioItems
+    - *ReadAccessOrders
+    - *OrderAccessOrders
+    - *ReadAccessOrderItems
+    - *OrderAccessOrderItems
+    - *ReadAccessProgressMessages
+role3: &CatalogEnabledCustomerRole
+  name: Access to Catalog Feature
+  access:
+    - *CatalogFeatureAccess
+role4: &CatalogReporterRole
+  name: Catalog Reporter
+  access:
+    - *ReadAccessPortfolios
+    - *ReadAccessPortfolioItems
+    - *ReadAccessOrders
+    - *ReadAccessOrderItems
+    - *ReadAccessProgressMessages
+role5: &CatalogOperatorRole
+  name: Catalog Operator
+  access:
+    - *ReadAccessPortfolios
+    - *OrderAccessPortfolios
+    - *ReadAccessPortfolioItems
+    - *OrderAccessPortfolioItems
+    - *ReadAccessOrders
+    - *OrderAccessOrders
+    - *ReadAccessOrderItems
+    - *OrderAccessOrderItems
+    - *ReadAccessProgressMessages
+role6: &CatalogPortfolioDesignerRole
+  name: Catalog Portfolio Designer
+  access:
+    - *WriteAccessPortfolios
+    - *WriteAccessPortfolioItems
+group1: &CatalogAdministratorsGroup
+  name: Catalog Administrators
+  description: Catalog Administrators have complete access to all objects in the Catalog Service.
+group2: &CatalogUsersGroup
+  name: Catalog Users
+  description: Catalog Users have limited access and can only order portfolios.
+group3: &CatalogEnabledCustomersGroup
+  name: Catalog Enabled Customers
+  description: A group of customers who have the catalog feature enabled.
+group4: &CatalogReportersGroup
+  name: Catalog Reporters
+  description: Catalog Reporters can create reports about existing portfolios, orders
+group5: &CatalogOperatorsGroup
+  name: Catalog Operators
+  description: Catalog Operators can order a portfolio similar to the Catalog Users
+group6: &CatalogPortfolioDesignersGroup
+  name: Catalog Portfolio Designers 
+  description: Catalog Portfolio Designers have the ability to add new Portfolio Items
+policy1: &CatalogAdministratorPolicy
+  name: Catalog Administrator
+  group: *CatalogAdministratorsGroup
+  role: *CatalogAdministratorRole
+  description: Policy for Catalog Administrators who have complete access to all objects in the Catalog Service.
+policy2: &CatalogUserPolicy
+  name: Catalog User
+  group: *CatalogUsersGroup
+  role: *CatalogUserRole
+  description: Policy for Catalog Users who can only order existing portfolios
+policy3: &CatalogEnabledCustomerPolicy
+  name: Catalog feature enabled for customer
+  group: *CatalogEnabledCustomersGroup
+  role: *CatalogEnabledCustomerRole
+  description: Policy for Catalog feature being enabled per customer
+policy4: &CatalogReporterPolicy
+  name: Catalog Reporter
+  group: *CatalogReportersGroup
+  role: *CatalogReporterRole
+  description: Policy for Catalog Reporters who have the ability to list portfolios and orders for reporting purposes.
+policy5: &CatalogOperatorPolicy
+  name: Catalog Operator
+  group: *CatalogOperatorsGroup
+  role: *CatalogOperatorRole
+  description: Policy for Catalog Operators who have the ability to order existing portfolios but can't create or edit portfolios
+policy6: &CatalogPortfolioDesignerPolicy
+  name: Catalog Portfolio Designer
+  group: *CatalogPortfolioDesignersGroup
+  role: *CatalogPortfolioDesignerRole
+  description: Policy for Portfolio Designer who have access to create new portfolios or edit existing portfolios but can't order the portfolio.
+
+roles:
+  - *CatalogAdministratorRole
+  - *CatalogUserRole
+  - *CatalogEnabledCustomerRole
+  - *CatalogReporterRole
+  - *CatalogOperatorRole
+  - *CatalogPortfolioDesignerRole
+groups:
+  - *CatalogAdministratorsGroup
+  - *CatalogUsersGroup
+  - *CatalogEnabledCustomersGroup
+  - *CatalogReportersGroup
+  - *CatalogOperatorsGroup
+  - *CatalogPortfolioDesignersGroup
+policies:
+  - *CatalogAdministratorPolicy
+  - *CatalogUserPolicy
+  - *CatalogEnabledCustomerPolicy
+  - *CatalogReporterPolicy
+  - *CatalogOperatorPolicy
+  - *CatalogPortfolioDesignerPolicy

@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   rescue_from ServiceCatalog::TopologyError, :with => :topology_service_error
+  rescue_from ServiceCatalog::NotAuthorized, :with => :not_authorized_error
   private
 
   set_current_tenant_through_filter
@@ -28,5 +29,9 @@ class ApplicationController < ActionController::API
 
   def topology_service_error(err)
     render :json => {:message => err.message}, :status => :internal_server_error
+  end
+
+  def not_authorized_error(err)
+    render :json => {:message => err.message}, :status => 403
   end
 end

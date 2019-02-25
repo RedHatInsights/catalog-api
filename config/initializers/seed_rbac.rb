@@ -1,0 +1,1 @@
+SeedRBACData.new.process
