@@ -17,7 +17,7 @@ describe "OrderItemsRequests", :type => :request do
 
   context "v0.1" do
     it "lists order items" do
-      get "/api/v0.1/orders/#{order.id}/items"
+      get "/api/v0.1/orders/#{order.id}/order_items"
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
