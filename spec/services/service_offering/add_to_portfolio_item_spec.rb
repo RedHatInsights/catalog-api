@@ -1,4 +1,5 @@
 describe ServiceOffering::AddToPortfolioItem do
+  include ServiceOfferingHelper
   let(:api_instance) { double }
   let(:service_offering_ref) { "1" }
 
@@ -6,7 +7,7 @@ describe ServiceOffering::AddToPortfolioItem do
 
   let(:params) { HashWithIndifferentAccess.new(:name => "test name", :description => "test description") }
 
-  let(:topology_service_offering) { ServiceOfferingHelper.fully_populated_service_offering }
+  let(:topology_service_offering) { fully_populated_service_offering }
   let(:topological_inventory) do
     class_double("TopologicalInventory")
       .as_stubbed_const(:transfer_nested_constants => true)
@@ -30,39 +31,43 @@ describe ServiceOffering::AddToPortfolioItem do
       'name'                        => topology_service_offering.name,
       'description'                 => topology_service_offering.description,
       'service_offering_ref'        => service_offering_ref,
-      'service_offering_source_ref' => topology_service_offering.source_ref,
+      'service_offering_source_ref' => topology_service_offering.source_id,
       'display_name'                => topology_service_offering.display_name,
       'long_description'            => topology_service_offering.long_description,
       'documentation_url'           => topology_service_offering.documentation_url,
-      'support_url'                 => topology_service_offering.support_url
+      'support_url'                 => topology_service_offering.support_url,
+      'distributor'                 => topology_service_offering.distributor
     )
   end
 
-  it "#{described_class}#populate_missing_fields(params)" do
-    # Send in params which only has 2 fields
-    add_to_portfolio_item.instance_variable_set("@params", params)
-    my_params = add_to_portfolio_item.send(:populate_missing_fields)
+  context "private methods" do
+    let(:service_offering) { build_service_offering(:name => "NameyMcNameFace") }
 
-    # It should have added the extra field (source ref) as well as inferring the values of long_description and display name, giving us 5 total fields.
-    expect(my_params.keys.size).to eql 5
-    expect(my_params[:long_description]).to eq(params[:description])
-    expect(my_params[:display_name]).to eq(params[:name])
-  end
+    before do
+      add_to_portfolio_item.instance_variable_set("@service_offering", service_offering)
+      add_to_portfolio_item.instance_variable_set("@params", params)
+    end
 
-  it "#{described_class}#determine_valid_fields" do
-    add_to_portfolio_item.instance_variable_set("@service_offering", topology_service_offering)
+    it "#{described_class}#creation_fields" do
+      creation_fields = add_to_portfolio_item.send(:creation_fields)
+      expect(creation_fields).to eq ["name"]
+    end
 
-    expect(topology_service_offering.instance_variables.count).to eql 9
-    filtered = add_to_portfolio_item.send(:determine_valid_fields)
-    expect(filtered.count).to eql 8
-  end
+    it "#{described_class}#generate_attributes" do
 
-  it "#{described_class}#create_param_map(params)" do
-    service_offering = ServiceOfferingHelper.build_service_offering(:name => "NameyMcNameFace")
-    add_to_portfolio_item.instance_variable_set("@service_offering", service_offering)
+      my_params = add_to_portfolio_item.send(:generate_attributes)
+      %w(name display_name).each do |name|
+        expect(my_params[name]).to eq "NameyMcNameFace"
+      end
+    end
 
-    param_map = add_to_portfolio_item.send(:create_param_map, add_to_portfolio_item.send(:determine_valid_fields))
-    # Only expected one is name since that's what we added.
-    expect(param_map.count).to eql 1
+    it "#{described_class}#populate_missing_fields(params)" do
+      my_params = add_to_portfolio_item.send(:populate_missing_fields)
+
+      # It should have added the extra field (source ref) as well as inferring the values of long_description and display name, giving us 5 total fields.
+      expect(my_params.keys.size).to eql 5
+      expect(my_params[:long_description]).to eq(params[:description])
+      expect(my_params[:display_name]).to eq(params[:name])
+    end
   end
 end

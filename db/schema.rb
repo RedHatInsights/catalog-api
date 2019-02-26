@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(version: 2019_02_19_204110) do
     t.string "service_offering_source_ref"
     t.string "display_name"
     t.string "long_description"
-    t.string "provider_display_name"
+    t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
     t.datetime "discarded_at"

@@ -63,10 +63,6 @@ module Api
         so = ServiceCatalog::ProviderControlParameters.new(params.require(:portfolio_item_id))
         render :json => so.process.data
       end
-
-      def topology_service_error(err)
-        render :json => {:message => err.message}, :status => :internal_server_error
-      end
     end
   end
 end
