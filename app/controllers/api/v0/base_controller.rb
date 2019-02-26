@@ -16,7 +16,7 @@ module Api
       end
 
       def list_portfolios
-        render :json => Portfolio.kept
+        render :json => Portfolio.all
       end
 
       def list_portfolio_items
