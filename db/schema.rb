@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_31_192312) do
+ActiveRecord::Schema.define(version: 2019_02_18_162940) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(version: 2019_01_31_192312) do
     t.string "service_offering_source_ref"
     t.string "display_name"
     t.string "long_description"
-    t.string "provider_display_name"
+    t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"

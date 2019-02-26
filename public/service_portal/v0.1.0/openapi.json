@@ -935,9 +935,9 @@
       "AddPortfolioItem": {
         "type": "object",
         "properties": {
-          "portfolio_id": {
+          "portfolio_item_id": {
             "type": "string",
-            "title": "Portfolio Id",
+            "title": "Portfolio Item Id",
             "example": "100",
             "description": "This is the id of the portfolio item object"
           }
@@ -976,6 +976,36 @@
             "readOnly": true,
             "title": "State",
             "example": "The current state of a portfolio item"
+          },
+          "display_name": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Display Name",
+            "example": "The name of the portfolio item to be displayed in the UI"
+          },
+          "long_description": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Long Description",
+            "example": "The longer description of a portfolio item"
+          },
+          "distributor": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Distributor",
+            "example": "The name of the provider for this Item"
+          },
+          "documentation_url": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Documentation URL",
+            "example": "The URL for documentation of the portfolio item"
+          },
+          "support_url": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Support URL",
+            "example": "The URL for finding support for the portfolio item"
           }
         }
       },
