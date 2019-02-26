@@ -36,7 +36,8 @@ describe ServiceOffering::AddToPortfolioItem do
       'long_description'            => topology_service_offering.long_description,
       'documentation_url'           => topology_service_offering.documentation_url,
       'support_url'                 => topology_service_offering.support_url,
-      'service_offering_icon_id'    => topology_service_offering.service_offering_icon_id
+      'service_offering_icon_id'    => topology_service_offering.service_offering_icon_id,
+      'distributor'                 => topology_service_offering.distributor
     )
   end
 

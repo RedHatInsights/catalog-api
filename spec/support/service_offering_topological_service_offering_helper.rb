@@ -10,7 +10,8 @@ module ServiceOfferingHelper
       :long_description         => "test long description",
       :documentation_url        => "http://test.docs.io",
       :support_url              => "800-555-TEST",
-      :service_offering_icon_id => 998
+      :service_offering_icon_id => 998,
+      :distributor              => "Red Hat Inc."
     )
   end
 
