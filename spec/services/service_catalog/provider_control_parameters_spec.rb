@@ -24,7 +24,7 @@ describe ServiceCatalog::ProviderControlParameters do
 
   it "#{described_class}#process" do
     result = double('links' => {}, 'meta' => {}, 'data' => [project1, project2])
-    expect(api_instance).to receive(:list_container_projects).and_return(result)
+    expect(api_instance).to receive(:list_source_container_projects).and_return(result)
 
     data = provider_control_parameters.process.data
     expect(data['properties']['namespace']['enum'].first).to eq("project one")

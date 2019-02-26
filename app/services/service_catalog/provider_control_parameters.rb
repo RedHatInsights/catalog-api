@@ -10,7 +10,7 @@ module ServiceCatalog
       source_ref = PortfolioItem.find(@portfolio_item_id).service_offering_source_ref
       TopologicalInventory.call do |api_instance|
         # TODO: Temporay till we get this call in the topology service
-        projects = api_instance.list_container_projects.data.select { |p| p.source_id == source_ref }
+        projects = api_instance.list_source_container_projects(source_ref).data
         update_project_list(projects.collect(&:name))
         self
       end
