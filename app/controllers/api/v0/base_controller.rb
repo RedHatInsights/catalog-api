@@ -20,7 +20,7 @@ module Api
       end
 
       def list_portfolio_items
-        render :json => PortfolioItem.kept
+        render :json => PortfolioItem.all
       end
 
       def fetch_portfolio_with_id
