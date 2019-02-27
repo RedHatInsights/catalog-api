@@ -183,7 +183,11 @@ describe 'Portfolios API' do
       end
 
       it 'sets the discarded_at column' do
-        expect(Portfolio.find_by(:id => portfolio_id).discarded_at).to_not be_nil
+        expect(Portfolio.with_discarded.find_by(:id => portfolio_id).discarded_at).to_not be_nil
+      end
+
+      it "can't be requested" do
+        expect { get("/api/v0.1/portfolios/#{portfolio_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
       it 'allows adding portfolios with the same name when one is discarded' do
