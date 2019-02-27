@@ -758,18 +758,18 @@
         }
       }
     },
-    "/icons/{icon_ids}": {
+    "/icons/{icon_id}": {
       "post": {
         "tags": [
           "admins",
           "users"
         ],
         "summary": "Get Icon Data in bulk or one at a time",
-        "operationId": "fetchIconsById",
+        "operationId": "showIcon",
         "description": "Returns the icon data for the specified id(s)",
         "parameters": [
           {
-            "$ref": "#/components/parameters/IconIDs"
+            "$ref": "#/components/parameters/IconID"
           }
         ],
         "responses": {
@@ -795,14 +795,14 @@
         }
       }
     },
-    "/portfolio_items/{portfolio_item_id}/icon": {
+    "/portfolio_items/{portfolio_item_id}/icons": {
       "get": {
         "tags": [
           "users",
           "admins"
         ],
         "summary": "Fetches the specified portfolio item's icon information",
-        "operationId": "fetchServiceOfferingIconFromPortfolioItem",
+        "operationId": "listServiceOfferingIcon",
         "description": "Fetch the specified portfolio item's icon information.",
         "parameters": [
           {
@@ -815,7 +815,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOfferingIcon"
+                  "$ref": "#/components/schemas/ServiceOfferingIconCollection"
                 }
               }
             }
@@ -873,10 +873,10 @@
           "type": "string"
         }
       },
-      "IconIDs": {
-        "name": "icon_ids",
+      "IconID": {
+        "name": "icon_id",
         "in": "path",
-        "description": "The Icon ID(s)",
+        "description": "The Icon ID",
         "required": true,
         "schema": {
           "type": "string"

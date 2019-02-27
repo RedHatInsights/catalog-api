@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
+        resources :icons,                       :only => [:index]
       end
     end
     namespace :v0x0, :path => "v0.0" do
