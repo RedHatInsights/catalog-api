@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_18_162940) do
+ActiveRecord::Schema.define(version: 2019_02_19_143359) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,8 @@ ActiveRecord::Schema.define(version: 2019_02_18_162940) do
     t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
 

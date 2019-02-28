@@ -56,8 +56,16 @@ describe "PortfolioItemRequests", :type => :request do
         delete "/api/v0.0/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
       end
 
-      it 'deletes the record' do
+      it 'discards the record' do
         expect(response).to have_http_status(204)
+      end
+
+      it 'is still present in the db, just with deleted_at set' do
+        expect(PortfolioItem.with_discarded.find_by(:id => portfolio_item_id).discarded_at).to_not be_nil
+      end
+
+      it "can't be requested" do
+        expect { get("/api/v0.1/portfolio_items/#{portfolio_item_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
