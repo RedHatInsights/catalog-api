@@ -186,7 +186,7 @@ describe 'Portfolios API' do
         expect(Portfolio.with_discarded.find_by(:id => portfolio_id).discarded_at).to_not be_nil
       end
 
-      it "can't be requested" do
+      it "cannot be requested" do
         expect { get("/api/v0.1/portfolios/#{portfolio_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
 

@@ -27,7 +27,7 @@ class Portfolio < ApplicationRecord
         errors.add(item.name.to_sym, "PortfolioItem ID #{item.id}: #{item.name} failed to be discarded")
       end
 
-      Rails.logger.error("Failed to discard items from Portfolio #{id} - not discarding portfolio")
+      Rails.logger.error("Failed to discard items from Portfolio '#{name}' id: #{id} - not discarding portfolio")
       throw :abort
     end
   end
