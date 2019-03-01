@@ -194,6 +194,9 @@
           },
           "404": {
             "description": "Portfolio Not Found"
+          },
+          "422": {
+            "description": "Failed to discard child Portfolio Items"
           }
         }
       }
