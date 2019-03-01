@@ -13,6 +13,8 @@ class PortfolioItem < ApplicationRecord
   include Discard::Model
   acts_as_tenant(:tenant)
 
+  default_scope -> { kept }
+
   belongs_to :portfolio
   validates :service_offering_ref, :presence => true
 end

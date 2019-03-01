@@ -23,7 +23,7 @@ module Api
       end
 
       def destroy
-        PortfolioItem.find(params.require(:id)).destroy
+        PortfolioItem.find(params.require(:id)).discard
         head :no_content
       end
 
