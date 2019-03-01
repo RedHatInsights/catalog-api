@@ -1,4 +1,4 @@
-describe ServiceCatalog::RBACAccess do
+describe RBACAccess do
   let(:app_name) { 'catalog' }
   let(:resource) { "portfolio" }
   let(:verb) { "read" }
