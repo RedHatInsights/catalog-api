@@ -40,8 +40,7 @@ class RBACService
   end
 
   private_class_method def self.init(klass)
-    # TODO: Get headers from request
-    headers = {}
+    headers = ManageIQ::API::Common::Headers.current_forwardable
     klass.new.tap do |api|
       api.api_client.default_headers = api.api_client.default_headers.merge(headers)
     end

@@ -12,6 +12,7 @@ describe RBACService do
 
   it "raises RBACError" do
     with_modified_env :RBAC_URL => 'http://www.example.com' do
+      allow(ManageIQ::API::Common::Headers).to receive(:current_forwardable).and_return(:x => 1)
       expect do
         described_class.call(RBACApiClient::StatusApi) do |_klass|
           raise rbac_ex
