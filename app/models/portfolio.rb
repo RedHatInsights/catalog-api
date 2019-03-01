@@ -23,6 +23,10 @@ class Portfolio < ApplicationRecord
 
   before_discard do
     if portfolio_items.map(&:discard).any? { |result| result == false }
+      portfolio_items.kept.each do |item|
+        errors.add(item.name.to_sym, "PortfolioItem ID #{item.id}: #{item.name} failed to be discarded")
+      end
+
       Rails.logger.error("Failed to discard items from Portfolio #{id} - not discarding portfolio")
       throw :abort
     end
