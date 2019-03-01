@@ -21,8 +21,11 @@ class Portfolio < ApplicationRecord
 
   has_many :portfolio_items, :dependent => :destroy
 
-  after_discard do
-    portfolio_items.discard_all
+  before_discard do
+    if portfolio_items.map(&:discard).any? { |result| result == false }
+      Rails.logger.error("Failed to discard items from Portfolio #{id} - not discarding portfolio")
+      throw :abort
+    end
   end
 
   def add_portfolio_item(portfolio_item_id)
