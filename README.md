@@ -95,7 +95,7 @@ Clone the following repo to your dev machine
 Follow the instructions in [README.md](https://github.com/RedHatInsights/insights-proxy/blob/master/README.md)
 
 
-In the service-portal repository the dev_configs directory contains 2 Java script files which can be used with insights proxy to route the service portal requests to your dev machine
+In the service-portal repository the dev_configs directory contains 2 Javascript files which can be used with insights proxy to route the service portal requests to your dev machine
 
 1. service-portal_linux.js
 
