@@ -9,7 +9,8 @@ class SeedRBACData
     create_policies
   end
 
-  private 
+  private
+
   def create_groups
     current = current_groups
     names = current.collect(&:name)
@@ -18,14 +19,15 @@ class SeedRBACData
       RBACService.call(RBACApiClient::GroupApi) do |api_instance|
         @acl_data['groups'].each do |grp|
           next if names.include?(grp['name'])
-          puts "Creating #{grp['name']}"
+          Rails.logger.info("Creating #{grp['name']}")
           group.name = grp['name']
           group.description = grp['description']
-          result = api_instance.create_group(group)
+          api_instance.create_group(group)
         end
       end
     rescue RBACApiClient::ApiError => e
-      puts "Exception when calling GroupApi->create_group: #{e}"
+      Rails.logger.error("Exception when calling GroupApi->create_group: #{e}")
+      raise
     end
   end
 
@@ -49,21 +51,20 @@ class SeedRBACData
             access = RBACApiClient::Access.new
             access.permission = obj['permission']
             access.resource_definition = obj['resource_definition'] || []
-            role_in.access  << access
+            role_in.access << access
           end
-          result = api_instance.create_roles(role_in)
-          p result
+          api_instance.create_roles(role_in)
         end
       end
     rescue RBACApiClient::ApiError => e
-      puts "Exception when calling RoleApi->create_roles: #{e}"
+      Rails.logger.error("Exception when calling RoleApi->create_roles: #{e}")
       raise
     end
   end
 
   def current_roles
     RBACService.call(RBACApiClient::RoleApi) do |api|
-      RBACService.paginate(api, :list_roles,  {}).to_a
+      RBACService.paginate(api, :list_roles, {}).to_a
     end
   end
 
@@ -80,18 +81,18 @@ class SeedRBACData
           policy_in.description = policy['description']
           policy_in.group = find_uuid('Group', groups, policy['group']['name'])
           policy_in.roles = [find_uuid('Role', roles, policy['role']['name'])]
-          result = api_instance.create_policies(policy_in)
-          p result
+          api_instance.create_policies(policy_in)
         end
       end
     rescue RBACApiClient::ApiError => e
-      puts "Exception when calling PolicyApi->create_policies: #{e}"
+      Rails.logger.error("Exception when calling PolicyApi->create_policies: #{e}")
+      raise
     end
   end
 
   def current_policies
     RBACService.call(RBACApiClient::PolicyApi) do |api|
-      RBACService.paginate(api, :list_policies,  {}).to_a
+      RBACService.paginate(api, :list_policies, {}).to_a
     end
   end
 
