@@ -22,8 +22,7 @@ class TopologicalInventory
   end
 
   private_class_method def self.pass_thru_headers
-    # TODO: Get headers from request
-    headers = {}
+    headers = ManageIQ::API::Common::Headers.current_forwardable
     api.api_client.default_headers = api.api_client.default_headers.merge(headers)
   end
 end

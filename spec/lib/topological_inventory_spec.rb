@@ -3,6 +3,7 @@ describe TopologicalInventory do
 
   it "raises TopologyError" do
     with_modified_env :TOPOLOGICAL_INVENTORY_URL => 'http://www.example.com' do
+      allow(ManageIQ::API::Common::Headers).to receive(:current_forwardable).and_return(:x => 1)
       expect do
         described_class.call do |_api|
           raise topo_ex
