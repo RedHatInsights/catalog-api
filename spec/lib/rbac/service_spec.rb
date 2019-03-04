@@ -1,4 +1,4 @@
-describe RBACService do
+describe RBAC::Service do
   let(:rbac_ex) { RBACApiClient::ApiError.new("kaboom") }
   let(:page_size) { 3 }
   let(:page1_data) { [1, 2, 3] }

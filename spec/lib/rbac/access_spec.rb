@@ -1,4 +1,4 @@
-describe RBACAccess do
+describe RBAC::Access do
   let(:app_name) { 'catalog' }
   let(:resource) { "portfolio" }
   let(:verb) { "read" }
@@ -15,7 +15,7 @@ describe RBACAccess do
 
   let(:rbac_access) { described_class.new(resource, verb) }
   let(:api_instance) { double }
-  let(:rs_class) { class_double("RBACService").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:rs_class) { class_double("RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::AccessApi).and_yield(api_instance)
@@ -23,7 +23,7 @@ describe RBACAccess do
 
   it "fetches the array of plans" do
     with_modified_env :APP_NAME => app_name do
-      allow(RBACService).to receive(:paginate).with(api_instance, :get_principal_access, {}, app_name).and_return(acls)
+      allow(RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, {}, app_name).and_return(acls)
       svc_obj = rbac_access.process
       expect(svc_obj.acl.count).to eq(1)
       expect(svc_obj.accessible?).to be_truthy
