@@ -92,16 +92,16 @@ Clone the following repo to your dev machine
 
 [Insights Proxy](https://github.com/RedHatInsights/insights-proxy)
 
-Follow the instructions in [README.md](https://github.com/RedHatInsights/insights-proxy/blob/master/README.md)
+Follow the setup instructions in [README.md](https://github.com/RedHatInsights/insights-proxy/blob/master/README.md#setup)
 
 
-In the service-portal repository the dev_configs directory contains 2 JavaScript files which can be used with insights proxy to route the service portal requests to your dev machine
+In the service-portal repository the dev_configs directory contains 2 JavaScript files which can be used with Insights Proxy to route the service portal requests to your dev machine
 
 1. service-portal_linux.js
 
 2. service-portal_mac.js
 
-The insights proxy runs a docker container and it can be tailored using config files
+The Insights Proxy runs a docker container and it can be tailored using config files
 
 You would need 2 terminals for this setup
 
@@ -115,13 +115,13 @@ You would need 2 terminals for this setup
       
 2. **Run the insights proxy based on Linux or Mac**
 ```
-   SPANDX_CONFIG=/path/to/service_portal_api/dev_configs/. service-portal_mac.js service bash /path/to/insights-proxy/scripts/run.sh
+   SPANDX_CONFIG=/path/to/service_portal_api/dev_configs/service-portal_mac.js bash /path/to/insights-proxy/scripts/run.sh
 ```
    
 3. **Login to the Dev cluster to access the UI**
 
    Using this URL which connects to the insights proxy running in the docker container
-   https://ci.foo.redhat.com:1337/
+   https://ci.foo.redhat.com:1337/insights/platform/service-portal/portfolios
 
 
 ## License
