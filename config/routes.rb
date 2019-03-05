@@ -21,7 +21,7 @@ Rails.application.routes.draw do
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
       end
-      resources :portfolio_items,       :only => [:create, :destroy, :index, :show] do
+      resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
       end

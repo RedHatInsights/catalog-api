@@ -250,4 +250,42 @@ describe "PortfolioItemRequests", :type => :request do
       expect(response).to have_http_status(:internal_server_error)
     end
   end
+
+  describe "patching portfolio items" do
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription' } }
+    let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
+
+    context "when passing in valid attributes" do
+      before do
+        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes
+      end
+
+      it 'returns a 200' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'patches the record' do
+        expect(json["name"]).to eq valid_attributes[:name]
+        expect(json["description"]).to eq valid_attributes[:description]
+      end
+    end
+
+    context "when passing in read-only attributes" do
+      before do
+        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes
+      end
+
+      it 'returns a 200' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the field that is allowed' do
+        expect(json["name"]).to eq invalid_attributes[:name]
+      end
+
+      it "does not update the read-only field" do
+        expect(json["service_offering_ref"]).to_not eq invalid_attributes[:service_offering_ref]
+      end
+    end
+  end
 end
