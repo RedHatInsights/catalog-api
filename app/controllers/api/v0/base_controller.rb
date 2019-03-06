@@ -64,23 +64,6 @@ module Api
         render :json => so.process.data
       end
 
-      def fetch_service_offering_icon_from_portfolio_item
-        portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        so = ServiceOffering::Icons.new(portfolio_item.service_offering_icon_id)
-        render :json => so.process.icons.first
-      rescue ActiveRecord::RecordNotFound => e
-        render :json => { :message => e.message }, :status => :not_found
-      rescue ArgumentError
-        render :json => { :message => "Icon ID not present on Portfolio Item" }, :status => :not_found
-      end
-
-      def fetch_icons_by_id
-        so = ServiceOffering::Icons.new(params.require(:icon_ids))
-        render :json => so.process.icons
-      rescue ServiceCatalog::TopologyError => e
-        render :json => { :message => e.message }, :status => :not_found
-      end
-
       def topology_service_error(err)
         render :json => {:message => err.message}, :status => :internal_server_error
       end

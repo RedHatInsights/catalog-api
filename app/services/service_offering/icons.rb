@@ -1,22 +1,20 @@
 module ServiceOffering
   class Icons
-    attr_reader :icon_ids
-    attr_reader :icons
+    attr_reader :icon_id
+    attr_reader :icon
 
     def initialize(id)
-      @icon_ids = id.to_s
+      @icon_id = id.to_s
     end
 
     def process
-      @icons = @icon_ids.split(",").map do |id|
-        TopologicalInventory.call do |api|
-          api.show_service_offering_icon(id)
-        end
+      TopologicalInventory.call do |api|
+        @icon = api.show_service_offering_icon(@icon_id)
       end
 
       self
     rescue StandardError => e
-      Rails.logger.error("Portfolio Item Icons ID #{@icon_ids}: #{e.message}")
+      Rails.logger.error("Portfolio Item Icons ID #{@icon_id}: #{e.message}")
       raise
     end
   end

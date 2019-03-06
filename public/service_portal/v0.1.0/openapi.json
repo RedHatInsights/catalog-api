@@ -792,44 +792,7 @@
         }
       }
     },
-    "/icons/{icon_id}": {
-      "post": {
-        "tags": [
-          "admins",
-          "users"
-        ],
-        "summary": "Get Icon Data in bulk or one at a time",
-        "operationId": "showIcon",
-        "description": "Returns the icon data for the specified id(s)",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/IconID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of Icon Objects",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ServiceOfferingIconCollection"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon not found"
-          }
-        }
-      }
-    },
-    "/portfolio_items/{portfolio_item_id}/icons": {
+    "/portfolio_items/{portfolio_item_id}/icon": {
       "get": {
         "tags": [
           "users",
@@ -849,7 +812,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOfferingIconCollection"
+                  "$ref": "#/components/schemas/ServiceOfferingIcon"
                 }
               }
             }
@@ -902,15 +865,6 @@
         "name": "portfolio_item_id",
         "in": "path",
         "description": "The Portfolio Item ID",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "IconID": {
-        "name": "icon_id",
-        "in": "path",
-        "description": "The Icon ID",
         "required": true,
         "schema": {
           "type": "string"
@@ -1126,6 +1080,12 @@
             "readOnly": true,
             "title": "Support URL",
             "example": "The URL for finding support for the portfolio item"
+          },
+          "service_offering_icon_ref": {
+              "type": "integer",
+              "readOnly": true,
+              "title": "Service Offering Icon Ref",
+              "example": 20
           }
         }
       },

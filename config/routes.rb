@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
-        resources :icons,                       :only => [:index]
+        resources :icon,                        :only => [:index]
       end
     end
     namespace :v0x0, :path => "v0.0" do
@@ -34,7 +34,6 @@ Rails.application.routes.draw do
       match '/orders/:order_id/items', :controller => 'admins', :action => 'add_to_order', :via => :post
       match '/portfolio_items/:portfolio_item_id/service_plans', :controller => 'admins', :action => 'fetch_plans_with_portfolio_item_id', :via => :get
       match '/portfolio_items/:portfolio_item_id/provider_control_parameters', :controller => 'admins', :action => 'fetch_provider_control_parameters', :via => :get
-      match '/portfolio_items/:portfolio_item_id/icon', :controller => 'admins', :action => 'fetch_service_offering_icon_from_portfolio_item', :via => :get
       match '/portfolios/:portfolio_id/portfolio_items', :controller => 'admins', :action => 'fetch_portfolio_items_with_portfolio', :via => :get
       match '/portfolio_items/:portfolio_item_id', :controller => 'admins', :action => 'fetch_portfolio_item_with_id', :via => :get
       match '/portfolios/:portfolio_id', :controller => 'admins', :action => 'fetch_portfolio_with_id', :via => :get
@@ -49,10 +48,8 @@ Rails.application.routes.draw do
       match '/order_items/:order_item_id/progress_messages', :controller => 'admins', :action => 'list_progress_messages', :via => :get
       match '/orders', :controller => 'admins', :action => 'new_order', :via => :post
       match '/orders/:order_id', :controller => 'admins', :action => 'submit_order', :via => :post
-      match '/icons/:icon_ids', :controller => 'admins', :action => 'fetch_icons_by_id', :via => :get
       match '/orders/:order_id/items', :controller => 'users', :action => 'add_to_order', :via => :post
       match '/portfolio_items/:portfolio_item_id/service_plans', :controller => 'users', :action => 'fetch_plans_with_portfolio_item_id', :via => :get
-      match '/portfolio_items/:portfolio_item_id/icon', :controller => 'users', :action => 'fetch_service_offering_icon_from_portfolio_item', :via => :get
       match '/portfolios/:portfolio_id/portfolio_items', :controller => 'users', :action => 'fetch_portfolio_items_with_portfolio', :via => :get
       match '/portfolio_items/:portfolio_item_id', :controller => 'users', :action => 'fetch_portfolio_item_with_id', :via => :get
       match '/portfolios/:portfolio_id', :controller => 'users', :action => 'fetch_portfolio_with_id', :via => :get
@@ -62,7 +59,6 @@ Rails.application.routes.draw do
       match '/portfolio_items', :controller => 'users', :action => 'list_portfolio_items', :via => :get
       match '/portfolios', :controller => 'users', :action => 'list_portfolios', :via => :get
       match '/order_items/:order_item_id/progress_messages', :controller => 'users', :action => 'list_progress_messages', :via => :get
-      match '/icons/:icon_ids', :controller => 'users', :action => 'fetch_icons_by_id', :via => :get
     end
   end
 end
