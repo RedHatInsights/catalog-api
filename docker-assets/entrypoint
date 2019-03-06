@@ -26,5 +26,5 @@ function check_svc_status() {
 # Wait for postgres to be ready
 check_svc_status $DATABASE_HOST $DATABASE_PORT
 
-bundle exec rake db:create db:migrate
+bundle exec rake db:migrate
 bundle exec rails server
