@@ -1,10 +1,16 @@
 RSpec.describe ApplicationController, :type => :request do
+  include UserHeaderSpecHelper
 
   let(:tenant)            { Tenant.create(:external_tenant => external_tenant) }
   let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id) }
   let(:portfolio_id)      { portfolio.id }
   let!(:external_tenant)  { (Time.zone.now.to_i * rand(1000)).to_s }
-  let(:identity)          { Base64.encode64({'identity' => { 'account_number' => external_tenant}}.to_json) }
+  let(:other_user)        { default_user_hash }
+
+  let(:identity) do
+    other_user['identity']['account_number'] = external_tenant
+    encoded_user_hash(other_user)
+  end
 
   context "with api version v0" do
     let(:api_version)       { api(0) }
