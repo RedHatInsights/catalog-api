@@ -17,30 +17,6 @@ describe ServiceOffering::AddToPortfolioItem do
     allow(topological_inventory).to receive(:call).and_yield(api_instance)
   end
 
-  it "#{described_class}#process" do
-    expect(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
-
-    item = add_to_portfolio_item.process.item
-
-    expect(item).to be_a(PortfolioItem)
-    expect(item.attributes.count).to eql(18)
-
-    # Does it have all the attributes transferred over that we set up above?
-    # noinspection RubyResolve
-    expect(item.attributes).to include(
-      'name'                        => topology_service_offering.name,
-      'description'                 => topology_service_offering.description,
-      'service_offering_ref'        => service_offering_ref,
-      'service_offering_source_ref' => topology_service_offering.source_id,
-      'display_name'                => topology_service_offering.display_name,
-      'long_description'            => topology_service_offering.long_description,
-      'documentation_url'           => topology_service_offering.documentation_url,
-      'support_url'                 => topology_service_offering.support_url,
-      'service_offering_icon_id'    => topology_service_offering.service_offering_icon_id,
-      'distributor'                 => topology_service_offering.distributor
-    )
-  end
-
   context "private methods" do
     let(:service_offering) { build_service_offering(:name => "NameyMcNameFace") }
 

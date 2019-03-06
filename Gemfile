@@ -18,6 +18,7 @@ group :development do
 end
 
 gem 'acts_as_tenant'
+gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.1'
 gem 'more_core_extensions', '~>3.5'

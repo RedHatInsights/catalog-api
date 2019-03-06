@@ -35,8 +35,12 @@ module Api
       end
 
       def destroy
-        Portfolio.find(params.require(:id)).destroy
-        head :no_content
+        portfolio = Portfolio.find(params.require(:id))
+        if portfolio.discard
+          head :no_content
+        else
+          render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity
+        end
       end
 
       private

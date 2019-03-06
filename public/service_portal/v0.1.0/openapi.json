@@ -194,6 +194,9 @@
           },
           "404": {
             "description": "Portfolio Not Found"
+          },
+          "422": {
+            "description": "Failed to discard child Portfolio Items"
           }
         }
       }
@@ -411,6 +414,37 @@
           },
           "404": {
             "description": "Portfolio Item not Found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Edit an existing Portfolio Item",
+        "description": "Returns the edited Portfolio Item Object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "operationId": "updatePortfolioItem",
+        "responses": {
+          "200": {
+            "description": "Return the updated Portfolio Item object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "The Portfolio Item ID was not found"
           }
         }
       }
