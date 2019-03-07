@@ -4,12 +4,14 @@ module ServiceSpecHelper
   end
 
   def admin_headers
-    value = Base64.encode64({'identity' => {'is_org_admin' => true }}.to_json)
-    { 'x-rh-auth-identity' => value }
+    default_headers
   end
 
   def user_headers
-    value = Base64.encode64({'identity' => {'is_org_admin' => false }}.to_json)
-    { 'x-rh-auth-identity' => value }
+    default_headers
+  end
+
+  def default_headers
+    { 'x-rh-identity' => encoded_user_hash }
   end
 end
