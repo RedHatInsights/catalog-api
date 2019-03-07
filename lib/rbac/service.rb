@@ -11,7 +11,7 @@ module RBAC
 
     def self.paginate(obj, method, pagination_options, *method_args)
       Enumerator.new do |enum|
-        opts = { 'page_size' => 10, 'page' => 1 }.merge(pagination_options)
+        opts = { 'limit' => 10, 'offset' => 0 }.merge(pagination_options)
         count = nil
         fetched = 0
         begin
@@ -19,7 +19,7 @@ module RBAC
             args = [method_args, opts].flatten.compact
             result = obj.send(method, *args)
             count ||= result.meta.count
-            opts['page'] = opts['page'] + 1
+            opts['offset'] = opts['offset'] + result.data.count
             result.data.each do |element|
               enum.yield element
             end
@@ -41,7 +41,7 @@ module RBAC
     end
 
     private_class_method def self.init(klass)
-      headers = ManageIQ::API::Common::Headers.current_forwardable
+      headers = ManageIQ::API::Common::Request.current_forwardable
       klass.new.tap do |api|
         api.api_client.default_headers = api.api_client.default_headers.merge(headers)
       end
