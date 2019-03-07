@@ -1,10 +1,9 @@
 RSpec.describe ApplicationController, :type => :request do
-  include UserHeaderSpecHelper
 
   let(:tenant)            { Tenant.create(:external_tenant => external_tenant) }
   let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id) }
   let(:portfolio_id)      { portfolio.id }
-  let!(:external_tenant)  { (Time.zone.now.to_i * rand(1000)).to_s }
+  let!(:external_tenant)  { "0369233" }
   let(:other_user)        { default_user_hash }
 
   let(:identity) do
@@ -34,7 +33,6 @@ RSpec.describe ApplicationController, :type => :request do
   end
 
   context "with tenancy enforcement" do
-    after  { controller.send(:set_current_tenant, nil) }
 
     it "get /portfolios with tenant" do
       headers = { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity }
@@ -71,7 +69,6 @@ RSpec.describe ApplicationController, :type => :request do
 
   context "without tenancy enforcement" do
     before { disable_tenancy }
-    after { controller.send(:set_current_tenant, nil) }
 
     it "get /portfolios" do
       headers = { "CONTENT_TYPE" => "application/json" }
