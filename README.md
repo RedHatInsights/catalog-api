@@ -32,8 +32,8 @@ export MANAGEIQ_PORT=3000
 
 If the topology inventory requires authentication (ie in dev), basic authentication is supported via these variables. They won't be read in unless :
 ```
-export DEV_TOPOLOGICAL_INVENTORY_USERNAME=myuser
-export DEV_TOPOLOGICAL_INVENTORY_PASSWORD=password
+export DEV_USERNAME=myuser
+export DEV_PASSWORD=password
 ```
 
 This sample was generated with the [swagger-codegen](https://github.com/swagger-api/swagger-codegen) project.
