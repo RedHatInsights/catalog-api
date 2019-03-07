@@ -95,7 +95,7 @@ Clone the following repo to your dev machine
 Follow the setup instructions in [README.md](https://github.com/RedHatInsights/insights-proxy/blob/master/README.md#setup)
 
 
-In the service-portal repository the dev_configs directory contains 2 JavaScript files which can be used with Insights Proxy to route the service portal requests to your dev machine
+In the service-portal repository the config/spandx directory contains 2 JavaScript files which can be used with Insights Proxy to route the service portal requests to your dev machine
 
 1. service-portal_linux.js
 
@@ -115,7 +115,7 @@ You would need 2 terminals for this setup
       
 2. **Run the insights proxy based on Linux or Mac**
 ```
-   SPANDX_CONFIG=/path/to/service_portal_api/dev_configs/service-portal_mac.js bash /path/to/insights-proxy/scripts/run.sh
+   SPANDX_CONFIG=/path/to/service_portal_api/config/spandx/service-portal_mac.js bash /path/to/insights-proxy/scripts/run.sh
 ```
    
 3. **Login to the Dev cluster to access the UI**
