@@ -88,6 +88,48 @@ Definitions of the flags used in the below example
 swagger-codegen generate -l rails5 -i public/doc/swagger-2.yaml -o /tmp/sp -t swagger-codegen-templates/'
 ```
 
+## Testing with Dev Insights UI
+
+If you want to run the service portal locally on your dev machine but access the UI on the dev cluster you would need to do the following
+
+Install Docker in your machine
+
+Clone the following repo to your dev machine
+
+[Insights Proxy](https://github.com/RedHatInsights/insights-proxy)
+
+Follow the setup instructions in [README.md](https://github.com/RedHatInsights/insights-proxy/blob/master/README.md#setup)
+
+
+In the service-portal repository the config/spandx directory contains 2 JavaScript files which can be used with Insights Proxy to route the service portal requests to your dev machine
+
+1. service-portal_linux.js
+
+2. service-portal_mac.js
+
+The Insights Proxy runs a docker container and it can be tailored using config files
+
+You would need 2 terminals for this setup
+
+1. **Running your service portal app**
+
+      export APP_NAME=service-portal
+      
+      export PATH_PREFIX=/r/insights/platform
+      
+      bin/rails s -p 5000
+      
+2. **Run the insights proxy based on Linux or Mac**
+```
+   SPANDX_CONFIG=/path/to/service_portal_api/config/spandx/service-portal_mac.js bash /path/to/insights-proxy/scripts/run.sh
+```
+   
+3. **Login to the Dev cluster to access the UI**
+
+   Using this URL which connects to the insights proxy running in the docker container
+   https://ci.foo.redhat.com:1337/insights/platform/service-portal/portfolios
+
+
 ## License
 
 This project is available as open source under the terms of the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
