@@ -36,4 +36,32 @@ describe Catalog::AddToOrder do
       expect { described_class.new(params).process }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  context "when passing in a x-rh-identity header" do
+    let(:order_item) { described_class.new(params).process.order.order_items.first }
+
+    let(:encoded) { encoded_user_hash }
+    let(:request) do
+      { :headers => { 'x-rh-identity' => encoded }, :original_url => 'whatever' }
+    end
+
+    it 'sets the context to the encoded_user_hash' do
+      ManageIQ::API::Common::Request.with_request(request) do
+        expect(order_item.context["headers"]["x-rh-identity"]).to eq encoded
+      end
+    end
+
+    it 'can recreate the request from the context' do
+      item = nil
+      ManageIQ::API::Common::Request.with_request(request) do
+        item = order_item
+      end
+
+      new_request = item.context.transform_keys(&:to_sym)
+      ManageIQ::API::Common::Request.with_request(new_request) do
+        expect(ManageIQ::API::Common::Request.current.user.username).to eq "jdoe"
+        expect(ManageIQ::API::Common::Request.current.user.email).to eq "jdoe@acme.com"
+      end
+    end
+  end
 end
