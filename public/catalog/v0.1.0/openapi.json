@@ -946,6 +946,11 @@
             "type": "string",
             "title": "Approval Workflow ID",
             "example": "The current approval workflow selected for a portfolio"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "example": "jdoe"
           }
         }
       },
@@ -1050,6 +1055,11 @@
             "type": "string",
             "title": "Approval Workflow ID",
             "example": "The approval workflow selected for a portfolio item"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "example": "jdoe"
           }
         }
       },
@@ -1089,6 +1099,11 @@
             "type": "string",
             "format": "date-time",
             "title": "Completed at"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "example": "jdoe"
           }
         }
       },
@@ -1165,6 +1180,11 @@
             "format": "date-time",
             "title": "Completed at",
             "readOnly": true
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "example": "jdoe"
           }
         }
       },

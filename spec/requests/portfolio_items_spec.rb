@@ -145,10 +145,11 @@ describe "PortfolioItemRequests", :type => :request do
       allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
       allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
 
-      post "#{api('0.1')}/portfolio_items", :params => params
+      post "#{api('0.1')}/portfolio_items", :params => params, :headers => admin_headers
       expect(response).to have_http_status(:ok)
       expect(json["id"]).to eq portfolio_item.id
       expect(json["service_offering_ref"]).to eq service_offering_ref
+      expect(json["owner"]).to_not be_nil
     end
   end
 
@@ -257,7 +258,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in valid attributes" do
       before do
-        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes
+        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => admin_headers
       end
 
       it 'returns a 200' do
@@ -271,7 +272,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in read-only attributes" do
       before do
-        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes
+        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => admin_headers
       end
 
       it 'returns a 200' do

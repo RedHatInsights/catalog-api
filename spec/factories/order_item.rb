@@ -4,5 +4,6 @@ FactoryBot.define do
     provider_control_parameters { {'namespace' => 'barney'} }
     service_plan_ref { "something" }
     count { 1 }
+    owner { "wilma" }
   end
 end
