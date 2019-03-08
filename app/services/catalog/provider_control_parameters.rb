@@ -1,4 +1,4 @@
-module ServiceCatalog
+module Catalog
   class ProviderControlParameters
     attr_reader :data
     def initialize(portfolio_item_id)
@@ -27,7 +27,7 @@ module ServiceCatalog
     end
 
     def read_control_parameters
-      # TODO: This belongs in the topology service, temporarily hosting it in service portal
+      # TODO: This belongs in the topology service, temporarily hosting it in catalog
       File.read(Rails.root.join("schemas", "json", "openshift_control_parameters.json"))
     end
   end

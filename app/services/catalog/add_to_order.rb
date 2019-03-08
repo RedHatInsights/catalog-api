@@ -1,4 +1,4 @@
-module ServiceCatalog
+module Catalog
   class AddToOrder
     attr_reader :order
 

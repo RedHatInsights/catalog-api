@@ -9,7 +9,7 @@ class TopologicalInventory
     yield api
   rescue TopologicalInventoryApiClient::ApiError => err
     Rails.logger.error("TopologicalInventoryApiClient::ApiError #{err.message} ")
-    raise ServiceCatalog::TopologyError, err.message
+    raise Catalog::TopologyError, err.message
   end
 
   private_class_method def self.raw_api

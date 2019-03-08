@@ -9,7 +9,7 @@ describe "PortfolioItemRequests", :type => :request do
                             :service_offering_source_ref => service_offering_source_ref)
   end
   let(:portfolio_item_id)    { portfolio_item.id }
-  let(:topo_ex)              { ServiceCatalog::TopologyError.new("kaboom") }
+  let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
 
   %w(admin user).each do |tag|
     describe "GET #{tag} /portfolio_items/:portfolio_item_id" do
@@ -48,7 +48,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe 'DELETE admin tagged /portfolio_items/:portfolio_item_id' do
-    # TODO: https://github.com/ManageIQ/service_portal-api/issues/85
+    # TODO: https://github.com/ManageIQ/catalog-api/issues/85
     let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
 
     context 'when :portfolio_item_id is valid' do
@@ -153,11 +153,11 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   context "service plans" do
-    let(:svc_object)           { instance_double("ServiceCatalog::ServicePlans") }
+    let(:svc_object)           { instance_double("Catalog::ServicePlans") }
     let(:plans)                { [{}, {}] }
 
     before do
-      allow(ServiceCatalog::ServicePlans).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
+      allow(Catalog::ServicePlans).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
     end
 
     it "fetches plans" do
@@ -198,11 +198,11 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   context "provider control parameters" do
-    let(:svc_object)  { instance_double("ServiceCatalog::ProviderControlParameters") }
+    let(:svc_object)  { instance_double("Catalog::ProviderControlParameters") }
     let(:url)         { "/api/v0.0/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     before do
-      allow(ServiceCatalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
+      allow(Catalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
     end
 
     it "fetches plans" do
@@ -225,11 +225,11 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   context "v0.1 provider control parameters" do
-    let(:svc_object)  { instance_double("ServiceCatalog::ProviderControlParameters") }
+    let(:svc_object)  { instance_double("Catalog::ProviderControlParameters") }
     let(:url)         { "#{api('0.1')}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     before do
-      allow(ServiceCatalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
+      allow(Catalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
     end
 
     it "fetches plans" do

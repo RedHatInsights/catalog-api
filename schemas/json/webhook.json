@@ -1,6 +1,6 @@
 {
   "title": "Web hook",
-  "description": "This web hook allows us to send a JSON object from the service portal",
+  "description": "This web hook allows us to send a JSON object from the catalog",
   "type": "object",
   "required": [
     "url"
@@ -49,7 +49,7 @@
     "secret": {
       "type": "string",
       "title": "Secret",
-      "description": "If specified we will create a HMAC signature of the body with the secret and include it in the HTTP Header X-Service-Portal-Signature"
+      "description": "If specified we will create a HMAC signature of the body with the secret and include it in the HTTP Header X-Catalog-Signature"
     },
     "authentication": {
       "$ref": "#/definitions/Authentications",

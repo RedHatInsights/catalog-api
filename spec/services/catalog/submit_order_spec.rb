@@ -1,4 +1,4 @@
-describe ServiceCatalog::SubmitOrder do
+describe Catalog::SubmitOrder do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }

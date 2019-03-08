@@ -8,7 +8,7 @@ describe TopologicalInventory do
         described_class.call do |_api|
           raise topo_ex
         end
-      end.to raise_exception(ServiceCatalog::TopologyError)
+      end.to raise_exception(Catalog::TopologyError)
     end
   end
 end

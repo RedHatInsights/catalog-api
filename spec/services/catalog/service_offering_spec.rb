@@ -1,4 +1,4 @@
-describe ServiceCatalog::ServiceOffering do
+describe Catalog::ServiceOffering do
   let(:api_instance) { double }
   let(:service_offering) { described_class.new }
   let(:service_offering_ref) { "1" }

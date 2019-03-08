@@ -12,7 +12,7 @@ module Api
       end
 
       def submit_order
-        so = ServiceCatalog::SubmitOrder.new(params.require(:order_id))
+        so = Catalog::SubmitOrder.new(params.require(:order_id))
         render :json => so.process.order
       end
     end

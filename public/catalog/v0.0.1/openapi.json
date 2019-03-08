@@ -3,7 +3,7 @@
     "info": {
         "description": "This is a API to fetch and order catalog items from different cloud sources",
         "version": "0.0.1",
-        "title": "Service Portal API",
+        "title": "Catalog API",
         "contact": {
             "email": "support@redhat.com"
         },
@@ -750,10 +750,10 @@
     },
     "servers": [
         {
-            "url": "https://localhost/r/insights/platform/service-portal"
+            "url": "https://localhost/r/insights/platform/catalog"
         },
         {
-            "url": "http://localhost/r/insights/platform/service-portal"
+            "url": "http://localhost/r/insights/platform/catalog"
         }
     ],
     "components": {

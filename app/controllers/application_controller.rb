@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   include Response
-  rescue_from ServiceCatalog::TopologyError, :with => :topology_service_error
+  rescue_from Catalog::TopologyError, :with => :topology_service_error
 
   around_action :with_current_request
 
@@ -15,7 +15,7 @@ class ApplicationController < ActionController::API
           ActsAsTenant.current_tenant = nil
           yield
         end
-      rescue ServiceCatalog::NoTenantError
+      rescue Catalog::NoTenantError
         json_response({ :message => 'Unauthorized' }, :unauthorized)
       end
     end
@@ -25,7 +25,7 @@ class ApplicationController < ActionController::API
     tenant = current_user.tenant rescue nil
     found_tenant = Tenant.find_or_create_by(:external_tenant => tenant) if tenant.present?
     return found_tenant if found_tenant
-    raise ServiceCatalog::NoTenantError
+    raise Catalog::NoTenantError
   end
 
   def topology_service_error(err)

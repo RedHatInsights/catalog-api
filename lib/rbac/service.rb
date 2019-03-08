@@ -6,7 +6,7 @@ module RBAC
       yield init(klass)
     rescue RBACApiClient::ApiError => err
       Rails.logger.error("RBACApiClient::ApiError #{err.message} ")
-      raise ServiceCatalog::RBACError, err.message
+      raise Catalog::RBACError, err.message
     end
 
     def self.paginate(obj, method, pagination_options, *method_args)
