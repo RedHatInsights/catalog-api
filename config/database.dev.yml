@@ -10,13 +10,13 @@ default: &default
 
 development:
   <<: *default
-  database: service_portal_development
+  database: catalog_development
   min_messages: notice
 
 test:
   <<: *default
-  database: service_portal_test
+  database: catalog_test
 
 production:
   <<: *default
-  database: service_portal_production
+  database: catalog_production

@@ -12,7 +12,7 @@ module Api
       end
 
       def create
-        so = ServiceCatalog::AddToOrder.new(params)
+        so = Catalog::AddToOrder.new(params)
         render :json => so.process.order
       end
 

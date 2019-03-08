@@ -4,11 +4,11 @@ describe "OrderRequests", :type => :request do
   let!(:order) { create(:order) }
 
   context "submit order" do
-    let(:svc_object) { instance_double("ServiceCatalog::SubmitOrder") }
-    let(:topo_ex) { ServiceCatalog::TopologyError.new("kaboom") }
+    let(:svc_object) { instance_double("Catalog::SubmitOrder") }
+    let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
     let(:params) { order.id.to_s }
     before do
-      allow(ServiceCatalog::SubmitOrder).to receive(:new).with(params).and_return(svc_object)
+      allow(Catalog::SubmitOrder).to receive(:new).with(params).and_return(svc_object)
     end
 
     it "successfully adds submits an order" do
@@ -47,9 +47,9 @@ describe "OrderRequests", :type => :request do
   end
 
   context "add to order" do
-    let(:svc_object) { instance_double("ServiceCatalog::AddToOrder") }
+    let(:svc_object) { instance_double("Catalog::AddToOrder") }
     before do
-      allow(ServiceCatalog::AddToOrder).to receive(:new).and_return(svc_object)
+      allow(Catalog::AddToOrder).to receive(:new).and_return(svc_object)
     end
 
     it "successfully adds to an order" do

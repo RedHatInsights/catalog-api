@@ -1,4 +1,4 @@
-module ServiceCatalog
+module Catalog
   class SubmitOrder
     attr_reader :order
 

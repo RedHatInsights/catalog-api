@@ -16,7 +16,7 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module ServiceCatalog
+module Catalog
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -33,6 +33,6 @@ module ServiceCatalog
     config.autoload_paths << Rails.root.join('lib').to_s
 
     ManageIQ::API::Common::Logging.activate(config)
-    ManageIQ::API::Common::Metrics.activate(config, "service_portal_api")
+    ManageIQ::API::Common::Metrics.activate(config, "catalog_api")
   end
 end

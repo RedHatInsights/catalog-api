@@ -1,4 +1,4 @@
-describe ServiceCatalog::ServicePlans do
+describe Catalog::ServicePlans do
   let(:service_offering_ref) { "998" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:params) { portfolio_item.id }

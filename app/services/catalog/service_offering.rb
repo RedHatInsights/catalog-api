@@ -1,4 +1,4 @@
-module ServiceCatalog
+module Catalog
   class ServiceOffering
     def initialize
       @name = nil

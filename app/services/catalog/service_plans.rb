@@ -1,4 +1,4 @@
-module ServiceCatalog
+module Catalog
   class ServicePlans
     attr_reader :items
     def initialize(portfolio_item_id)

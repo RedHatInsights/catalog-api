@@ -17,7 +17,7 @@ describe RBAC::Service do
         described_class.call(RBACApiClient::StatusApi) do |_klass|
           raise rbac_ex
         end
-      end.to raise_exception(ServiceCatalog::RBACError)
+      end.to raise_exception(Catalog::RBACError)
     end
   end
 

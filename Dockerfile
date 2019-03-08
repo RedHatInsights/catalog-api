@@ -14,7 +14,7 @@ RUN yum -y install centos-release-scl-rh && \
                    && \
     yum clean all
 
-ENV WORKDIR /opt/service_portal-api/
+ENV WORKDIR /opt/catalog-api/
 ENV RAILS_ROOT $WORKDIR
 WORKDIR $WORKDIR
 

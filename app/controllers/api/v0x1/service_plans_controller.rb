@@ -4,7 +4,7 @@ module Api
       include Api::V0x1::Mixins::IndexMixin
 
       def index
-        so = ServiceCatalog::ServicePlans.new(params.require(:portfolio_item_id))
+        so = Catalog::ServicePlans.new(params.require(:portfolio_item_id))
         render :json => so.process.items
       end
     end

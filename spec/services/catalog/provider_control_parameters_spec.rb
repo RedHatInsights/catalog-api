@@ -1,4 +1,4 @@
-describe ServiceCatalog::ProviderControlParameters do
+describe Catalog::ProviderControlParameters do
   let(:api_instance) { double }
   let(:provider_control) { described_class.new }
   let(:name) { 'project1' }

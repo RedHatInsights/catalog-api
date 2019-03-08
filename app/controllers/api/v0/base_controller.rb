@@ -1,7 +1,7 @@
 module Api
   module V0
     class BaseController < ApplicationController
-      rescue_from ServiceCatalog::TopologyError, :with => :topology_service_error
+      rescue_from Catalog::TopologyError, :with => :topology_service_error
 
       def list_order_item
         render :json => Order.find(params.require(:order_id)).order_items.find(params.require(:order_item_id))
@@ -50,17 +50,17 @@ module Api
       end
 
       def submit_order
-        so = ServiceCatalog::SubmitOrder.new(params.require(:order_id))
+        so = Catalog::SubmitOrder.new(params.require(:order_id))
         render :json => so.process.order
       end
 
       def fetch_plans_with_portfolio_item_id
-        so = ServiceCatalog::ServicePlans.new(params.require(:portfolio_item_id))
+        so = Catalog::ServicePlans.new(params.require(:portfolio_item_id))
         render :json => so.process.items
       end
 
       def fetch_provider_control_parameters
-        so = ServiceCatalog::ProviderControlParameters.new(params.require(:portfolio_item_id))
+        so = Catalog::ProviderControlParameters.new(params.require(:portfolio_item_id))
         render :json => so.process.data
       end
     end
