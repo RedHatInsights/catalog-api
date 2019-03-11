@@ -38,6 +38,7 @@ class OrderItem < ApplicationRecord
 
   def set_defaults
     self.state = "Created"
+    self.context = ManageIQ::API::Common::Request.current.to_h
   end
 
   def update_message(level, message)
