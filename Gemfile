@@ -24,6 +24,7 @@ gem 'acts_as_tenant'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.1'
+gem 'manageiq-messaging', '~> 0.1.2', :require => false
 gem 'more_core_extensions', '~>3.5'
 gem 'pg', '~> 1.0', :require => false
 gem 'prometheus-client', '~> 0.8.0'
