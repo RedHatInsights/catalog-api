@@ -46,7 +46,7 @@ module Api
       private
 
       def portfolio_params
-        params.permit(:name, :description, :image_url, :enabled)
+        params.permit(:name, :description, :image_url, :enabled, :workflow_ref)
       end
     end
   end

@@ -941,6 +941,11 @@
             "title": "Image URL",
             "format": "url",
             "example": "The public facing image url for a portfolio"
+          },
+          "workflow_ref": {
+            "type": "string",
+            "title": "Approval Workflow ID",
+            "example": "The current approval workflow selected for a portfolio"
           }
         }
       },

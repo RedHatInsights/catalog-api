@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(version: 2019_03_07_171244) do
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.datetime "discarded_at"
+    t.string "workflow_ref"
     t.index ["discarded_at"], name: "index_portfolios_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end
