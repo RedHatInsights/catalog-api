@@ -11,7 +11,7 @@ module RBAC
 
     def self.paginate(obj, method, pagination_options, *method_args)
       Enumerator.new do |enum|
-        opts = { 'limit' => 10, 'offset' => 0 }.merge(pagination_options)
+        opts = { :limit => 10, :offset => 0 }.merge(pagination_options)
         count = nil
         fetched = 0
         begin
@@ -19,7 +19,7 @@ module RBAC
             args = [method_args, opts].flatten.compact
             result = obj.send(method, *args)
             count ||= result.meta.count
-            opts['offset'] = opts['offset'] + result.data.count
+            opts[:offset] = opts[:offset] + result.data.count
             result.data.each do |element|
               enum.yield element
             end
