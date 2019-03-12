@@ -252,7 +252,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe "patching portfolio items" do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription' } }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef'} }
     let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
 
     context "when passing in valid attributes" do
@@ -265,8 +265,7 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it 'patches the record' do
-        expect(json["name"]).to eq valid_attributes[:name]
-        expect(json["description"]).to eq valid_attributes[:description]
+        expect(json).to include(valid_attributes.stringify_keys)
       end
     end
 
