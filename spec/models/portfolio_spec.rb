@@ -18,9 +18,11 @@ describe Portfolio do
   end
 
   context "destroy portfolio cascading portfolio_items" do
-    before do
-      ActsAsTenant.current_tenant = nil
-      portfolio.add_portfolio_item(portfolio_item)
+    around do |example|
+      ActsAsTenant.without_tenant do
+        portfolio.add_portfolio_item(portfolio_item)
+        example.call
+      end
     end
 
     it "destroys portfolio_items only associated with the current portfolio" do
@@ -32,8 +34,11 @@ describe Portfolio do
 
   context "when updating a portfolio" do
     let(:workflow_ref) { Time.now.to_i }
-    before do
-      ActsAsTenant.current_tenant = tenant
+
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
     end
 
     it "will allow adding a workflow_ref" do
@@ -45,8 +50,10 @@ describe Portfolio do
   context "when a tenant tries to create portfolios with the same name" do
     let(:portfolio_copy) { create(:portfolio, :without_tenant) }
 
-    before do
-      ActsAsTenant.current_tenant = tenant
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
     end
 
     it "will fail validation" do
@@ -65,8 +72,10 @@ describe Portfolio do
     let(:portfolio_copy) { create(:portfolio, :without_tenant) }
     let(:second_tenant)  { create(:tenant) }
 
-    before do
-      ActsAsTenant.current_tenant = tenant
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
     end
 
     it "will pass validation" do
@@ -83,8 +92,10 @@ describe Portfolio do
 
   context "without current_tenant" do
 
-    before do
-      ActsAsTenant.current_tenant = nil
+    around do |example|
+      ActsAsTenant.without_tenant do
+        example.call
+      end
     end
 
     describe "#add_portfolio_item" do
@@ -112,25 +123,26 @@ describe Portfolio do
   context "with and without current_tenant" do
     let(:portfolio_two) { create(:portfolio) }
     let(:tenant_two)    { create(:tenant) }
+
     describe "#add_portfolio_item" do
-      before do
-        ActsAsTenant.current_tenant = tenant_two
-        portfolio_two
-        ActsAsTenant.current_tenant = tenant
-        portfolio
-      end
-
       it "only finds a portfolio scoped to the current_tenant" do
-          ActsAsTenant.current_tenant = nil
+        ActsAsTenant.with_tenant(tenant_two) do
+          portfolio_two
+        end
+        ActsAsTenant.with_tenant(tenant) do
+          portfolio
+        end
+        ActsAsTenant.without_tenant do
           expect(Portfolio.all.count).to eq 2
-
-          ActsAsTenant.current_tenant = tenant
+        end
+        ActsAsTenant.with_tenant(tenant) do
           expect(Portfolio.all.count).to eq 1
           expect(Portfolio.first.tenant_id).to eq tenant.id
-
-          ActsAsTenant.current_tenant = tenant_two
+        end
+        ActsAsTenant.with_tenant(tenant_two) do
           expect(Portfolio.all.count).to eq 1
           expect(Portfolio.first.tenant_id).to eq tenant_two.id
+        end
       end
     end
   end
