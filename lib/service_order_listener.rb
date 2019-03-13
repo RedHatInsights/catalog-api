@@ -13,16 +13,18 @@ class ServiceOrderListener
   end
 
   def run
-    Thread.new do
-      self.client = ManageIQ::Messaging::Client.open(messaging_client_options)
+    Thread.new { subscribe_to_task_updates }
+  end
 
-      client.subscribe_messages(
-        :service   => SERVICE_NAME,
-        :max_bytes => 500_000
-      ) do |messages|
-        messages.each do |msg|
-          process_message(msg)
-        end
+  def subscribe_to_task_updates
+    self.client = ManageIQ::Messaging::Client.open(messaging_client_options)
+
+    client.subscribe_messages(
+      :service   => SERVICE_NAME,
+      :max_bytes => 500_000
+    ) do |messages|
+      messages.each do |msg|
+        process_message(msg)
       end
     end
   ensure
@@ -33,7 +35,7 @@ class ServiceOrderListener
   private
 
   def process_message(msg)
-    ProgressMessage.create(
+    ProgressMessage.create!(
       :level   => "info",
       :message => "Task update message received with payload: #{msg.payload}"
     )

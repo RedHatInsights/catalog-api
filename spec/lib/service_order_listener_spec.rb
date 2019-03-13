@@ -1,7 +1,7 @@
 describe ServiceOrderListener do
   let(:client) { double(:client) }
 
-  describe "#run" do
+  describe "#subscribe_to_task_updates" do
     let(:messages) { [ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil)] }
     let(:payload) { {"task_id" => "123", "state" => state} }
     let!(:item) do
@@ -28,6 +28,7 @@ describe ServiceOrderListener do
         :service   => ServiceOrderListener::SERVICE_NAME,
         :max_bytes => 500_000
       ).and_yield(messages)
+      allow(client).to receive(:close)
     end
 
     context "when the order item is not findable" do
@@ -37,7 +38,7 @@ describe ServiceOrderListener do
         let(:state) { "test" }
 
         it "creates a progress message about the payload" do
-          subject.run.join
+          subject.subscribe_to_task_updates
           latest_progress_message = ProgressMessage.last
           expect(latest_progress_message.level).to eq("info")
           expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
@@ -48,14 +49,14 @@ describe ServiceOrderListener do
         let(:state) { "completed" }
 
         it "creates a progress message about the payload" do
-          subject.run.join
+          subject.subscribe_to_task_updates
           latest_progress_message = ProgressMessage.second_to_last
           expect(latest_progress_message.level).to eq("info")
           expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
         end
 
         it "creates a progress message with an error" do
-          subject.run.join
+          subject.subscribe_to_task_updates
           latest_progress_message = ProgressMessage.last
           expect(latest_progress_message.level).to eq("error")
           expect(latest_progress_message.message).to eq("Could not find OrderItem with topology_task_ref of 123")
@@ -70,14 +71,14 @@ describe ServiceOrderListener do
         let(:state) { "test" }
 
         it "creates a progress message about the payload" do
-          subject.run.join
+          subject.subscribe_to_task_updates
           latest_progress_message = ProgressMessage.last
           expect(latest_progress_message.level).to eq("info")
           expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
         end
 
         it "does not update the order" do
-          subject.run.join
+          subject.subscribe_to_task_updates
           item.reload
           expect(item.state).to eq("Created")
         end
@@ -87,14 +88,14 @@ describe ServiceOrderListener do
         let(:state) { "completed" }
 
         it "creates a progress message about the payload" do
-          subject.run.join
+          subject.subscribe_to_task_updates
           latest_progress_message = ProgressMessage.second_to_last
           expect(latest_progress_message.level).to eq("info")
           expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
         end
 
         it "updates the order item to be completed" do
-          subject.run.join
+          subject.subscribe_to_task_updates
           item.reload
           expect(item.state).to eq("Order Completed")
         end
