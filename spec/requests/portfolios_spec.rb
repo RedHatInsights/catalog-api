@@ -209,7 +209,7 @@ describe 'Portfolios API' do
   end
 
   describe 'PATCH admin tagged /portfolios/:portfolio_id' do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => "123456" } }
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
     context 'when patched portfolio is valid' do
       before do
@@ -240,6 +240,7 @@ describe 'Portfolios API' do
         expect(json).not_to be_empty
         expect(json).to be_a Hash
         expect(json['name']).to eq valid_attributes[:name]
+        expect(json['workflow_ref']).to eq valid_attributes[:workflow_ref]
       end
     end
 
