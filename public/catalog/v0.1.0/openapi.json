@@ -1045,6 +1045,11 @@
             "readOnly": true,
             "title": "Support URL",
             "example": "The URL for finding support for the portfolio item"
+          },
+          "workflow_ref": {
+            "type": "string",
+            "title": "Approval Workflow ID",
+            "example": "The approval workflow selected for a portfolio item"
           }
         }
       },
