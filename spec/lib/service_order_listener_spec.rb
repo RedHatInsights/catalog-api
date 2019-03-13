@@ -1,5 +1,3 @@
-require "manageiq-messaging"
-
 describe ServiceOrderListener do
   let(:client) { double(:client) }
 

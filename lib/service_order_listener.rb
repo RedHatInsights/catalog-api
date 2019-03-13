@@ -1,3 +1,5 @@
+require "manageiq-messaging"
+
 class ServiceOrderListener
   SERVICE_NAME = "platform.topological-inventory.task-output-stream".freeze
   CLIENT_AND_GROUP_REF = "catalog-api-worker".freeze
@@ -7,7 +9,7 @@ class ServiceOrderListener
   attr_accessor :messaging_client_options, :client
 
   def initialize(messaging_client_options = {})
-    self.messaging_client_options = default_messaing_options.merge(messaging_client_options)
+    self.messaging_client_options = default_messaging_options.merge(messaging_client_options)
   end
 
   def run
@@ -50,7 +52,7 @@ class ServiceOrderListener
     )
   end
 
-  def default_messaing_options
+  def default_messaging_options
     {
       :protocol   => :Kafka,
       :client_ref => CLIENT_AND_GROUP_REF,
