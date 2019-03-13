@@ -1,4 +1,9 @@
 class ServiceOrderListener
+  SERVICE_NAME = "platform.topological-inventory.task-output-stream".freeze
+  CLIENT_AND_GROUP_REF = "catalog-api-worker".freeze
+
+  class OrderItemNotFound < StandardError; end
+
   attr_accessor :messaging_client_options, :client
 
   def initialize(messaging_client_options = {})
@@ -9,10 +14,10 @@ class ServiceOrderListener
     Thread.new do
       self.client = ManageIQ::Messaging::Client.open(messaging_client_options)
 
-      client.subscribe_messages({
-        :service   => "platform.topological-inventory.task-output-stream",
+      client.subscribe_messages(
+        :service   => SERVICE_NAME,
         :max_bytes => 500_000
-      }) do |messages|
+      ) do |messages|
         messages.each do |msg|
           process_message(msg)
         end
@@ -26,19 +31,30 @@ class ServiceOrderListener
   private
 
   def process_message(msg)
+    ProgressMessage.create(
+      :level   => "info",
+      :message => "Task update message received with payload: #{msg.payload}"
+    )
+
     if msg.payload["state"] == "completed"
       item = OrderItem.where(:topology_task_ref => msg.payload["task_id"]).first
-      item.state = 'Order Completed?'
+      raise OrderItemNotFound if item.nil?
+      item.state = 'Order Completed'
       item.update_message('info', 'Order Complete')
       item.save!
     end
+  rescue OrderItemNotFound
+    ProgressMessage.create(
+      :level   => "error",
+      :message => "Could not find OrderItem with topology_task_ref of #{msg.payload["task_id"]}"
+    )
   end
 
   def default_messaing_options
     {
       :protocol   => :Kafka,
-      :client_ref => "catalog-api-worker?",
-      :group_ref  => "catalog-api-worker?"
+      :client_ref => CLIENT_AND_GROUP_REF,
+      :group_ref  => CLIENT_AND_GROUP_REF
     }
   end
 end
