@@ -53,11 +53,11 @@ module RBAC
     end
 
     def add_verbs_to_group(group, verbs)
-      result = @share_info.detect { |grp| grp['uuid'] == group.uuid }
+      result = @share_info.detect { |grp| grp['group_uuid'] == group.uuid }
       if result
-        verbs.each { |verb| result['verbs'].add(verb) }
+        verbs.each { |verb| result['permissions'].add(verb) }
       else
-        @share_info << { 'uuid' => group.uuid, 'name' => group.name, 'verbs' => Set.new(verbs) }
+        @share_info << { 'group_uuid' => group.uuid, 'group_name' => group.name, 'permissions' => Set.new(verbs) }
       end
     end
   end

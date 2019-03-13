@@ -48,27 +48,27 @@ describe RBAC::QuerySharedResource do
       allow(api_instance).to receive(:get_role).with(role1.uuid).and_return(role1_detail)
       allow(api_instance).to receive(:get_role).with(role2.uuid).and_return(role2_detail)
       obj = subject.process
-      expect(obj.share_info.first['verbs']).to match_array(expected_verbs)
+      expect(obj.share_info.first['permissions']).to match_array(expected_permissions)
     end
   end
 
   context "with no verbs" do
     let(:verbs) { nil }
-    let(:expected_verbs) { %w[read write order] }
+    let(:expected_permissions) { %w[read write order] }
 
     it_behaves_like "#share_info"
   end
 
   context "with read only verb" do
     let(:verbs) { %w[read] }
-    let(:expected_verbs) { verbs }
+    let(:expected_permissions) { verbs }
 
     it_behaves_like "#share_info"
   end
 
   context "with read and order verb" do
     let(:verbs) { %w[read order] }
-    let(:expected_verbs) { verbs }
+    let(:expected_permissions) { verbs }
 
     it_behaves_like "#share_info"
   end
