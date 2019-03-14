@@ -2,12 +2,14 @@ require 'rbac-api-client'
 module RBAC
   class UnshareResource
     include Utilities
+    attr_accessor :count
     def initialize(options)
       @app_name = options[:app_name]
       @resource_ids = options[:resource_ids]
       @resource_name = options[:resource_name]
       @group_uuids = SortedSet.new(options[:group_uuids])
       @regexp = Regexp.new("#{@app_name}:#{@resource_name}:(#{options[:verbs].join('|')})")
+      @count = 0
     end
 
     def process
@@ -53,6 +55,7 @@ module RBAC
           role = api_instance.get_role(uuid)
           matching_acls = find_matching_acls(role.access, resource_id)
           next if matching_acls.empty?
+          @count += 1
           update_role(role, resource_id)
           # get the updated role
           role = api_instance.get_role(uuid)
