@@ -8,7 +8,6 @@ describe RBAC::UnshareResource do
       :resource_name => "portfolios" }
   end
 
-
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
     allow(rs_class).to receive(:call).with(RBACApiClient::RoleApi).and_yield(api_instance)
