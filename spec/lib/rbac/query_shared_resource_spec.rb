@@ -7,7 +7,11 @@ describe RBAC::QuerySharedResource do
       :resource_id   => resource_id1,
       :resource_name => resource }
   end
+  let(:resource1_access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
+  let(:resource1_access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def1]) }
+  let(:resource1_access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definitions => [resource_def1]) }
   let(:roles) { [shared_role1, shared_role2] }
+  let(:subject) { described_class.new(options) }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)

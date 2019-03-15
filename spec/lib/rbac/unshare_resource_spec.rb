@@ -7,6 +7,7 @@ describe RBAC::UnshareResource do
       :resource_ids  => [resource_id1],
       :resource_name => "portfolios" }
   end
+  let(:subject) { described_class.new(options) }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)

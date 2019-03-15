@@ -8,6 +8,7 @@ describe RBAC::ShareResource do
       :resource_ids  => %w[4 5],
       :resource_name => "portfolios" }
   end
+  let(:subject) { described_class.new(options) }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
