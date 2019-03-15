@@ -13,7 +13,7 @@ RSpec.describe ApplicationController, :type => :request do
 
   context "with api version v0" do
     let(:api_version)       { api(0) }
-    let(:api_minor_version) { api }
+    let(:api_minor_version) { api(0.1) }
 
     it "get api/v0/portfolios with tenant" do
       headers = { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity }
