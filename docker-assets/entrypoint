@@ -1,30 +1,13 @@
 #!/bin/bash
 
-export RAILS_ENV=production
-
-echo "== Writing encryption key =="
-cat > $WORKDIR/v2_key << KEY
----
-:algorithm: aes-256-cbc
-:key: ${ENCRYPTION_KEY}
-KEY
-
-function check_svc_status() {
-  local SVC_NAME=$1 SVC_PORT=$2
-
-  [[ $# -lt 2 ]] && echo "Error something seems wrong, we need at least two parameters to check service status" && exit 1
-
-  echo "== Checking ${SVC_NAME}:$SVC_PORT status =="
-
-  while true; do
-    ncat ${SVC_NAME} ${SVC_PORT} < /dev/null && break
-    sleep 5
-  done
-  echo "${SVC_NAME}:${SVC_PORT} - accepting connections"
+function urlescape() {
+  PAYLOAD="$1" ruby -rcgi -e "puts CGI.escape(ENV['PAYLOAD'])"
 }
 
-# Wait for postgres to be ready
-check_svc_status $DATABASE_HOST $DATABASE_PORT
+safeuser=$(urlescape ${DATABASE_USER})
+safepass=$(urlescape ${DATABASE_PASSWORD})
 
-bundle exec rake db:migrate
-bundle exec rails server
+export RAILS_ENV=production
+export DATABASE_URL="postgresql://${safeuser}:${safepass}@${DATABASE_HOST}:${DATABASE_PORT}/catalog_production?encoding=utf8&pool=5&wait_timeout=5"
+
+exec ${@}
