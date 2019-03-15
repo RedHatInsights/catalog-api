@@ -40,7 +40,7 @@ module RBAC
           role_obj = api_instance.get_role(role.uuid)
           acls = find_matching_acls(role_obj.access, @resource_id)
           next if acls.empty?
-          add_verbs_to_group(group, collect_verbs(acls))
+          add_to_share_info(group, collect_verbs(acls))
         end
       end
     end
@@ -52,7 +52,7 @@ module RBAC
       end.compact
     end
 
-    def add_verbs_to_group(group, verbs)
+    def add_to_share_info(group, verbs)
       result = @share_info.detect { |grp| grp['group_uuid'] == group.uuid }
       if result
         verbs.each { |verb| result['permissions'].add(verb) }
