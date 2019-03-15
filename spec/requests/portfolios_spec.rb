@@ -319,5 +319,65 @@ describe 'Portfolios API' do
         expect(response).to have_http_status(422)
       end
     end
+
+    RSpec.shared_context "sharing_objects" do
+      let(:group_uuids) { %w[1 2 3] }
+      let(:permissions) { %w[read] }
+      let(:app_name) { "catalog" }
+    end
+
+    context 'share' do
+      include_context "sharing_objects"
+      let(:sharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
+      let(:dummy) { double("RBAC::ShareResource", :process => self) }
+      it "portfolio" do
+        with_modified_env :APP_NAME => app_name do
+          options = {:app_name      => app_name,
+                     :resource_ids  => [portfolio.id.to_s],
+                     :resource_name => 'portfolios',
+                     :verbs         => permissions,
+                     :group_uuids   => group_uuids}
+          expect(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
+          post "#{api('0.1')}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => admin_headers
+          expect(response).to have_http_status(204)
+        end
+      end
+    end
+
+    context 'unshare' do
+      include_context "sharing_objects"
+      let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
+      let(:dummy) { double("RBAC::UnshareResource", :process => self) }
+      it "portfolio" do
+        with_modified_env :APP_NAME => app_name do
+          options = {:app_name      => app_name,
+                     :resource_ids  => [portfolio.id.to_s],
+                     :resource_name => 'portfolios',
+                     :verbs         => permissions,
+                     :group_uuids   => group_uuids}
+          expect(RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
+          post "#{api('0.1')}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => admin_headers
+          expect(response).to have_http_status(204)
+        end
+      end
+    end
+
+    context 'share_info' do
+      include_context "sharing_objects"
+      let(:dummy_response) { double(:share_info => {'a' => 1}) }
+      let(:dummy) { double("RBAC::UnshareResource", :process => dummy_response) }
+      it "portfolio" do
+        with_modified_env :APP_NAME => app_name do
+          options = {:app_name      => app_name,
+                     :resource_id   => portfolio.id.to_s,
+                     :resource_name => 'portfolios',
+                     :verbs         => []}
+          expect(RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
+          get "#{api('0.1')}/portfolios/#{portfolio.id}/share_info", :headers => admin_headers
+
+          expect(response).to have_http_status(200)
+        end
+      end
+    end
   end
 end

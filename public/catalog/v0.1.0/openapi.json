@@ -297,6 +297,124 @@
         }
       }
     },
+    "/portfolios/{portfolio_id}/share": {
+      "post": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Share a portfolio with one or more groups with specific permission",
+        "operationId": "sharePortfolio",
+        "description": "Share a Portfolio with one or more groups with specific permissions\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully shared the portfolio"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "The Portfolio Object or or one or more of the groups was not found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharePolicy"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/portfolios/{portfolio_id}/unshare": {
+      "post": {
+        "tags": [
+          "admins"
+        ],
+        "summary": "Unshare a portfolio from one or more groups with specific permission",
+        "operationId": "unsharePortfolio",
+        "description": "Unshare a Portfolio with one or more groups with specific permissions\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully unshared portfolio"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "The Portfolio Object or the one or more of the groups was not found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnsharePolicy"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/portfolios/{portfolio_id}/share_info": {
+      "get": {
+        "tags": [
+          "users",
+          "admins"
+        ],
+        "summary": "Fetch share information about this portfolio, the response would include a collection of groups and permissions with each group",
+        "operationId": "share_info",
+        "description": "Fetch share information about a portfolio\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an array of group uuid, name and permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShareInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "The Portfolio object not found"
+          }
+        }
+      }
+    },
     "/portfolio_items": {
       "get": {
         "tags": [
@@ -973,11 +1091,6 @@
             "type": "string",
             "title": "Approval Workflow ID",
             "example": "The current approval workflow selected for a portfolio"
-          },
-          "owner": {
-            "type": "string",
-            "title": "Owner",
-            "example": "jdoe"
           }
         }
       },
@@ -1077,16 +1190,6 @@
             "readOnly": true,
             "title": "Support URL",
             "example": "The URL for finding support for the portfolio item"
-          },
-          "workflow_ref": {
-            "type": "string",
-            "title": "Approval Workflow ID",
-            "example": "The approval workflow selected for a portfolio item"
-          },
-          "owner": {
-            "type": "string",
-            "title": "Owner",
-            "example": "jdoe"
           }
         }
       },
@@ -1126,11 +1229,6 @@
             "type": "string",
             "format": "date-time",
             "title": "Completed at"
-          },
-          "owner": {
-            "type": "string",
-            "title": "Owner",
-            "example": "jdoe"
           }
         }
       },
@@ -1207,11 +1305,6 @@
             "format": "date-time",
             "title": "Completed at",
             "readOnly": true
-          },
-          "owner": {
-            "type": "string",
-            "title": "Owner",
-            "example": "jdoe"
           }
         }
       },
@@ -1401,6 +1494,78 @@
         "type": "object",
         "title": "Provider Control Parameters",
         "description": "JSON Schema for Provider control parameters"
+      },
+      "SharePolicy": {
+        "type": "object",
+        "required": [
+          "permissions",
+          "group_uuids"
+        ],
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "title": "Name",
+            "description": "The permissions to apply for this share",
+            "items": {
+              "type": "string"
+            }
+          },
+          "group_uuids": {
+            "type": "array",
+            "title": "The Group UUIDs",
+            "description": "An array of group UUID's retrieved from the RBAC Service with whom the resource has to be shared.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UnsharePolicy": {
+        "type": "object",
+        "required": [
+          "permissions"
+        ],
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "title": "Name",
+            "description": "The permissions to remove for this resource",
+            "items": {
+              "type": "string"
+            }
+          },
+          "group_uuids": {
+            "type": "array",
+            "title": "The Group UUIDs",
+            "description": "An array of group UUID's retrieved from the RBAC Service from which the permissions have to be removed. If group uuids are not specified we will unshare it from all groups",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ShareInfo": {
+        "type": "object",
+        "properties": {
+          "group_uuid": {
+            "type": "string",
+            "title": "The Group UUID",
+            "description": "The Group UUID"
+          },
+          "group_name": {
+            "type": "string",
+            "title": "The Group Name",
+            "description": "The Group Name"
+          },
+          "permissions": {
+            "type": "array",
+            "title": "Permissions",
+            "description": "One or more permissions currently applied to this group",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       }
     }
   }
