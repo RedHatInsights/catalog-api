@@ -3,7 +3,7 @@
 // The Insights UI is running on CI dev cluster
 module.exports = {
     routes: {
-        '/r/insights/platform/catalog': { host: 'http://localhost:5000' },
+        '/api/catalog': { host: 'http://localhost:5000' },
         '/insights': { host:  'PORTAL_BACKEND_MARKER' }
     }
 };
