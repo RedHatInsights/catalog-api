@@ -9,8 +9,8 @@ module RBAC
       @resource_id = options[:resource_id]
       @resource_name = options[:resource_name]
       @share_info = []
-      verbs = options[:verbs]
-      @regexp = if verbs
+      verbs = options[:verbs] || []
+      @regexp = if verbs.present?
                   Regexp.new("#{@app_name}:#{@resource_name}:(#{verbs.join('|')})")
                 else
                   Regexp.new("#{@app_name}:#{@resource_name}:")
