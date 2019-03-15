@@ -23,6 +23,7 @@ describe 'Portfolios API' do
         it 'returns portfolio requested' do
           expect(json).not_to be_empty
           expect(json['id']).to eq(portfolio_id.to_s)
+          expect(json['created_at']).to eq(portfolio.created_at.iso8601)
         end
       end
     end
