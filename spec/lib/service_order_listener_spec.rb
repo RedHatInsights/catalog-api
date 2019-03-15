@@ -2,6 +2,14 @@ describe ServiceOrderListener do
   let(:client) { double(:client) }
 
   describe "#subscribe_to_task_updates" do
+    let(:request) do
+      { :headers => { 'x-rh-identity' => encoded_user_hash }, :original_url => 'whatever' }
+    end
+
+    around do |example|
+      ManageIQ::API::Common::Request.with_request(request) { example.call }
+    end
+
     let(:messages) { [ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil)] }
     let(:payload) { {"task_id" => "123", "state" => state} }
     let!(:item) do

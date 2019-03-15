@@ -295,6 +295,10 @@ describe 'Portfolios API' do
 
         expect(response).to have_http_status(422)
       end
+
+      it 'stores the username in the owner column' do
+        expect(json['owner']).to eq default_user_hash["identity"]["user"]["username"]
+      end
     end
 
     context 'when portfolio attributes are valid v0.1' do

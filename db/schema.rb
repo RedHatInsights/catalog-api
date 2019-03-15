@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2019_03_12_200721) do
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
     t.jsonb "context"
+    t.string "owner"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
@@ -41,6 +42,7 @@ ActiveRecord::Schema.define(version: 2019_03_12_200721) do
     t.datetime "completed_at"
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
+    t.string "owner"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
@@ -63,6 +65,7 @@ ActiveRecord::Schema.define(version: 2019_03_12_200721) do
     t.string "support_url"
     t.datetime "discarded_at"
     t.string "workflow_ref"
+    t.string "owner"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
@@ -77,6 +80,7 @@ ActiveRecord::Schema.define(version: 2019_03_12_200721) do
     t.bigint "tenant_id"
     t.datetime "discarded_at"
     t.string "workflow_ref"
+    t.string "owner"
     t.index ["discarded_at"], name: "index_portfolios_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end

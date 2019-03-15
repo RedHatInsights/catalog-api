@@ -1,7 +1,7 @@
 RSpec.describe ApplicationController, :type => :request do
 
   let(:tenant)            { Tenant.create(:external_tenant => external_tenant) }
-  let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id) }
+  let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id, :owner => 'wilma') }
   let(:portfolio_id)      { portfolio.id }
   let!(:external_tenant)  { "0369233" }
   let(:other_user)        { default_user_hash }
