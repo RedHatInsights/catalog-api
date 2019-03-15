@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   end
 
   scope :as => :api, :module => "api", :path => prefix do
-    match "/v0/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v0.0/%{path}", :only_path => true)
+    match "/v0/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v0.1/%{path}", :only_path => true)
     namespace :v0x1, :path => "v0.1" do
       post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
       resources :orders,                :only => [:create, :index] do
