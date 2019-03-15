@@ -37,4 +37,4 @@ RUN chgrp -R 0 $WORKDIR && \
 EXPOSE 3000
 
 ENTRYPOINT ["entrypoint"]
-ENTRYPOINT ["run_rails_server"]
+CMD ["run_rails_server"]
