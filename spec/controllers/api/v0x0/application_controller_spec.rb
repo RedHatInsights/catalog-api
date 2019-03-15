@@ -40,7 +40,7 @@ RSpec.describe ApplicationController, :type => :request do
       get("/api/v0.0/portfolios/#{portfolio_id}", :headers => headers)
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body).to include("id" => portfolio_id)
+      expect(response.parsed_body).to include("id" => portfolio_id.to_s)
     end
 
     it "get /portfolios without tenant" do

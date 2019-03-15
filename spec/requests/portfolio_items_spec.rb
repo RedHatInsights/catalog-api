@@ -23,7 +23,7 @@ describe "PortfolioItemRequests", :type => :request do
         end
 
         it 'returns the portfolio_item we asked for' do
-          expect(json["id"]).to eq portfolio_item.id
+          expect(json["id"]).to eq portfolio_item.id.to_s
         end
       end
     end
@@ -41,7 +41,7 @@ describe "PortfolioItemRequests", :type => :request do
         end
 
         it 'returns the portfolio_item we asked for' do
-          expect(json["id"]).to eq portfolio_item.id
+          expect(json["id"]).to eq portfolio_item.id.to_s
         end
       end
     end
@@ -121,7 +121,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       post "#{api}/portfolio_items", :params => params
       expect(response).to have_http_status(:ok)
-      expect(json["id"]).to eq portfolio_item.id
+      expect(json["id"]).to eq portfolio_item.id.to_s
       expect(json["service_offering_ref"]).to eq service_offering_ref
     end
   end
@@ -147,7 +147,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       post "#{api('0.1')}/portfolio_items", :params => params, :headers => admin_headers
       expect(response).to have_http_status(:ok)
-      expect(json["id"]).to eq portfolio_item.id
+      expect(json["id"]).to eq portfolio_item.id.to_s
       expect(json["service_offering_ref"]).to eq service_offering_ref
       expect(json["owner"]).to_not be_nil
     end
