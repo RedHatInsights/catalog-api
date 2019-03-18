@@ -1,5 +1,9 @@
 describe "PortfolioItemRequests", :type => :request do
-  before { disable_tenancy }
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
