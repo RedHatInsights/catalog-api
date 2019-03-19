@@ -335,7 +335,7 @@ describe 'Portfolios API' do
           options = {:app_name      => app_name,
                      :resource_ids  => [portfolio.id.to_s],
                      :resource_name => 'portfolios',
-                     :verbs         => permissions,
+                     :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
           post "#{api('0.1')}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => admin_headers
@@ -353,7 +353,7 @@ describe 'Portfolios API' do
           options = {:app_name      => app_name,
                      :resource_ids  => [portfolio.id.to_s],
                      :resource_name => 'portfolios',
-                     :verbs         => permissions,
+                     :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
           post "#{api('0.1')}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => admin_headers
@@ -370,8 +370,7 @@ describe 'Portfolios API' do
         with_modified_env :APP_NAME => app_name do
           options = {:app_name      => app_name,
                      :resource_id   => portfolio.id.to_s,
-                     :resource_name => 'portfolios',
-                     :verbs         => []}
+                     :resource_name => 'portfolios'}
           expect(RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
           get "#{api('0.1')}/portfolios/#{portfolio.id}/share_info", :headers => admin_headers
 
