@@ -1,73 +1,53 @@
 # load the gem
 require 'rbac-api-client'
-require 'securerandom'
 module RBAC
   class ShareResource
     include Utilities
+    include ACLS
     def initialize(options)
       @app_name = options[:app_name]
       @resource_name = options[:resource_name]
-      @verbs = options[:verbs]
+      @permissions = options[:permissions]
       @resource_ids = options[:resource_ids]
-      @group_uuids  = SortedSet.new(options[:group_uuids])
+      @group_uuids = SortedSet.new(options[:group_uuids])
     end
 
     def process
       validate_groups
-      @group_uuids.each { |uuid| add_policy_for_group(uuid) }
+      @roles = RBAC::Roles.new("#{@app_name}-#{@resource_name}-")
+      @group_uuids.each { |uuid| manage_roles_for_group(uuid) }
       self
     end
 
     private
 
-    def add_policy_for_group(group_uuid)
+    def manage_roles_for_group(group_uuid)
       @resource_ids.each do |resource_id|
-        @unique_name = "#{SecureRandom.uuid}-Sharing"
-        role = add_role(resource_id)
-        add_policy(group_uuid, role.uuid)
+        name = unique_name(resource_id, group_uuid)
+        role = @roles.find_role_by_name(name)
+        role ? update_existing_role(role, resource_id) : add_new_role(name, group_uuid, resource_id)
       end
     end
 
-    def add_role(resource_id)
-      RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
-        role_in = RBACApiClient::RoleIn.new
-        role_in.name = @unique_name
-        role_in.access = acl(resource_id)
-        api_instance.create_roles(role_in)
-      end
+    def update_existing_role(role, resource_id)
+      role.access = updated_acls(role.access, resource_id, @permissions)
+      @roles.update_role(role) if role.access.present?
     end
 
-    def acl(resource_id)
-      resource_def = resource_definition(resource_id)
-      @verbs.collect do |verb|
-        RBACApiClient::Access.new.tap do |access|
-          permission = "#{@app_name}:#{@resource_name}:#{verb}"
-          access.permission = permission
-          access.resource_definitions = [resource_def]
-        end
-      end
+    def add_new_role(name, group_uuid, resource_id)
+      acls = new_acls(resource_id, @permissions)
+      role = @roles.add_role(name, acls)
+      add_policy(name, group_uuid, role.uuid)
     end
 
-    def add_policy(group_uuid, role_uuid)
+    def add_policy(name, group_uuid, role_uuid)
       RBAC::Service.call(RBACApiClient::PolicyApi) do |api_instance|
         policy_in = RBACApiClient::PolicyIn.new
-        policy_in.name = @unique_name
+        policy_in.name = name
         policy_in.description = 'Shared Policy'
         policy_in.group = group_uuid
         policy_in.roles = [role_uuid]
         api_instance.create_policies(policy_in)
-      end
-    end
-
-    def resource_definition(resource_id)
-      rdf = RBACApiClient::ResourceDefinitionFilter.new.tap do |obj|
-        obj.key       = 'id'
-        obj.operation = 'equal'
-        obj.value     = resource_id.to_s
-      end
-
-      RBACApiClient::ResourceDefinition.new.tap do |rd|
-        rd.attribute_filter = rdf
       end
     end
   end

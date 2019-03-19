@@ -9,17 +9,16 @@ module RBAC
       end
     end
 
-    def find_matching_acls(acls, resource_id)
-      acls.select { |access| matches?(access, resource_id) }
+    def unique_name(resource_id, group_id)
+      "#{@app_name}-#{@resource_name}-#{resource_id}-group-#{group_id}"
     end
 
-    def delete_matching_acls(acls, resource_id)
-      acls.delete_if { |access| matches?(access, resource_id) }
-    end
-
-    def matches?(access, resource_id)
-      @regexp.match(access.permission) &&
-        access.resource_definitions.any? { |rdf| rdf.attribute_filter.value == resource_id }
+    def parse_ids_from_name(name)
+      @regexp ||= Regexp.new("#{@app_name}-#{@resource_name}-(?<resource_id>.*)-group-(?<group_uuid>.*)")
+      result = @regexp.match(name)
+      if result
+        [result[:resource_id], result[:group_uuid]]
+      end
     end
   end
 end

@@ -2,15 +2,18 @@ describe RBAC::QuerySharedResource do
   include_context "rbac_objects"
 
   let(:options) do
-    { :verbs         => verbs,
+    { :permissions   => permissions,
       :app_name      => app_name,
       :resource_id   => resource_id1,
       :resource_name => resource }
   end
-  let(:resource1_access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
-  let(:resource1_access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def1]) }
-  let(:resource1_access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definitions => [resource_def1]) }
-  let(:roles) { [shared_role1, shared_role2] }
+  let(:pagination_options) { { :limit => 100, :name => "catalog-portfolios-#{resource_id1}" } }
+
+  let(:access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
+  let(:access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def1]) }
+  let(:access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definitions => [resource_def1]) }
+  let(:role1_detail) { double(:name => role1.name, :uuid => role1.uuid, :access => [access1, access2, access3]) }
+  let(:roles) { [role1, role2] }
   let(:subject) { described_class.new(options) }
 
   before do
@@ -23,31 +26,18 @@ describe RBAC::QuerySharedResource do
     it "query resource definitions" do
       allow(RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
       allow(RBAC::Service).to receive(:paginate).with(api_instance, :list_policies, {}).and_return(policies)
-      allow(api_instance).to receive(:get_role).with(shared_role1.uuid).and_return(shared_role1_detail)
-      allow(api_instance).to receive(:get_role).with(shared_role2.uuid).and_return(shared_role2_detail)
+      allow(RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return([role1, role2])
+      allow(api_instance).to receive(:get_group).with(group1.uuid).and_return(group1)
+      allow(api_instance).to receive(:get_role).with(role1.uuid).and_return(role1_detail)
+      allow(api_instance).to receive(:get_role).with(role2.uuid).and_return(role2_detail)
 
       obj = subject.process
       expect(obj.share_info.first['permissions']).to match_array(expected_permissions)
     end
   end
 
-  context "with no verbs" do
-    let(:verbs) { nil }
-    let(:expected_permissions) { %w[read write order] }
-
-    it_behaves_like "#share_info"
-  end
-
-  context "with read only verb" do
-    let(:verbs) { %w[read] }
-    let(:expected_permissions) { verbs }
-
-    it_behaves_like "#share_info"
-  end
-
-  context "with read and order verb" do
-    let(:verbs) { %w[read order] }
-    let(:expected_permissions) { verbs }
+  context "all permissions" do
+    let(:expected_permissions) { %w[catalog:portfolios:read catalog:portfolios:write catalog:portfolios:order] }
 
     it_behaves_like "#share_info"
   end
