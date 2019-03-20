@@ -73,6 +73,17 @@
         ],
         "summary": "API to add a new portfolio",
         "operationId": "createPortfolio",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Portfolio"
+              }
+            }
+          },
+          "description": "Parameters needed to add a Portfolio",
+          "required": true
+        },
         "description": "Returns the added portfolio object\n",
         "responses": {
           "200": {
@@ -94,9 +105,6 @@
           "422": {
             "$ref": "#/components/responses/InvalidEntity"
           }
-        },
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Portfolio"
         }
       }
     },
@@ -151,6 +159,17 @@
             "$ref": "#/components/parameters/ID"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Portfolio"
+              }
+            }
+          },
+          "description": "Parameters needed to update a Portfolio",
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Edited portfolio object",
@@ -171,9 +190,6 @@
           "422": {
             "$ref": "#/components/responses/InvalidEntity"
           }
-        },
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Portfolio"
         }
       },
       "delete": {
@@ -425,6 +441,17 @@
             "$ref": "#/components/parameters/ID"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortfolioItem"
+              }
+            }
+          },
+          "description": "Parameters needed to update a Portfolio Item",
+          "required": true
+        },
         "operationId": "updatePortfolioItem",
         "responses": {
           "200": {
