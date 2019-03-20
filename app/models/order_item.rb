@@ -24,6 +24,7 @@ class OrderItem < ApplicationRecord
   belongs_to :order
   belongs_to :portfolio_item
   has_many :progress_messages
+  has_many :approval_requests, :dependent => :destroy
   after_initialize :set_defaults, unless: :persisted?
 
   NON_DATE_ATTRIBUTES = %w(order_id service_plan_ref portfolio_item_id state service_parameters provider_control_parameters external_ref)
