@@ -2,22 +2,22 @@ module RBAC
   class Roles
     def initialize(prefix)
       @roles = {}
-      load_roles(prefix)
+      load(prefix)
       @deleted_roles = SortedSet.new
     end
 
-    def find_role_by_name(name)
+    def find(name)
       uuid = @roles[name]
-      get_role(uuid) if uuid
+      get(uuid) if uuid
     end
 
     def with_each_role
       @roles.each_value do |uuid|
-        yield get_role(uuid)
+        yield get(uuid)
       end
     end
 
-    def add_role(name, acls)
+    def add(name, acls)
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
         role_in = RBACApiClient::RoleIn.new
         role_in.name = name
@@ -26,13 +26,13 @@ module RBAC
       end
     end
 
-    def update_role(role)
+    def update(role)
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
         api_instance.update_role(role.uuid, role)
       end
     end
 
-    def delete_role(role)
+    def delete(role)
       @deleted_roles.add(role.uuid)
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
         api_instance.delete_role(role.uuid)
@@ -41,7 +41,7 @@ module RBAC
 
     private
 
-    def load_roles(prefix)
+    def load(prefix)
       opts = { :limit => 100,
                :name  => prefix }
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
@@ -51,7 +51,7 @@ module RBAC
       end
     end
 
-    def get_role(uuid)
+    def get(uuid)
       raise ArgumentError, "Role object #{uuid} has been deleted" if @deleted_roles.include?(uuid)
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
         api_instance.get_role(uuid)

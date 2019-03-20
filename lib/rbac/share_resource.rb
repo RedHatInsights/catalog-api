@@ -3,13 +3,13 @@ require 'rbac-api-client'
 module RBAC
   class ShareResource
     include Utilities
-    include ACLS
     def initialize(options)
       @app_name = options[:app_name]
       @resource_name = options[:resource_name]
       @permissions = options[:permissions]
       @resource_ids = options[:resource_ids]
       @group_uuids = SortedSet.new(options[:group_uuids])
+      @acls = RBAC::ACLS.new
     end
 
     def process
@@ -24,19 +24,19 @@ module RBAC
     def manage_roles_for_group(group_uuid)
       @resource_ids.each do |resource_id|
         name = unique_name(resource_id, group_uuid)
-        role = @roles.find_role_by_name(name)
+        role = @roles.find(name)
         role ? update_existing_role(role, resource_id) : add_new_role(name, group_uuid, resource_id)
       end
     end
 
     def update_existing_role(role, resource_id)
-      role.access = updated_acls(role.access, resource_id, @permissions)
-      @roles.update_role(role) if role.access.present?
+      role.access = @acls.update(role.access, resource_id, @permissions)
+      @roles.update(role) if role.access.present?
     end
 
     def add_new_role(name, group_uuid, resource_id)
-      acls = new_acls(resource_id, @permissions)
-      role = @roles.add_role(name, acls)
+      acls = @acls.create(resource_id, @permissions)
+      role = @roles.add(name, acls)
       add_policy(name, group_uuid, role.uuid)
     end
 

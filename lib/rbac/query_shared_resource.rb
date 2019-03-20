@@ -22,7 +22,6 @@ module RBAC
     def build_share_info
       @roles.with_each_role do |role|
         _id, group_uuid = parse_ids_from_name(role.name)
-        next if group_uuid.nil?
         group = get_group(group_uuid)
         @share_info << { 'group_name'  => group.name,
                          'group_uuid'  => group.uuid,

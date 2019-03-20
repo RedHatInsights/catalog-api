@@ -12,10 +12,10 @@ module RBAC
     def manage_roles_for_group(group_uuid)
       @resource_ids.each do |resource_id|
         name = unique_name(resource_id, group_uuid)
-        role = @roles.find_role_by_name(name)
+        role = @roles.find(name)
         next unless role
-        role.access = remove_acls(role.access, resource_id, @permissions)
-        role.access.present? ? @roles.update_role(role) : @roles.delete_role(role)
+        role.access = @acls.remove(role.access, resource_id, @permissions)
+        role.access.present? ? @roles.update(role) : @roles.delete(role)
         @count += 1
       end
     end
