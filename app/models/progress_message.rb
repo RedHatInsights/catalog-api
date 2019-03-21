@@ -14,15 +14,11 @@ class ProgressMessage < ApplicationRecord
   acts_as_tenant(:tenant)
 
   after_initialize :set_defaults, unless: :persisted?
-  NON_DATE_ATTRIBUTES = %w(level message)
-  DATE_ATTRIBUTES     = %w(received_at)
+
+  AS_JSON_ATTRIBUTES = %w(id level message received_at).freeze
 
   def as_json(_options = {})
-    attributes.slice(*NON_DATE_ATTRIBUTES).tap do |hash|
-      DATE_ATTRIBUTES.each do |attr|
-        hash[attr] = self.send(attr.to_sym).iso8601 if self.send(attr.to_sym)
-      end
-    end.merge(:id => id.to_s)
+    super.slice(*AS_JSON_ATTRIBUTES)
   end
 
   def set_defaults

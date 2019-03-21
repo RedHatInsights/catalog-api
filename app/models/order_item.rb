@@ -26,15 +26,11 @@ class OrderItem < ApplicationRecord
   has_many :progress_messages
   after_initialize :set_defaults, unless: :persisted?
 
-  NON_DATE_ATTRIBUTES = %w(order_id service_plan_ref portfolio_item_id state service_parameters provider_control_parameters external_ref)
-  DATE_ATTRIBUTES     = %w(created_at ordered_at completed_at updated_at)
+  AS_JSON_ATTRIBUTES = %w(id order_id service_plan_ref portfolio_item_id state service_parameters
+                          provider_control_parameters external_ref created_at ordered_at completed_at updated_at).freeze
 
   def as_json(_options = {})
-    attributes.slice(*NON_DATE_ATTRIBUTES).tap do |hash|
-      DATE_ATTRIBUTES.each do |attr|
-        hash[attr] = self.send(attr.to_sym).iso8601 if self.send(attr.to_sym)
-      end
-    end.merge(:id => id.to_s)
+    super.slice(*AS_JSON_ATTRIBUTES)
   end
 
   def set_defaults
