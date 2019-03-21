@@ -18,6 +18,9 @@ Rails.application.routes.draw do
         resources :progress_messages,     :only => [:index]
       end
       post '/portfolios/:portfolio_id/portfolio_items', :action => 'add_portfolio_item_to_portfolio', :controller => 'portfolios', :as => 'add_portfolio_item_to_portfolio'
+      post '/portfolios/:portfolio_id/share', :action => 'share', :controller => 'portfolios', :as => 'share'
+      post '/portfolios/:portfolio_id/unshare', :action => 'unshare', :controller => 'portfolios', :as => 'unshare'
+      get '/portfolios/:portfolio_id/share_info', :action => 'share_info', :controller => 'portfolios', :as => 'share_info'
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
       end
