@@ -310,6 +310,16 @@
             "$ref": "#/components/parameters/PortfolioID"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharePolicy"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successfully shared the portfolio"
@@ -323,16 +333,6 @@
           "404": {
             "description": "The Portfolio Object or or one or more of the groups was not found."
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SharePolicy"
-              }
-            }
-          },
-          "required": true
         }
       }
     },
@@ -349,6 +349,16 @@
             "$ref": "#/components/parameters/PortfolioID"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnsharePolicy"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successfully unshared portfolio"
@@ -362,16 +372,6 @@
           "404": {
             "description": "The Portfolio Object or the one or more of the groups was not found."
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UnsharePolicy"
-              }
-            }
-          },
-          "required": true
         }
       }
     },
