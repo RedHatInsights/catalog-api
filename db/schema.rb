@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2019_03_22_202902) do
     t.integer "order_item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "reason"
     t.integer "state", default: 0
   end
 

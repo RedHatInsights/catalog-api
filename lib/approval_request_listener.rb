@@ -2,9 +2,8 @@ require "manageiq-messaging"
 
 class ApprovalRequestListener
   SERVICE_NAME = "platform.approval".freeze
-  CLIENT_AND_GROUP_REF = "catalog-api-worker".freeze
-
-  class ApprovalRequestNotFound < StandardError; end
+  CLIENT_AND_GROUP_REF = "approval-catalog-api-worker".freeze
+  EVENT_REQUEST_FINISHED = 'request_finished'.freeze
 
   attr_accessor :messaging_client_options, :client
 
@@ -19,7 +18,7 @@ class ApprovalRequestListener
   def subscribe_to_approval_updates
     self.client = ManageIQ::Messaging::Client.open(messaging_client_options)
 
-    client.subscribe_messages(
+    client.subscribe_topic(
       :service   => SERVICE_NAME,
       :max_bytes => 500_000
     ) do |messages|
@@ -35,23 +34,25 @@ class ApprovalRequestListener
   private
 
   def process_message(msg)
-    ProgressMessage.create!(
-      :level   => "info",
-      :message => "Task update message received with payload: #{msg.payload}"
-    )
-    if msg.payload["decision"] == "approved"
-      approval = ApprovalRequest.find_by(:approval_request_ref => msg.payload["request_id"])
-      raise ApprovalRequestNotFound if approval.nil?
-      approval.status = msg.payload["reason"]
-      # TODO Make ProgressMessage polymorphic to support multiple model types
-      approval.update_message('info', 'Approval Complete')
-      approval.save!
+    approval = ApprovalRequest.find_by!(:approval_request_ref => msg.payload["request_id"])
+    approval.order_item.update_message("info", "Task update message received with payload: #{msg.payload}")
+    if msg.message == EVENT_REQUEST_FINISHED && (msg.payload["decision"] == "approved" || msg.payload["decision"] == "denied")
+      update_and_log_state(approval, msg.payload)
     end
-  rescue ApprovalRequestNotFound
-    ProgressMessage.create(
+  rescue ActiveRecord::RecordNotFound
+    Rails.logger.error("Could not find Approval Request with request_id of #{msg.payload['request_id']}")
+    ProgressMessage.create!(
       :level   => "error",
-      :message => "Could not find Approval Request with request_id of #{msg.payload["request_id"]}"
+      :message => "Could not find Approval Request with request_id of #{msg.payload['request_id']}"
     )
+  end
+
+  def update_and_log_state(approval, payload)
+    decision = payload['decision']
+    reason = payload['reason']
+    log_message = decision == "approved" ? "Approval Complete: #{reason}" : "Approval Denied: #{reason}"
+    approval.order_item.update_message("info", log_message)
+    approval.update!(:state => decision, :reason => reason)
   end
 
   def default_messaging_options
