@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_12_200721) do
+ActiveRecord::Schema.define(version: 2019_03_20_170708) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "approval_requests", force: :cascade do |t|
+    t.string "approval_request_ref"
+    t.string "workflow_ref"
+    t.string "state", default: "undecided"
+    t.integer "order_item_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "order_items", force: :cascade do |t|
     t.integer "count"
