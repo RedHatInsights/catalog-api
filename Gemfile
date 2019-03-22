@@ -39,4 +39,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'manageiq-api-common', :git => 'https://github.com/ManageIQ/manageiq-api-common', :branch => 'master'
 gem 'topological_inventory-api-client', :git => "https://github.com/ManageIQ/topological_inventory-api-client-ruby", :branch => "master"
 
-gem 'rbac-api-client', :git => "https://github.com/mkanoor/rbac_api_client", :branch => "master"
+gem 'rbac-api-client', :git => "https://github.com/ManageIQ/insights-rbac-api-client-ruby", :branch => "master"
