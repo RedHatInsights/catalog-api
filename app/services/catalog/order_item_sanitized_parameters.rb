@@ -1,6 +1,11 @@
 module Catalog
-  class OrderItemSanitizedParameters < TopologyServiceApi
+  class OrderItemSanitizedParameters
     MASKED_VALUE = "********".freeze
+    FILTERED_PARAMS = %w[password token secret].freeze
+
+    def initialize(params)
+      @params = params
+    end
 
     def process
       sanitized_parameters
@@ -12,7 +17,7 @@ module Catalog
     private
 
     def order_item
-      @order_item ||= OrderItem.find(params[:order_item_id])
+      @order_item ||= OrderItem.find(@params[:order_item_id])
     end
 
     def service_plan_ref
@@ -24,8 +29,10 @@ module Catalog
     end
 
     def service_plan_schema
-      plan = api_instance.show_service_plan(service_plan_ref)
-      plan.create_json_schema
+      TopologicalInventory.call do |api|
+        @plan = api.show_service_plan(service_plan_ref.to_s)
+      end
+      @plan.create_json_schema
     rescue TopologicalInventoryApiClient::ApiError => e
       Rails.logger.error("DefaultApi->show_service_plan #{e.message}")
       raise
@@ -40,9 +47,9 @@ module Catalog
     end
 
     def hide?(key, attrs)
-      attrs[:format] == "password" ||
-        /password/i.match?(attrs[:title]) ||
-        /password/i.match?(key)
+      FILTERED_PARAMS.reduce(attrs[:format] == "password") do |result, param|
+        result || /#{param}/i.match?(attrs[:title]) || /#{param}/i.match(key)
+      end
     end
   end
 end

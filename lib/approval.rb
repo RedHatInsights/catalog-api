@@ -1,4 +1,4 @@
-require 'approval_api_client'
+require 'approval-api-client-ruby'
 
 class Approval
   def self.approval_api
@@ -8,7 +8,7 @@ class Approval
   def self.call
     pass_thru_headers
     yield approval_api
-  rescue ApprovalAPIClient::APIError => e
+  rescue ApprovalApiClient::ApiError => e
     Rails.logger.error("ApprovalApiClient::ApiError #{e.message}")
     raise Catalog::ApprovalError, e.message
   end
@@ -24,6 +24,6 @@ class Approval
 
   private_class_method def self.pass_thru_headers
     headers = ManageIQ::API::Common::Request.current_forwardable
-    approval_api.api_client.default_headers = api.api_client.default_headers.merge(headers)
+    approval_api.api_client.default_headers.merge!(headers)
   end
 end

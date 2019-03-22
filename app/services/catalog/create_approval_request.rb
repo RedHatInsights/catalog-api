@@ -1,5 +1,3 @@
-require 'approval_api_client'
-
 module Catalog
   class CreateApprovalRequest
     attr_reader :order
@@ -10,35 +8,31 @@ module Catalog
 
     def process
       @order.order_items.each do |order_item|
-        approvals = send_approval_requests(order_item)
-        approvals.compact.each do |req|
-          order_item.approval_requests << create_approval_request(req)
-        end
+        submit_approval_requests(order_item)
       end
 
-      @order.update(:status => "Ordered", :ordered_at => Time.now.utc)
+      @order.update(:state => "Ordered", :ordered_at => Time.now.utc)
       self
-    rescue Catalog::AprovalError => e
+    rescue Catalog::ApprovalError => e
       Rails.logger.error("Error putting in approval Request for #{order.id}: #{e.message}")
       raise
     end
 
     private
 
-    def send_approval_requests(order_item)
-      workflows(order_item.portfolio_item).map do |workflow|
-        Approval.call do |api_instance|
-          api_instance.create_request(workflow, request_body_from(order_item))
-        end
+    def submit_approval_requests(order_item)
+      workflows(order_item.portfolio_item).each do |workflow|
+        response = Approval.call { |api| api.create_request(workflow, request_body_from(order_item)) }
+        order_item.approval_requests << create_approval_request(response)
+
+        order_item.update_message("info", "Approval Request Submitted for workflow #{workflow}, ID: #{order_item.approval_requests.last.id}")
       end
     end
 
     def request_body_from(order_item)
-      o_params = ActionController::Parameters.new('order_item_id' => order_item.id)
-      svc_params_sanitized = Catalog::OrderItemSanitizedParameters.new(o_params).process
+      svc_params_sanitized = Catalog::OrderItemSanitizedParameters.new(:order_item_id => order_item.id).process
 
       ApprovalApiClient::RequestIn.new.tap do |request|
-        request.requester = ManageIQ::API::Common::Request.current.user.username
         request.name      = order_item.portfolio_item.name
         request.content   = {
           :product   => order_item.portfolio_item.name,
@@ -57,8 +51,8 @@ module Catalog
       ApprovalRequest.new.tap do |approval|
         approval.workflow_ref         = req.workflow_id
         approval.approval_request_ref = req.id
-        approval.status               = req.decision
-        approval.save
+        approval.state                = req.decision.to_sym
+        approval.save!
       end
     end
   end
