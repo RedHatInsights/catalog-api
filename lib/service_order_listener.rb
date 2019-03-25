@@ -19,6 +19,8 @@ class ServiceOrderListener
   def subscribe_to_task_updates
     self.client = ManageIQ::Messaging::Client.open(messaging_client_options)
 
+    Rails.logger.info("Catalog API service order listener started...")
+
     client.subscribe_messages(
       :service   => SERVICE_NAME,
       :max_bytes => 500_000
@@ -28,6 +30,8 @@ class ServiceOrderListener
       end
     end
   ensure
+    Rails.logger.info("Catalog API service order listener stopping...")
+
     client&.close
     self.client = nil
   end
@@ -35,6 +39,8 @@ class ServiceOrderListener
   private
 
   def process_message(msg)
+    Rails.logger.info("Processing #{msg.message} with payload: #{msg.payload}")
+
     ProgressMessage.create!(
       :level   => "info",
       :message => "Task update message received with payload: #{msg.payload}"
