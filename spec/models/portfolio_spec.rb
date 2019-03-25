@@ -5,6 +5,12 @@ describe Portfolio do
   let(:portfolio_item_id)  { portfolio_item.id }
   let(:tenant)             { create(:tenant) }
 
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
+
   context "when setting portfolio fields" do
     it "fails validation with a bad uri" do
       portfolio.image_url = "notreallyaurl"
@@ -48,7 +54,7 @@ describe Portfolio do
   end
 
   context "when a tenant tries to create portfolios with the same name" do
-    let(:portfolio_copy) { create(:portfolio, :without_tenant) }
+    let(:portfolio_copy) { create(:portfolio) }
 
     around do |example|
       ActsAsTenant.with_tenant(tenant) do
@@ -69,7 +75,7 @@ describe Portfolio do
   end
 
   context "when different tenants try to create portfolios with the same name" do
-    let(:portfolio_copy) { create(:portfolio, :without_tenant) }
+    let(:portfolio_copy) { create(:portfolio, :tenant_id => Time.now.to_i) }
     let(:second_tenant)  { create(:tenant) }
 
     around do |example|
@@ -80,13 +86,14 @@ describe Portfolio do
 
     it "will pass validation" do
       portfolio.update(:name => "samename")
-      ActsAsTenant.current_tenant = second_tenant
-      portfolio_copy.update(:name => "samename")
+      ActsAsTenant.with_tenant(second_tenant) do
+        portfolio_copy.update(:name => "samename")
 
-      expect(portfolio).to be_valid
-      expect(portfolio_copy).to be_valid
+        expect(portfolio).to be_valid
+        expect(portfolio_copy).to be_valid
 
-      expect{ portfolio_copy.save! }.to_not raise_error
+        expect { portfolio_copy.save! }.to_not raise_error
+      end
     end
   end
 
@@ -149,8 +156,10 @@ describe Portfolio do
 
   context "with current_tenant" do
 
-    before do
-      ActsAsTenant.current_tenant = tenant
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
     end
 
     describe "#add_portfolio_item" do

@@ -1,5 +1,9 @@
 describe 'Portfolios API' do
-  before { disable_tenancy }
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
 
   let!(:portfolio)            { create(:portfolio) }
   let!(:portfolio_item)       { create(:portfolio_item) }
