@@ -6,15 +6,7 @@ describe ApprovalRequestListener do
   let(:request_id)           { "1" }
 
   describe "#subscribe_to_approval_updates" do
-    let(:request) do
-      { :headers => { 'x-rh-identity' => encoded_user_hash }, :original_url => 'whatever' }
-    end
-
-    around do |example|
-      ManageIQ::API::Common::Request.with_request(request) { example.call }
-    end
-
-    let(:messages)    { [ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil)] }
+    let(:message)     { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil) }
     let!(:order_item) { create(:order_item, :order_id => "123", :portfolio_item_id => "234") }
     let!(:approval_request) do
       ApprovalRequest.create!(
@@ -28,13 +20,13 @@ describe ApprovalRequestListener do
       allow(ManageIQ::Messaging::Client).to receive(:open).with(
         :protocol   => :Kafka,
         :client_ref => ApprovalRequestListener::CLIENT_AND_GROUP_REF,
-        :group_ref  => ApprovalRequestListener::CLIENT_AND_GROUP_REF
-      ).and_return(client)
+        :encoding   => 'json'
+      ).and_yield(client)
       allow(client).to receive(:subscribe_topic).with(
-        :service   => ApprovalRequestListener::SERVICE_NAME,
-        :max_bytes => 500_000
-      ).and_yield(messages)
-      allow(client).to receive(:close)
+        :service     => ApprovalRequestListener::SERVICE_NAME,
+        :persist_ref => ApprovalRequestListener::CLIENT_AND_GROUP_REF,
+        :max_bytes   => 500_000
+      ).and_yield(message)
     end
 
     context "when the approval request is not findable" do
@@ -42,10 +34,8 @@ describe ApprovalRequestListener do
         let(:payload) { {"request_id" => "10" } }
 
         it "creates a progress message about the payload" do
+          expect(Rails.logger).to receive(:error).with("Could not find Approval Request with payload of #{payload}")
           subject.subscribe_to_approval_updates
-          latest_progress_message = ProgressMessage.last
-          expect(latest_progress_message.level).to eq("error")
-          expect(latest_progress_message.message).to eq("Could not find Approval Request with request_id of 10")
         end
 
         it "does not update the approval request" do
@@ -60,10 +50,8 @@ describe ApprovalRequestListener do
         let(:decision) { "approved" }
 
         it "creates a progress message about the approval request error" do
+          expect(Rails.logger).to receive(:error).with("Could not find Approval Request with payload of #{payload}")
           subject.subscribe_to_approval_updates
-          latest_progress_message = ProgressMessage.last
-          expect(latest_progress_message.level).to eq("error")
-          expect(latest_progress_message.message).to eq("Could not find Approval Request with request_id of 1")
         end
 
         it "does not update the approval request" do

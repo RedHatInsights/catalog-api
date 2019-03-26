@@ -16,35 +16,27 @@ class ApprovalRequestListener
   end
 
   def subscribe_to_approval_updates
-    self.client = ManageIQ::Messaging::Client.open(messaging_client_options)
-
-    client.subscribe_topic(
-      :service   => SERVICE_NAME,
-      :max_bytes => 500_000
-    ) do |messages|
-      messages.each do |msg|
-        process_message(msg)
+    ManageIQ::Messaging::Client.open(messaging_client_options) do |client|
+      client.subscribe_topic(
+        :service     => SERVICE_NAME,
+        :persist_ref => CLIENT_AND_GROUP_REF,
+        :max_bytes   => 500_000
+      ) do |topic|
+        process_event(topic)
       end
     end
-  ensure
-    client&.close
-    self.client = nil
   end
 
   private
 
-  def process_message(msg)
-    approval = ApprovalRequest.find_by!(:approval_request_ref => msg.payload["request_id"])
-    approval.order_item.update_message("info", "Task update message received with payload: #{msg.payload}")
-    if msg.message == EVENT_REQUEST_FINISHED && (msg.payload["decision"] == "approved" || msg.payload["decision"] == "denied")
-      update_and_log_state(approval, msg.payload)
+  def process_event(topic)
+    approval = ApprovalRequest.find_by!(:approval_request_ref => topic.payload["request_id"])
+    approval.order_item.update_message("info", "Task update message received with payload: #{topic.payload}")
+    if topic.message == EVENT_REQUEST_FINISHED
+      update_and_log_state(approval, topic.payload)
     end
   rescue ActiveRecord::RecordNotFound
-    Rails.logger.error("Could not find Approval Request with request_id of #{msg.payload['request_id']}")
-    ProgressMessage.create!(
-      :level   => "error",
-      :message => "Could not find Approval Request with request_id of #{msg.payload['request_id']}"
-    )
+    Rails.logger.error("Could not find Approval Request with payload of #{topic.payload}")
   end
 
   def update_and_log_state(approval, payload)
@@ -59,7 +51,7 @@ class ApprovalRequestListener
     {
       :protocol   => :Kafka,
       :client_ref => CLIENT_AND_GROUP_REF,
-      :group_ref  => CLIENT_AND_GROUP_REF
+      :encoding   => 'json'
     }
   end
 end
