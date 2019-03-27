@@ -73,6 +73,17 @@
         ],
         "summary": "Add a new portfolio",
         "operationId": "createPortfolio",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Portfolio"
+              }
+            }
+          },
+          "description": "Parameters needed to add a Portfolio",
+          "required": true
+        },
         "description": "Adds a portfolio.\n",
         "responses": {
           "200": {
