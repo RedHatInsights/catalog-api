@@ -12,8 +12,8 @@ module Api
       end
 
       def submit_order
-        so = Catalog::SubmitOrder.new(params.require(:order_id))
-        render :json => so.process.order
+        approval = Catalog::CreateApprovalRequest.new(params.require(:order_id))
+        render :json => approval.process.order
       end
     end
   end

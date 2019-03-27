@@ -11,9 +11,9 @@ describe Catalog::ServicePlans do
   end
 
   it "fetches the array of plans" do
-    Plan = Struct.new(:name, :id, :description, :create_json_schema)
-    plan1 = Plan.new("Plan A", "1", "Plan A", {})
-    plan2 = Plan.new("Plan B", "2", "Plan B", {})
+    SvcPlan = Struct.new(:name, :id, :description, :create_json_schema)
+    plan1 = SvcPlan.new("Plan A", "1", "Plan A", {})
+    plan2 = SvcPlan.new("Plan B", "2", "Plan B", {})
     result = double('links' => {}, 'meta' => {}, 'data' => [plan1, plan2])
     expect(api_instance).to receive(:list_service_offering_service_plans).with(portfolio_item.service_offering_ref).and_return(result)
 

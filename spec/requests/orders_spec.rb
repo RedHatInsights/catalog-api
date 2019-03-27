@@ -7,15 +7,17 @@ describe "OrderRequests", :type => :request do
 
   let!(:order) { create(:order) }
 
+  # TODO: Update this context with new logic. Will be fixed with
+  # https://projects.engineering.redhat.com/browse/SSP-237
   context "submit order" do
-    let(:svc_object) { instance_double("Catalog::SubmitOrder") }
+    let(:svc_object) { instance_double("Catalog::CreateApprovalRequest") }
     let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
     let(:params) { order.id.to_s }
     before do
-      allow(Catalog::SubmitOrder).to receive(:new).with(params).and_return(svc_object)
+      allow(Catalog::CreateApprovalRequest).to receive(:new).with(params).and_return(svc_object)
     end
 
-    it "successfully adds submits an order" do
+    it "successfully creates approval requests" do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
 
@@ -25,14 +27,7 @@ describe "OrderRequests", :type => :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it "raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
-
-      post "/api/v0.0/orders/#{order.id}", :headers => admin_headers
-      expect(response).to have_http_status(:internal_server_error)
-    end
-
-    it "v0.1 successfully adds submits an order" do
+    it "v0.1 successfully creates approval requests" do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
 
@@ -40,13 +35,6 @@ describe "OrderRequests", :type => :request do
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
-    end
-
-    it "v0.1 raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
-
-      post "#{api('0.1')}/orders/#{order.id}/submit_order", :headers => admin_headers
-      expect(response).to have_http_status(:internal_server_error)
     end
   end
 
