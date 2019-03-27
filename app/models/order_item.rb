@@ -40,10 +40,8 @@ class OrderItem < ApplicationRecord
   end
 
   def update_message(level, message)
-    self.updated_at = Time.zone.now
-    ProgressMessage.create(:level         => level,
-                           :message       => message,
-                           :order_item_id => id)
+    progress_messages << ProgressMessage.new(:level => level, :message => message)
+    touch
   end
 
   def monitor
