@@ -40,7 +40,7 @@ class OrderItem < ApplicationRecord
   end
 
   def update_message(level, message)
-    self.updated_at = DateTime.now
+    self.updated_at = Time.zone.now
     ProgressMessage.create(:level         => level,
                            :message       => message,
                            :order_item_id => id)
