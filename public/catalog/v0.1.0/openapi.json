@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is a API to fetch and order catalog items from different cloud sources",
+    "description": "This API gets and orders catalog items from different cloud sources.",
     "version": "0.1.0",
     "title": "Catalog API",
     "contact": {
@@ -23,11 +23,11 @@
   "tags": [
     {
       "name": "admins",
-      "description": "Secured Admin-only calls"
+      "description": "Secured admin-only calls."
     },
     {
       "name": "users",
-      "description": "Calls available to both regular users and admins"
+      "description": "Calls available to both regular users and admins."
     }
   ],
   "paths": {
@@ -37,9 +37,9 @@
           "users",
           "admins"
         ],
-        "summary": "API to list portfolios",
+        "summary": "List portfolios",
         "operationId": "listPortfolios",
-        "description": "Returns a PortfoliosCollection object with an embedded array of portfolio objects\n",
+        "description": "Gets a list of portfolios.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -50,7 +50,7 @@
         ],
         "responses": {
           "200": {
-            "description": "On success this API returns a PortfoliosCollection object embedded with links and an array of Portfolio objects. If the array is empty you dont have any portfolios defined in the system or they are inaccessible to you.",
+            "description": "Returns a list of portfolios. An empty list indicate either undefined portfolios in the system or inaccessibility to the caller.",
             "content": {
               "application/json": {
                 "schema": {
@@ -71,7 +71,7 @@
         "tags": [
           "admins"
         ],
-        "summary": "API to add a new portfolio",
+        "summary": "Add a new portfolio",
         "operationId": "createPortfolio",
         "requestBody": {
           "content": {
@@ -84,10 +84,10 @@
           "description": "Parameters needed to add a Portfolio",
           "required": true
         },
-        "description": "Returns the added portfolio object\n",
+        "description": "Adds a portfolio.\n",
         "responses": {
           "200": {
-            "description": "Newly added Portfolio Object",
+            "description": "Succesfully added the new portfolio.",
             "content": {
               "application/json": {
                 "schema": {
@@ -114,9 +114,9 @@
           "users",
           "admins"
         ],
-        "summary": "Fetch a specific Portfolio",
+        "summary": "Get a specific portfolio",
         "operationId": "showPortfolio",
-        "description": "By passing in the portfolio id you can fetch a specific portfolio.\n",
+        "description": "Gets the portfolio specified by the portfolio ID.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -124,7 +124,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The portfolio object matching the portfolio id",
+            "description": "Portfolio matching the portfolio ID.",
             "content": {
               "application/json": {
                 "schema": {
@@ -140,7 +140,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "Portfolio object not found"
+            "description": "Portfolio not found."
           },
           "422": {
             "$ref": "#/components/responses/InvalidEntity"
@@ -153,7 +153,7 @@
         ],
         "summary": "Edit an existing portfolio",
         "operationId": "updatePortfolio",
-        "description": "Returns the edited portfolio object\n",
+        "description": "Returns the edited portfolio.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -172,7 +172,7 @@
         },
         "responses": {
           "200": {
-            "description": "Edited portfolio object",
+            "description": "Portfolio successfully edited.",
             "content": {
               "application/json": {
                 "schema": {
@@ -198,7 +198,7 @@
         ],
         "summary": "Delete an existing portfolio",
         "operationId": "destroyPortfolio",
-        "description": "Deletes the portfolio id passed in as the param.\n",
+        "description": "Deletes the portfolio specified by the ID.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -206,13 +206,13 @@
         ],
         "responses": {
           "204": {
-            "description": "Portfolio Deleted"
+            "description": "Portfolio Deleted."
           },
           "404": {
-            "description": "Portfolio Not Found"
+            "description": "Portfolio Not Found."
           },
           "422": {
-            "description": "Failed to discard child Portfolio Items"
+            "description": "Failed to discard child portfolio items."
           }
         }
       }
@@ -223,9 +223,9 @@
           "users",
           "admins"
         ],
-        "summary": "Fetch all portfolio items from a specific portfolio",
+        "summary": "Get all portfolio items from a specific portfolio",
         "operationId": "fetchPortfolioItemsWithPortfolio",
-        "description": "By passing in the portfolio id you can fetch all the portfolio items in the portfolio.\n",
+        "description": "Gets all portfilio items in the portfolio specified by the given ID.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
@@ -239,7 +239,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns a PortfolioItemsCollection object with links and an embedded array of Portfolio Items, if the portfolio is not connected to any portfolio items you would get an empty array.",
+            "description": "Returns a list of portfolio items. An empty list is returned if the portfolio is not connected to any portfolio items.",
             "content": {
               "application/json": {
                 "schema": {
@@ -255,7 +255,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "The Portfolio object not found"
+            "description": "Portfolio not found"
           }
         }
       },
@@ -263,9 +263,9 @@
         "tags": [
           "admins"
         ],
-        "summary": "Add Portfolio item to a portfolio",
+        "summary": "Add a portfolio item to a portfolio",
         "operationId": "addPortfolioItemToPortfolio",
-        "description": "Add new portfolio item to an existing portfolio\n",
+        "description": "Adds a new portfolio item to an existing portfolio.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
@@ -273,7 +273,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully added a portfolio item to portfolio"
+            "description": "Successfully added a portfolio item to the portfolio."
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -282,7 +282,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "The Portfolio Object or the Portfolio Item Object was not found."
+            "description": "The portfolio or the portfolio item was not found."
           }
         },
         "requestBody": {
@@ -421,9 +421,9 @@
           "users",
           "admins"
         ],
-        "summary": "API to list all portfolio items",
+        "summary": "List all portfolio items",
         "operationId": "listPortfolioItems",
-        "description": "Returns a PortfolioItemsCollection object with an embedded array of portfolio item objects\n",
+        "description": "Gets a list of portfolio items.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -434,7 +434,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Portfolio Items Collection object",
+            "description": "Successfully returned a list of portfolio items.",
             "content": {
               "application/json": {
                 "schema": {
@@ -455,12 +455,12 @@
         "tags": [
           "admins"
         ],
-        "summary": "API to add a new portfolio item",
+        "summary": "Add a new portfolio item",
         "operationId": "createPortfolioItem",
-        "description": "This API would connect to the Topology Service to fetch the name and description of the service offering. Returns the added portfolio item object\n",
+        "description": "Adds a name and description for a portfolio item and returns the newly created portfolio item.\n",
         "responses": {
           "200": {
-            "description": "The newly created Portfolio Item object",
+            "description": "The newly created portfolio item.",
             "content": {
               "application/json": {
                 "schema": {
@@ -476,7 +476,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "Service Offering not found"
+            "description": "Service Offering not found."
           },
           "422": {
             "$ref": "#/components/responses/InvalidEntity"
@@ -500,9 +500,9 @@
           "users",
           "admins"
         ],
-        "summary": "Fetch a specific Portfolio Item",
+        "summary": "Gets a specific portfolio item",
         "operationId": "showPortfolioItem",
-        "description": "By passing in the portfolio_item_id you can fetch a specific portfolio item\n",
+        "description": "Gets a specific portfolio item based on the portfolio item ID passed\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -510,7 +510,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Return a Portfolio Item object",
+            "description": "Portfolio item specified by the given ID.",
             "content": {
               "application/json": {
                 "schema": {
@@ -526,7 +526,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "The Portfolio Item ID was not found"
+            "description": "The portfolio item ID was not found"
           }
         }
       },
@@ -536,7 +536,7 @@
         ],
         "summary": "Delete an existing portfolio item",
         "operationId": "destroyPortfolioItem",
-        "description": "Deletes the portfolio item id passed in as the param.\n",
+        "description": "Deletes the portfolio item based on portfolio item ID passed\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -544,16 +544,16 @@
         ],
         "responses": {
           "204": {
-            "description": "Portfolio Item deleted"
+            "description": "Portfolio item deleted."
           },
           "404": {
-            "description": "Portfolio Item not Found"
+            "description": "Portfolio item not found."
           }
         }
       },
       "patch": {
-        "summary": "Edit an existing Portfolio Item",
-        "description": "Returns the edited Portfolio Item Object",
+        "summary": "Edit an existing portfolio item",
+        "description": "Edits portfolio item specified by the given ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -573,7 +573,7 @@
         "operationId": "updatePortfolioItem",
         "responses": {
           "200": {
-            "description": "Return the updated Portfolio Item object",
+            "description": "Return the updated portfolio item object",
             "content": {
               "application/json": {
                 "schema": {
@@ -589,7 +589,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "The Portfolio Item ID was not found"
+            "description": "The portfolio item ID was not found"
           }
         }
       }
@@ -600,9 +600,9 @@
           "users",
           "admins"
         ],
-        "summary": "Fetches all the service plans for a specific portfolio item, this requires a connection to the topology service.",
+        "summary": "Gets all service plans for a specific portfolio item; requires a connection to the topology service.",
         "operationId": "listServicePlans",
-        "description": "Fetch all service plans for a portfolio item\n",
+        "description": "Gets all service plans for a portfolio item.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioItemID"
@@ -629,7 +629,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "Portfolio Item Not found"
+            "description": "Portfolio item not found"
           },
           "500": {
             "description": "Could not access the Topology Service"
@@ -643,9 +643,9 @@
           "users",
           "admins"
         ],
-        "summary": "Fetches the provider control parameters for this portfolio item, it needs to be provided when provisioning the portfolio item.",
+        "summary": "Gets the provider control parameters for this portfolio item; requires control paramaters provided when provisioning the portfolio item.",
         "operationId": "listProviderControlParameters",
-        "description": "Fetch provider control parameters for a portfolio item\n",
+        "description": "Gets the provider control parameters for a portfolio item.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioItemID"
@@ -653,7 +653,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Return Provider control parameters JSON object",
+            "description": "Return provider control parameters JSON object.",
             "content": {
               "application/json": {
                 "schema": {
@@ -669,7 +669,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "Portfolio Item Not found"
+            "description": "Portfolio item not found"
           },
           "500": {
             "description": "Could not access the Topology Service"
@@ -685,7 +685,7 @@
         ],
         "summary": "Get a list of orders",
         "operationId": "listOrders",
-        "description": "Get a list of orders associated with the logged in user.\n",
+        "description": "Gets a list of orders associated with the logged in user.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -696,7 +696,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns an OrdersCollection object with an embedded array of Order objects",
+            "description": "The list of orders.",
             "content": {
               "application/json": {
                 "schema": {
@@ -719,10 +719,10 @@
         ],
         "summary": "Create a new order",
         "operationId": "createOrder",
-        "description": "Create a new order.\n",
+        "description": "Creates a new order.\n",
         "responses": {
           "200": {
-            "description": "Returns a newly created order object",
+            "description": "Returns a newly created order.",
             "content": {
               "application/json": {
                 "schema": {
@@ -746,9 +746,9 @@
           "users",
           "admins"
         ],
-        "summary": "Get a list of items in a given order",
+        "summary": "Gets a list of items in a given order",
         "operationId": "listOrderItems",
-        "description": "Get a list of items associated with an order.\n",
+        "description": "Gets a list of items associated with an order.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -784,9 +784,9 @@
           "users",
           "admins"
         ],
-        "summary": "Add an Order Item to the Order in Pending State",
+        "summary": "Add an order item to an order in pending state",
         "operationId": "addToOrder",
-        "description": "Add an order item to the order in Pending State\n",
+        "description": "Adds an order item to an order in pending state\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -824,9 +824,9 @@
           "users",
           "admins"
         ],
-        "summary": "Get an individual order item from a given order",
+        "summary": "Gets an individual order item from a given order",
         "operationId": "showOrderItem",
-        "description": "Get an order item associated with an order.\n",
+        "description": "Gets an order item associated with an order.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -863,9 +863,9 @@
         "tags": [
           "admins"
         ],
-        "summary": "Submit the given order",
+        "summary": "Submit a given order",
         "operationId": "submitOrder",
-        "description": "Returns an updated order object\n",
+        "description": "Returns an updated order.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -873,7 +873,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Updated Order object",
+            "description": "Updated order object",
             "content": {
               "application/json": {
                 "schema": {
@@ -900,9 +900,9 @@
           "users",
           "admins"
         ],
-        "summary": "Get a list of progress messages in an item",
+        "summary": "Gets a list of progress messages in an item",
         "operationId": "listProgressMessages",
-        "description": "Get a list of progress messages associated with an order item. As the item is being processed the provider can update the progress messages\n",
+        "description": "Gets a list of progress messages associated with an order item. As the item is being processed the provider can update the progress messages.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderItemID"
@@ -1019,10 +1019,10 @@
     },
     "responses": {
       "InvalidEntity": {
-        "description": "The entity being created does not have either all the required parameters specified or the parameter value is invalid"
+        "description": "The entity being created does not have either all the required parameters specified or the parameter value is invalid."
       },
       "Forbidden": {
-        "description": "The caller is forbidden to perform the action"
+        "description": "The caller is forbidden to perform the action."
       },
       "Unauthorized": {
         "description": "The caller is not authorized to access this resource."
@@ -1073,7 +1073,7 @@
           "description": {
             "type": "string",
             "title": "Description",
-            "example": "This is a sample description for a portfolio"
+            "example": "This is a sample description for a portfolio."
           },
           "enabled": {
             "type": "boolean",
@@ -1085,7 +1085,7 @@
             "type": "string",
             "title": "Image URL",
             "format": "url",
-            "example": "The public facing image url for a portfolio"
+            "example": "The public facing image url for a portfolio."
           },
           "workflow_ref": {
             "type": "string",
@@ -1106,7 +1106,7 @@
             "type": "string",
             "readOnly": true,
             "title": "Id",
-            "example": "Id of the sample organization"
+            "example": "ID of the sample organization."
           }
         }
       },
@@ -1116,7 +1116,7 @@
           "service_offering_ref": {
             "type": "string",
             "title": "Service Offering Ref",
-            "description": "The service offering ref should be retrieved from a call to the Topology Service",
+            "description": "The service offering ref should be retrieved from a call to the Topology Service.",
             "example": "177"
           }
         }
@@ -1128,7 +1128,7 @@
             "type": "string",
             "title": "Portfolio Item Id",
             "example": "100",
-            "description": "This is the id of the portfolio item object"
+            "description": "This is the ID of the portfolio item object."
           }
         }
       },
@@ -1228,7 +1228,7 @@
               "Completed"
             ],
             "title": "State",
-            "description": "Current State of the order"
+            "description": "Current State of the order."
           },
           "created_at": {
             "type": "string",
@@ -1278,17 +1278,17 @@
           "provider_control_parameters": {
             "type": "object",
             "title": "Provider Control Parameters",
-            "description": "The provider specific parameters needed to provision this service. This might include namespaces, special keys"
+            "description": "The provider specific parameters needed to provision this service. This might include namespaces, special keys."
           },
           "service_plan_ref": {
             "type": "string",
             "title": "The Service Plan ref",
-            "description": "Stores the Plan ref from the Topology Service"
+            "description": "Stores the service plan ref from the Topology Service."
           },
           "portfolio_item_id": {
             "type": "string",
             "title": "Portfolio Item ID",
-            "description": "Stores the Portfolio Item ID"
+            "description": "Stores the Portfolio Item ID."
           },
           "state": {
             "type": "string",
@@ -1299,7 +1299,7 @@
               "Completed"
             ],
             "title": "State",
-            "description": "Current State of this order item",
+            "description": "Current state of this order item.",
             "readOnly": true
           },
           "created_at": {
@@ -1372,25 +1372,25 @@
           "name": {
             "type": "string",
             "title": "Name",
-            "description": "The name of the Service Plan",
+            "description": "The name of the service plan.",
             "readOnly": true
           },
           "description": {
             "type": "string",
             "title": "Description",
-            "description": "The Service Plan description",
+            "description": "The service plan description.",
             "readOnly": true
           },
           "id": {
             "type": "string",
             "title": "ID",
-            "description": "The unique identifier for this Service Plan",
+            "description": "The unique identifier for this service plan.",
             "readOnly": true
           },
           "create_json_schema": {
             "type": "object",
             "title": "JSON Schema",
-            "description": "JSON Schema for the object",
+            "description": "JSON schema for the object.",
             "readOnly": true
           }
         }
@@ -1511,14 +1511,14 @@
           "count": {
             "type": "integer",
             "title": "Total number of items in the result set",
-            "description": "This is the total number of items in the result set, of which only a subset is returned defined by the QueryLimit parameter"
+            "description": "Total number of items in the result set, of which only a subset is returned, defined by the QueryLimit parameter."
           }
         }
       },
       "ProviderControlParameters": {
         "type": "object",
         "title": "Provider Control Parameters",
-        "description": "JSON Schema for Provider control parameters"
+        "description": "JSON Schema for Provider control parameters."
       },
       "SharePolicy": {
         "type": "object",
@@ -1530,7 +1530,7 @@
           "permissions": {
             "type": "array",
             "title": "Name",
-            "description": "The permissions to apply for this share",
+            "description": "The permissions to apply for this share.",
             "items": {
               "type": "string"
             }
@@ -1554,7 +1554,7 @@
           "permissions": {
             "type": "array",
             "title": "Name",
-            "description": "The permissions to remove for this resource",
+            "description": "The permissions to remove for this resource.",
             "items": {
               "type": "string"
             }
@@ -1562,7 +1562,7 @@
           "group_uuids": {
             "type": "array",
             "title": "The Group UUIDs",
-            "description": "An array of group UUID's retrieved from the RBAC Service from which the permissions have to be removed. If group uuids are not specified we will unshare it from all groups",
+            "description": "An array of group UUID's retrieved from the RBAC Service from which the permissions have to be removed. If group uuids are not specified we will unshare it from all groups.",
             "items": {
               "type": "string"
             }
@@ -1585,7 +1585,7 @@
           "permissions": {
             "type": "array",
             "title": "Permissions",
-            "description": "One or more permissions currently applied to this group",
+            "description": "One or more permissions currently applied to this group.",
             "items": {
               "type": "string"
             }
