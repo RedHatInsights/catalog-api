@@ -3,7 +3,7 @@ describe Catalog::AddToOrder do
   let(:order) { create(:order) }
   let(:order_id) { order.id.to_s }
   let(:order_item) { create(:order_item, :portfolio_item_id => portfolio_item.id) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
+  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref, :owner => 'wilma') }
   let(:portfolio_item_id) { portfolio_item.id.to_s }
 
   let(:params) do
@@ -21,9 +21,17 @@ describe Catalog::AddToOrder do
                                      'count'             => 1)
   end
 
+  let(:order_item) { described_class.new(params).process.order.order_items.first }
+
+  let(:encoded) { encoded_user_hash }
+  let(:request) do
+    { :headers => { 'x-rh-identity' => encoded }, :original_url => 'whatever' }
+  end
+
   it "add order item" do
-    order = described_class.new(params).process.order
-    expect(order.order_items.first.portfolio_item_id).to eq(portfolio_item.id)
+    ManageIQ::API::Common::Request.with_request(request) do
+      expect(order_item.portfolio_item_id).to eq(portfolio_item.id)
+    end
   end
 
   it "invalid parameters" do
@@ -34,6 +42,27 @@ describe Catalog::AddToOrder do
     let(:order_id) { "999" }
     it "invalid order" do
       expect { described_class.new(params).process }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  context "when passing in a x-rh-identity header" do
+    it 'sets the context to the encoded_user_hash' do
+      ManageIQ::API::Common::Request.with_request(request) do
+        expect(order_item.context["headers"]["x-rh-identity"]).to eq encoded
+      end
+    end
+
+    it 'can recreate the request from the context' do
+      item = nil
+      ManageIQ::API::Common::Request.with_request(request) do
+        item = order_item
+      end
+
+      new_request = item.context.transform_keys(&:to_sym)
+      ManageIQ::API::Common::Request.with_request(new_request) do
+        expect(ManageIQ::API::Common::Request.current.user.username).to eq "jdoe"
+        expect(ManageIQ::API::Common::Request.current.user.email).to eq "jdoe@acme.com"
+      end
     end
   end
 end

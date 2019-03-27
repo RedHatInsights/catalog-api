@@ -12,9 +12,10 @@ class ApplicationController < ActionController::API
         if Tenant.tenancy_enabled?
           ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
         else
-          ActsAsTenant.current_tenant = nil
-          yield
+          ActsAsTenant.without_tenant { yield }
         end
+      rescue KeyError
+        json_response({ :message => 'Unauthorized' }, :unauthorized)
       rescue Catalog::NoTenantError
         json_response({ :message => 'Unauthorized' }, :unauthorized)
       end
@@ -22,7 +23,7 @@ class ApplicationController < ActionController::API
   end
 
   def current_tenant(current_user)
-    tenant = current_user.tenant rescue nil
+    tenant = current_user.tenant
     found_tenant = Tenant.find_or_create_by(:external_tenant => tenant) if tenant.present?
     return found_tenant if found_tenant
     raise Catalog::NoTenantError

@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_19_204110) do
+ActiveRecord::Schema.define(version: 2019_03_22_202902) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "approval_requests", force: :cascade do |t|
+    t.string "approval_request_ref"
+    t.string "workflow_ref"
+    t.integer "order_item_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "state", default: 0
+  end
 
   create_table "order_items", force: :cascade do |t|
     t.integer "count"
@@ -29,6 +38,8 @@ ActiveRecord::Schema.define(version: 2019_02_19_204110) do
     t.bigint "portfolio_item_id"
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
+    t.jsonb "context"
+    t.string "owner"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
@@ -40,6 +51,7 @@ ActiveRecord::Schema.define(version: 2019_02_19_204110) do
     t.datetime "completed_at"
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
+    t.string "owner"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
@@ -61,6 +73,8 @@ ActiveRecord::Schema.define(version: 2019_02_19_204110) do
     t.string "documentation_url"
     t.string "support_url"
     t.datetime "discarded_at"
+    t.string "workflow_ref"
+    t.string "owner"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
@@ -74,6 +88,8 @@ ActiveRecord::Schema.define(version: 2019_02_19_204110) do
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.datetime "discarded_at"
+    t.string "workflow_ref"
+    t.string "owner"
     t.index ["discarded_at"], name: "index_portfolios_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end

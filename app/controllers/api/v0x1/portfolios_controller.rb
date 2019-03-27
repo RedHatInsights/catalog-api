@@ -43,10 +43,41 @@ module Api
         end
       end
 
+      def share
+        portfolio = Portfolio.find(params.require(:portfolio_id))
+        options = {:app_name      => ENV['APP_NAME'],
+                   :resource_name => 'portfolios',
+                   :resource_ids  => [portfolio.id.to_s],
+                   :permissions   => params.require(:permissions),
+                   :group_uuids   => params.require(:group_uuids)}
+        RBAC::ShareResource.new(options).process
+        head :no_content
+      end
+
+      def unshare
+        portfolio = Portfolio.find(params.require(:portfolio_id))
+        options = {:app_name      => ENV['APP_NAME'],
+                   :resource_name => 'portfolios',
+                   :resource_ids  => [portfolio.id.to_s],
+                   :permissions   => params.require(:permissions),
+                   :group_uuids   => params[:group_uuids] || []}
+        RBAC::UnshareResource.new(options).process
+        head :no_content
+      end
+
+      def share_info
+        portfolio = Portfolio.find(params.require(:portfolio_id))
+        options = {:app_name      => ENV['APP_NAME'],
+                   :resource_name => 'portfolios',
+                   :resource_id   => portfolio.id.to_s}
+        obj = RBAC::QuerySharedResource.new(options).process
+        render :json => obj.share_info
+      end
+
       private
 
       def portfolio_params
-        params.permit(:name, :description, :image_url, :enabled)
+        params.permit(:name, :description, :image_url, :enabled, :workflow_ref)
       end
     end
   end

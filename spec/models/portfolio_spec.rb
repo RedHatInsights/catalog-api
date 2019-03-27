@@ -5,6 +5,12 @@ describe Portfolio do
   let(:portfolio_item_id)  { portfolio_item.id }
   let(:tenant)             { create(:tenant) }
 
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
+
   context "when setting portfolio fields" do
     it "fails validation with a bad uri" do
       portfolio.image_url = "notreallyaurl"
@@ -18,9 +24,11 @@ describe Portfolio do
   end
 
   context "destroy portfolio cascading portfolio_items" do
-    before do
-      ActsAsTenant.current_tenant = nil
-      portfolio.add_portfolio_item(portfolio_item)
+    around do |example|
+      ActsAsTenant.without_tenant do
+        portfolio.add_portfolio_item(portfolio_item)
+        example.call
+      end
     end
 
     it "destroys portfolio_items only associated with the current portfolio" do
@@ -30,11 +38,28 @@ describe Portfolio do
     end
   end
 
-  context "when a tenant tries to create portfolios with the same name" do
-    let(:portfolio_copy) { create(:portfolio, :without_tenant) }
+  context "when updating a portfolio" do
+    let(:workflow_ref) { Time.now.to_i }
 
-    before do
-      ActsAsTenant.current_tenant = tenant
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
+    end
+
+    it "will allow adding a workflow_ref" do
+      expect(portfolio.update(:workflow_ref => workflow_ref)).to be_truthy
+      expect(portfolio.workflow_ref).to eq workflow_ref.to_s
+    end
+  end
+
+  context "when a tenant tries to create portfolios with the same name" do
+    let(:portfolio_copy) { create(:portfolio) }
+
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
     end
 
     it "will fail validation" do
@@ -50,29 +75,34 @@ describe Portfolio do
   end
 
   context "when different tenants try to create portfolios with the same name" do
-    let(:portfolio_copy) { create(:portfolio, :without_tenant) }
+    let(:portfolio_copy) { create(:portfolio, :tenant_id => Time.now.to_i) }
     let(:second_tenant)  { create(:tenant) }
 
-    before do
-      ActsAsTenant.current_tenant = tenant
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
     end
 
     it "will pass validation" do
       portfolio.update(:name => "samename")
-      ActsAsTenant.current_tenant = second_tenant
-      portfolio_copy.update(:name => "samename")
+      ActsAsTenant.with_tenant(second_tenant) do
+        portfolio_copy.update(:name => "samename")
 
-      expect(portfolio).to be_valid
-      expect(portfolio_copy).to be_valid
+        expect(portfolio).to be_valid
+        expect(portfolio_copy).to be_valid
 
-      expect{ portfolio_copy.save! }.to_not raise_error
+        expect { portfolio_copy.save! }.to_not raise_error
+      end
     end
   end
 
   context "without current_tenant" do
 
-    before do
-      ActsAsTenant.current_tenant = nil
+    around do |example|
+      ActsAsTenant.without_tenant do
+        example.call
+      end
     end
 
     describe "#add_portfolio_item" do
@@ -100,33 +130,36 @@ describe Portfolio do
   context "with and without current_tenant" do
     let(:portfolio_two) { create(:portfolio) }
     let(:tenant_two)    { create(:tenant) }
+
     describe "#add_portfolio_item" do
-      before do
-        ActsAsTenant.current_tenant = tenant_two
-        portfolio_two
-        ActsAsTenant.current_tenant = tenant
-        portfolio
-      end
-
       it "only finds a portfolio scoped to the current_tenant" do
-          ActsAsTenant.current_tenant = nil
+        ActsAsTenant.with_tenant(tenant_two) do
+          portfolio_two
+        end
+        ActsAsTenant.with_tenant(tenant) do
+          portfolio
+        end
+        ActsAsTenant.without_tenant do
           expect(Portfolio.all.count).to eq 2
-
-          ActsAsTenant.current_tenant = tenant
+        end
+        ActsAsTenant.with_tenant(tenant) do
           expect(Portfolio.all.count).to eq 1
           expect(Portfolio.first.tenant_id).to eq tenant.id
-
-          ActsAsTenant.current_tenant = tenant_two
+        end
+        ActsAsTenant.with_tenant(tenant_two) do
           expect(Portfolio.all.count).to eq 1
           expect(Portfolio.first.tenant_id).to eq tenant_two.id
+        end
       end
     end
   end
 
   context "with current_tenant" do
 
-    before do
-      ActsAsTenant.current_tenant = tenant
+    around do |example|
+      ActsAsTenant.with_tenant(tenant) do
+        example.call
+      end
     end
 
     describe "#add_portfolio_item" do

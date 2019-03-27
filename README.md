@@ -115,7 +115,7 @@ You would need 2 terminals for this setup
 
       export APP_NAME=catalog
       
-      export PATH_PREFIX=/r/insights/platform
+      export PATH_PREFIX=/api
       
       bin/rails s -p 5000
       

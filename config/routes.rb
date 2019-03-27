@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   end
 
   scope :as => :api, :module => "api", :path => prefix do
-    match "/v0/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v0.0/%{path}", :only_path => true)
+    match "/v0/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v0.1/%{path}", :only_path => true)
     namespace :v0x1, :path => "v0.1" do
       post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
       resources :orders,                :only => [:create, :index] do
@@ -18,6 +18,9 @@ Rails.application.routes.draw do
         resources :progress_messages,     :only => [:index]
       end
       post '/portfolios/:portfolio_id/portfolio_items', :action => 'add_portfolio_item_to_portfolio', :controller => 'portfolios', :as => 'add_portfolio_item_to_portfolio'
+      post '/portfolios/:portfolio_id/share', :action => 'share', :controller => 'portfolios', :as => 'share'
+      post '/portfolios/:portfolio_id/unshare', :action => 'unshare', :controller => 'portfolios', :as => 'unshare'
+      get '/portfolios/:portfolio_id/share_info', :action => 'share_info', :controller => 'portfolios', :as => 'share_info'
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
       end

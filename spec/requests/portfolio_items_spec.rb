@@ -1,5 +1,9 @@
 describe "PortfolioItemRequests", :type => :request do
-  before { disable_tenancy }
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
@@ -23,7 +27,7 @@ describe "PortfolioItemRequests", :type => :request do
         end
 
         it 'returns the portfolio_item we asked for' do
-          expect(json["id"]).to eq portfolio_item.id
+          expect(json["id"]).to eq portfolio_item.id.to_s
         end
       end
     end
@@ -41,7 +45,7 @@ describe "PortfolioItemRequests", :type => :request do
         end
 
         it 'returns the portfolio_item we asked for' do
-          expect(json["id"]).to eq portfolio_item.id
+          expect(json["id"]).to eq portfolio_item.id.to_s
         end
       end
     end
@@ -121,7 +125,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       post "#{api}/portfolio_items", :params => params
       expect(response).to have_http_status(:ok)
-      expect(json["id"]).to eq portfolio_item.id
+      expect(json["id"]).to eq portfolio_item.id.to_s
       expect(json["service_offering_ref"]).to eq service_offering_ref
     end
   end
@@ -145,10 +149,11 @@ describe "PortfolioItemRequests", :type => :request do
       allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
       allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
 
-      post "#{api('0.1')}/portfolio_items", :params => params
+      post "#{api('0.1')}/portfolio_items", :params => params, :headers => admin_headers
       expect(response).to have_http_status(:ok)
-      expect(json["id"]).to eq portfolio_item.id
+      expect(json["id"]).to eq portfolio_item.id.to_s
       expect(json["service_offering_ref"]).to eq service_offering_ref
+      expect(json["owner"]).to_not be_nil
     end
   end
 
@@ -252,12 +257,12 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe "patching portfolio items" do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription' } }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef'} }
     let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
 
     context "when passing in valid attributes" do
       before do
-        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes
+        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => admin_headers
       end
 
       it 'returns a 200' do
@@ -265,14 +270,13 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it 'patches the record' do
-        expect(json["name"]).to eq valid_attributes[:name]
-        expect(json["description"]).to eq valid_attributes[:description]
+        expect(json).to include(valid_attributes.stringify_keys)
       end
     end
 
     context "when passing in read-only attributes" do
       before do
-        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes
+        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => admin_headers
       end
 
       it 'returns a 200' do

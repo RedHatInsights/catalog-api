@@ -1,5 +1,9 @@
 describe "OrderRequests", :type => :request do
-  before { disable_tenancy }
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
 
   let!(:order) { create(:order) }
 

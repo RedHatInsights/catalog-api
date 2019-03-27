@@ -1,5 +1,9 @@
 describe "ProgressMessageRequests", :type => :request do
-  before { disable_tenancy }
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
 
   let(:order) { create(:order) }
   let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }

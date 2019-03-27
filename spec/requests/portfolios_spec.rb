@@ -1,5 +1,9 @@
 describe 'Portfolios API' do
-  before { disable_tenancy }
+  around do |example|
+    bypass_tenancy do
+      example.call
+    end
+  end
 
   let!(:portfolio)            { create(:portfolio) }
   let!(:portfolio_item)       { create(:portfolio_item) }
@@ -22,7 +26,8 @@ describe 'Portfolios API' do
 
         it 'returns portfolio requested' do
           expect(json).not_to be_empty
-          expect(json['id']).to eq(portfolio_id)
+          expect(json['id']).to eq(portfolio_id.to_s)
+          expect(json['created_at']).to eq(portfolio.created_at.iso8601)
         end
       end
     end
@@ -39,7 +44,7 @@ describe 'Portfolios API' do
 
         it 'returns portfolio requested' do
           expect(json).not_to be_empty
-          expect(json['id']).to eq(portfolio_id)
+          expect(json['id']).to eq(portfolio_id.to_s)
         end
       end
     end
@@ -52,7 +57,7 @@ describe 'Portfolios API' do
       it 'returns all associated portfolio_items' do
         expect(json).not_to be_empty
         expect(json.count).to eq 1
-        portfolio_item_ids = portfolio_items.map(&:id).sort
+        portfolio_item_ids = portfolio_items.map { |x| x.id.to_s }.sort
         expect(json.map { |x| x['id'] }.sort).to eq portfolio_item_ids
       end
     end
@@ -65,7 +70,7 @@ describe 'Portfolios API' do
       it 'returns all associated portfolio_items' do
         expect(json).not_to be_empty
         expect(json['data'].count).to eq 1
-        portfolio_item_ids = portfolio_items.map(&:id).sort
+        portfolio_item_ids = portfolio_items.map { |x| x.id.to_s }.sort
         expect(json['data'].map { |x| x['id'] }.sort).to eq portfolio_item_ids
       end
     end
@@ -77,7 +82,7 @@ describe 'Portfolios API' do
 
       it 'returns an associated portfolio_item for a specific portfolio' do
         expect(json).not_to be_empty
-        expect(json['id']).to eq portfolio_item_id
+        expect(json['id']).to eq portfolio_item_id.to_s
       end
     end
 
@@ -88,7 +93,7 @@ describe 'Portfolios API' do
 
       it 'returns an associated portfolio_item for a specific portfolio' do
         expect(json).not_to be_empty
-        expect(json['id']).to eq portfolio_item_id
+        expect(json['id']).to eq portfolio_item_id.to_s
       end
     end
 
@@ -106,7 +111,7 @@ describe 'Portfolios API' do
 
       it 'returns the portfolio_item which now points back to the portfolio' do
         expect(json.size).to eq 1
-        expect(json.first['portfolio_id']).to eq portfolio.id
+        expect(json.first['portfolio_id']).to eq portfolio.id.to_s
       end
     end
 
@@ -124,7 +129,7 @@ describe 'Portfolios API' do
 
       it 'returns the portfolio_item which now points back to the portfolio' do
         expect(json.size).to eq 1
-        expect(json.first['portfolio_id']).to eq portfolio.id
+        expect(json.first['portfolio_id']).to eq portfolio.id.to_s
       end
     end
 
@@ -209,7 +214,7 @@ describe 'Portfolios API' do
   end
 
   describe 'PATCH admin tagged /portfolios/:portfolio_id' do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => "123456" } }
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
     context 'when patched portfolio is valid' do
       before do
@@ -240,6 +245,7 @@ describe 'Portfolios API' do
         expect(json).not_to be_empty
         expect(json).to be_a Hash
         expect(json['name']).to eq valid_attributes[:name]
+        expect(json['workflow_ref']).to eq valid_attributes[:workflow_ref]
       end
     end
 
@@ -294,6 +300,10 @@ describe 'Portfolios API' do
 
         expect(response).to have_http_status(422)
       end
+
+      it 'stores the username in the owner column' do
+        expect(json['owner']).to eq default_user_hash["identity"]["user"]["username"]
+      end
     end
 
     context 'when portfolio attributes are valid v0.1' do
@@ -311,6 +321,65 @@ describe 'Portfolios API' do
         post "#{api('0.1')}/portfolios", :params => valid_attributes, :headers => admin_headers
 
         expect(response).to have_http_status(422)
+      end
+    end
+
+    RSpec.shared_context "sharing_objects" do
+      let(:group_uuids) { %w[1 2 3] }
+      let(:permissions) { %w[read] }
+      let(:app_name) { "catalog" }
+    end
+
+    context 'share' do
+      include_context "sharing_objects"
+      let(:sharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
+      let(:dummy) { double("RBAC::ShareResource", :process => self) }
+      it "portfolio" do
+        with_modified_env :APP_NAME => app_name do
+          options = {:app_name      => app_name,
+                     :resource_ids  => [portfolio.id.to_s],
+                     :resource_name => 'portfolios',
+                     :permissions   => permissions,
+                     :group_uuids   => group_uuids}
+          expect(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
+          post "#{api('0.1')}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => admin_headers
+          expect(response).to have_http_status(204)
+        end
+      end
+    end
+
+    context 'unshare' do
+      include_context "sharing_objects"
+      let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
+      let(:dummy) { double("RBAC::UnshareResource", :process => self) }
+      it "portfolio" do
+        with_modified_env :APP_NAME => app_name do
+          options = {:app_name      => app_name,
+                     :resource_ids  => [portfolio.id.to_s],
+                     :resource_name => 'portfolios',
+                     :permissions   => permissions,
+                     :group_uuids   => group_uuids}
+          expect(RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
+          post "#{api('0.1')}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => admin_headers
+          expect(response).to have_http_status(204)
+        end
+      end
+    end
+
+    context 'share_info' do
+      include_context "sharing_objects"
+      let(:dummy_response) { double(:share_info => {'a' => 1}) }
+      let(:dummy) { double("RBAC::UnshareResource", :process => dummy_response) }
+      it "portfolio" do
+        with_modified_env :APP_NAME => app_name do
+          options = {:app_name      => app_name,
+                     :resource_id   => portfolio.id.to_s,
+                     :resource_name => 'portfolios'}
+          expect(RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
+          get "#{api('0.1')}/portfolios/#{portfolio.id}/share_info", :headers => admin_headers
+
+          expect(response).to have_http_status(200)
+        end
       end
     end
   end

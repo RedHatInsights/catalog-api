@@ -1,4 +1,5 @@
 FactoryBot.define do
   factory :order do
-  end 
+    owner { "wilma" }
+  end
 end

@@ -8,7 +8,7 @@ module RequestSpecHelper
     "/api/v#{version}"
   end
 
-  def disable_tenancy
-    stub_const("ENV", "BYPASS_TENANCY" => "true")
+  def bypass_tenancy
+    with_modified_env(:BYPASS_TENANCY => 'true') { yield }
   end
 end
