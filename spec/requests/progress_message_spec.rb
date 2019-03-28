@@ -10,19 +10,9 @@ describe "ProgressMessageRequests", :type => :request do
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123") }
   let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id.to_s) }
 
-  context "v0.0" do
+  context "v1.0" do
     it "lists progress messages" do
-      get "/api/v0.0/order_items/#{order_item.id}/progress_messages"
-
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).first['id']).to eq(progress_message.id.to_s)
-    end
-  end
-
-  context "v0.1" do
-    it "lists progress messages" do
-      get "/api/v0.1/order_items/#{order_item.id}/progress_messages"
+      get "/#{api}/order_items/#{order_item.id}/progress_messages"
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)

@@ -34,9 +34,9 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   %w(admin user).each do |tag|
-    describe "GET v0.1 #{tag} /portfolio_items/:portfolio_item_id" do
+    describe "GET v1.0 #{tag} /portfolio_items/:portfolio_item_id" do
       before do
-        get "#{api('0.1')}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers
+        get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers
       end
 
       context 'the portfolio_item exists' do
@@ -55,9 +55,9 @@ describe "PortfolioItemRequests", :type => :request do
     # TODO: https://github.com/ManageIQ/catalog-api/issues/85
     let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
 
-    context 'when :portfolio_item_id is valid' do
+    context 'when v1.0 :portfolio_item_id is valid' do
       before do
-        delete "/api/v0.0/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
+        delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
       end
 
       it 'discards the record' do
@@ -69,35 +69,16 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it "can't be requested" do
-        expect { get("/api/v0.1/portfolio_items/#{portfolio_item_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
-
-    context 'when v0.1 :portfolio_item_id is valid' do
-      before do
-        delete "#{api('0.1')}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
-      end
-
-      it 'deletes the record' do
-        expect(response).to have_http_status(204)
+        expect { get("/#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end
 
   describe 'GET portfolio items' do
-    context "v0.0" do
+    context "v1.0" do
       it "success" do
         portfolio_item
-        get "/api/v0.0/portfolio_items"
-        expect(response).to have_http_status(200)
-        expect(JSON.parse(response.body).count).to eq(1)
-      end
-    end
-
-    context "v0.1" do
-      it "success" do
-        portfolio_item
-        get "/api/v0.1/portfolio_items"
+        get "/#{api}/portfolio_items"
         expect(response).to have_http_status(200)
         expect(JSON.parse(response.body)['data'].count).to eq(1)
       end
@@ -130,33 +111,6 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
-  context "v0.1 when adding portfolio items" do
-    let(:add_to_portfolio_svc) { double(ServiceOffering::AddToPortfolioItem) }
-    let(:params) { { :service_offering_ref => service_offering_ref } }
-
-    before do
-      allow(ServiceOffering::AddToPortfolioItem).to receive(:new).and_return(add_to_portfolio_svc)
-    end
-
-    it "returns not found when topology doesn't have the service_offering_ref" do
-      allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
-
-      post "#{api('0.1')}/portfolio_items", :params => params
-      expect(response).to have_http_status(:not_found)
-    end
-
-    it "returns the new portfolio item when topology has the service_offering_ref" do
-      allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
-      allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
-
-      post "#{api('0.1')}/portfolio_items", :params => params, :headers => admin_headers
-      expect(response).to have_http_status(:ok)
-      expect(json["id"]).to eq portfolio_item.id.to_s
-      expect(json["service_offering_ref"]).to eq service_offering_ref
-      expect(json["owner"]).to_not be_nil
-    end
-  end
-
   context "service plans" do
     let(:svc_object)           { instance_double("Catalog::ServicePlans") }
     let(:plans)                { [{}, {}] }
@@ -169,7 +123,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:items).and_return(plans)
 
-      get "/api/v0.1/portfolio_items/#{portfolio_item.id}/service_plans"
+      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans"
 
       expect(JSON.parse(response.body).count).to eq(2)
       expect(response.content_type).to eq("application/json")
@@ -179,59 +133,14 @@ describe "PortfolioItemRequests", :type => :request do
     it "raises error" do
       allow(svc_object).to receive(:process).and_raise(topo_ex)
 
-      get "/api/v0.1/portfolio_items/#{portfolio_item.id}/service_plans"
-      expect(response).to have_http_status(:internal_server_error)
-    end
-
-    it "fetches plans" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:items).and_return(plans)
-
-      get "/api/v0.0/portfolio_items/#{portfolio_item.id}/service_plans"
-
-      expect(JSON.parse(response.body).count).to eq(2)
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
-
-      get "/api/v0.0/portfolio_items/#{portfolio_item.id}/service_plans"
+      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans"
       expect(response).to have_http_status(:internal_server_error)
     end
   end
 
-  context "provider control parameters" do
+  context "v1.0 provider control parameters" do
     let(:svc_object)  { instance_double("Catalog::ProviderControlParameters") }
-    let(:url)         { "/api/v0.0/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
-
-    before do
-      allow(Catalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
-    end
-
-    it "fetches plans" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:data).and_return(:fred => 'bedrock')
-
-      get url
-
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
-
-      get url
-
-      expect(response).to have_http_status(:internal_server_error)
-    end
-  end
-
-  context "v0.1 provider control parameters" do
-    let(:svc_object)  { instance_double("Catalog::ProviderControlParameters") }
-    let(:url)         { "#{api('0.1')}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
+    let(:url)         { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     before do
       allow(Catalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
@@ -262,7 +171,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in valid attributes" do
       before do
-        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => admin_headers
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => admin_headers
       end
 
       it 'returns a 200' do
@@ -276,7 +185,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in read-only attributes" do
       before do
-        patch "#{api('0.1')}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => admin_headers
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => admin_headers
       end
 
       it 'returns a 200' do

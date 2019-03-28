@@ -15,7 +15,7 @@ describe "Swagger stuff" do
       it "with a random prefix" do
         expect(ENV["PATH_PREFIX"]).not_to be_nil
         expect(ENV["APP_NAME"]).not_to be_nil
-        expect(api_v0x0_orders_url(:only_path => true)).to eq("/#{URI.encode(ENV["PATH_PREFIX"])}/#{URI.encode(ENV["APP_NAME"])}/v0.0/orders")
+        expect(api_v1x0_orders_url(:only_path => true)).to eq("/#{URI.encode(ENV["PATH_PREFIX"])}/#{URI.encode(ENV["APP_NAME"])}/v1.0/orders")
       end
 
       it "with extra slashes" do
@@ -23,7 +23,7 @@ describe "Swagger stuff" do
         ENV["APP_NAME"] = "/appname/"
         Rails.application.reload_routes!
 
-        expect(api_v0x0_orders_url(:only_path => true)).to eq("/example/path/prefix/appname/v0.0/orders")
+        expect(api_v1x0_orders_url(:only_path => true)).to eq("/example/path/prefix/appname/v1.0/orders")
       end
 
       it "doesn't use the APP_NAME when PATH_PREFIX is empty" do
@@ -31,7 +31,7 @@ describe "Swagger stuff" do
         Rails.application.reload_routes!
 
         expect(ENV["APP_NAME"]).not_to be_nil
-        expect(api_v0x0_orders_url(:only_path => true)).to eq("/api/v0.0/orders")
+        expect(api_v1x0_orders_url(:only_path => true)).to eq("/api/v1.0/orders")
       end
     end
 

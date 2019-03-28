@@ -17,21 +17,11 @@ describe "OrderRequests", :type => :request do
       allow(Catalog::CreateApprovalRequest).to receive(:new).with(params).and_return(svc_object)
     end
 
-    it "successfully creates approval requests" do
+    it "v1.0 successfully creates approval requests" do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
 
-      post "/api/v0.0/orders/#{order.id}", :headers => admin_headers
-
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "v0.1 successfully creates approval requests" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:order).and_return(order)
-
-      post "#{api('0.1')}/orders/#{order.id}/submit_order", :headers => admin_headers
+      post "#{api}/orders/#{order.id}/submit_order", :headers => admin_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
@@ -48,7 +38,7 @@ describe "OrderRequests", :type => :request do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
 
-      post "/api/v0.0/orders/#{order.id}/items", :headers => admin_headers
+      post "/api/v1.0/orders/#{order.id}/order_items", :headers => admin_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
@@ -56,16 +46,8 @@ describe "OrderRequests", :type => :request do
   end
 
   context "list orders" do
-    it "lists orders v0.0" do
-      get "/api/v0.0/orders"
-
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).first['id']).to eq(order.id.to_s)
-    end
-
-    it "lists orders v0.1" do
-      get "/api/v0.1/orders"
+    it "lists orders v1.0" do
+      get "/api/v1.0/orders"
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
