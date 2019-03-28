@@ -39,7 +39,7 @@ module Catalog
       item.topology_task_ref = result.task_id
       item.state             = 'Ordered'
       item.ordered_at        = Time.now.utc
-      item.update_message('info', 'Initialized')
+      item.update_message('info', 'Ordered')
       item.save!
     end
   end

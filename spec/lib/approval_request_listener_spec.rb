@@ -5,6 +5,9 @@ describe ApprovalRequestListener do
   let(:payload)              { {"request_id" => request_id, "decision" => decision, "reason" => reason } }
   let(:request_id)           { "1" }
 
+  let(:so) { class_double(Catalog::SubmitOrder).as_stubbed_const(:transfer_nested_constants => true) }
+  let(:so_instance) { instance_double(Catalog::SubmitOrder) }
+
   describe "#subscribe_to_approval_updates" do
     let(:message)     { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil) }
     let!(:order_item) { create(:order_item, :order_id => "123", :portfolio_item_id => "234") }
@@ -27,6 +30,9 @@ describe ApprovalRequestListener do
         :persist_ref => ApprovalRequestListener::CLIENT_AND_GROUP_REF,
         :max_bytes   => 500_000
       ).and_yield(message)
+
+      allow(so).to receive(:new).and_return(so_instance)
+      allow(so_instance).to receive(:process).and_return(so_instance)
     end
 
     context "when the approval request is not findable" do
@@ -69,7 +75,7 @@ describe ApprovalRequestListener do
 
       it "creates a progress message about the payload" do
         subject.subscribe_to_approval_updates
-        latest_progress_message = ProgressMessage.second_to_last
+        latest_progress_message = ProgressMessage.third_to_last
         expect(latest_progress_message.level).to eq("info")
         expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
       end
@@ -78,6 +84,11 @@ describe ApprovalRequestListener do
         subject.subscribe_to_approval_updates
         approval_request.reload
         expect(approval_request.state).to eq("approved")
+      end
+
+      it "submits the order" do
+        expect(so_instance).to receive(:process).once
+        subject.subscribe_to_approval_updates
       end
     end
 
@@ -88,7 +99,7 @@ describe ApprovalRequestListener do
 
       it "creates a progress message about the payload" do
         subject.subscribe_to_approval_updates
-        latest_progress_message = ProgressMessage.second_to_last
+        latest_progress_message = ProgressMessage.third_to_last
         expect(latest_progress_message.level).to eq("info")
         expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
       end
@@ -97,6 +108,17 @@ describe ApprovalRequestListener do
         subject.subscribe_to_approval_updates
         approval_request.reload
         expect(approval_request.state).to eq("denied")
+      end
+
+      it "does not submit the order" do
+        expect(so_instance).to receive(:process).exactly(0).times
+        subject.subscribe_to_approval_updates
+      end
+
+      it "marks the order_item as denied" do
+        subject.subscribe_to_approval_updates
+        order_item.reload
+        expect(order_item.state).to eq "Denied"
       end
     end
   end
