@@ -1,11 +1,6 @@
 describe "OrderRequests", :type => :request do
-  around do |example|
-    bypass_tenancy do
-      example.call
-    end
-  end
-
-  let!(:order) { create(:order) }
+  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let!(:order) { create(:order, :tenant_id => tenant.id) }
 
   # TODO: Update this context with new logic. Will be fixed with
   # https://projects.engineering.redhat.com/browse/SSP-237
@@ -21,7 +16,7 @@ describe "OrderRequests", :type => :request do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
 
-      post "#{api}/orders/#{order.id}/submit_order", :headers => admin_headers
+      post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
@@ -38,7 +33,7 @@ describe "OrderRequests", :type => :request do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
 
-      post "/api/v1.0/orders/#{order.id}/order_items", :headers => admin_headers
+      post "/api/v1.0/orders/#{order.id}/order_items", :headers => default_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
@@ -47,7 +42,7 @@ describe "OrderRequests", :type => :request do
 
   context "list orders" do
     it "lists orders v1.0" do
-      get "/api/v1.0/orders"
+      get "/api/v1.0/orders", :headers => default_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
