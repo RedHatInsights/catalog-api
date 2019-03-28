@@ -6,7 +6,10 @@ module Api
       def index
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
         so = ServiceOffering::Icons.new(portfolio_item.service_offering_icon_ref)
-        render :json => so.process.icon
+        icon = so.process.icon
+        send_data(icon.data,
+                  :type        => MimeMagic.by_magic(icon.data).type,
+                  :disposition => 'inline')
       rescue ActiveRecord::RecordNotFound => e
         render :json => { :message => e.message }, :status => :not_found
       rescue ArgumentError
