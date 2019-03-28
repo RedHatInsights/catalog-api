@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   scope :as => :api, :module => "api", :path => prefix do
     match "/v1/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v1.0/%{path}", :only_path => true)
     namespace :v1x0, :path => "v1.0" do
+      get "/openapi.json", :to => "root#openapi"
       post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
       resources :orders,                :only => [:create, :index] do
         resources :order_items,           :only => [:create, :index, :show]
