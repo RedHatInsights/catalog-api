@@ -6,17 +6,17 @@ RSpec.describe ApplicationController, :type => :request do
   let(:external_tenant)   { "0369233" }
   let(:other_user)        { default_user_hash }
 
-  context "with api version v0" do
-    let(:api_version)       { api(0) }
-    let(:api_minor_version) { api(0.1) }
+  context "with api version v1" do
+    let(:api_version)       { api(1) }
+    let(:api_minor_version) { api(1.0) }
 
-    it "get api/v0/portfolios with tenant" do
+    it "get api/v1/portfolios with tenant" do
       get("#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers)
       expect(response.status).to eq(301)
       expect(response.headers["Location"]).to eq "#{api_minor_version}/portfolios/#{portfolio_id}"
     end
 
-    it "get api/v0/portfolios without tenant" do
+    it "get api/v1/portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
       get("#{api_version}/portfolios/#{portfolio_id}", :headers => headers)
@@ -28,7 +28,7 @@ RSpec.describe ApplicationController, :type => :request do
   context "with tenancy enforcement" do
 
     it "get /portfolios with tenant" do
-      get("/api/v0.0/portfolios/#{portfolio_id}", :headers => admin_headers)
+      get("/api/v1.0/portfolios/#{portfolio_id}", :headers => admin_headers)
 
       expect(response.status).to eq(200)
       expect(response.parsed_body).to include("id" => portfolio_id.to_s)
@@ -37,21 +37,21 @@ RSpec.describe ApplicationController, :type => :request do
     it "get /portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("/api/v0.0/portfolios/#{portfolio_id}", :headers => headers)
+      get("/api/v1.0/portfolios/#{portfolio_id}", :headers => headers)
 
       expect(response.status).to eq(401)
     end
 
     it "get /portfolios with tenant" do
       portfolio
-      get("/api/v0.0/portfolios", :headers => default_headers)
+      get("/api/v1.0/portfolios", :headers => default_headers)
       expect(response.status).to eq(200)
     end
 
     it "get /portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("/api/v0.0/portfolios", :headers => headers)
+      get("/api/v1.0/portfolios", :headers => headers)
 
       expect(response.status).to eq(401)
     end
@@ -67,7 +67,7 @@ RSpec.describe ApplicationController, :type => :request do
     it "get /portfolios" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("/api/v0.0/portfolios", :headers => headers)
+      get("/api/v1.0/portfolios", :headers => headers)
 
       expect(response.status).to eq(200)
     end

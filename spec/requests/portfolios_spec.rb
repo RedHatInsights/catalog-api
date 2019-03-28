@@ -32,9 +32,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe "GET #{tag} v0.1 tagged /portfolios/:portfolio_id" do
+    describe "GET #{tag} v1.0 tagged /portfolios/:portfolio_id" do
       before do
-        get "#{api('0.1')}/portfolios/#{portfolio_id}", :headers => send("#{tag}_headers")
+        get "#{api}/portfolios/#{portfolio_id}", :headers => send("#{tag}_headers")
       end
 
       context 'when portfolios exist' do
@@ -56,20 +56,7 @@ describe 'Portfolios API' do
 
       it 'returns all associated portfolio_items' do
         expect(json).not_to be_empty
-        expect(json.count).to eq 1
-        portfolio_item_ids = portfolio_items.map { |x| x.id.to_s }.sort
-        expect(json.map { |x| x['id'] }.sort).to eq portfolio_item_ids
-      end
-    end
-
-    describe "GET #{tag} tagged /portfolios/:portfolio_id/portfolio_items v0.1" do
-      before do
-        get "/api/v0.1/portfolios/#{portfolio_id}/portfolio_items", :headers => send("#{tag}_headers")
-      end
-
-      it 'returns all associated portfolio_items' do
-        expect(json).not_to be_empty
-        expect(json['data'].count).to eq 1
+        expect(json['meta']['count']).to eq 1
         portfolio_item_ids = portfolio_items.map { |x| x.id.to_s }.sort
         expect(json['data'].map { |x| x['id'] }.sort).to eq portfolio_item_ids
       end
@@ -86,20 +73,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe "GET #{tag} tagged /portfolios_items/:portfolio_item_id v0.1" do
-      before do
-        get "#{api('0.1')}/portfolio_items/#{portfolio_item_id}", :headers => send("#{tag}_headers")
-      end
-
-      it 'returns an associated portfolio_item for a specific portfolio' do
-        expect(json).not_to be_empty
-        expect(json['id']).to eq portfolio_item_id.to_s
-      end
-    end
-
     describe "POST admin tagged /portfolios/:portfolio_id/portfolio_items" do
-      let(:portfolio) { create(:portfolio) }
-      let(:portfolio_item) { create(:portfolio_item) }
+      #let(:portfolio) { create(:portfolio) }
+      #let(:portfolio_item) { create(:portfolio_item) }
       let(:params) { {:portfolio_item_id => portfolio_item.id} }
       before do
         post "#{api}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => send("#{tag}_headers")
@@ -115,43 +91,9 @@ describe 'Portfolios API' do
       end
     end
 
-    describe "POST admin tagged /portfolios/:portfolio_id/portfolio_items v0.1" do
-      let(:portfolio) { create(:portfolio) }
-      let(:portfolio_item) { create(:portfolio_item) }
-      let(:params) { {:portfolio_item_id => portfolio_item.id} }
-      before do
-        post "#{api('0.1')}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => send("#{tag}_headers")
-      end
-
-      it 'returns a 200' do
-        expect(response).to have_http_status(200)
-      end
-
-      it 'returns the portfolio_item which now points back to the portfolio' do
-        expect(json.size).to eq 1
-        expect(json.first['portfolio_id']).to eq portfolio.id.to_s
-      end
-    end
-
     describe "GET #{tag} tagged /portfolios" do
       before do
         get "#{api}/portfolios", :headers => send("#{tag}_headers")
-      end
-
-      context 'when portfolios exist' do
-        it 'returns status code 200' do
-          expect(response).to have_http_status(200)
-        end
-
-        it 'returns all portfolio requests' do
-          expect(json.size).to eq(1)
-        end
-      end
-    end
-
-    describe "GET #{tag} tagged /portfolios v0.1" do
-      before do
-        get "/api/v0.1/portfolios", :headers => send("#{tag}_headers")
       end
 
       context 'when portfolios exist' do
@@ -192,23 +134,13 @@ describe 'Portfolios API' do
       end
 
       it "cannot be requested" do
-        expect { get("/api/v0.1/portfolios/#{portfolio_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { get("/#{api}/portfolios/#{portfolio_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
       it 'allows adding portfolios with the same name when one is discarded' do
         post "#{api}/portfolios", :headers => admin_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context 'when :portfolio_id is valid v0.1' do
-      before do
-        delete "#{api('0.1')}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => valid_attributes
-      end
-
-      it 'deletes the record' do
-        expect(response).to have_http_status(204)
       end
     end
   end
@@ -232,42 +164,9 @@ describe 'Portfolios API' do
       end
     end
 
-    context 'when patched portfolio is valid v0.1' do
-      before do
-        patch "#{api('0.1')}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => valid_attributes
-      end
-
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
-      end
-
-      it 'returns an updated portfolio object' do
-        expect(json).not_to be_empty
-        expect(json).to be_a Hash
-        expect(json['name']).to eq valid_attributes[:name]
-        expect(json['workflow_ref']).to eq valid_attributes[:workflow_ref]
-      end
-    end
-
     context 'when patched portfolio params are invalid' do
       before do
         patch "#{api}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => invalid_attributes
-      end
-
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
-      end
-
-      it 'returns an updated portfolio object' do
-        expect(json).not_to be_empty
-        expect(json).to be_a Hash
-        expect(json['name']).to_not eq invalid_attributes[:name]
-      end
-    end
-
-    context 'when patched portfolio params are invalid v0.1' do
-      before do
-        patch "#{api('0.1')}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => invalid_attributes
       end
 
       it 'returns status code 200' do
@@ -306,24 +205,6 @@ describe 'Portfolios API' do
       end
     end
 
-    context 'when portfolio attributes are valid v0.1' do
-      before { post "#{api('0.1')}/portfolios", :params => valid_attributes, :headers => admin_headers }
-
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
-      end
-
-      it 'returns the new portfolio' do
-        expect(json['name']).to eq valid_attributes[:name]
-      end
-
-      it 'returns a status code 422 when trying to create with the same name' do
-        post "#{api('0.1')}/portfolios", :params => valid_attributes, :headers => admin_headers
-
-        expect(response).to have_http_status(422)
-      end
-    end
-
     RSpec.shared_context "sharing_objects" do
       let(:group_uuids) { %w[1 2 3] }
       let(:permissions) { %w[read] }
@@ -342,7 +223,7 @@ describe 'Portfolios API' do
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api('0.1')}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => admin_headers
+          post "#{api}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => admin_headers
           expect(response).to have_http_status(204)
         end
       end
@@ -360,7 +241,7 @@ describe 'Portfolios API' do
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api('0.1')}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => admin_headers
+          post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => admin_headers
           expect(response).to have_http_status(204)
         end
       end
@@ -376,7 +257,7 @@ describe 'Portfolios API' do
                      :resource_id   => portfolio.id.to_s,
                      :resource_name => 'portfolios'}
           expect(RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
-          get "#{api('0.1')}/portfolios/#{portfolio.id}/share_info", :headers => admin_headers
+          get "#{api}/portfolios/#{portfolio.id}/share_info", :headers => admin_headers
 
           expect(response).to have_http_status(200)
         end
