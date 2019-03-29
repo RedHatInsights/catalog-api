@@ -31,9 +31,12 @@ class ApprovalRequestListener
 
   def process_event(topic)
     approval = ApprovalRequest.find_by!(:approval_request_ref => topic.payload["request_id"])
-    approval.order_item.update_message("info", "Task update message received with payload: #{topic.payload}")
+    Rails.logger.info("Task update message received with payload: #{topic.payload}")
+    approval.order_item.update_message("info", "Approval #{approval.id} #{topic.payload['decision']}")
+
     if topic.message == EVENT_REQUEST_FINISHED
       update_and_log_state(approval, topic.payload)
+      Catalog::OrderItemTransition.new(approval.order_item_id).process
     end
   rescue ActiveRecord::RecordNotFound
     Rails.logger.error("Could not find Approval Request with payload of #{topic.payload}")
