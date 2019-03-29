@@ -940,10 +940,10 @@
   },
   "servers": [
     {
-      "url": "https://localhost/api/catalog"
+      "url": "https://localhost/api/catalog/v1.0"
     },
     {
-      "url": "http://localhost/api/catalog"
+      "url": "http://localhost/api/catalog/v1.0"
     }
   ],
   "components": {
