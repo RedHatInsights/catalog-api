@@ -2,15 +2,24 @@ describe ApprovalRequestListener do
   let(:approval_request_ref) { "0" }
   let(:client)               { double(:client) }
   let(:event)                { ApprovalRequestListener::EVENT_REQUEST_FINISHED }
-  let(:payload)              { {"request_id" => request_id, "decision" => decision, "reason" => reason } }
+  let(:payload)              { { "request_id" => request_id, "decision" => decision, "reason" => reason } }
   let(:request_id)           { "1" }
 
   let(:so) { class_double(Catalog::SubmitOrder).as_stubbed_const(:transfer_nested_constants => true) }
   let(:so_instance) { instance_double(Catalog::SubmitOrder) }
+  let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
 
   describe "#subscribe_to_approval_updates" do
     let(:message)     { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil) }
-    let!(:order_item) { create(:order_item, :order_id => "123", :portfolio_item_id => "234") }
+    let(:order) { create(:order) }
+    let!(:order_item) do
+      create(:order_item,
+             :order_id          => order.id,
+             :portfolio_item_id => "234",
+             :context           => {
+               :headers => encoded_user_hash, :original_url => "localhost/nope"
+             })
+    end
     let!(:approval_request) do
       ApprovalRequest.create!(
         :approval_request_ref => approval_request_ref,
@@ -75,9 +84,9 @@ describe ApprovalRequestListener do
 
       it "creates a progress message about the payload" do
         subject.subscribe_to_approval_updates
-        latest_progress_message = ProgressMessage.third_to_last
+        latest_progress_message = ProgressMessage.second_to_last
         expect(latest_progress_message.level).to eq("info")
-        expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
+        expect(latest_progress_message.message).to eq("Approval #{approval_request.id} #{decision}")
       end
 
       it "updates the approval request to be approved" do
@@ -99,9 +108,9 @@ describe ApprovalRequestListener do
 
       it "creates a progress message about the payload" do
         subject.subscribe_to_approval_updates
-        latest_progress_message = ProgressMessage.third_to_last
+        latest_progress_message = ProgressMessage.second_to_last
         expect(latest_progress_message.level).to eq("info")
-        expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
+        expect(latest_progress_message.message).to eq("Approval #{approval_request.id} #{decision}")
       end
 
       it "updates the approval request to be denied" do
@@ -119,6 +128,23 @@ describe ApprovalRequestListener do
         subject.subscribe_to_approval_updates
         order_item.reload
         expect(order_item.state).to eq "Denied"
+      end
+    end
+
+    context "when submitting an order fails" do
+      let(:decision)             { "approved" }
+      let(:reason)               { "System Approved" }
+      let(:approval_request_ref) { "1" }
+
+      before do
+        allow(so_instance).to receive(:process).and_raise(topo_ex)
+      end
+
+      it "blows up" do
+        subject.subscribe_to_approval_updates
+        latest_progress_message = ProgressMessage.last
+        expect(latest_progress_message.level).to eq("info")
+        expect(latest_progress_message.message).to eq "Error Submitting Order #{order.id}, #{topo_ex.message}"
       end
     end
   end

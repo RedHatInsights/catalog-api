@@ -90,12 +90,4 @@ class OrderItem < ApplicationRecord
     self.state = 'Completed'
     save!
   end
-
-  def approved?
-    approval_requests.present? && approval_requests.all?(&:approved?)
-  end
-
-  def denied?
-    approval_requests.present? && approval_requests.any?(&:denied?)
-  end
 end

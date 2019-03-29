@@ -3,12 +3,4 @@ class ApprovalRequest < ApplicationRecord
   enum :state => [:undecided, :approved, :denied]
 
   belongs_to :order_item
-
-  def approved?
-    state == "approved"
-  end
-
-  def denied?
-    state == "denied"
-  end
 end

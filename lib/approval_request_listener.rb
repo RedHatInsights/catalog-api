@@ -31,18 +31,12 @@ class ApprovalRequestListener
 
   def process_event(topic)
     approval = ApprovalRequest.find_by!(:approval_request_ref => topic.payload["request_id"])
-    approval.order_item.update_message("info", "Task update message received with payload: #{topic.payload}")
+    Rails.logger.info("Task update message received with payload: #{topic.payload}")
     approval.order_item.update_message("info", "Approval #{approval.id} #{topic.payload['decision']}")
 
     if topic.message == EVENT_REQUEST_FINISHED
       update_and_log_state(approval, topic.payload)
-
-      case approval.order_item
-      when :approved?.to_proc
-        Catalog::SubmitOrder.new(approval.order_item_id).process
-      when :denied?.to_proc
-        mark_denied(approval.order_item)
-      end
+      Catalog::OrderItemTransition.new(approval.order_item_id).process
     end
   rescue ActiveRecord::RecordNotFound
     Rails.logger.error("Could not find Approval Request with payload of #{topic.payload}")
@@ -54,10 +48,6 @@ class ApprovalRequestListener
     log_message = decision == "approved" ? "Approval Complete: #{reason}" : "Approval Denied: #{reason}"
     approval.order_item.update_message("info", log_message)
     approval.update!(:state => decision, :reason => reason)
-  end
-
-  def mark_denied(item)
-    item.update!(:state => "Denied")
   end
 
   def default_messaging_options
