@@ -16,6 +16,9 @@ class ApprovalRequestListener
   end
 
   def subscribe_to_approval_updates
+
+    Rails.logger.info("Catalog API approval listener started...")
+
     ManageIQ::Messaging::Client.open(messaging_client_options) do |client|
       client.subscribe_topic(
         :service     => SERVICE_NAME,
@@ -30,8 +33,8 @@ class ApprovalRequestListener
   private
 
   def process_event(topic)
-    approval = ApprovalRequest.find_by!(:approval_request_ref => topic.payload["request_id"])
     Rails.logger.info("Task update message received with payload: #{topic.payload}")
+    approval = ApprovalRequest.find_by!(:approval_request_ref => topic.payload["request_id"])
     approval.order_item.update_message("info", "Approval #{approval.id} #{topic.payload['decision']}")
 
     if topic.message == EVENT_REQUEST_FINISHED
@@ -40,6 +43,8 @@ class ApprovalRequestListener
     end
   rescue ActiveRecord::RecordNotFound
     Rails.logger.error("Could not find Approval Request with payload of #{topic.payload}")
+  rescue Exception => e
+    Rails.logger.error("An Exception was rescued in the Approval Listener: #{e.message} Details: #{e.inspect}")
   end
 
   def update_and_log_state(approval, payload)
