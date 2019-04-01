@@ -43,8 +43,9 @@ class ApprovalRequestListener
       Rails.logger.info("Starting update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
       update_and_log_state(approval, topic.payload)
       Rails.logger.info("Finished update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
-      # comment out ordering for now
-      #Catalog::OrderItemTransition.new(approval.order_item_id).process
+      Rails.logger.info("Staring Catalog::OrderItemTransition for order_item_id: #{approval.order_item_id}")
+      Catalog::OrderItemTransition.new(approval.order_item_id).process
+      Rails.logger.info("Finished Catalog::OrderItemTransition for order_item_id: #{approval.order_item_id}")
     end
   rescue ActiveRecord::RecordNotFound
     Rails.logger.error("Could not find Approval Request with payload of #{topic.payload}")
@@ -67,7 +68,8 @@ class ApprovalRequestListener
   def default_messaging_options
     {
       :protocol   => :Kafka,
-      :client_ref => CLIENT_AND_GROUP_REF,
+      #:client_ref => CLIENT_AND_GROUP_REF,
+      :client_ref => "approval-catalog-api-worker-testing".freeze,
       :encoding   => 'json'
     }
   end
