@@ -1,9 +1,9 @@
 module Api
-  module V0x1
+  module V1x0
     class IconController < ApplicationController
-      include Api::V0x1::Mixins::IndexMixin
+      include Api::V1x0::Mixins::IndexMixin
 
-      def index
+      def show
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
         so = ServiceOffering::Icons.new(portfolio_item.service_offering_icon_ref)
         icon = so.process.icon

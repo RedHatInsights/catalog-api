@@ -230,7 +230,7 @@ describe "PortfolioItemRequests", :type => :request do
       it "reaches out to topology to get the icon" do
         expect(api_instance).to receive(:show_service_offering_icon).with(topology_service_offering_icon.id.to_s).and_return(topology_service_offering_icon)
 
-        get "#{api('0.1')}/portfolio_items/#{portfolio_item_without_overriden_icon.id}/icon", :headers => admin_headers
+        get "#{api}/portfolio_items/#{portfolio_item_without_overriden_icon.id}/icon", :headers => admin_headers
 
         expect(response).to have_http_status(200)
         expect(response.content_type).to eq "image/svg+xml"

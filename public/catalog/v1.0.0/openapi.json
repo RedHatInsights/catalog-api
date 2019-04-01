@@ -980,8 +980,7 @@
     "/portfolio_items/{portfolio_item_id}/icon": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "PortfolioItem"
         ],
         "summary": "Fetches the specified portfolio item's icon information",
         "operationId": "listServiceOfferingIcon",
@@ -1178,7 +1177,7 @@
             "example": "jdoe"
           },
           "service_offering_icon_ref": {
-              "type": "integer",
+              "type": "string",
               "readOnly": true,
               "title": "Service Offering Icon Ref",
               "example": 20
@@ -1473,7 +1472,7 @@
          "id": {
            "type": "string",
            "title": "ID",
-           "description": "The unique identifier for this Service Plan",
+           "description": "The unique identifier for this Service Offering Icon",
            "readOnly": true
          },
          "data": {

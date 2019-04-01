@@ -29,7 +29,7 @@ Rails.application.routes.draw do
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
-        resources :icon,                        :only => [:index]
+        get :icon, :action => 'show', :controller => 'icon'
       end
     end
   end
