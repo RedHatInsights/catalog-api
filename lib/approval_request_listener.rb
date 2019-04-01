@@ -25,7 +25,9 @@ class ApprovalRequestListener
         :persist_ref => CLIENT_AND_GROUP_REF,
         :max_bytes   => 500_000
       ) do |topic|
+        Rails.logger.info("Starting process_event")
         process_event(topic)
+        Rails.logger.info("Finished process_event")
       end
     end
   end
@@ -38,8 +40,11 @@ class ApprovalRequestListener
     approval.order_item.update_message("info", "Approval #{approval.id} #{topic.payload['decision']}")
 
     if topic.message == EVENT_REQUEST_FINISHED
+      Rails.logger.info("Starting update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
       update_and_log_state(approval, topic.payload)
-      Catalog::OrderItemTransition.new(approval.order_item_id).process
+      Rails.logger.info("Finished update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
+      # comment out ordering for now
+      #Catalog::OrderItemTransition.new(approval.order_item_id).process
     end
   rescue ActiveRecord::RecordNotFound
     Rails.logger.error("Could not find Approval Request with payload of #{topic.payload}")
@@ -48,11 +53,15 @@ class ApprovalRequestListener
   end
 
   def update_and_log_state(approval, payload)
+    Rails.logger.info("Inside update_and_log_state")
     decision = payload['decision']
     reason = payload['reason']
     log_message = decision == "approved" ? "Approval Complete: #{reason}" : "Approval Denied: #{reason}"
+    Rails.logger.info("Built log message of: #{log_message}")
     approval.order_item.update_message("info", log_message)
+    Rails.logger.info("Updated the order item message")
     approval.update!(:state => decision, :reason => reason)
+    Rails.logger.info("Updated the ApprovalRequest record with state: #{decision}, and reason: #{reason}")
   end
 
   def default_messaging_options
