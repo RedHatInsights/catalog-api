@@ -6,12 +6,11 @@ describe ApprovalRequestListener do
   let(:payload)              { { "request_id" => request_id, "decision" => decision, "reason" => reason } }
   let(:request_id)           { "1" }
 
-  let(:so) { class_double(Catalog::SubmitOrder).as_stubbed_const(:transfer_nested_constants => true) }
-  let(:so_instance) { instance_double(Catalog::SubmitOrder) }
-  let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
+  let(:transition_class) { class_double(Catalog::OrderItemTransition).as_stubbed_const(:transfer_nested_constants => true) }
+  let(:transition_instance) { instance_double(Catalog::OrderItemTransition) }
 
   describe "#subscribe_to_approval_updates" do
-    let(:message)     { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil) }
+    let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil) }
     let(:order) { create(:order) }
     let!(:order_item) do
       create(:order_item,
@@ -41,8 +40,8 @@ describe ApprovalRequestListener do
         :max_bytes   => 500_000
       ).and_yield(message)
 
-      allow(so).to receive(:new).and_return(so_instance)
-      allow(so_instance).to receive(:process).and_return(so_instance)
+      allow(transition_class).to receive(:new).and_return(transition_instance)
+      allow(transition_instance).to receive(:process).and_return(transition_instance)
     end
 
     context "when the approval request is not findable" do
@@ -96,8 +95,14 @@ describe ApprovalRequestListener do
         expect(approval_request.state).to eq("approved")
       end
 
-      it "submits the order" do
-        expect(so_instance).to receive(:process).once
+      it "calls the transition" do
+        expect(transition_instance).to receive(:process).once
+        subject.subscribe_to_approval_updates
+      end
+
+      it "catches exception from transition" do
+        allow(transition_instance).to receive(:process).and_raise(RuntimeError)
+        expect(Rails.logger).to receive(:error).with(/Exception/)
         subject.subscribe_to_approval_updates
       end
     end
@@ -118,34 +123,6 @@ describe ApprovalRequestListener do
         subject.subscribe_to_approval_updates
         approval_request.reload
         expect(approval_request.state).to eq("denied")
-      end
-
-      it "does not submit the order" do
-        expect(so_instance).to receive(:process).exactly(0).times
-        subject.subscribe_to_approval_updates
-      end
-
-      it "marks the order_item as denied" do
-        subject.subscribe_to_approval_updates
-        order_item.reload
-        expect(order_item.state).to eq "Denied"
-      end
-    end
-
-    context "when submitting an order fails" do
-      let(:decision)             { "approved" }
-      let(:reason)               { "System Approved" }
-      let(:approval_request_ref) { "1" }
-
-      before do
-        allow(so_instance).to receive(:process).and_raise(topo_ex)
-      end
-
-      it "blows up" do
-        subject.subscribe_to_approval_updates
-        latest_progress_message = ProgressMessage.last
-        expect(latest_progress_message.level).to eq("info")
-        expect(latest_progress_message.message).to eq "Error Submitting Order #{order.id}, #{topo_ex.message}"
       end
     end
   end

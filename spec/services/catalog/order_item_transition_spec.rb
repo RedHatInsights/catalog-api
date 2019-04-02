@@ -85,7 +85,7 @@ describe Catalog::OrderItemTransition do
       it "blows up" do
         order_item_transition.process
         msg = order_item.progress_messages.last
-        expect(msg.level).to eq "info"
+        expect(msg.level).to eq "error"
         expect(msg.message).to eq "Error Submitting Order #{order.id}, #{topo_ex.message}"
       end
     end

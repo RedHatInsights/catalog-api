@@ -10,6 +10,15 @@ module Catalog
     end
 
     def process
+      ManageIQ::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
+        state_transitions
+      end
+      self
+    end
+
+    private
+
+    def state_transitions
       if approved?
         submit_order
         @state = "approved"
@@ -19,24 +28,20 @@ module Catalog
       else
         @state = "pending"
       end
-
-      self
     end
 
-    private
-
     def submit_order
-      ManageIQ::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
-        Catalog::SubmitOrder.new(@order_item.order_id).process
-      end
+      @order_item.update_message("info", "Submitting Order #{@order_item.order_id} for provisioning ")
+      Catalog::SubmitOrder.new(@order_item.order_id).process
     rescue Catalog::TopologyError => e
       Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
-      @order_item.update_message("info", "Error Submitting Order #{@order_item.order_id}, #{e.message}")
+      @order_item.update_message("error", "Error Submitting Order #{@order_item.order_id}, #{e.message}")
     end
 
     def mark_denied
       @order_item.update!(:state => "Denied")
       @order_item.order.update!(:state => "Denied")
+      @order_item.update_message("info", "Order #{@order_item.order_id} has been denied")
     end
 
     def approved?
