@@ -936,6 +936,49 @@
           }
         }
       }
+    },
+    "/order_items/{order_item_id}/approval_requests": {
+      "get": {
+        "tags": [
+          "users",
+          "admins"
+        ],
+        "summary": "Gets a list of approval requests for an item",
+        "operationId": "listApprovalRequests",
+        "description": "Gets a list of approval request associated with an order item. As the item is being approved one can check the status of the approvals.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OrderItemID"
+          },
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a ApprovalRequestCollection object with an embedded array of ProgressMessage objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalRequestsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Order item not found"
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -1334,6 +1377,52 @@
           }
         }
       },
+      "ApprovalRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "ID",
+            "description": "The unique identifier for this approval request.",
+            "readOnly": true
+          },
+          "approval_request_ref": {
+            "type": "string",
+            "title": "Approval Request Ref",
+            "description": "The id of the approval submitted to approval-api",
+            "readOnly": true
+          },
+          "order_item_id": {
+            "type": "string",
+            "title": "Order Item ID",
+            "description": "The Order Item which the approval request belongs to",
+            "readOnly": true
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "The reason for the current state.",
+            "readOnly": true
+          },
+          "state": {
+            "type": "string",
+            "title": "State",
+            "enum": [
+              "undecided",
+              "approved",
+              "denied"
+            ],
+            "description": "The state of the approval request (approved, denied, undecided)",
+            "readOnly": true
+          },
+          "workflow_ref": {
+            "type": "string",
+            "title": "Workflow Ref",
+            "description": "The workflow that was requested",
+            "readOnly": true
+          }
+        }
+      },
       "ProgressMessage": {
         "type": "object",
         "properties": {
@@ -1460,6 +1549,23 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrderItem"
+            }
+          }
+        }
+      },
+      "ApprovalRequestsCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprovalRequest"
             }
           }
         }
