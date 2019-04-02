@@ -15,7 +15,7 @@ describe "OrderItemsRequests", :type => :request do
   end
 
   describe "#approval_requests" do
-    let!(:approval) { create(:approval_request, :order_item_id => order_item.id, :workflow_ref => "1") }
+    let!(:approval) { create(:approval_request, :order_item_id => order_item.id, :workflow_ref => "1", :tenant_id => tenant.id) }
 
     context "list" do
       before do
