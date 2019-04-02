@@ -1,6 +1,7 @@
 describe Catalog::OrderItemTransition do
   let(:so) { class_double(Catalog::SubmitOrder).as_stubbed_const(:transfer_nested_constants => true) }
   let(:submit_order) { instance_double(Catalog::SubmitOrder) }
+  let(:topo_ex) { Catalog::TopologyError.new("boom") }
 
   let(:order) { create(:order) }
   let(:order_item) do
@@ -72,6 +73,20 @@ describe Catalog::OrderItemTransition do
     context "when pending" do
       it "returns the state as pending" do
         expect(order_item_transition.process.state).to eq "pending"
+      end
+    end
+
+    context "when the call to submit order fails" do
+      before do
+        approval.update(:state => "approved")
+        allow(submit_order).to receive(:process).and_raise(topo_ex)
+      end
+
+      it "blows up" do
+        order_item_transition.process
+        msg = order_item.progress_messages.last
+        expect(msg.level).to eq "info"
+        expect(msg.message).to eq "Error Submitting Order #{order.id}, #{topo_ex.message}"
       end
     end
   end
