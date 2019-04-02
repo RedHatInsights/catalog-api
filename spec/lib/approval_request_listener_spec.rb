@@ -2,6 +2,7 @@ describe ApprovalRequestListener do
   let(:approval_request_ref) { "0" }
   let(:client)               { double(:client) }
   let(:event)                { ApprovalRequestListener::EVENT_REQUEST_FINISHED }
+  let(:event_message)        { "request_finished" }
   let(:payload)              { { "request_id" => request_id, "decision" => decision, "reason" => reason } }
   let(:request_id)           { "1" }
 
@@ -86,7 +87,7 @@ describe ApprovalRequestListener do
         subject.subscribe_to_approval_updates
         latest_progress_message = ProgressMessage.second_to_last
         expect(latest_progress_message.level).to eq("info")
-        expect(latest_progress_message.message).to eq("Approval #{approval_request.id} #{decision}")
+        expect(latest_progress_message.message).to eq("Approval #{approval_request.id} message: #{event_message} decision:  #{decision}")
       end
 
       it "updates the approval request to be approved" do
@@ -110,7 +111,7 @@ describe ApprovalRequestListener do
         subject.subscribe_to_approval_updates
         latest_progress_message = ProgressMessage.second_to_last
         expect(latest_progress_message.level).to eq("info")
-        expect(latest_progress_message.message).to eq("Approval #{approval_request.id} #{decision}")
+        expect(latest_progress_message.message).to eq("Approval #{approval_request.id} message: #{event_message} decision:  #{decision}")
       end
 
       it "updates the approval request to be denied" do
