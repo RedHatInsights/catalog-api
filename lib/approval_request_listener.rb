@@ -35,13 +35,13 @@ class ApprovalRequestListener
   private
 
   def process_event(topic)
-    Rails.logger.info("Task update message received with payload: #{topic.payload}")
+    Rails.logger.info("Task update message #{topic.message} received with payload: #{topic.payload}")
     approval = ApprovalRequest.find_by!(:approval_request_ref => topic.payload["request_id"])
-    approval.order_item.update_message("info", "Approval #{approval.id} #{topic.payload['decision']}")
+    approval.order_item.update_message("info", "Approval #{approval.id} message: #{topic.message} decision:  #{topic.payload['decision']}")
 
     if topic.message == EVENT_REQUEST_FINISHED
       Rails.logger.info("Starting update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
-      update_and_log_state(approval, topic.payload)
+      update_and_log_state(approval, topic)
       Rails.logger.info("Finished update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
       Rails.logger.info("Staring Catalog::OrderItemTransition for order_item_id: #{approval.order_item_id}")
       Catalog::OrderItemTransition.new(approval.order_item_id).process
@@ -53,11 +53,12 @@ class ApprovalRequestListener
     Rails.logger.error("An Exception was rescued in the Approval Listener: #{e.message} Details: #{e.inspect}")
   end
 
-  def update_and_log_state(approval, payload)
+  def update_and_log_state(approval, topic)
     Rails.logger.info("Inside update_and_log_state")
-    decision = payload['decision']
-    reason = payload['reason']
-    log_message = decision == "approved" ? "Approval Complete: #{reason}" : "Approval Denied: #{reason}"
+    decision = topic.payload['decision']
+    reason = topic.payload['reason']
+    message = topic.message
+    log_message = decision == "approved" ? "Approval Complete: message: #{message} reason: #{reason}" : "Approval Denied: message: #{message} reason: #{reason}"
     Rails.logger.info("Built log message of: #{log_message}")
     approval.order_item.update_message("info", log_message)
     Rails.logger.info("Updated the order item message")
@@ -68,8 +69,7 @@ class ApprovalRequestListener
   def default_messaging_options
     {
       :protocol   => :Kafka,
-      #:client_ref => CLIENT_AND_GROUP_REF,
-      :client_ref => "approval-catalog-api-worker-testing".freeze,
+      :client_ref => CLIENT_AND_GROUP_REF,
       :encoding   => 'json'
     }
   end
