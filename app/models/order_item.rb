@@ -40,7 +40,7 @@ class OrderItem < ApplicationRecord
   end
 
   def update_message(level, message)
-    progress_messages << ProgressMessage.new(:level => level, :message => message)
+    progress_messages << ProgressMessage.new(:level => level, :message => message, :tenant_id => self.tenant_id)
     touch
   end
 
