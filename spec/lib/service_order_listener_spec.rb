@@ -10,7 +10,7 @@ describe ServiceOrderListener do
       ManageIQ::API::Common::Request.with_request(request) { example.call }
     end
 
-    let(:messages) { [ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil)] }
+    let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil) }
     let(:payload) { {"task_id" => "123", "state" => state} }
     let!(:item) do
       OrderItem.create!(
@@ -29,13 +29,14 @@ describe ServiceOrderListener do
     before do
       allow(ManageIQ::Messaging::Client).to receive(:open).with(
         :protocol   => :Kafka,
-        :client_ref => ServiceOrderListener::CLIENT_AND_GROUP_REF,
-        :group_ref  => ServiceOrderListener::CLIENT_AND_GROUP_REF
-      ).and_return(client)
-      allow(client).to receive(:subscribe_messages).with(
-        :service   => ServiceOrderListener::SERVICE_NAME,
-        :max_bytes => 500_000
-      ).and_yield(messages)
+        :client_ref => ServiceOrderListener::CLIENT_REF,
+        :encoding   => "json"
+      ).and_yield(client)
+      allow(client).to receive(:subscribe_topic).with(
+        :service     => ServiceOrderListener::SERVICE_NAME,
+        :persist_ref => ServiceOrderListener::CLIENT_REF,
+        :max_bytes   => 500_000
+      ).and_yield(message)
       allow(client).to receive(:close)
     end
 

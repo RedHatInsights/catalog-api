@@ -2,7 +2,7 @@ require "manageiq-messaging"
 
 class ServiceOrderListener
   SERVICE_NAME = "platform.topological-inventory.task-output-stream".freeze
-  CLIENT_AND_GROUP_REF = "catalog-api-worker".freeze
+  CLIENT_REF = "catalog-api-worker".freeze
 
   class OrderItemNotFound < StandardError; end
 
@@ -17,54 +17,57 @@ class ServiceOrderListener
   end
 
   def subscribe_to_task_updates
-    self.client = ManageIQ::Messaging::Client.open(messaging_client_options)
-
     Rails.logger.info("Catalog API service order listener started...")
 
-    client.subscribe_messages(
-      :service   => SERVICE_NAME,
-      :max_bytes => 500_000
-    ) do |messages|
-      messages.each do |msg|
-        process_message(msg)
+    ManageIQ::Messaging::Client.open(messaging_client_options) do |client|
+      client.subscribe_topic(
+        :service     => SERVICE_NAME,
+        :persist_ref => CLIENT_REF,
+        :max_bytes   => 500_000
+      ) do |topic|
+        process_event(topic)
       end
     end
-  ensure
-    Rails.logger.info("Catalog API service order listener stopping...")
-
-    client&.close
-    self.client = nil
   end
 
   private
 
-  def process_message(msg)
-    Rails.logger.info("Processing #{msg.message} with payload: #{msg.payload}")
+  def process_event(topic)
+    Rails.logger.info("Processing service order topic message: #{topic.message} with payload: #{topic.payload}")
 
     ProgressMessage.create!(
       :level   => "info",
-      :message => "Task update message received with payload: #{msg.payload}"
+      :message => "Task update message received with payload: #{topic.payload}"
     )
 
-    if msg.payload["state"] == "completed"
-      item = OrderItem.where(:topology_task_ref => msg.payload["task_id"]).first
+    if topic.payload["state"] == "completed"
+      Rails.logger.info("Searching for OrderItem with a task_ref: #{topic.payload["task_id"]}")
+      item = OrderItem.where(:topology_task_ref => topic.payload["task_id"]).first
       raise OrderItemNotFound if item.nil?
+
+      Rails.logger.info("Found OrderItem: #{item.id}")
       item.state = 'Order Completed'
       item.update_message('info', 'Order Complete')
+
+      Rails.logger.info("Updating OrderItem: #{item.id} with 'Order Completed' state")
       item.save!
+      Rails.logger.info("Finished updating OrderItem: #{item.id} with 'Order Completed' state")
     end
   rescue OrderItemNotFound
+    Rails.logger.error("Could not find an OrderItem with topology_task_ref: #{topic.payload["task_id"]}")
     ProgressMessage.create(
       :level   => "error",
-      :message => "Could not find OrderItem with topology_task_ref of #{msg.payload["task_id"]}"
+      :message => "Could not find OrderItem with topology_task_ref of #{topic.payload["task_id"]}"
     )
+  rescue Exception => e
+    Rails.logger.error("An Exception was rescued in the Service Order Listener: #{e.message} Details: #{e.inspect}")
   end
 
   def default_messaging_options
     {
       :protocol   => :Kafka,
-      :client_ref => CLIENT_AND_GROUP_REF,
-      :group_ref  => CLIENT_AND_GROUP_REF
+      :client_ref => CLIENT_REF,
+      :encoding   => "json"
     }
   end
 end
