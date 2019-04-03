@@ -1223,6 +1223,7 @@
             "type": "string",
             "enum": [
               "Created",
+              "Approval Pending",
               "Ordered",
               "Failed",
               "Completed"
