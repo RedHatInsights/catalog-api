@@ -10,7 +10,7 @@ describe ServiceOrderListener do
       ManageIQ::API::Common::Request.with_request(request) { example.call }
     end
 
-    let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil) }
+    let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client) }
     let(:payload) { {"task_id" => "123", "state" => state} }
     let!(:item) do
       OrderItem.create!(
