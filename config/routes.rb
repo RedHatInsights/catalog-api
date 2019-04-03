@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       end
       resources :order_items,           :only => [:index, :show] do
         resources :progress_messages,     :only => [:index]
+        resources :approval_requests,     :only => [:index]
       end
       post '/portfolios/:portfolio_id/portfolio_items', :action => 'add_portfolio_item_to_portfolio', :controller => 'portfolios', :as => 'add_portfolio_item_to_portfolio'
       post '/portfolios/:portfolio_id/share', :action => 'share', :controller => 'portfolios', :as => 'share'

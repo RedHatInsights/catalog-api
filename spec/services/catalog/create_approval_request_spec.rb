@@ -5,7 +5,7 @@ describe Catalog::CreateApprovalRequest do
   let!(:order) { create(:order) }
   let!(:portfolio) { create(:portfolio) }
   let!(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :workflow_ref => workflow_ref) }
-  let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
+  let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => 1) }
 
   let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { instance_double(ApprovalApiClient::RequestApi) }

@@ -13,4 +13,23 @@ describe "OrderItemsRequests", :type => :request do
       expect(JSON.parse(response.body)['data'].first['id']).to eq(order_item.id.to_s)
     end
   end
+
+  describe "#approval_requests" do
+    let!(:approval) { create(:approval_request, :order_item_id => order_item.id, :workflow_ref => "1", :tenant_id => tenant.id) }
+
+    context "list" do
+      before do
+        get "#{api}/order_items/#{order_item.id}/approval_requests", :headers => default_headers
+      end
+
+      it "returns a 200 http status" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "lists approval requests" do
+        expect(json["data"].count).to eq 1
+        expect(json["data"].first["id"]).to eq approval.id.to_s
+      end
+    end
+  end
 end
