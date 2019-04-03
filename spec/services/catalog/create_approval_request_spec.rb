@@ -33,7 +33,7 @@ describe Catalog::CreateApprovalRequest do
       end
 
       it "submits the approval request" do
-        expect(request.order.state).to eq "Ordered"
+        expect(request.order.state).to eq "Approval Pending"
       end
 
       it "sets up the approval_request on the order item" do
