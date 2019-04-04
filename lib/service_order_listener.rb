@@ -33,32 +33,7 @@ class ServiceOrderListener
   private
 
   def process_event(topic)
-    Rails.logger.info("Processing service order topic message: #{topic.message} with payload: #{topic.payload}")
-
-    ProgressMessage.create!(
-      :level   => "info",
-      :message => "Task update message received with payload: #{topic.payload}"
-    )
-
-    if topic.payload["state"] == "completed"
-      Rails.logger.info("Searching for OrderItem with a task_ref: #{topic.payload["task_id"]}")
-      item = OrderItem.where(:topology_task_ref => topic.payload["task_id"]).first
-      raise OrderItemNotFound if item.nil?
-
-      Rails.logger.info("Found OrderItem: #{item.id}")
-      item.state = 'Order Completed'
-      item.update_message('info', 'Order Complete')
-
-      Rails.logger.info("Updating OrderItem: #{item.id} with 'Order Completed' state")
-      item.save!
-      Rails.logger.info("Finished updating OrderItem: #{item.id} with 'Order Completed' state")
-    end
-  rescue OrderItemNotFound
-    Rails.logger.error("Could not find an OrderItem with topology_task_ref: #{topic.payload["task_id"]}")
-    ProgressMessage.create(
-      :level   => "error",
-      :message => "Could not find OrderItem with topology_task_ref of #{topic.payload["task_id"]}"
-    )
+    Catalog::UpdateOrderItem.new(topic).process
   rescue Exception => e
     Rails.logger.error("An Exception was rescued in the Service Order Listener: #{e.message} Details: #{e.inspect}")
   end
