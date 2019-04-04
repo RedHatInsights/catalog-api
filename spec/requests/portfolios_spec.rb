@@ -1,7 +1,9 @@
 describe 'Portfolios API' do
   around do |example|
     bypass_tenancy do
-      example.call
+      bypass_rbac do
+        example.call
+      end
     end
   end
 

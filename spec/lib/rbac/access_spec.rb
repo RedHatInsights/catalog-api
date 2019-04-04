@@ -30,4 +30,14 @@ describe RBAC::Access do
       expect(svc_obj.id_list).to match_array([25, 27])
     end
   end
+
+  it "rbac is enabled by default" do
+    expect(described_class.enabled?).to be_truthy
+  end
+
+  it "rbac is enabled by default" do
+    with_modified_env :BYPASS_RBAC => "1" do
+      expect(described_class.enabled?).to be_falsey
+    end
+  end
 end

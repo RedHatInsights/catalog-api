@@ -7,6 +7,12 @@ RSpec.describe ApplicationController, :type => :request do
   let(:other_user)        { default_user_hash }
 
   context "with api version v1" do
+    around do |example|
+      bypass_rbac do
+        example.call
+      end
+    end
+
     let(:api_version)       { api(1) }
     let(:api_minor_version) { api(1.0) }
 
@@ -26,6 +32,11 @@ RSpec.describe ApplicationController, :type => :request do
   end
 
   context "with tenancy enforcement" do
+    around do |example|
+      bypass_rbac do
+        example.call
+      end
+    end
 
     it "get /portfolios with tenant" do
       get("/api/v1.0/portfolios/#{portfolio_id}", :headers => admin_headers)
@@ -60,7 +71,9 @@ RSpec.describe ApplicationController, :type => :request do
   context "without tenancy enforcement" do
     around do |example|
       bypass_tenancy do
-        example.call
+        bypass_rbac do
+          example.call
+        end
       end
     end
 
