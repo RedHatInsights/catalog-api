@@ -22,20 +22,27 @@
   ],
   "tags": [
     {
-      "name": "admins",
-      "description": "Secured admin-only calls."
+      "name": "Portfolio",
+      "description": "Portfolio API calls"
     },
     {
-      "name": "users",
-      "description": "Calls available to both regular users and admins."
+      "name": "PortfolioItem",
+      "description": "Portfolio Item API calls"
+    },
+    {
+      "name": "Order",
+      "description": "Order API calls"
+    },
+    {
+      "name": "OrderItem",
+      "description": "OrderItem API calls"
     }
   ],
   "paths": {
     "/portfolios": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "Portfolio"
         ],
         "summary": "List portfolios",
         "operationId": "listPortfolios",
@@ -69,7 +76,7 @@
       },
       "post": {
         "tags": [
-          "admins"
+          "Portfolio"
         ],
         "summary": "Add a new portfolio",
         "operationId": "createPortfolio",
@@ -111,8 +118,7 @@
     "/portfolios/{id}": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "Portfolio"
         ],
         "summary": "Get a specific portfolio",
         "operationId": "showPortfolio",
@@ -149,7 +155,7 @@
       },
       "patch": {
         "tags": [
-          "admins"
+          "Portfolio"
         ],
         "summary": "Edit an existing portfolio",
         "operationId": "updatePortfolio",
@@ -194,7 +200,7 @@
       },
       "delete": {
         "tags": [
-          "admins"
+          "Portfolio"
         ],
         "summary": "Delete an existing portfolio",
         "operationId": "destroyPortfolio",
@@ -220,8 +226,7 @@
     "/portfolios/{portfolio_id}/portfolio_items": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "Portfolio"
         ],
         "summary": "Get all portfolio items from a specific portfolio",
         "operationId": "fetchPortfolioItemsWithPortfolio",
@@ -261,7 +266,7 @@
       },
       "post": {
         "tags": [
-          "admins"
+          "Portfolio"
         ],
         "summary": "Add a portfolio item to a portfolio",
         "operationId": "addPortfolioItemToPortfolio",
@@ -300,7 +305,7 @@
     "/portfolios/{portfolio_id}/share": {
       "post": {
         "tags": [
-          "admins"
+          "Portfolio"
         ],
         "summary": "Share a portfolio with one or more groups with specific permission",
         "operationId": "sharePortfolio",
@@ -339,7 +344,7 @@
     "/portfolios/{portfolio_id}/unshare": {
       "post": {
         "tags": [
-          "admins"
+          "Portfolio"
         ],
         "summary": "Unshare a portfolio from one or more groups with specific permission",
         "operationId": "unsharePortfolio",
@@ -378,8 +383,7 @@
     "/portfolios/{portfolio_id}/share_info": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "Portfolio"
         ],
         "summary": "Fetch share information about this portfolio, the response would include a collection of groups and permissions with each group",
         "operationId": "share_info",
@@ -418,8 +422,7 @@
     "/portfolio_items": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "PortfolioItem"
         ],
         "summary": "List all portfolio items",
         "operationId": "listPortfolioItems",
@@ -453,7 +456,7 @@
       },
       "post": {
         "tags": [
-          "admins"
+          "PortfolioItem"
         ],
         "summary": "Add a new portfolio item",
         "operationId": "createPortfolioItem",
@@ -497,8 +500,7 @@
     "/portfolio_items/{id}": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "PortfolioItem"
         ],
         "summary": "Gets a specific portfolio item",
         "operationId": "showPortfolioItem",
@@ -532,7 +534,7 @@
       },
       "delete": {
         "tags": [
-          "admins"
+          "PortfolioItem"
         ],
         "summary": "Delete an existing portfolio item",
         "operationId": "destroyPortfolioItem",
@@ -552,6 +554,9 @@
         }
       },
       "patch": {
+        "tags": [
+          "PortfolioItem"
+        ],
         "summary": "Edit an existing portfolio item",
         "description": "Edits portfolio item specified by the given ID.",
         "parameters": [
@@ -597,8 +602,7 @@
     "/portfolio_items/{portfolio_item_id}/service_plans": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "PortfolioItem"
         ],
         "summary": "Gets all service plans for a specific portfolio item; requires a connection to the topology service.",
         "operationId": "listServicePlans",
@@ -640,8 +644,7 @@
     "/portfolio_items/{portfolio_item_id}/provider_control_parameters": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "PortfolioItem"
         ],
         "summary": "Gets the provider control parameters for this portfolio item; requires control paramaters provided when provisioning the portfolio item.",
         "operationId": "listProviderControlParameters",
@@ -680,8 +683,7 @@
     "/orders": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "Order"
         ],
         "summary": "Get a list of orders",
         "operationId": "listOrders",
@@ -715,7 +717,7 @@
       },
       "post": {
         "tags": [
-          "admins"
+          "Order"
         ],
         "summary": "Create a new order",
         "operationId": "createOrder",
@@ -743,8 +745,7 @@
     "/orders/{order_id}/order_items": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "Order"
         ],
         "summary": "Gets a list of items in a given order",
         "operationId": "listOrderItems",
@@ -781,8 +782,7 @@
       },
       "post": {
         "tags": [
-          "users",
-          "admins"
+          "Order"
         ],
         "summary": "Add an order item to an order in pending state",
         "operationId": "addToOrder",
@@ -821,8 +821,7 @@
     "/orders/{order_id}/order_items/{id}": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "Order"
         ],
         "summary": "Gets an individual order item from a given order",
         "operationId": "showOrderItem",
@@ -861,7 +860,7 @@
     "/orders/{order_id}/submit_order": {
       "post": {
         "tags": [
-          "admins"
+          "Order"
         ],
         "summary": "Submit a given order",
         "operationId": "submitOrder",
@@ -897,8 +896,7 @@
     "/order_items/{order_item_id}/progress_messages": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "OrderItem"
         ],
         "summary": "Gets a list of progress messages in an item",
         "operationId": "listProgressMessages",
@@ -940,8 +938,7 @@
     "/order_items/{order_item_id}/approval_requests": {
       "get": {
         "tags": [
-          "users",
-          "admins"
+          "OrderItem"
         ],
         "summary": "Gets a list of approval requests for an item",
         "operationId": "listApprovalRequests",
