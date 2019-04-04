@@ -976,6 +976,45 @@
           }
         }
       }
+    },
+    "/portfolio_items/{portfolio_item_id}/icon": {
+      "get": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "Fetches the specified portfolio item's icon information",
+        "operationId": "listServiceOfferingIcon",
+        "description": "Fetch the specified portfolio item's icon information.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioItemID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio Item Icon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceOfferingIcon"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Icon Not Found/Not Present on Portfolio Item"
+          },
+          "500": {
+            "description": "Could not access the Topology Service"
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -1136,6 +1175,12 @@
             "type": "string",
             "title": "Owner",
             "example": "jdoe"
+          },
+          "service_offering_icon_ref": {
+              "type": "string",
+              "readOnly": true,
+              "title": "Service Offering Icon Ref",
+              "example": 20
           }
         }
       },
@@ -1421,6 +1466,29 @@
           }
         }
       },
+      "ServiceOfferingIcon": {
+       "type": "object",
+       "properties": {
+         "id": {
+           "type": "string",
+           "title": "ID",
+           "description": "The unique identifier for this Service Offering Icon",
+           "readOnly": true
+         },
+         "data": {
+           "type": "string",
+           "title": "Data",
+           "description": "The raw SVG data for this icon",
+           "readOnly": false
+         },
+         "source_ref": {
+           "type": "string",
+           "title": "Source Ref",
+           "description": "Stores the Source Ref for this icon",
+           "readOnly": true
+         }
+       }
+     },
       "ProgressMessage": {
         "type": "object",
         "properties": {
