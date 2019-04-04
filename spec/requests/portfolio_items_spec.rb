@@ -17,38 +17,34 @@ describe "PortfolioItemRequests", :type => :request do
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
 
-  %w(admin user).each do |tag|
-    describe "GET #{tag} /portfolio_items/:portfolio_item_id" do
-      before do
-        get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers
+  describe "GET /portfolio_items/:portfolio_item_id" do
+    before do
+      get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+    end
+
+    context 'the portfolio_item exists' do
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
       end
 
-      context 'the portfolio_item exists' do
-        it 'returns status code 200' do
-          expect(response).to have_http_status(200)
-        end
-
-        it 'returns the portfolio_item we asked for' do
-          expect(json["id"]).to eq portfolio_item.id.to_s
-        end
+      it 'returns the portfolio_item we asked for' do
+        expect(json["id"]).to eq portfolio_item.id.to_s
       end
     end
   end
 
-  %w(admin user).each do |tag|
-    describe "GET v1.0 #{tag} /portfolio_items/:portfolio_item_id" do
-      before do
-        get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers
+  describe "GET v1.0 /portfolio_items/:portfolio_item_id" do
+    before do
+      get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+    end
+
+    context 'the portfolio_item exists' do
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
       end
 
-      context 'the portfolio_item exists' do
-        it 'returns status code 200' do
-          expect(response).to have_http_status(200)
-        end
-
-        it 'returns the portfolio_item we asked for' do
-          expect(json["id"]).to eq portfolio_item.id.to_s
-        end
+      it 'returns the portfolio_item we asked for' do
+        expect(json["id"]).to eq portfolio_item.id.to_s
       end
     end
   end
