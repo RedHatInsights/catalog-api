@@ -114,20 +114,20 @@ You would need 2 terminals for this setup
 1. **Running your catalog app**
 
       export APP_NAME=catalog
-      
+
       export PATH_PREFIX=/api
-      
+
       bin/rails s -p 5000
-      
+
 2. **Run the insights proxy based on Linux or Mac**
 ```
    SPANDX_CONFIG=/path/to/catalog-api/config/spandx/mac.js bash /path/to/insights-proxy/scripts/run.sh
 ```
-   
+
 3. **Login to the Dev cluster to access the UI**
 
    Using this URL which connects to the insights proxy running in the docker container
-   https://ci.foo.redhat.com:1337/insights/platform/catalog/portfolios
+   https://ci.foo.redhat.com:1337/hybrid/catalog
 
 
 ## License
