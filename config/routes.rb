@@ -2,13 +2,16 @@ Rails.application.routes.draw do
   # Disable PUT for now since rails sends these :update and they aren't really the same thing.
   def put(*_args); end
 
+  routing_helper = ManageIQ::API::Common::Routing.new(self)
+
   prefix = "api"
   if ENV["PATH_PREFIX"].present? && ENV["APP_NAME"].present?
     prefix = File.join(ENV["PATH_PREFIX"], ENV["APP_NAME"]).gsub(/^\/+|\/+$/, "")
   end
 
   scope :as => :api, :module => "api", :path => prefix do
-    match "/v1/*path", :via => [:delete, :get, :options, :patch, :post], :to => redirect(:path => "/#{prefix}/v1.0/%{path}", :only_path => true)
+    routing_helper.redirect_major_version("v1.0", prefix)
+
     namespace :v1x0, :path => "v1.0" do
       get "/openapi.json", :to => "root#openapi"
       post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
