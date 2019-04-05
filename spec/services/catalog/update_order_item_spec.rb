@@ -1,11 +1,7 @@
 describe Catalog::UpdateOrderItem do
   describe "#process" do
-    let(:request) do
-      { :headers => { 'x-rh-identity' => encoded_user_hash }, :original_url => 'whatever' }
-    end
-
     around do |example|
-      ManageIQ::API::Common::Request.with_request(request) { example.call }
+      ManageIQ::API::Common::Request.with_request(default_request) { example.call }
     end
 
     let(:client) { double(:client) }
