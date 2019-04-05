@@ -3,14 +3,16 @@ describe Catalog::OrderItemTransition do
   let(:submit_order) { instance_double(Catalog::SubmitOrder) }
   let(:topo_ex) { Catalog::TopologyError.new("boom") }
 
+  let(:req) { { :headers => default_headers, :original_url => "localhost/nope" } }
+
   let(:order) { create(:order) }
-  let(:order_item) do
-    create(:order_item,
-           :order_id          => order.id,
-           :portfolio_item_id => "1",
-           :context           => {
-             :headers => encoded_user_hash, :original_url => "localhost/nope"
-           })
+
+  let!(:order_item) do
+    ManageIQ::API::Common::Request.with_request(req) do
+      create(:order_item,
+             :order_id          => order.id,
+             :portfolio_item_id => "1")
+    end
   end
 
   let(:approval) do
