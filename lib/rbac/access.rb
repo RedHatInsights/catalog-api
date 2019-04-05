@@ -23,7 +23,7 @@ module RBAC
 
     def id_list
       @acl.collect do |item|
-        item.resource_definition.collect do |rd|
+        item.resource_definitions.collect do |rd|
           rd.attribute_filter.value
         end
       end.flatten
