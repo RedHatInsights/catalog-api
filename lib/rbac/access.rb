@@ -28,5 +28,9 @@ module RBAC
         end
       end.flatten
     end
+
+    def self.enabled?
+      ENV['BYPASS_RBAC'].blank?
+    end
   end
 end

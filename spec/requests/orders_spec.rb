@@ -1,4 +1,9 @@
 describe "OrderRequests", :type => :request do
+  around do |example|
+    bypass_rbac do
+      example.call
+    end
+  end
   let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
   let!(:order) { create(:order, :tenant_id => tenant.id) }
 

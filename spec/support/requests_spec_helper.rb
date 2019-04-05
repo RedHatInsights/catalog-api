@@ -11,4 +11,8 @@ module RequestSpecHelper
   def bypass_tenancy
     with_modified_env(:BYPASS_TENANCY => 'true') { yield }
   end
+
+  def bypass_rbac
+    with_modified_env(:BYPASS_RBAC => 'true') { yield }
+  end
 end

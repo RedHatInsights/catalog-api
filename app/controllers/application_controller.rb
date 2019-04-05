@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::API
   include Response
   rescue_from Catalog::TopologyError, :with => :topology_service_error
+  rescue_from Catalog::NotAuthorized, :with => :not_authorized_error
 
   around_action :with_current_request
 
@@ -31,5 +32,9 @@ class ApplicationController < ActionController::API
 
   def topology_service_error(err)
     render :json => {:message => err.message}, :status => :internal_server_error
+  end
+
+  def not_authorized_error(err)
+    render :json => {:message => err.message}, :status => :forbidden
   end
 end

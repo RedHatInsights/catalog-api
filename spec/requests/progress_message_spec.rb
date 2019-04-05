@@ -1,4 +1,10 @@
 describe "ProgressMessageRequests", :type => :request do
+  around do |example|
+    bypass_rbac do
+      example.call
+    end
+  end
+
   let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
   let(:order) { create(:order, :tenant_id => tenant.id) }
   let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
