@@ -18,7 +18,7 @@ RSpec.describe ApplicationController, :type => :request do
 
     it "get api/v1/portfolios with tenant" do
       get("#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers)
-      expect(response.status).to eq(301)
+      expect(response.status).to eq(302)
       expect(response.headers["Location"]).to eq "#{api_minor_version}/portfolios/#{portfolio_id}"
     end
 
@@ -26,7 +26,7 @@ RSpec.describe ApplicationController, :type => :request do
       headers = { "CONTENT_TYPE" => "application/json" }
 
       get("#{api_version}/portfolios/#{portfolio_id}", :headers => headers)
-      expect(response.status).to eq(301)
+      expect(response.status).to eq(302)
       expect(response.headers["Location"]).to eq "#{api_minor_version}/portfolios/#{portfolio_id}"
     end
   end
