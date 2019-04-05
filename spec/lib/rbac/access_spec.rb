@@ -8,9 +8,9 @@ describe RBAC::Access do
   let(:resource_def1) { double(:attribute_filter => attr_filter1) }
   let(:resource_def2) { double(:attribute_filter => attr_filter2) }
   let(:resource_def3) { double(:attribute_filter => attr_filter3) }
-  let(:access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definition => [resource_def1, resource_def3]) }
-  let(:access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definition => [resource_def2]) }
-  let(:access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definition => []) }
+  let(:access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1, resource_def3]) }
+  let(:access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def2]) }
+  let(:access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definitions => []) }
   let(:acls) { [access1, access2, access3] }
 
   let(:rbac_access) { described_class.new(resource, verb) }
