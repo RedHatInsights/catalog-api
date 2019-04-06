@@ -1,20 +1,20 @@
 describe "PortfolioItemRequests", :type => :request do
   around do |example|
-    bypass_tenancy do
-      bypass_rbac do
-        example.call
-      end
+    bypass_rbac do
+      example.call
     end
   end
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
-  let(:order) { create(:order) }
+  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:order) { create(:order, :tenant_id => tenant.id) }
   let(:icon_id) { 1 }
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
                             :service_offering_source_ref => service_offering_source_ref,
-                            :service_offering_icon_ref   => icon_id)
+                            :service_offering_icon_ref   => icon_id,
+                            :tenant_id                   => tenant.id)
   end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
@@ -57,7 +57,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context 'when v1.0 :portfolio_item_id is valid' do
       before do
-        delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers, :params => valid_attributes
+        delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers, :params => valid_attributes
       end
 
       it 'discards the record' do
@@ -69,7 +69,7 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it "can't be requested" do
-        expect { get("/#{api}/portfolio_items/#{portfolio_item_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { get("/#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end
@@ -78,7 +78,7 @@ describe "PortfolioItemRequests", :type => :request do
     context "v1.0" do
       it "success" do
         portfolio_item
-        get "/#{api}/portfolio_items"
+        get "/#{api}/portfolio_items", :headers => default_headers
         expect(response).to have_http_status(200)
         expect(JSON.parse(response.body)['data'].count).to eq(1)
       end
@@ -96,7 +96,7 @@ describe "PortfolioItemRequests", :type => :request do
     it "returns not found when topology doesn't have the service_offering_ref" do
       allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
 
-      post "#{api}/portfolio_items", :params => params
+      post "#{api}/portfolio_items", :params => params, :headers => default_headers
       expect(response).to have_http_status(:not_found)
     end
 
@@ -104,7 +104,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
       allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
 
-      post "#{api}/portfolio_items", :params => params
+      post "#{api}/portfolio_items", :params => params, :headers => default_headers
       expect(response).to have_http_status(:ok)
       expect(json["id"]).to eq portfolio_item.id.to_s
       expect(json["service_offering_ref"]).to eq service_offering_ref
@@ -123,7 +123,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:items).and_return(plans)
 
-      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans"
+      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
 
       expect(JSON.parse(response.body).count).to eq(2)
       expect(response.content_type).to eq("application/json")
@@ -133,7 +133,7 @@ describe "PortfolioItemRequests", :type => :request do
     it "raises error" do
       allow(svc_object).to receive(:process).and_raise(topo_ex)
 
-      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans"
+      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
       expect(response).to have_http_status(:internal_server_error)
     end
   end
@@ -150,7 +150,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:data).and_return(:fred => 'bedrock')
 
-      get url
+      get url, :headers => default_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
@@ -159,7 +159,7 @@ describe "PortfolioItemRequests", :type => :request do
     it "raises error" do
       allow(svc_object).to receive(:process).and_raise(topo_ex)
 
-      get url
+      get url, :headers => default_headers
 
       expect(response).to have_http_status(:internal_server_error)
     end
@@ -171,7 +171,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in valid attributes" do
       before do
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => admin_headers
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
       end
 
       it 'returns a 200' do
@@ -185,7 +185,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in read-only attributes" do
       before do
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => admin_headers
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers
       end
 
       it 'returns a 200' do
@@ -218,7 +218,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
     let(:portfolio_item_without_overriden_icon) do
       create(:portfolio_item,
-             :service_offering_icon_ref => topology_service_offering_icon.id)
+             :service_offering_icon_ref => topology_service_offering_icon.id, :tenant_id => tenant.id)
     end
 
     before do
@@ -228,7 +228,7 @@ describe "PortfolioItemRequests", :type => :request do
       it "reaches out to topology to get the icon" do
         expect(api_instance).to receive(:show_service_offering_icon).with(topology_service_offering_icon.id.to_s).and_return(topology_service_offering_icon)
 
-        get "#{api}/portfolio_items/#{portfolio_item_without_overriden_icon.id}/icon", :headers => admin_headers
+        get "#{api}/portfolio_items/#{portfolio_item_without_overriden_icon.id}/icon", :headers => default_headers
 
         expect(response).to have_http_status(200)
         expect(response.content_type).to eq "image/svg+xml"

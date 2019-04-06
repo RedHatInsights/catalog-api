@@ -1,5 +1,4 @@
 RSpec.describe ApplicationController, :type => :request do
-
   let(:tenant)            { Tenant.create(:external_tenant => external_tenant) }
   let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id, :owner => 'wilma') }
   let(:portfolio_id)      { portfolio.id }
@@ -39,7 +38,7 @@ RSpec.describe ApplicationController, :type => :request do
     end
 
     it "get /portfolios with tenant" do
-      get("/api/v1.0/portfolios/#{portfolio_id}", :headers => admin_headers)
+      get("/api/v1.0/portfolios/#{portfolio_id}", :headers => default_headers)
 
       expect(response.status).to eq(200)
       expect(response.parsed_body).to include("id" => portfolio_id.to_s)
