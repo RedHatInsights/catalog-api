@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_02_184014) do
+ActiveRecord::Schema.define(version: 2019_04_06_092520) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,7 @@ ActiveRecord::Schema.define(version: 2019_04_02_184014) do
     t.bigint "external_tenant"
     t.string "name"
     t.string "description"
+    t.boolean "rbac_enabled"
     t.index ["external_tenant"], name: "index_tenants_on_external_tenant"
   end
 

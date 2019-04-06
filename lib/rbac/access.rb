@@ -30,7 +30,16 @@ module RBAC
     end
 
     def self.enabled?
-      ENV['BYPASS_RBAC'].blank?
+      enabled = ENV['BYPASS_RBAC'].blank?
+
+      # Temporary hack to allow per-tenant enabling of RBAC while we test
+      # TODO: Delete as soon as possible
+      if enabled == true
+        return enabled if ENV['RAILS_ENV'] == 'test'
+        enabled = false if ActsAsTenant.current_tenant.try(:rbac_enabled?) == false
+      end
+
+      enabled
     end
   end
 end
