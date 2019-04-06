@@ -22,15 +22,21 @@ module RBAC
     end
 
     def id_list
+      ids = collect_ids
+      ids.include?('*') ? [] : ids
+    end
+
+    def self.enabled?
+      ENV['BYPASS_RBAC'].blank?
+    end
+
+    private 
+    def collect_ids
       @acl.collect do |item|
         item.resource_definitions.collect do |rd|
           rd.attribute_filter.value
         end
       end.flatten
-    end
-
-    def self.enabled?
-      ENV['BYPASS_RBAC'].blank?
     end
   end
 end

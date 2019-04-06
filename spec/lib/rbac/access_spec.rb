@@ -5,13 +5,17 @@ describe RBAC::Access do
   let(:attr_filter1) { double(:value => 25) }
   let(:attr_filter2) { double(:value => 26) }
   let(:attr_filter3) { double(:value => 27) }
+  let(:attr_filter4) { double(:value => '*') }
   let(:resource_def1) { double(:attribute_filter => attr_filter1) }
   let(:resource_def2) { double(:attribute_filter => attr_filter2) }
   let(:resource_def3) { double(:attribute_filter => attr_filter3) }
+  let(:resource_def4) { double(:attribute_filter => attr_filter4) }
   let(:access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1, resource_def3]) }
   let(:access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def2]) }
   let(:access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definitions => []) }
+  let(:access4) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def4]) }
   let(:acls) { [access1, access2, access3] }
+  let(:all_access_acls) { [access4] }
 
   let(:rbac_access) { described_class.new(resource, verb) }
   let(:api_instance) { double }
@@ -28,6 +32,16 @@ describe RBAC::Access do
       expect(svc_obj.acl.count).to eq(1)
       expect(svc_obj.accessible?).to be_truthy
       expect(svc_obj.id_list).to match_array([25, 27])
+    end
+  end
+
+  it "* in id gives access to all instances" do
+    with_modified_env :APP_NAME => app_name do
+      allow(RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, {}, app_name).and_return(all_access_acls)
+      svc_obj = rbac_access.process
+      expect(svc_obj.acl.count).to eq(1)
+      expect(svc_obj.accessible?).to be_truthy
+      expect(svc_obj.id_list).to match_array([])
     end
   end
 
