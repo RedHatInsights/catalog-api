@@ -15,9 +15,6 @@
   "security": [
     {
       "BasicAuth": []
-    },
-    {
-      "APIKeyAuth": []
     }
   ],
   "tags": [
@@ -1019,10 +1016,25 @@
   },
   "servers": [
     {
-      "url": "https://localhost/api/catalog/v1.0"
+      "url": "https://cloud.redhat.com/{basePath}",
+      "description": "Production Server",
+      "variables": {
+        "basePath": {
+          "default": "/api/catalog/v1.0"
+        }
+      }
     },
     {
-      "url": "http://localhost/api/catalog/v1.0"
+      "url": "http://localhost:{port}/{basePath}",
+      "description": "Development Server",
+      "variables": {
+        "port": {
+          "default": "3000"
+        },
+        "basePath": {
+          "default": "/api/catalog/v1.0"
+        }
+      }
     }
   ],
   "components": {
@@ -1124,12 +1136,6 @@
         "type": "http",
         "description": "The userid/password is needed when accessing this API externally",
         "scheme": "basic"
-      },
-      "APIKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-rh-auth-identity",
-        "description": "This is a base64 encoded string of a collection of attributes, that identify a user. This token is needed when accessing the API internally."
       }
     },
     "schemas": {
@@ -1177,10 +1183,10 @@
             "example": "jdoe"
           },
           "service_offering_icon_ref": {
-              "type": "string",
-              "readOnly": true,
-              "title": "Service Offering Icon Ref",
-              "example": 20
+            "type": "string",
+            "readOnly": true,
+            "title": "Service Offering Icon Ref",
+            "example": 20
           }
         }
       },
@@ -1467,28 +1473,28 @@
         }
       },
       "ServiceOfferingIcon": {
-       "type": "object",
-       "properties": {
-         "id": {
-           "type": "string",
-           "title": "ID",
-           "description": "The unique identifier for this Service Offering Icon",
-           "readOnly": true
-         },
-         "data": {
-           "type": "string",
-           "title": "Data",
-           "description": "The raw SVG data for this icon",
-           "readOnly": false
-         },
-         "source_ref": {
-           "type": "string",
-           "title": "Source Ref",
-           "description": "Stores the Source Ref for this icon",
-           "readOnly": true
-         }
-       }
-     },
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "ID",
+            "description": "The unique identifier for this Service Offering Icon",
+            "readOnly": true
+          },
+          "data": {
+            "type": "string",
+            "title": "Data",
+            "description": "The raw SVG data for this icon",
+            "readOnly": false
+          },
+          "source_ref": {
+            "type": "string",
+            "title": "Source Ref",
+            "description": "Stores the Source Ref for this icon",
+            "readOnly": true
+          }
+        }
+      },
       "ProgressMessage": {
         "type": "object",
         "properties": {
