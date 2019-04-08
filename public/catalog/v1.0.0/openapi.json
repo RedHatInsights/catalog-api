@@ -1012,6 +1012,43 @@
           }
         }
       }
+    },
+    "/icons": {
+      "post": {
+        "tags": [
+          "Icon"
+        ],
+        "summary": "Bulk Query for icons",
+        "operationId": "bulkQueryIcons",
+        "description": "Bulk Query for Icon information",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkQueryIcon"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A collection of ServiceOfferingIcons",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceOfferingIconCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -1129,6 +1166,15 @@
           }
         },
         "required": true
+      },
+      "BulkQueryIcon": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BulkQueryIcon"
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -1642,6 +1688,12 @@
           }
         }
       },
+      "ServiceOfferingIconCollection": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ServiceOfferingIcon"
+        }
+      },
       "ProgressMessagesCollection": {
         "type": "object",
         "properties": {
@@ -1768,6 +1820,16 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "BulkQueryIcon": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "string",
+            "title": "IDs",
+            "description": "A comma separated list of IDs to query for"
           }
         }
       }
