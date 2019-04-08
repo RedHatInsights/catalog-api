@@ -3,20 +3,19 @@ module Api
     class PortfoliosController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
       include Api::V1x0::Mixins::RBACMixin
+      before_action :write_access_check, :only => %i(add_portfolio_item_to_portfolio create update destroy)
 
       def index
         collection(Portfolio.all)
       end
 
       def add_portfolio_item_to_portfolio
-        write_access_check
         portfolio = Portfolio.find(params.require(:portfolio_id))
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
         render :json => portfolio.add_portfolio_item(portfolio_item)
       end
 
       def create
-        write_access_check
         portfolio = Portfolio.create!(portfolio_params)
         render :json => portfolio
       rescue ActiveRecord::RecordInvalid => e
@@ -24,7 +23,6 @@ module Api
       end
 
       def update
-        write_access_check
         portfolio = Portfolio.find(params.require(:id))
         portfolio.update!(portfolio_params)
 
@@ -39,7 +37,6 @@ module Api
       end
 
       def destroy
-        write_access_check
         portfolio = Portfolio.find(params.require(:id))
         if portfolio.discard
           head :no_content
