@@ -1,19 +1,17 @@
 describe 'Portfolios API' do
   around do |example|
-    bypass_tenancy do
-      bypass_rbac do
-        example.call
-      end
+    bypass_rbac do
+      example.call
     end
   end
 
-  let!(:portfolio)            { create(:portfolio) }
-  let!(:portfolio_item)       { create(:portfolio_item) }
+  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let!(:portfolio)            { create(:portfolio, :tenant_id => tenant.id) }
+  let!(:portfolio_item)       { create(:portfolio_item, :tenant_id => tenant.id) }
   let!(:portfolio_items)      { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)          { portfolio.id }
   let(:portfolio_item_id)     { portfolio_items.first.id }
   let(:new_portfolio_item_id) { portfolio_item.id }
-  let(:tenant)                { create(:tenant, :with_external_tenant) }
 
   describe "GET /portfolios/:portfolio_id" do
     before do
@@ -120,7 +118,7 @@ describe 'Portfolios API' do
 
     context 'when discarding a portfolio' do
       before do
-        delete "#{api}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => valid_attributes
+        delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
       end
 
       it 'deletes the record' do
@@ -132,11 +130,11 @@ describe 'Portfolios API' do
       end
 
       it "cannot be requested" do
-        expect { get("/#{api}/portfolios/#{portfolio_id}", :headers => admin_headers) }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { get("/#{api}/portfolios/#{portfolio_id}", :headers => default_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
       it 'allows adding portfolios with the same name when one is discarded' do
-        post "#{api}/portfolios", :headers => admin_headers, :params => valid_attributes
+        post "#{api}/portfolios", :headers => default_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:ok)
       end
@@ -148,7 +146,7 @@ describe 'Portfolios API' do
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
     context 'when patched portfolio is valid' do
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => valid_attributes
+        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
       end
 
       it 'returns status code 200' do
@@ -164,7 +162,7 @@ describe 'Portfolios API' do
 
     context 'when patched portfolio params are invalid' do
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => admin_headers, :params => invalid_attributes
+        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => invalid_attributes
       end
 
       it 'returns status code 200' do
@@ -182,7 +180,7 @@ describe 'Portfolios API' do
   describe 'POST /portfolios' do
     let(:valid_attributes) { { :name => 'rspec 1', :description => 'rspec 1 description' } }
     context 'when portfolio attributes are valid' do
-      before { post "#{api}/portfolios", :params => valid_attributes, :headers => admin_headers }
+      before { post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -193,7 +191,7 @@ describe 'Portfolios API' do
       end
 
       it 'returns a status code 422 when trying to create with the same name' do
-        post "#{api}/portfolios", :params => valid_attributes, :headers => admin_headers
+        post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers
 
         expect(response).to have_http_status(422)
       end
@@ -221,7 +219,7 @@ describe 'Portfolios API' do
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => admin_headers
+          post "#{api}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => default_headers
           expect(response).to have_http_status(204)
         end
       end
@@ -239,7 +237,7 @@ describe 'Portfolios API' do
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => admin_headers
+          post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
           expect(response).to have_http_status(204)
         end
       end
@@ -255,7 +253,7 @@ describe 'Portfolios API' do
                      :resource_id   => portfolio.id.to_s,
                      :resource_name => 'portfolios'}
           expect(RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
-          get "#{api}/portfolios/#{portfolio.id}/share_info", :headers => admin_headers
+          get "#{api}/portfolios/#{portfolio.id}/share_info", :headers => default_headers
 
           expect(response).to have_http_status(200)
         end

@@ -1,11 +1,12 @@
 describe Catalog::CreateApprovalRequest do
   let(:create_approval_request) { described_class.new(order.id) }
 
+  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
   let(:workflow_ref) { "1" }
-  let!(:order) { create(:order) }
-  let!(:portfolio) { create(:portfolio) }
-  let!(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :workflow_ref => workflow_ref) }
-  let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => 1) }
+  let!(:order) { create(:order, :tenant_id => tenant.id) }
+  let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let!(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :workflow_ref => workflow_ref, :tenant_id => tenant.id) }
+  let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
   let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { instance_double(ApprovalApiClient::RequestApi) }
