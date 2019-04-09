@@ -28,7 +28,7 @@ describe Catalog::UpdateOrderItem do
 
       context "when the state of the task is completed" do
         let(:state) { "completed" }
-        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:url => "service_instance_url"}}.to_json) }
+        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => "321"}}.to_json) }
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
 
         around do |e|
@@ -48,7 +48,7 @@ describe Catalog::UpdateOrderItem do
 
         context "when the service instance can be found" do
           before do
-            stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instance_url").
+            stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321").
               with(:headers => {'Content-Type'=>'application/json'}).
               to_return(:status => 200, :body => service_instance.to_json, :headers => {})
           end
@@ -75,7 +75,7 @@ describe Catalog::UpdateOrderItem do
 
         context "when the service instance can not be found" do
           before do
-            stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instance_url").
+            stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321").
               with(:headers => {'Content-Type'=>'application/json'}).
               to_return(:status => 404, :body => service_instance.to_json, :headers => {})
           end

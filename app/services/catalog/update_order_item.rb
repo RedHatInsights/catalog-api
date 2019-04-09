@@ -47,11 +47,8 @@ module Catalog
     def fetch_external_url
       TopologicalInventory.call do |api_instance|
         task = api_instance.show_task(@payload["task_id"])
-        service_instance_response = api_instance.api_client.call_api(
-          :GET,
-          JSON.parse(task.context)["service_instance"]["url"],
-          :return_type => "ServiceInstance")
-        return service_instance_response[0].external_url if service_instance_response[1] == 200
+        service_instance = api_instance.show_service_instance(JSON.parse(task.context)["service_instance"]["id"])
+        service_instance.external_url
       end
     rescue Catalog::TopologyError
       Rails.logger.error("Could not find the service instance attached to task_id: #{@payload["task_id"]}")
