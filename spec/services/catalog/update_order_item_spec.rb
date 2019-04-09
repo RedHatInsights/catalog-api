@@ -1,25 +1,18 @@
 describe Catalog::UpdateOrderItem do
   describe "#process" do
-    around do |example|
-      ManageIQ::API::Common::Request.with_request(default_request) { example.call }
-    end
-
     let(:client) { double(:client) }
     let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client) }
     let(:payload) { {"task_id" => "123", "state" => state} }
+    let(:req) { { :headers => default_headers, :original_url => "localhost/nope" } }
     let!(:item) do
-      OrderItem.create!(
-        :count                       => 1,
-        :service_parameters          => "test",
-        :provider_control_parameters => "test",
-        :order                       => order,
-        :service_plan_ref            => "321",
-        :portfolio_item              => portfolio_item,
-        :topology_task_ref           => topology_task_ref
-      )
+      ManageIQ::API::Common::Request.with_request(req) do
+        create(:order_item,
+               :order_id          => order.id,
+               :topology_task_ref => topology_task_ref,
+               :portfolio_item_id => "1")
+      end
     end
-    let(:order) { Order.create! }
-    let(:portfolio_item) { PortfolioItem.create!(:service_offering_ref => "321") }
+    let(:order) { create(:order) }
     let(:subject) { described_class.new(topic) }
 
     context "when the order item is not findable" do

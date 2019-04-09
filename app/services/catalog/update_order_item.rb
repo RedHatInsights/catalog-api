@@ -14,15 +14,17 @@ module Catalog
       order_item = find_order_item
       Rails.logger.info("Found OrderItem: #{order_item.id}")
 
-      order_item.update_message("info", "Task update message received with payload: #{@payload}")
+      ManageIQ::API::Common::Request.with_request(order_item.context.transform_keys(&:to_sym)) do
+        order_item.update_message("info", "Task update message received with payload: #{@payload}")
 
-      if @payload["state"] == "completed"
-        order_item.state = "Order Completed"
-        order_item.update_message("info", "Order Complete")
+        if @payload["state"] == "completed"
+          order_item.state = "Order Completed"
+          order_item.update_message("info", "Order Complete")
 
-        Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state")
-        order_item.save!
-        Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
+          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state")
+          order_item.save!
+          Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
+        end
       end
     end
 
