@@ -2,12 +2,8 @@ describe ServiceOrderListener do
   let(:client) { double(:client) }
 
   describe "#subscribe_to_task_updates" do
-    let(:request) do
-      { :headers => { 'x-rh-identity' => encoded_user_hash }, :original_url => 'whatever' }
-    end
-
     around do |example|
-      ManageIQ::API::Common::Request.with_request(request) { example.call }
+      ManageIQ::API::Common::Request.with_request(default_request) { example.call }
     end
 
     let(:message) { double("ManageIQ::Messaging::ReceivedMessage") }
@@ -31,6 +27,16 @@ describe ServiceOrderListener do
     it "delegates all processing to the UpdateOrderItem serice" do
       expect(update_order_item).to receive(:process)
       subject.subscribe_to_task_updates
+    end
+
+    context "when Catalog::UpdateOrderItem#process method encounters an error" do
+      before do
+        allow(update_order_item).to receive(:process).and_raise("There was a big boom")
+      end
+
+      it "rescues the error" do
+        expect { subject.subscribe_to_task_updates }.to_not raise_error
+      end
     end
   end
 end

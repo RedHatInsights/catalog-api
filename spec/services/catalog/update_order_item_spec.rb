@@ -3,9 +3,8 @@ describe Catalog::UpdateOrderItem do
     let(:client) { double(:client) }
     let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client) }
     let(:payload) { {"task_id" => "123", "state" => state} }
-    let(:req) { { :headers => default_headers, :original_url => "localhost/nope" } }
     let!(:item) do
-      ManageIQ::API::Common::Request.with_request(req) do
+      ManageIQ::API::Common::Request.with_request(default_request) do
         create(:order_item,
                :order_id          => order.id,
                :topology_task_ref => topology_task_ref,
