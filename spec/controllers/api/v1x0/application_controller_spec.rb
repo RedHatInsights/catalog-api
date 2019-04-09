@@ -1,9 +1,7 @@
 RSpec.describe ApplicationController, :type => :request do
-  let(:tenant)            { Tenant.create(:external_tenant => external_tenant) }
+  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
   let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id, :owner => 'wilma') }
   let(:portfolio_id)      { portfolio.id }
-  let(:external_tenant)   { "0369233" }
-  let(:other_user)        { default_user_hash }
 
   context "with api version v1" do
     around do |example|
@@ -64,24 +62,6 @@ RSpec.describe ApplicationController, :type => :request do
       get("/api/v1.0/portfolios", :headers => headers)
 
       expect(response.status).to eq(401)
-    end
-  end
-
-  context "without tenancy enforcement" do
-    around do |example|
-      bypass_tenancy do
-        bypass_rbac do
-          example.call
-        end
-      end
-    end
-
-    it "get /portfolios" do
-      headers = { "CONTENT_TYPE" => "application/json" }
-
-      get("/api/v1.0/portfolios", :headers => headers)
-
-      expect(response.status).to eq(200)
     end
   end
 end
