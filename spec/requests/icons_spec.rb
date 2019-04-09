@@ -6,6 +6,12 @@ describe "IconsRequests", :type => :request do
       .as_stubbed_const(:transfer_nested_constants => true)
   end
 
+  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:portfolio_item) do
+    create(:portfolio_item, :service_offering_icon_ref => icon_id,
+                            :tenant_id                 => tenant.id)
+  end
+
   let(:topology_service_offering_icon) do
     TopologicalInventoryApiClient::ServiceOfferingIcon.new(
       :id         => icon_id.to_s,
@@ -22,14 +28,35 @@ describe "IconsRequests", :type => :request do
   end
 
   describe "#show" do
-    context "when we have to hit topology for the icon data" do
-      it "reaches out to topology to get the icon" do
+    context "when the icon exists" do
+      it "/icons/{id} returns the icon" do
         expect(api_instance).to receive(:show_service_offering_icon).with(topology_service_offering_icon.id).and_return(topology_service_offering_icon)
 
         get "#{api}/icons/#{icon_id}", :headers => default_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq "image/svg+xml"
+      end
+
+      it "/portfolio_items/{portfolio_item_id}/icon returns the icon" do
+        expect(api_instance).to receive(:show_service_offering_icon).with(topology_service_offering_icon.id).and_return(topology_service_offering_icon)
+
+        get "#{api}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq "image/svg+xml"
+      end
+    end
+
+    context "when the portfolio item doesn't have a service_offering_icon_ref" do
+      before do
+        portfolio_item.update(:service_offering_icon_ref => nil)
+      end
+
+      it "returns not found" do
+        get "#{api}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
