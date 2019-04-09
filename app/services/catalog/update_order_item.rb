@@ -11,8 +11,7 @@ module Catalog
       Rails.logger.info("Processing service order topic message: #{@message} with payload: #{@payload}")
 
       Rails.logger.info("Searching for OrderItem with a task_ref: #{@payload["task_id"]}")
-      order_item = OrderItem.where(:topology_task_ref => @payload["task_id"]).first
-      raise OrderItemNotFound if order_item.nil?
+      order_item = find_order_item
       Rails.logger.info("Found OrderItem: #{order_item.id}")
 
       order_item.update_message("info", "Task update message received with payload: #{@payload}")
@@ -25,6 +24,15 @@ module Catalog
         order_item.save!
         Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
       end
+    end
+
+    private
+
+    def find_order_item
+      order_item = OrderItem.where(:topology_task_ref => @payload["task_id"]).first
+      raise OrderItemNotFound if order_item.nil?
+
+      order_item
     rescue OrderItemNotFound
       Rails.logger.error("Could not find an OrderItem with topology_task_ref: #{@payload["task_id"]}")
       raise "Could not find an OrderItem with topology_task_ref: #{@payload["task_id"]}"
