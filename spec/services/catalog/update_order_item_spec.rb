@@ -73,15 +73,15 @@ describe Catalog::UpdateOrderItem do
           end
         end
 
-        context "when the service instance can not be found" do
+        context "when the service instance does not have an external url" do
           before do
             stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321").
               with(:headers => {'Content-Type'=>'application/json'}).
-              to_return(:status => 404, :body => service_instance.to_json, :headers => {})
+              to_return(:status => 200, :body => "".to_json, :headers => {})
           end
 
           it "raises an error" do
-            expect { subject.process }.to raise_error("Could not find a ServiceInstance attached to task_id: 123")
+            expect { subject.process }.to raise_error("Could not find an external url on service instance (id: 321) attached to task_id: 123")
           end
         end
       end
