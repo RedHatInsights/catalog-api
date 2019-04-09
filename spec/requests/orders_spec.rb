@@ -56,4 +56,12 @@ describe "OrderRequests", :type => :request do
       expect(result['data'].first['id']).to eq(order.id.to_s)
     end
   end
+
+  context "create" do
+    it "create a new order" do
+      post "/api/v1.0/orders", :headers => default_headers, :params => {}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
