@@ -1,6 +1,7 @@
 module Catalog
   class UpdateOrderItem
     class OrderItemNotFound < StandardError; end
+    class ServiceInstanceNotFound < StandardError; end
 
     def initialize(topic)
       @payload = topic.payload
@@ -21,7 +22,10 @@ module Catalog
           order_item.state = "Order Completed"
           order_item.update_message("info", "Order Complete")
 
-          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state")
+          external_url = fetch_external_url
+          order_item.external_url = external_url
+
+          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state and #{external_url}")
           order_item.save!
           Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
         end
@@ -38,6 +42,20 @@ module Catalog
     rescue OrderItemNotFound
       Rails.logger.error("Could not find an OrderItem with topology_task_ref: #{@payload["task_id"]}")
       raise "Could not find an OrderItem with topology_task_ref: #{@payload["task_id"]}"
+    end
+
+    def fetch_external_url
+      TopologicalInventory.call do |api_instance|
+        task = api_instance.show_task(@payload["task_id"])
+        service_instance_response = api_instance.api_client.call_api(
+          :GET,
+          JSON.parse(task.context)["service_instance"]["url"],
+          :return_type => "ServiceInstance")
+        return service_instance_response[0].external_url if service_instance_response[1] == 200
+      end
+    rescue Catalog::TopologyError
+      Rails.logger.error("Could not find the service instance attached to task_id: #{@payload["task_id"]}")
+      raise "Could not find a ServiceInstance attached to task_id: #{@payload["task_id"]}"
     end
   end
 end
