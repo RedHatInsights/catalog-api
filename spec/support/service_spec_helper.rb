@@ -8,4 +8,12 @@ module ServiceSpecHelper
       'x-rh-insights-request-id' => 'gobbledygook',
       'original_url'             => 'some_url' }
   end
+
+  def original_url
+    "whatever"
+  end
+
+  def default_request
+    { :headers => default_headers, :original_url => original_url }
+  end
 end

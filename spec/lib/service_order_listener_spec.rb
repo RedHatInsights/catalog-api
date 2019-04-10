@@ -2,29 +2,12 @@ describe ServiceOrderListener do
   let(:client) { double(:client) }
 
   describe "#subscribe_to_task_updates" do
-    let(:request) do
-      { :headers => { 'x-rh-identity' => encoded_user_hash }, :original_url => 'whatever' }
-    end
-
     around do |example|
-      ManageIQ::API::Common::Request.with_request(request) { example.call }
+      ManageIQ::API::Common::Request.with_request(default_request) { example.call }
     end
 
-    let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client) }
-    let(:payload) { {"task_id" => "123", "state" => state} }
-    let!(:item) do
-      OrderItem.create!(
-        :count                       => 1,
-        :service_parameters          => "test",
-        :provider_control_parameters => "test",
-        :order                       => order,
-        :service_plan_ref            => "321",
-        :portfolio_item              => portfolio_item,
-        :topology_task_ref           => topology_task_ref
-      )
-    end
-    let(:order) { Order.create! }
-    let(:portfolio_item) { PortfolioItem.create!(:service_offering_ref => "321") }
+    let(:message) { double("ManageIQ::Messaging::ReceivedMessage") }
+    let(:update_order_item) { double("Catalog::UpdateOrderItem") }
 
     before do
       allow(ManageIQ::Messaging::Client).to receive(:open).with(
@@ -38,76 +21,21 @@ describe ServiceOrderListener do
         :max_bytes   => 500_000
       ).and_yield(message)
       allow(client).to receive(:close)
+      allow(Catalog::UpdateOrderItem).to receive(:new).with(message).and_return(update_order_item)
     end
 
-    context "when the order item is not findable" do
-      let(:topology_task_ref) { "0" }
-
-      context "when the state of the task is anything else" do
-        let(:state) { "test" }
-
-        it "creates a progress message about the payload" do
-          subject.subscribe_to_task_updates
-          latest_progress_message = ProgressMessage.last
-          expect(latest_progress_message.level).to eq("info")
-          expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
-        end
-      end
-
-      context "when the state of the task is completed" do
-        let(:state) { "completed" }
-
-        it "creates a progress message about the payload" do
-          subject.subscribe_to_task_updates
-          latest_progress_message = ProgressMessage.second_to_last
-          expect(latest_progress_message.level).to eq("info")
-          expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
-        end
-
-        it "creates a progress message with an error" do
-          subject.subscribe_to_task_updates
-          latest_progress_message = ProgressMessage.last
-          expect(latest_progress_message.level).to eq("error")
-          expect(latest_progress_message.message).to eq("Could not find OrderItem with topology_task_ref of 123")
-        end
-      end
+    it "delegates all processing to the UpdateOrderItem serice" do
+      expect(update_order_item).to receive(:process)
+      subject.subscribe_to_task_updates
     end
 
-    context "when the order item is findable" do
-      let(:topology_task_ref) { "123" }
-
-      context "when the state of the task is anything else" do
-        let(:state) { "test" }
-
-        it "creates a progress message about the payload" do
-          subject.subscribe_to_task_updates
-          latest_progress_message = ProgressMessage.last
-          expect(latest_progress_message.level).to eq("info")
-          expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
-        end
-
-        it "does not update the order" do
-          subject.subscribe_to_task_updates
-          item.reload
-          expect(item.state).to eq("Created")
-        end
+    context "when Catalog::UpdateOrderItem#process method encounters an error" do
+      before do
+        allow(update_order_item).to receive(:process).and_raise("There was a big boom")
       end
 
-      context "when the state of the task is completed" do
-        let(:state) { "completed" }
-
-        it "creates a progress message about the payload" do
-          subject.subscribe_to_task_updates
-          latest_progress_message = ProgressMessage.second_to_last
-          expect(latest_progress_message.level).to eq("info")
-          expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
-        end
-
-        it "updates the order item to be completed" do
-          subject.subscribe_to_task_updates
-          item.reload
-          expect(item.state).to eq("Order Completed")
-        end
+      it "rescues the error" do
+        expect { subject.subscribe_to_task_updates }.to_not raise_error
       end
     end
   end
