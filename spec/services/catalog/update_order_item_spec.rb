@@ -26,19 +26,16 @@ describe Catalog::UpdateOrderItem do
     context "when the order item is findable" do
       let(:topology_task_ref) { "123" }
 
+      around do |e|
+        with_modified_env :TOPOLOGICAL_INVENTORY_URL => 'http://localhost:3000' do
+          e.run
+        end
+      end
+
       context "when the state of the task is completed" do
         let(:state) { "completed" }
         let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => "321"}}.to_json) }
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
-
-        around do |e|
-          url = ENV["TOPOLOGICAL_INVENTORY_URL"]
-          ENV["TOPOLOGICAL_INVENTORY_URL"] = "http://localhost:3000"
-
-          e.run
-
-          ENV["TOPOLOGICAL_INVENTORY_URL"] = url
-        end
 
         before do
           stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/tasks/123").
