@@ -12,7 +12,7 @@ class ApplicationController < ActionController::API
     ManageIQ::API::Common::Request.with_request(request) do |current|
       begin
         ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
-      rescue KeyError
+      rescue ManageIQ::API::Common::IdentityError
         json_response({ :message => 'Unauthorized' }, :unauthorized)
       rescue Catalog::NoTenantError
         json_response({ :message => 'Unauthorized' }, :unauthorized)
