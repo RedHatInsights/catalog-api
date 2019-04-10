@@ -21,10 +21,9 @@ module Catalog
           order_item.state = "Order Completed"
           order_item.update_message("info", "Order Complete")
 
-          external_url = fetch_external_url
-          order_item.external_url = external_url
+          order_item.external_url = fetch_external_url
 
-          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state and #{external_url}")
+          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state and #{order_item.external_url}")
           order_item.save!
           Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
         end
