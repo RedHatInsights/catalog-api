@@ -1,6 +1,6 @@
 module Catalog
   class UpdateOrderItem
-    class OrderItemNotFound < StandardError; end
+    class ServiceInstanceWithoutExternalUrl < StandardError; end
 
     def initialize(topic)
       @payload = topic.payload
@@ -21,7 +21,9 @@ module Catalog
           order_item.state = "Order Completed"
           order_item.update_message("info", "Order Complete")
 
-          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state")
+          order_item.external_url = fetch_external_url
+
+          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state and #{order_item.external_url}")
           order_item.save!
           Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
         end
@@ -31,13 +33,23 @@ module Catalog
     private
 
     def find_order_item
-      order_item = OrderItem.where(:topology_task_ref => @payload["task_id"]).first
-      raise OrderItemNotFound if order_item.nil?
-
-      order_item
-    rescue OrderItemNotFound
+      OrderItem.find_by!(:topology_task_ref => @payload["task_id"])
+    rescue ActiveRecord::RecordNotFound
       Rails.logger.error("Could not find an OrderItem with topology_task_ref: #{@payload["task_id"]}")
       raise "Could not find an OrderItem with topology_task_ref: #{@payload["task_id"]}"
+    end
+
+    def fetch_external_url
+      TopologicalInventory.call do |api_instance|
+        task = api_instance.show_task(@payload["task_id"])
+        @service_instance_id = JSON.parse(task.context)["service_instance"]["id"]
+        service_instance = api_instance.show_service_instance(@service_instance_id)
+        raise ServiceInstanceWithoutExternalUrl if service_instance.external_url.nil?
+        service_instance.external_url
+      end
+    rescue ServiceInstanceWithoutExternalUrl
+      Rails.logger.error("Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}")
+      raise "Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}"
     end
   end
 end

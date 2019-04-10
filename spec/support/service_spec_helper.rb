@@ -1,5 +1,6 @@
 module ServiceSpecHelper
   def with_modified_env(options, &block)
+    Thread.current[:api_instance] = nil
     ClimateControl.modify(options, &block)
   end
 

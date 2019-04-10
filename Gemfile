@@ -12,6 +12,7 @@ group :development, :test do
   gem 'rspec-mocks'
   gem 'rspec-rails'
   gem 'simplecov'
+  gem 'webmock'
 end
 
 group :development do
