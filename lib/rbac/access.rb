@@ -30,7 +30,7 @@ module RBAC
       ENV['BYPASS_RBAC'].blank?
     end
 
-    private 
+    private
     def collect_ids
       @acl.collect do |item|
         item.resource_definitions.collect do |rd|
