@@ -1423,6 +1423,11 @@
             "type": "string",
             "title": "Owner",
             "example": "jdoe"
+          },
+          "external_url": {
+            "type": "string",
+            "title": "External url",
+            "description": "The external url of the service instance used with relation to this order item"
           }
         }
       },
