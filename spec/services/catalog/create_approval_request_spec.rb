@@ -97,7 +97,7 @@ describe Catalog::CreateApprovalRequest do
         expect(req.name).to eq order_item.portfolio_item.name
         expect(req.content).to include(:product   => order_item.portfolio_item.name,
                                        :portfolio => order_item.portfolio_item.portfolio.name,
-                                       :order_id  => order_item.order_id,
+                                       :order_id  => order_item.order_id.to_s,
                                        :params    => hashy)
       end
     end
