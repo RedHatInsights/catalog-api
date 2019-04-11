@@ -16,7 +16,7 @@ describe 'Portfolios Write Access RBAC API' do
       expect(response).to have_http_status(:ok)
     end
 
-    it 'returns status code 403' do
+    xit 'returns status code 403' do
       allow(RBAC::Access).to receive(:new).with('portfolios', 'write').and_return(block_access_obj)
       allow(block_access_obj).to receive(:process).and_return(block_access_obj)
       post "#{api('1.0')}/portfolios", :headers => default_headers, :params => valid_attributes
