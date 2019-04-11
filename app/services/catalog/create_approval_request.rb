@@ -37,7 +37,7 @@ module Catalog
         request.content   = {
           :product   => order_item.portfolio_item.name,
           :portfolio => order_item.portfolio_item.portfolio.name,
-          :order_id  => order_item.order_id,
+          :order_id  => order_item.order_id.to_s,
           :params    => svc_params_sanitized
         }
       end
