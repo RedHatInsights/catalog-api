@@ -44,7 +44,6 @@ module ServiceOffering
       # Fill up empty fields if they're empty with fields we already have, this is really easy with the ||= and subsequent || operators
       @params[:long_description] ||= @params[:description] || @params[:display_name]
       @params[:display_name] ||= @params[:name]
-      @params[:owner] = ManageIQ::API::Common::Request.current.user.username
       @params
     end
   end
