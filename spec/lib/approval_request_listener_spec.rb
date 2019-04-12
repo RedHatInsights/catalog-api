@@ -16,9 +16,7 @@ describe ApprovalRequestListener do
       create(:order_item,
              :order_id          => order.id,
              :portfolio_item_id => "234",
-             :context           => {
-               :headers => encoded_user_hash, :original_url => "localhost/nope"
-             })
+             :context           => default_request)
     end
     let!(:approval_request) do
       ApprovalRequest.create!(

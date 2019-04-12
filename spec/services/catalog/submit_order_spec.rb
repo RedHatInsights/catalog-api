@@ -11,9 +11,7 @@ describe Catalog::SubmitOrder do
                         :provider_control_parameters => provider_control_parameters,
                         :order_id                    => order.id,
                         :count                       => 1,
-                        :context                     => {
-                          :headers => encoded_user_hash, :original_url => "localhost/nope"
-                        })
+                        :context                     => default_request)
   end
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:portfolio_item_id) { portfolio_item.id.to_s }
