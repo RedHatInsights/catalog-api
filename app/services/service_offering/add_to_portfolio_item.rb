@@ -2,7 +2,6 @@ module ServiceOffering
   class AddToPortfolioItem
     IGNORE_FIELDS = %w(id created_at updated_at portfolio_id tenant_id).freeze
 
-    attr_reader :params
     attr_reader :item
 
     def initialize(params)
@@ -33,7 +32,7 @@ module ServiceOffering
 
     def generate_attributes
       creation_fields.each do |column|
-        @params[column] = @service_offering.send(column) if @service_offering.send(column).present?
+        @params[column] ||= @service_offering.send(column) if @service_offering.send(column).present?
       end
       populate_missing_fields
     end
@@ -45,6 +44,7 @@ module ServiceOffering
       # Fill up empty fields if they're empty with fields we already have, this is really easy with the ||= and subsequent || operators
       @params[:long_description] ||= @params[:description] || @params[:display_name]
       @params[:display_name] ||= @params[:name]
+      @params[:owner] = ManageIQ::API::Common::Request.current.user.username
       @params
     end
   end
