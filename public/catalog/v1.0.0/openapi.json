@@ -1190,17 +1190,6 @@
           }
         }
       },
-      "Organization": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "readOnly": true,
-            "title": "Id",
-            "example": "ID of the sample organization."
-          }
-        }
-      },
       "CreatePortfolioItem": {
         "type": "object",
         "properties": {
