@@ -14,17 +14,12 @@ class ApplicationController < ActionController::API
         ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
       rescue ManageIQ::API::Common::IdentityError
         json_response({ :message => 'Unauthorized' }, :unauthorized)
-      rescue Catalog::NoTenantError
-        json_response({ :message => 'Unauthorized' }, :unauthorized)
       end
     end
   end
 
   def current_tenant(current_user)
-    tenant = current_user.tenant
-    found_tenant = Tenant.find_or_create_by(:external_tenant => tenant) if tenant.present?
-    return found_tenant if found_tenant
-    raise Catalog::NoTenantError
+    Tenant.find_or_create_by(:external_tenant => current_user.tenant)
   end
 
   def topology_service_error(err)
