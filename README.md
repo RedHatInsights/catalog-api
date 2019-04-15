@@ -79,11 +79,7 @@ Clone the following repo to your dev machine
 Follow the setup instructions in [README.md](https://github.com/RedHatInsights/insights-proxy/blob/master/README.md#setup)
 
 
-In the catalog-api repository the config/spandx directory contains 2 JavaScript files which can be used with Insights Proxy to route the catalog requests to your dev machine
-
-1. linux.js
-
-2. mac.js
+In the catalog-api repository the config directory contains a JavaScript file (spandx.config.js) which can be used with Insights Proxy to route the catalog requests to your dev machine
 
 The Insights Proxy runs a docker container and it can be tailored using config files
 
