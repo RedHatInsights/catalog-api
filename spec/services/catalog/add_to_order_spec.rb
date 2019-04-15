@@ -23,10 +23,7 @@ describe Catalog::AddToOrder do
 
   let(:order_item) { described_class.new(params).process.order.order_items.first }
 
-  let(:encoded) { encoded_user_hash }
-  let(:request) do
-    { :headers => { 'x-rh-identity' => encoded }, :original_url => 'whatever' }
-  end
+  let(:request) { default_request }
 
   it "add order item" do
     ManageIQ::API::Common::Request.with_request(request) do
@@ -48,7 +45,7 @@ describe Catalog::AddToOrder do
   context "when passing in a x-rh-identity header" do
     it 'sets the context to the encoded_user_hash' do
       ManageIQ::API::Common::Request.with_request(request) do
-        expect(order_item.context["headers"]["x-rh-identity"]).to eq encoded
+        expect(order_item.context["headers"]["x-rh-identity"]).to eq encoded_user_hash
       end
     end
 

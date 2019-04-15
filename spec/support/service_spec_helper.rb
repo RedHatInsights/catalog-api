@@ -6,8 +6,7 @@ module ServiceSpecHelper
 
   def default_headers
     { 'x-rh-identity'            => encoded_user_hash,
-      'x-rh-insights-request-id' => 'gobbledygook',
-      'original_url'             => 'some_url' }
+      'x-rh-insights-request-id' => 'gobbledygook' }
   end
 
   def original_url
