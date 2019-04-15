@@ -2,7 +2,6 @@ module ServiceOffering
   class AddToPortfolioItem
     IGNORE_FIELDS = %w(id created_at updated_at portfolio_id tenant_id).freeze
 
-    attr_reader :params
     attr_reader :item
 
     def initialize(params)
@@ -33,7 +32,7 @@ module ServiceOffering
 
     def generate_attributes
       creation_fields.each do |column|
-        @params[column] = @service_offering.send(column) if @service_offering.send(column).present?
+        @params[column] ||= @service_offering.send(column) if @service_offering.send(column).present?
       end
       populate_missing_fields
     end

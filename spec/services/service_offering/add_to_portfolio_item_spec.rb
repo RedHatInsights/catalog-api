@@ -2,10 +2,12 @@ describe ServiceOffering::AddToPortfolioItem do
   include ServiceOfferingHelper
   let(:api_instance) { double }
   let(:service_offering_ref) { "1" }
+  let(:user_defined_name) { "Frank" }
+  let(:user_defined_description) { "Franks Description" }
+  let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
+  let(:subject) { described_class.new(params) }
 
-  let(:add_to_portfolio_item) { described_class.new(:service_offering_ref => service_offering_ref) }
-
-  let(:params) { HashWithIndifferentAccess.new(:name => "test name", :description => "test description") }
+  let(:params) { HashWithIndifferentAccess.new(:name => user_defined_name, :description => user_defined_description, :service_offering_ref => service_offering_ref) }
 
   let(:topology_service_offering) { fully_populated_service_offering }
   let(:topological_inventory) do
@@ -15,36 +17,37 @@ describe ServiceOffering::AddToPortfolioItem do
 
   before do
     allow(topological_inventory).to receive(:call).and_yield(api_instance)
+    allow(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
   end
 
-  context "private methods" do
-    let(:service_offering) { build_service_offering(:name => "NameyMcNameFace") }
-
-    before do
-      add_to_portfolio_item.instance_variable_set("@service_offering", service_offering)
-      add_to_portfolio_item.instance_variable_set("@params", params)
-    end
-
-    it "#{described_class}#creation_fields" do
-      creation_fields = add_to_portfolio_item.send(:creation_fields)
-      expect(creation_fields).to eq ["name"]
-    end
-
-    it "#{described_class}#generate_attributes" do
-
-      my_params = add_to_portfolio_item.send(:generate_attributes)
-      %w(name display_name).each do |name|
-        expect(my_params[name]).to eq "NameyMcNameFace"
+  context "user provided params" do
+    it "#process" do
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        result = subject.process
+        expect(result.item.name).to eq(user_defined_name)
+        expect(result.item.description).to eq(user_defined_description)
       end
     end
+  end
 
-    it "#{described_class}#populate_missing_fields(params)" do
-      my_params = add_to_portfolio_item.send(:populate_missing_fields)
+  context "no user provided params" do
+    let(:params) { HashWithIndifferentAccess.new(:service_offering_ref => service_offering_ref) }
+    it "#process" do
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        result = subject.process
+        expect(result.item.name).to eq("test name")
+        expect(result.item.description).to eq("test description")
+      end
+    end
+  end
 
-      # It should have added the extra field (source ref) as well as inferring the values of long_description and display name, giving us 6 total fields.
-      expect(my_params.keys.size).to eql 6
-      expect(my_params[:long_description]).to eq(params[:description])
-      expect(my_params[:display_name]).to eq(params[:name])
+  context "raises an error" do
+    let(:params) { HashWithIndifferentAccess.new(:service_offering_ref => service_offering_ref) }
+    it "#process" do
+      allow(topological_inventory).to receive(:call).and_raise(topo_ex)
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        expect { subject.process }.to raise_exception(Catalog::TopologyError)
+      end
     end
   end
 end
