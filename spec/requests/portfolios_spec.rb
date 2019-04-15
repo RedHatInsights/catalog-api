@@ -139,6 +139,19 @@ describe 'Portfolios API' do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "when discarding portfolio_items fails" do
+      before do
+        allow(Portfolio).to receive(:find).with(portfolio.id.to_s).and_return(portfolio)
+        allow(portfolio_item).to receive(:discard).and_return(false)
+      end
+
+      it 'reports errors when discarding child portfolio_items fails' do
+        delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
   end
 
   describe 'PATCH /portfolios/:portfolio_id' do
