@@ -10,11 +10,7 @@ class ApplicationController < ActionController::API
   def with_current_request
     ManageIQ::API::Common::Request.with_request(request) do |current|
       begin
-        if Tenant.tenancy_enabled?
-          ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
-        else
-          ActsAsTenant.without_tenant { yield }
-        end
+        ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
       rescue KeyError
         json_response({ :message => 'Unauthorized' }, :unauthorized)
       rescue Catalog::NoTenantError
