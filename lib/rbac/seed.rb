@@ -91,7 +91,7 @@ module RBAC
       roles = current_roles
       policy_in = RBACApiClient::PolicyIn.new
       begin
-        RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
+        RBAC::Service.call(RBACApiClient::PolicyApi) do |api_instance|
           @acl_data['policies'].each do |policy|
             next if names.include?(policy['name'])
             policy_in.name = policy['name']
