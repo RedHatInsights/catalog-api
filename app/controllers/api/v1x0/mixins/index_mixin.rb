@@ -16,8 +16,8 @@ module Api
           render :json => ManageIQ::API::Common::PaginatedResponse.new(
             :base_query => scoped(base_query),
             :request    => request,
-            :limit      => params.permit(:limit)[:limit],
-            :offset     => params.permit(:offset)[:offset]
+            :limit      => pagination_params[:limit],
+            :offset     => pagination_params[:offset]
           ).response
         end
 
@@ -26,6 +26,10 @@ module Api
           raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}" unless access_obj.accessible?
           ids = access_obj.id_list
           ids.any? ? relation.where(:id => ids) : relation
+        end
+
+        def pagination_params
+          params.permit(:limit, :offset)
         end
       end
     end
