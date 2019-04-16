@@ -1,0 +1,22 @@
+---
+access1: &RBACAdminAccess
+  permission: rbac:*:*
+role1: &RBACAdministratorRole
+  name: RBAC Administrator
+  description: A administrator role that grants read and write permissions for groups, roles and policies.
+  access:
+    - *RBACAdminAccess
+group1: &RBACAdministratorsGroup
+  name: RBAC Admins
+  description: RBAC Admins have complete access to all RBAC objects
+policy1: &RBACAdministratorPolicy
+  name: RBAC Admins Policy
+  group: *RBACAdministratorsGroup
+  role: *RBACAdministratorRole
+  description: Policy for RBAC Administrators who have complete access to all objects in the RBAC Service.
+roles:
+  - *RBACAdministratorRole
+groups:
+  - *RBACAdministratorsGroup
+policies:
+  - *RBACAdministratorPolicy
