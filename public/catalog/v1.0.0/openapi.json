@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "description": "This API gets and orders catalog items from different cloud sources.",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "title": "Catalog API",
     "contact": {
       "email": "support@redhat.com"
