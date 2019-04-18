@@ -2,7 +2,7 @@ describe 'Portfolios RBAC API' do
   let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
   let!(:portfolio1) { create(:portfolio, :tenant_id => tenant.id) }
   let!(:portfolio2) { create(:portfolio, :tenant_id => tenant.id) }
-  let(:access_obj) { instance_double(RBAC::Access, :accessible? => true, :id_list => [portfolio1.id]) }
+  let(:access_obj) { instance_double(RBAC::Access, :accessible? => true, :id_list => [portfolio1.id.to_s]) }
 
   let(:block_access_obj) { instance_double(RBAC::Access, :accessible? => false) }
 

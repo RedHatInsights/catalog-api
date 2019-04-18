@@ -2,9 +2,9 @@ describe RBAC::Access do
   let(:app_name) { 'catalog' }
   let(:resource) { "portfolio" }
   let(:verb) { "read" }
-  let(:attr_filter1) { double(:value => 25) }
-  let(:attr_filter2) { double(:value => 26) }
-  let(:attr_filter3) { double(:value => 27) }
+  let(:attr_filter1) { double(:value => '25') }
+  let(:attr_filter2) { double(:value => '26') }
+  let(:attr_filter3) { double(:value => '27') }
   let(:attr_filter4) { double(:value => '*') }
   let(:resource_def1) { double(:attribute_filter => attr_filter1) }
   let(:resource_def2) { double(:attribute_filter => attr_filter2) }
@@ -31,7 +31,7 @@ describe RBAC::Access do
       svc_obj = rbac_access.process
       expect(svc_obj.acl.count).to eq(1)
       expect(svc_obj.accessible?).to be_truthy
-      expect(svc_obj.id_list).to match_array([25, 27])
+      expect(svc_obj.id_list).to match_array(%w[25 27])
     end
   end
 
