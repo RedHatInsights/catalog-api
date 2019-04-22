@@ -17,9 +17,11 @@ module Catalog
       ManageIQ::API::Common::Request.with_request(order_item.context.transform_keys(&:to_sym)) do
         order_item.update_message("info", "Task update message received with payload: #{@payload}")
 
-        if @payload["state"] == "completed"
+        if @payload["status"] == "ok"
           mark_item_finished(order_item)
           order_item.order.finalize_order
+        else
+          mark_item_failed(order_item)
         end
       end
     end
@@ -55,6 +57,16 @@ module Catalog
       Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Completed' state and #{order_item.external_url} external url")
       order_item.save!
       Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Completed' state")
+    end
+
+    def mark_item_failed(order_item)
+      order_item.completed_at = DateTime.now
+      order_item.state = "Failed"
+      order_item.update_message("info", "Order Item Failed")
+
+      Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Failed' state")
+      order_item.save!
+      Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Failed' state")
     end
   end
 end

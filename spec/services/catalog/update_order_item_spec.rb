@@ -2,7 +2,7 @@ describe Catalog::UpdateOrderItem do
   describe "#process" do
     let(:client) { double(:client) }
     let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client) }
-    let(:payload) { {"task_id" => "123", "state" => state} }
+    let(:payload) { {"task_id" => "123", "status" => status} }
     let!(:item) do
       ManageIQ::API::Common::Request.with_request(default_request) do
         create(:order_item,
@@ -16,7 +16,7 @@ describe Catalog::UpdateOrderItem do
 
     context "when the order item is not findable" do
       let(:topology_task_ref) { "0" }
-      let(:state) { "completed" }
+      let(:status) { "ok" }
 
       it "raises an error" do
         expect { subject.process }.to raise_error("Could not find an OrderItem with topology_task_ref: 123")
@@ -32,8 +32,8 @@ describe Catalog::UpdateOrderItem do
         end
       end
 
-      context "when the state of the task is completed" do
-        let(:state) { "completed" }
+      context "when the status of the task is ok" do
+        let(:status) { "ok" }
         let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => "321"}}.to_json) }
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
 
@@ -58,7 +58,7 @@ describe Catalog::UpdateOrderItem do
           end
 
           it "updates the completed at time" do
-            fake_now = DateTime.now
+            fake_now = DateTime.now.iso8601
             allow(DateTime).to receive(:now).and_return(fake_now)
             subject.process
             item.reload
@@ -69,6 +69,13 @@ describe Catalog::UpdateOrderItem do
             subject.process
             item.reload
             expect(item.state).to eq("Completed")
+          end
+
+          it "creates a progress message about the completion" do
+            subject.process
+            latest_progress_message = ProgressMessage.last
+            expect(latest_progress_message.level).to eq("info")
+            expect(latest_progress_message.message).to eq("Order Item Complete")
           end
 
           it "updates the order item with the external url" do
@@ -98,20 +105,35 @@ describe Catalog::UpdateOrderItem do
         end
       end
 
-      context "when the state of the task is anything else" do
-        let(:state) { "test" }
+      context "when the status of the task is anything else" do
+        let(:status) { "error" }
 
         it "creates a progress message about the payload" do
           subject.process
-          latest_progress_message = ProgressMessage.last
+          latest_progress_message = ProgressMessage.second_to_last
           expect(latest_progress_message.level).to eq("info")
           expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
         end
 
-        it "does not update the order" do
+        it "updates the completed at time" do
+          fake_now = DateTime.now.iso8601
+          allow(DateTime).to receive(:now).and_return(fake_now)
           subject.process
           item.reload
-          expect(item.state).to eq("Created")
+          expect(item.completed_at).to eq(fake_now)
+        end
+
+        it "marks the item as failed" do
+          subject.process
+          item.reload
+          expect(item.state).to eq("Failed")
+        end
+
+        it "creates a progress message about the failure" do
+          subject.process
+          latest_progress_message = ProgressMessage.last
+          expect(latest_progress_message.level).to eq("info")
+          expect(latest_progress_message.message).to eq("Order Item Failed")
         end
       end
     end
