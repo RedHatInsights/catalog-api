@@ -18,14 +18,8 @@ module Catalog
         order_item.update_message("info", "Task update message received with payload: #{@payload}")
 
         if @payload["state"] == "completed"
-          order_item.state = "Order Completed"
-          order_item.update_message("info", "Order Complete")
-
-          order_item.external_url = fetch_external_url
-
-          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state and #{order_item.external_url}")
-          order_item.save!
-          Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
+          mark_item_finished(order_item)
+          order_item.order.finalize_order
         end
       end
     end
@@ -50,6 +44,17 @@ module Catalog
     rescue ServiceInstanceWithoutExternalUrl
       Rails.logger.error("Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}")
       raise "Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}"
+    end
+
+    def mark_item_finished(order_item)
+      order_item.completed_at = DateTime.now
+      order_item.state = "Completed"
+      order_item.update_message("info", "Order Item Complete")
+      order_item.external_url = fetch_external_url
+
+      Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Completed' state and #{order_item.external_url} external url")
+      order_item.save!
+      Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Completed' state")
     end
   end
 end

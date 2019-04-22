@@ -57,16 +57,31 @@ describe Catalog::UpdateOrderItem do
             expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
           end
 
+          it "updates the completed at time" do
+            fake_now = DateTime.now
+            allow(DateTime).to receive(:now).and_return(fake_now)
+            subject.process
+            item.reload
+            expect(item.completed_at).to eq(fake_now)
+          end
+
           it "updates the order item to be completed" do
             subject.process
             item.reload
-            expect(item.state).to eq("Order Completed")
+            expect(item.state).to eq("Completed")
           end
 
           it "updates the order item with the external url" do
             subject.process
             item.reload
             expect(item.external_url).to eq("external url")
+          end
+
+          it "finalizes the order" do
+            expect(order.state).to_not eq("Completed")
+            subject.process
+            order.reload
+            expect(order.state).to eq("Completed")
           end
         end
 
