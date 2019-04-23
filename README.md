@@ -87,12 +87,12 @@ You would need 2 terminals for this setup
 
 1. **Running your catalog app**
 
-_Includes the `RBAC_URL` environment variable to be able to use RBAC_
+_Includes the `RBAC_URL` and `APPROVAL_URL environment variables to be able to use RBAC_
 
 _You can also remove the `RBAC_URL` environment variable and pass in the `BYPASS_RBAC` environment variable instead if you want to test without RBAC_
 
 ```
-   APP_NAME=catalog PATH_PREFIX=/api RBAC_URL=https://<rbac_url>/api/rbac/v1/ DEV_USERNAME=<username> DEV_PASSWORD=<password> bin/rails s -
+   APP_NAME=catalog PATH_PREFIX=/api RBAC_URL=https://<rbac_url>/api/rbac/v1/ APPROVAL_URL=https://<approval_url>/api/approval/v1/ DEV_USERNAME=<username> DEV_PASSWORD=<password> bin/rails s -
 p 5000
 ```
 
