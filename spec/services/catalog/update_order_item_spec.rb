@@ -135,6 +135,13 @@ describe Catalog::UpdateOrderItem do
           expect(latest_progress_message.level).to eq("info")
           expect(latest_progress_message.message).to eq("Order Item Failed")
         end
+
+        it "finalizes the order" do
+          expect(order.state).to_not eq("Failed")
+          subject.process
+          order.reload
+          expect(order.state).to eq("Failed")
+        end
       end
     end
   end
