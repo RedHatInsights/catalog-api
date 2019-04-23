@@ -105,7 +105,7 @@ describe Catalog::UpdateOrderItem do
         end
       end
 
-      context "when the status of the task is anything else" do
+      context "when the status of the task is error" do
         let(:status) { "error" }
 
         it "creates a progress message about the payload" do
@@ -141,6 +141,17 @@ describe Catalog::UpdateOrderItem do
           subject.process
           order.reload
           expect(order.state).to eq("Failed")
+        end
+      end
+
+      context "when the status of the task is anything else" do
+        let(:status) { "foo" }
+
+        it "creates a progress message about the payload" do
+          subject.process
+          latest_progress_message = ProgressMessage.last
+          expect(latest_progress_message.level).to eq("info")
+          expect(latest_progress_message.message).to eq("Task update message received with payload: #{payload}")
         end
       end
     end

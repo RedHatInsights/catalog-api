@@ -17,9 +17,7 @@ module Catalog
       ManageIQ::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
         @order_item.update_message("info", "Task update message received with payload: #{@payload}")
 
-        @payload["status"] == "ok" ? mark_item_finished : mark_item_failed
-
-        @order_item.order.finalize_order
+        mark_item_based_on_status
       end
     end
 
@@ -43,6 +41,19 @@ module Catalog
     rescue ServiceInstanceWithoutExternalUrl
       Rails.logger.error("Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}")
       raise "Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}"
+    end
+
+    def mark_item_based_on_status
+      case @payload["status"]
+      when "ok"
+        mark_item_finished
+        @order_item.order.finalize_order
+      when "error"
+        mark_item_failed
+        @order_item.order.finalize_order
+      else
+        # Do nothing for now
+      end
     end
 
     def mark_item_finished
