@@ -11,22 +11,13 @@ module Catalog
       Rails.logger.info("Processing service order topic message: #{@message} with payload: #{@payload}")
 
       Rails.logger.info("Searching for OrderItem with a task_ref: #{@payload["task_id"]}")
-      order_item = find_order_item
-      Rails.logger.info("Found OrderItem: #{order_item.id}")
+      @order_item = find_order_item
+      Rails.logger.info("Found OrderItem: #{@order_item.id}")
 
-      ManageIQ::API::Common::Request.with_request(order_item.context.transform_keys(&:to_sym)) do
-        order_item.update_message("info", "Task update message received with payload: #{@payload}")
+      ManageIQ::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
+        @order_item.update_message("info", "Task update message received with payload: #{@payload}")
 
-        if @payload["state"] == "completed"
-          order_item.state = "Order Completed"
-          order_item.update_message("info", "Order Complete")
-
-          order_item.external_url = fetch_external_url
-
-          Rails.logger.info("Updating OrderItem: #{order_item.id} with 'Order Completed' state and #{order_item.external_url}")
-          order_item.save!
-          Rails.logger.info("Finished updating OrderItem: #{order_item.id} with 'Order Completed' state")
-        end
+        mark_item_based_on_status
       end
     end
 
@@ -50,6 +41,40 @@ module Catalog
     rescue ServiceInstanceWithoutExternalUrl
       Rails.logger.error("Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}")
       raise "Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}"
+    end
+
+    def mark_item_based_on_status
+      case @payload["status"]
+      when "ok"
+        mark_item_finished
+        @order_item.order.finalize_order
+      when "error"
+        mark_item_failed
+        @order_item.order.finalize_order
+      else
+        # Do nothing for now
+      end
+    end
+
+    def mark_item_finished
+      @order_item.completed_at = DateTime.now
+      @order_item.state = "Completed"
+      @order_item.update_message("info", "Order Item Complete")
+      @order_item.external_url = fetch_external_url
+
+      Rails.logger.info("Updating OrderItem: #{@order_item.id} with 'Completed' state and #{@order_item.external_url} external url")
+      @order_item.save!
+      Rails.logger.info("Finished updating OrderItem: #{@order_item.id} with 'Completed' state")
+    end
+
+    def mark_item_failed
+      @order_item.completed_at = DateTime.now
+      @order_item.state = "Failed"
+      @order_item.update_message("info", "Order Item Failed")
+
+      Rails.logger.info("Updating OrderItem: #{@order_item.id} with 'Failed' state")
+      @order_item.save!
+      Rails.logger.info("Finished updating OrderItem: #{@order_item.id} with 'Failed' state")
     end
   end
 end
