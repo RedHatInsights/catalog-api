@@ -6,6 +6,7 @@ describe "OrderRequests", :type => :request do
   end
   let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
   let!(:order) { create(:order, :tenant_id => tenant.id) }
+  let!(:order2) { create(:order, :tenant_id => tenant.id) }
 
   # TODO: Update this context with new logic. Will be fixed with
   # https://projects.engineering.redhat.com/browse/SSP-237
@@ -46,14 +47,31 @@ describe "OrderRequests", :type => :request do
   end
 
   context "list orders" do
-    it "lists orders v1.0" do
-      get "/api/v1.0/orders", :headers => default_headers
+    context "without filter" do
+      before do
+        get "/api/v1.0/orders", :headers => default_headers
+      end
 
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-      result = JSON.parse(response.body)
-      expect(result.keys).to match_array(%w(links meta data))
-      expect(result['data'].first['id']).to eq(order.id.to_s)
+      it "returns a 200" do
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns them in reversed order" do
+        expect(json['data'][0]['id']).to eq(order2.id.to_s)
+        expect(json['data'][1]['id']).to eq(order.id.to_s)
+      end
+    end
+
+    context "with filter" do
+      before do
+        get "/api/v1.0/orders?filter[id]=#{order.id}", :headers => default_headers
+      end
+
+      it "follows filter parameter" do
+        expect(json['data'].first['id']).to eq order.id.to_s
+        expect(json['meta']['count']).to eq 1
+      end
     end
   end
 
