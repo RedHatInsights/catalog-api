@@ -14,7 +14,7 @@ module Api
 
         def collection(base_query)
           render :json => ManageIQ::API::Common::PaginatedResponse.new(
-            :base_query => scoped(base_query),
+            :base_query => filtered(scoped(base_query)),
             :request    => request,
             :limit      => pagination_params[:limit],
             :offset     => pagination_params[:offset]
@@ -32,6 +32,28 @@ module Api
 
         def pagination_params
           params.permit(:limit, :offset)
+        end
+
+        def filtered(base_query)
+          ManageIQ::API::Common::Filter.new(base_query, params[:filter], api_doc_definition).apply
+        end
+
+        private
+
+        def api_doc_definition
+          @api_doc_definition ||= Api::Docs[api_version].definitions[model_name]
+        end
+
+        def api_version
+          @api_version ||= name.split("::")[1].downcase.delete("v").sub("x", ".")
+        end
+
+        def model_name
+          @model_name ||= controller_name.classify
+        end
+
+        def name
+          self.class.to_s
         end
       end
     end

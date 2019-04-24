@@ -3,6 +3,7 @@ describe 'Portfolios RBAC API' do
   let!(:portfolio1) { create(:portfolio, :tenant_id => tenant.id) }
   let!(:portfolio2) { create(:portfolio, :tenant_id => tenant.id) }
   let(:access_obj) { instance_double(RBAC::Access, :accessible? => true, :id_list => [portfolio1.id.to_s]) }
+  let(:double_access_obj) { instance_double(RBAC::Access, :accessible? => true, :id_list => [portfolio1.id.to_s, portfolio2.id.to_s]) }
 
   let(:block_access_obj) { instance_double(RBAC::Access, :accessible? => false) }
 
@@ -23,6 +24,25 @@ describe 'Portfolios RBAC API' do
       get "#{api('1.0')}/portfolios", :headers => default_headers
 
       expect(response).to have_http_status(403)
+    end
+
+    context "with filtering" do
+      before do
+        allow(RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(double_access_obj)
+        allow(double_access_obj).to receive(:process).and_return(double_access_obj)
+        get "#{api('1.0')}/portfolios?filter[name]=#{portfolio1.name}", :headers => default_headers
+      end
+
+      it 'returns a 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'only returns the portfolio we filtered for' do
+        result = JSON.parse(response.body)
+
+        expect(result['meta']['count']).to eq 1
+        expect(result['data'][0]['name']).to eq(portfolio1.name)
+      end
     end
   end
 end

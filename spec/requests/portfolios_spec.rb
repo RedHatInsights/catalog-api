@@ -89,17 +89,40 @@ describe 'Portfolios API' do
   end
 
   describe "GET /portfolios" do
-    before do
-      get "#{api}/portfolios", :headers => default_headers
-    end
-
-    context 'when portfolios exist' do
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
+    context "without filter" do
+      before do
+        get "#{api}/portfolios", :headers => default_headers
       end
 
-      it 'returns all portfolio requests' do
-        expect(json['data'].size).to eq(1)
+      context 'when portfolios exist' do
+        it 'returns status code 200' do
+          expect(response).to have_http_status(200)
+        end
+
+        it 'returns all portfolio requests' do
+          expect(json['data'].size).to eq(1)
+        end
+      end
+    end
+
+    context "with filter" do
+      let!(:portfolio_filter1) { create(:portfolio, :tenant_id => tenant.id, :name => "testfilter1") }
+      let!(:portfolio_filter2) { create(:portfolio, :tenant_id => tenant.id, :name => "testfilter2") }
+
+      it 'returns only the id specified in the filter' do
+        get "#{api}/portfolios?filter[id]=#{portfolio_id}", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["id"]).to eq portfolio_id.to_s
+      end
+
+      it 'allows filtering by name via regex' do
+        get "#{api}/portfolios?filter[name][starts_with]=test", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 2
+
+        names = json["data"].each.collect { |item| item["name"] }
+        expect(names).to match_array [portfolio_filter1.name, portfolio_filter2.name]
       end
     end
   end
