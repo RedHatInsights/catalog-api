@@ -107,6 +107,32 @@ p 5000
    https://ci.foo.redhat.com:1337/hybrid/catalog
 
 
+## Order Debugging
+### Rake command
+
+**rake order:list**
+
+List Orders and asscoiated objects (order_items and progress messages)
+
+Optional parameters:
+
+```
+- LIMIT  - Orders listed in reverse order.  (Default = 1)
+- TENANT - External Tenant Reference.
+- OWNER  - (Owner name
+- ID(S)  - Comma separated list of Order ID(s)
+  (Note: ID list overrides limit field.)
+```
+
+Examples:
+
+```
+rake order:list TENANT=12345
+rake order:list OWNER=testuser
+rake order:list IDS=1,2,3
+rake order:list TENANT=12345 OWNER=testuser LIMIT=10
+```
+
 ## License
 
 This project is available as open source under the terms of the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
