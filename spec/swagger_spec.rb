@@ -1,4 +1,4 @@
-describe "Swagger stuff" do
+describe "OpenAPI stuff" do
   describe "Routing" do
     include Rails.application.routes.url_helpers
 
