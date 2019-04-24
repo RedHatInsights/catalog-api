@@ -33,7 +33,6 @@ gem 'prometheus-client', '~> 0.8.0'
 gem 'puma', '~> 3.0'
 gem 'rack-cors', '>= 0.4.1'
 gem 'rest-client', '>= 1.8.0'
-gem 'swagger_ui_engine'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

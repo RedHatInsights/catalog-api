@@ -5,9 +5,9 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/test_coverage)](https://codeclimate.com/github/ManageIQ/catalog-api/test_coverage)
 [![Security](https://hakiri.io/github/ManageIQ/catalog-api/master.svg)](https://hakiri.io/github/ManageIQ/catalog-api/master)
 
-## Swagger for Rails 5
+## OpenAPI for Rails 5
 
-This is a project to provide Swagger support inside the [Ruby on Rails](http://rubyonrails.org/) framework.
+This is a project to provide OpenAPI support inside the [Ruby on Rails](http://rubyonrails.org/) framework.
 
 ## Prerequisites
 You need to install ruby >= 2.2.2 and run:
