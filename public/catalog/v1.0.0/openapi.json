@@ -50,6 +50,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -237,6 +240,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -430,6 +436,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -691,6 +700,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -756,6 +768,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -907,6 +922,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -949,6 +967,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -1105,6 +1126,17 @@
           "type": "integer",
           "minimum": 0,
           "default": 0
+        }
+      },
+      "QueryFilter": {
+        "in": "query",
+        "name": "filter",
+        "description": "Filter for querying collections.",
+        "required": false,
+        "style": "deepObject",
+        "explode": true,
+        "schema": {
+          "type": "object"
         }
       }
     },
