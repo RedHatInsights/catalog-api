@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :order do
-    owner { "wilma" }
+    owner { UserHeaderSpecHelper::DEFAULT_USER['identity']['user']['username'] }
   end
 end

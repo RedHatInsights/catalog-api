@@ -4,7 +4,7 @@ FactoryBot.define do
     sequence(:description)  { |n| "Portfolio_description_#{n}" }
     sequence(:image_url)    { |n| "https://portfolio#{n}.com/image/#{n}" }
     enabled                 { "true" }
-    owner                   { "wilma" }
+    owner                   { UserHeaderSpecHelper::DEFAULT_USER['identity']['user']['username'] }
     tenant
 
     trait :without_tenant do
