@@ -8,7 +8,7 @@ class Order < ApplicationRecord
 
   after_initialize :set_defaults, unless: :persisted?
 
-  AS_JSON_ATTRIBUTES = %w(id state created_at ordered_at completed_at).freeze
+  AS_JSON_ATTRIBUTES = %w[id state owner created_at ordered_at completed_at].freeze
 
   def as_json(_options = {})
     super.slice(*AS_JSON_ATTRIBUTES)
