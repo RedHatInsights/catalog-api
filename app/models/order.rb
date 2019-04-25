@@ -2,6 +2,8 @@ class Order < ApplicationRecord
   include OwnerField
   acts_as_tenant(:tenant)
 
+  default_scope { order(:created_at => :desc) }
+
   has_many :order_items
 
   after_initialize :set_defaults, unless: :persisted?
