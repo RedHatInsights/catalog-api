@@ -1212,7 +1212,8 @@
           "owner": {
             "type": "string",
             "title": "Owner",
-            "example": "jdoe"
+            "example": "jdoe",
+            "readOnly": true
           },
           "service_offering_icon_ref": {
             "type": "string",
@@ -1316,7 +1317,8 @@
           "owner": {
             "type": "string",
             "title": "Owner",
-            "example": "jdoe"
+            "example": "jdoe",
+            "readOnly": true
           }
         }
       },
@@ -1361,7 +1363,8 @@
           "owner": {
             "type": "string",
             "title": "Owner",
-            "example": "jdoe"
+            "example": "jdoe",
+            "readOnly": true
           }
         }
       },
@@ -1443,7 +1446,8 @@
           "owner": {
             "type": "string",
             "title": "Owner",
-            "example": "jdoe"
+            "example": "jdoe",
+            "readOnly": true
           },
           "external_url": {
             "type": "string",
