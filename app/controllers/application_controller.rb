@@ -10,11 +10,7 @@ class ApplicationController < ActionController::API
 
   def with_current_request
     ManageIQ::API::Common::Request.with_request(request) do |current|
-      begin
-        ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
-      rescue ManageIQ::API::Common::IdentityError
-        json_response({ :message => 'Unauthorized' }, :unauthorized)
-      end
+      ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
     end
   end
 
