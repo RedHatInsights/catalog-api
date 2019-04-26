@@ -3,7 +3,7 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
       include Api::V1x0::Mixins::RBACMixin
-      before_action :write_access_check, :only => %i(create update destroy)
+      before_action :write_access_check, :only => %i[create update destroy]
 
       def index
         if params[:portfolio_id]
