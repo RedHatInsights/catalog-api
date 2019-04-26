@@ -46,13 +46,19 @@ module Catalog
     def mark_item_based_on_status
       case @payload["status"]
       when "ok"
-        mark_item_finished
-        @order_item.order.finalize_order
+        case @payload["state"]
+        when "completed"
+          mark_item_finished
+          @order_item.order.finalize_order
+        when "running"
+          @order_item.update_message("info", "Order Item being processed with context: #{@payload["context"]}")
+          @order_item.save!
+        end
       when "error"
         mark_item_failed
         @order_item.order.finalize_order
       else
-        # Do nothing for now
+        # Do nothing for now, only other case is "warn"
       end
     end
 
