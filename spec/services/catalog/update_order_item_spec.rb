@@ -39,9 +39,9 @@ describe Catalog::UpdateOrderItem do
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
 
         before do
-          stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/tasks/123").
-            with(:headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json'}).
-            to_return(:status => 200, :body => task.to_json, :headers => {})
+          stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/tasks/123")
+            .with(:headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json'})
+            .to_return(:status => 200, :body => task.to_json, :headers => {})
         end
 
         context "when the state is completed" do
@@ -49,9 +49,9 @@ describe Catalog::UpdateOrderItem do
 
           context "when the service instance can be found" do
             before do
-              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321").
-                with(:headers => {'Content-Type'=>'application/json'}).
-                to_return(:status => 200, :body => service_instance.to_json, :headers => {})
+              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321")
+                .with(:headers => {'Content-Type'=>'application/json'})
+                .to_return(:status => 200, :body => service_instance.to_json, :headers => {})
             end
 
             it "creates a progress message about the payload" do
@@ -62,7 +62,7 @@ describe Catalog::UpdateOrderItem do
             end
 
             it "updates the completed at time" do
-              fake_now = DateTime.now.iso8601
+              fake_now = Time.now.iso8601
               allow(DateTime).to receive(:now).and_return(fake_now)
               subject.process
               item.reload
@@ -98,9 +98,9 @@ describe Catalog::UpdateOrderItem do
 
           context "when the service instance does not have an external url" do
             before do
-              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321").
-                with(:headers => {'Content-Type'=>'application/json'}).
-                to_return(:status => 200, :body => "".to_json, :headers => {})
+              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321")
+                .with(:headers => {'Content-Type'=>'application/json'})
+                .to_return(:status => 200, :body => "".to_json, :headers => {})
             end
 
             it "raises an error" do
@@ -135,7 +135,7 @@ describe Catalog::UpdateOrderItem do
         end
 
         it "updates the completed at time" do
-          fake_now = DateTime.now.iso8601
+          fake_now = Time.now.iso8601
           allow(DateTime).to receive(:now).and_return(fake_now)
           subject.process
           item.reload
