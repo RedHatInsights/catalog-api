@@ -4,4 +4,10 @@ class ApprovalRequest < ApplicationRecord
   enum :state => [:undecided, :approved, :denied]
 
   belongs_to :order_item
+
+  scope :by_owner, lambda {
+    joins(:order_item)
+      .select("approval_requests.*, order_items.owner")
+      .where("order_items.owner = ?", ManageIQ::API::Common::Request.current.user.username)
+  }
 end
