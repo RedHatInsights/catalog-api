@@ -132,7 +132,7 @@ describe Catalog::UpdateOrderItem do
         it "creates a progress message about the failure" do
           subject.process
           latest_progress_message = ProgressMessage.last
-          expect(latest_progress_message.level).to eq("info")
+          expect(latest_progress_message.level).to eq("error")
           expect(latest_progress_message.message).to eq("Order Item Failed")
         end
 
