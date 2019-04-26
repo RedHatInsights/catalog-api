@@ -21,16 +21,4 @@ class ApplicationController < ActionController::API
   def current_tenant(current_user)
     Tenant.find_or_create_by(:external_tenant => current_user.tenant)
   end
-
-  def topology_service_error(err)
-    render :json => {:message => err.message}, :status => :internal_server_error
-  end
-
-  def forbidden_error(err)
-    render :json => {:message => err.message}, :status => :forbidden
-  end
-
-  def unauthorized_error(err)
-    render :json => {:message => err.message}, :status => :unauthorized
-  end
 end
