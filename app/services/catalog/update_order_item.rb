@@ -70,7 +70,7 @@ module Catalog
     def mark_item_failed
       @order_item.completed_at = DateTime.now
       @order_item.state = "Failed"
-      @order_item.update_message("info", "Order Item Failed")
+      @order_item.update_message("error", "Order Item Failed")
 
       Rails.logger.info("Updating OrderItem: #{@order_item.id} with 'Failed' state")
       @order_item.save!
