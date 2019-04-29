@@ -1,7 +1,7 @@
 describe Catalog::CreateApprovalRequest do
   let(:create_approval_request) { described_class.new(order.id) }
 
-  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:tenant) { create(:tenant) }
   let(:workflow_ref) { "1" }
   let!(:order) { create(:order, :tenant_id => tenant.id) }
   let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }

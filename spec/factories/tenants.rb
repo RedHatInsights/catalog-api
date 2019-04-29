@@ -1,9 +1,5 @@
 FactoryBot.define do
   factory :tenant do
-    sequence(:external_tenant)
-
-    trait :with_external_tenant do
-      external_tenant { "0369233" }
-    end
+    external_tenant { UserHeaderSpecHelper::DEFAULT_USER['identity']['account_number'] }
   end
 end

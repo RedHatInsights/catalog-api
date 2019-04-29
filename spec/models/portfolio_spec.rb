@@ -1,6 +1,6 @@
 describe Portfolio do
-  let(:tenant1)           { create(:tenant) }
-  let(:tenant2)           { create(:tenant) }
+  let(:tenant1)           { create(:tenant, :external_tenant => "1") }
+  let(:tenant2)           { create(:tenant, :external_tenant => "2") }
   let(:portfolio)         { create(:portfolio, :tenant_id => tenant1.id) }
   let(:portfolio_id)      { portfolio.id }
   let(:portfolio_item)    { create(:portfolio_item, :tenant_id => tenant1.id) }

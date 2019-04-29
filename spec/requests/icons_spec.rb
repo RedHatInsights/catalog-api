@@ -6,7 +6,7 @@ describe "IconsRequests", :type => :request do
       .as_stubbed_const(:transfer_nested_constants => true)
   end
 
-  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:tenant) { create(:tenant) }
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_icon_ref => icon_id,
                             :tenant_id                 => tenant.id)
