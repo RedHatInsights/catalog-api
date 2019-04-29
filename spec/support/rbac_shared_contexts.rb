@@ -16,13 +16,21 @@ RSpec.shared_context "rbac_objects" do
   let(:groups) { [group1, group2, group3] }
   let(:roles) { [role1] }
   let(:policies) { [double(:group => group1, :roles => roles)] }
-  let(:resource_def1) { double(:attribute_filter => double(:value => resource_id1)) }
-  let(:resource_def2) { double(:attribute_filter => double(:value => resource_id2)) }
-  let(:resource_def3) { double(:attribute_filter => double(:value => resource_id3)) }
+  let(:resource_def1) { double(:attribute_filter => double(:key => 'id', :operator => 'equal', :value => resource_id1)) }
+  let(:resource_def2) { double(:attribute_filter => double(:key => 'id', :operator => 'equal', :value => resource_id2)) }
+  let(:resource_def3) { double(:attribute_filter => double(:key => 'id', :operator => 'equal', :value => resource_id3)) }
   let(:access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
   let(:access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def2]) }
   let(:access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definitions => []) }
   let(:group_uuids) { [group1.uuid, group2.uuid, group3.uuid] }
   let(:api_instance) { double }
   let(:rs_class) { class_double("RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:current_user) { '{{username}}' }
+  let(:id_value) { '*' }
+  let(:owner_resource_def) { double(:attribute_filter => double(:key => 'owner', :operator => 'equal', :value => current_user)) }
+  let(:id_resource_def) { double(:attribute_filter => double(:key => 'id', :operator => 'equal', :value => id_value)) }
+  let(:owner_resource) { 'orders' }
+  let(:owner_permission) { "#{app_name}:#{owner_resource}:read" }
+  let(:owner_access) { double(:permission => owner_permission, :resource_definitions => [owner_resource_def]) }
+  let(:all_access) { double(:permission => owner_permission, :resource_definitions => [id_resource_def]) }
 end

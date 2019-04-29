@@ -25,9 +25,14 @@ module RBAC
     end
 
     def id_list
-      ids = collect_ids
-      Rails.logger.info("IDS for #{@app_name} #{ids}")
-      ids.include?('*') ? [] : ids
+      generate_ids
+      Rails.logger.info("IDS for #{@app_name} #{@ids}")
+      @ids.include?('*') ? [] : @ids
+    end
+
+    def owner_scoped?
+      generate_ids
+      @ids.include?('*') ? false : owner_scope_filter?
     end
 
     def self.enabled?
@@ -35,12 +40,25 @@ module RBAC
     end
 
     private
-    def collect_ids
-      @acl.collect do |item|
-        item.resource_definitions.collect do |rd|
-          rd.attribute_filter.value
+
+    def generate_ids
+      @ids ||= @acl.each_with_object([]) do |item, ids|
+        item.resource_definitions.each do |rd|
+          next unless rd.attribute_filter.key == 'id'
+          next unless rd.attribute_filter.operator == 'equal'
+          ids << rd.attribute_filter.value
         end
-      end.flatten
+      end
+    end
+
+    def owner_scope_filter?
+      @acl.any? do |item|
+        item.resource_definitions.any? do |rd|
+          rd.attribute_filter.key == 'owner' &&
+            rd.attribute_filter.operator == 'equal' &&
+            rd.attribute_filter.value == '{{username}}'
+        end
+      end
     end
   end
 end

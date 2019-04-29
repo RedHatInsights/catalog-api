@@ -22,12 +22,14 @@ module Api
         end
 
         def rbac_scope(relation)
-          Rails.logger.info("RBAC Scope")
           access_obj = RBAC::Access.new(relation.model.table_name, 'read').process
           raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}" unless access_obj.accessible?
-          Rails.logger.info("RBAC ID List")
-          ids = access_obj.id_list
-          ids.any? ? relation.where(:id => ids) : relation
+          if access_obj.owner_scoped?
+            relation.by_owner
+          else
+            ids = access_obj.id_list
+            ids.any? ? relation.where(:id => ids) : relation
+          end
         end
 
         def pagination_params
