@@ -25,13 +25,13 @@ module RBAC
     end
 
     def id_list
-      ids
+      generate_ids
       Rails.logger.info("IDS for #{@app_name} #{@ids}")
       @ids.include?('*') ? [] : @ids
     end
 
     def owner_scoped?
-      ids
+      generate_ids
       @ids.include?('*') ? false : owner_scope_filter?
     end
 
@@ -41,7 +41,7 @@ module RBAC
 
     private
 
-    def ids
+    def generate_ids
       @ids ||= @acl.each_with_object([]) do |item, ids|
         item.resource_definitions.each do |rd|
           next unless rd.attribute_filter.key == 'id'
