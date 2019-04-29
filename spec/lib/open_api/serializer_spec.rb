@@ -1,5 +1,7 @@
 describe OpenApi::Serializer do
-  let(:portfolio_item) { create(:portfolio_item, :portfolio => create(:portfolio)) }
+
+  let(:tenant) { create(:tenant) }
+  let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :portfolio => create(:portfolio, :tenant_id => tenant.id)) }
 
   it "converts id columns to strings" do
     expect(portfolio_item.as_json).to include(

@@ -7,7 +7,7 @@ describe "PortfolioItemRequests", :type => :request do
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
-  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:tenant) { create(:tenant) }
   let(:order) { create(:order, :tenant_id => tenant.id) }
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,

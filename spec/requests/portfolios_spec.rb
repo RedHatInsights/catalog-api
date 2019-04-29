@@ -5,7 +5,7 @@ describe 'Portfolios API' do
     end
   end
 
-  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:tenant) { create(:tenant) }
   let!(:portfolio)            { create(:portfolio, :tenant_id => tenant.id) }
   let!(:portfolio_item)       { create(:portfolio_item, :tenant_id => tenant.id) }
   let!(:portfolio_items)      { portfolio.portfolio_items << portfolio_item }

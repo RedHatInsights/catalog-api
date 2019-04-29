@@ -4,7 +4,7 @@ describe "OrderRequests", :type => :request do
       example.call
     end
   end
-  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:tenant) { create(:tenant) }
   let!(:order) { create(:order, :tenant_id => tenant.id) }
   let!(:order2) { create(:order, :tenant_id => tenant.id) }
 

@@ -1,5 +1,7 @@
 describe PortfolioItem do
-  let(:item) { PortfolioItem.new }
+  let(:tenant) { create(:tenant) }
+  let(:item) { PortfolioItem.new(:tenant_id => tenant.id) }
+  
   let(:service_offering_ref) { "1" }
   let(:owner) { 'wilma' }
 
@@ -36,13 +38,14 @@ describe PortfolioItem do
   context "#item_workflow_ref" do
     let(:item_workflow_ref) { "portfolio_item_workflow_ref" }
     let(:portfolio_workflow_ref) { "portfolio_workflow_ref" }
-    let(:portfolio) { create(:portfolio, :workflow_ref => portfolio_workflow_ref) }
+    let(:portfolio) { create(:portfolio, :workflow_ref => portfolio_workflow_ref, :tenant_id => tenant.id) }
 
     let(:portfolio_item) do
       create(:portfolio_item,
              :service_offering_ref => "123",
              :portfolio_id         => portfolio.id,
-             :workflow_ref         => item_workflow_ref)
+             :workflow_ref         => item_workflow_ref,
+             :tenant_id            => tenant.id)
     end
 
     let(:ref) { portfolio_item.send(:item_workflow_ref) }
