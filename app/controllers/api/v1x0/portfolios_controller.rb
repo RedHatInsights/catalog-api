@@ -2,7 +2,7 @@ module Api
   module V1x0
     class PortfoliosController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
-      include Api::V1x0::Mixins::RBACMixin
+
       before_action :write_access_check, :only => %i(add_portfolio_item_to_portfolio create update destroy)
       before_action :read_access_check, :only => %i(show)
 
