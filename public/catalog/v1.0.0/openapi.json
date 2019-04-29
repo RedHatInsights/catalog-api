@@ -1413,7 +1413,8 @@
               "Approval Pending",
               "Ordered",
               "Failed",
-              "Completed"
+              "Completed",
+              "Denied"
             ],
             "title": "State",
             "description": "Current state of this order item.",
