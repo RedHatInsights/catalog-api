@@ -3,6 +3,8 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
 
+      before_action :write_access_check, :only => %i[create update destroy]
+
       def index
         if params[:portfolio_id]
           collection(PortfolioItem.where(:portfolio_id => params.require(:portfolio_id)))
