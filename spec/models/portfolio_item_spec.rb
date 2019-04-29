@@ -1,7 +1,7 @@
 describe PortfolioItem do
   let(:tenant) { create(:tenant) }
   let(:item) { PortfolioItem.new(:tenant_id => tenant.id) }
-  
+
   let(:service_offering_ref) { "1" }
   let(:owner) { 'wilma' }
 
