@@ -5,10 +5,5 @@ FactoryBot.define do
     sequence(:image_url)    { |n| "https://portfolio#{n}.com/image/#{n}" }
     enabled                 { "true" }
     owner                   { UserHeaderSpecHelper::DEFAULT_USER['identity']['user']['username'] }
-    tenant
-
-    trait :without_tenant do
-      tenant_id { nil }
-    end
   end
 end

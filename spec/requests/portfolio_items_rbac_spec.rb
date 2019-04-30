@@ -1,5 +1,5 @@
 describe 'Portfolio Items RBAC API' do
-  let(:tenant) { create(:tenant, :external_tenant => default_user_hash['identity']['account_number']) }
+  let(:tenant) { create(:tenant) }
   let!(:portfolio_item1) { create(:portfolio_item, :tenant_id => tenant.id) }
   let!(:portfolio_item2) { create(:portfolio_item, :tenant_id => tenant.id) }
   let(:access_obj) { instance_double(RBAC::Access, :accessible? => true, :owner_scoped? => true, :id_list => [portfolio_item1.id.to_s]) }
