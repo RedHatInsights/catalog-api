@@ -51,7 +51,7 @@ module RBAC
 
     def matches?(access, resource_id, permission)
       access.permission == permission &&
-        access.resource_definitions.any? { |rdf| rdf.attribute_filter.key == 'id' && rdf.attribute_filter.operator == 'equal' && rdf.attribute_filter.value == resource_id }
+        access.resource_definitions.any? { |rdf| rdf.attribute_filter.key == 'id' && rdf.attribute_filter.operation == 'equal' && rdf.attribute_filter.value == resource_id }
     end
 
     def find_matching(acls, resource_id, permission)

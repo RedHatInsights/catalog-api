@@ -2,10 +2,10 @@ describe RBAC::Access do
   let(:app_name) { 'catalog' }
   let(:resource) { "portfolio" }
   let(:verb) { "read" }
-  let(:attr_filter1) { double(:key => 'id', :operator => 'equal', :value => '25') }
-  let(:attr_filter2) { double(:key => 'id', :operator => 'equal', :value => '26') }
-  let(:attr_filter3) { double(:key => 'id', :operator => 'equal', :value => '27') }
-  let(:attr_filter4) { double(:key => 'id', :operator => 'equal', :value => '*') }
+  let(:attr_filter1) { double(:key => 'id', :operation => 'equal', :value => '25') }
+  let(:attr_filter2) { double(:key => 'id', :operation => 'equal', :value => '26') }
+  let(:attr_filter3) { double(:key => 'id', :operation => 'equal', :value => '27') }
+  let(:attr_filter4) { double(:key => 'id', :operation => 'equal', :value => '*') }
   let(:resource_def1) { double(:attribute_filter => attr_filter1) }
   let(:resource_def2) { double(:attribute_filter => attr_filter2) }
   let(:resource_def3) { double(:attribute_filter => attr_filter3) }
