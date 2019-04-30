@@ -45,7 +45,7 @@ module RBAC
       @ids ||= @acl.each_with_object([]) do |item, ids|
         item.resource_definitions.each do |rd|
           next unless rd.attribute_filter.key == 'id'
-          next unless rd.attribute_filter.operator == 'equal'
+          next unless rd.attribute_filter.operation == 'equal'
           ids << rd.attribute_filter.value
         end
       end
@@ -55,7 +55,7 @@ module RBAC
       @acl.any? do |item|
         item.resource_definitions.any? do |rd|
           rd.attribute_filter.key == 'owner' &&
-            rd.attribute_filter.operator == 'equal' &&
+            rd.attribute_filter.operation == 'equal' &&
             rd.attribute_filter.value == '{{username}}'
         end
       end
