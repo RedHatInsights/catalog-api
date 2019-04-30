@@ -9,10 +9,10 @@ describe RBAC::QuerySharedResource do
   end
   let(:pagination_options) { { :limit => 100, :name => "catalog-portfolios-#{resource_id1}" } }
 
-  let(:access1) { double(:permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
-  let(:access2) { double(:permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def1]) }
-  let(:access3) { double(:permission => "#{app_name}:#{resource}:order", :resource_definitions => [resource_def1]) }
-  let(:role1_detail) { double(:name => role1.name, :uuid => role1.uuid, :access => [access1, access2, access3]) }
+  let(:access1) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
+  let(:access2) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def1]) }
+  let(:access3) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:order", :resource_definitions => [resource_def1]) }
+  let(:role1_detail) { instance_double(RBACApiClient::RoleWithAccess, :name => role1.name, :uuid => role1.uuid, :access => [access1, access2, access3]) }
   let(:roles) { [role1, role2] }
   let(:subject) { described_class.new(options) }
 
