@@ -4,6 +4,6 @@ FactoryBot.define do
     sequence(:description)          { |n| "PortfolioItem_description_#{n}" }
     sequence(:service_offering_ref) { |n| (111 + n).to_s }
     sequence(:service_offering_source_ref) { |n| (222 + n).to_s }
-    owner { UserHeaderSpecHelper::DEFAULT_USER['identity']['user']['username'] }
+    owner { default_username }
   end
 end
