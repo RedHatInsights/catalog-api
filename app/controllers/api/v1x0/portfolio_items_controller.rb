@@ -39,7 +39,7 @@ module Api
       private
 
       def portfolio_item_params
-        params.permit(:service_offering_ref, :workflow_ref)
+        params.permit(:service_offering_ref, :workflow_ref).require(:service_offering_ref)
       end
 
       def portfolio_item_patch_params
