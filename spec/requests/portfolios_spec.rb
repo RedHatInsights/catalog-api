@@ -233,7 +233,7 @@ describe 'Portfolios API' do
       end
 
       it 'stores the username in the owner column' do
-        expect(json['owner']).to eq default_user_hash["identity"]["user"]["username"]
+        expect(json['owner']).to eq default_username
       end
     end
 
