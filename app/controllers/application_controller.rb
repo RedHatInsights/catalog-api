@@ -4,6 +4,7 @@ class ApplicationController < ActionController::API
   rescue_from Catalog::TopologyError, :with => :topology_service_error
   rescue_from Catalog::NotAuthorized, :with => :forbidden_error
   rescue_from ManageIQ::API::Common::IdentityError, :with => :unauthorized_error
+  rescue_from ActionController::ParameterMissing, :with => :unprocessable_entity_error
 
   around_action :with_current_request
 

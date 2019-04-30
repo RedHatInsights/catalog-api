@@ -16,4 +16,9 @@ module Response
     Rails.logger.error("Unauthorized error: #{err.message}")
     render :json => {:message => "Unauthorized"}, :status => :unauthorized
   end
+
+  def unprocessable_entity_error(err)
+    Rails.logger.error("Unprocessable Entity error: #{err.message}")
+    render :json => {:message => "Unprocessable Entity"}, :status => :unprocessable_entity
+  end
 end
