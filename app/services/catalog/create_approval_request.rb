@@ -44,7 +44,13 @@ module Catalog
     end
 
     def workflows(portfolio_item)
-      portfolio_item.resolved_workflow_refs
+      workflows = portfolio_item.resolved_workflow_refs
+      case workflows
+      when :empty?.to_proc
+        raise Catalog::ApprovalError, "No Approval workflows assigned"
+      when :present?.to_proc
+        workflows
+      end
     end
 
     def create_approval_request(req)

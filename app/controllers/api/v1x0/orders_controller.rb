@@ -14,6 +14,8 @@ module Api
       def submit_order
         approval = Catalog::CreateApprovalRequest.new(params.require(:order_id))
         render :json => approval.process.order
+      rescue Catalog::ApprovalError => e
+        render :json => { :errors => e.message }, :status => :internal_server_error
       end
     end
   end

@@ -52,6 +52,18 @@ describe Catalog::CreateApprovalRequest do
         expect { request }.to raise_exception(Catalog::ApprovalError)
       end
     end
+
+    context "when the item has no workflow_ref" do
+      before do
+        allow(approval).to receive(:call).and_yield(api_instance)
+        allow(api_instance).to receive(:create_request).and_return(approval_response)
+        portfolio_item.update!(:workflow_ref => nil)
+      end
+
+      it "throws an exception" do
+        expect { request }.to raise_exception(Catalog::ApprovalError)
+      end
+    end
   end
 
   context "private methods" do
@@ -87,6 +99,11 @@ describe Catalog::CreateApprovalRequest do
       it "returns the workflow from portfolio_item" do
         workflows = create_approval_request.send(:workflows, portfolio_item)
         expect(workflows.first).to eq portfolio_item.workflow_ref
+      end
+
+      it "blows up when there is no workflow ref" do
+        portfolio_item.workflow_ref = nil
+        expect { create_approval_request.send(:workflows, portfolio_item) }.to raise_exception(Catalog::ApprovalError)
       end
     end
 

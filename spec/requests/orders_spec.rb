@@ -8,24 +8,39 @@ describe "OrderRequests", :type => :request do
   let!(:order) { create(:order, :tenant_id => tenant.id) }
   let!(:order2) { create(:order, :tenant_id => tenant.id) }
 
-  # TODO: Update this context with new logic. Will be fixed with
-  # https://projects.engineering.redhat.com/browse/SSP-237
   context "submit order" do
     let(:svc_object) { instance_double("Catalog::CreateApprovalRequest") }
-    let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
+    let(:approval_ex) { Catalog::ApprovalError.new("kaboom") }
     let(:params) { order.id.to_s }
-    before do
-      allow(Catalog::CreateApprovalRequest).to receive(:new).with(params).and_return(svc_object)
+
+    context "when the items have workflows to run" do
+      before do
+        allow(Catalog::CreateApprovalRequest).to receive(:new).with(params).and_return(svc_object)
+      end
+
+      it "successfully submits the order" do
+        allow(svc_object).to receive(:process).and_return(svc_object)
+        allow(svc_object).to receive(:order).and_return(order)
+
+        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:ok)
+      end
     end
 
-    it "v1.0 successfully creates approval requests" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:order).and_return(order)
+    context "when the items have no workflow refs" do
+      before do
+        allow(Catalog::CreateApprovalRequest).to receive(:new).with(params).and_return(svc_object)
+        allow(svc_object).to receive(:process).and_raise(approval_ex)
+      end
 
-      post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+      it "raises error if no workflow refs are present" do
+        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
 
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:internal_server_error)
+      end
     end
   end
 
