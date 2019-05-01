@@ -64,4 +64,37 @@ RSpec.describe ApplicationController, :type => :request do
       expect(response.status).to eq(401)
     end
   end
+
+  context "with entitlement enforcement" do
+    around do |example|
+      bypass_rbac do
+        example.call
+      end
+    end
+
+    let(:false_hash) do
+      false_hash = default_user_hash
+      false_hash["entitlements"]["hybrid_cloud"]["is_entitled"] = false
+      false_hash
+    end
+    let(:missing_hash) do
+      missing_hash = default_user_hash
+      missing_hash.delete("entitlements")
+      missing_hash
+    end
+
+    it "fails if the hybrid_cloud entitlement is false" do
+      headers =  { 'x-rh-identity' => encoded_user_hash(false_hash), 'x-rh-insights-request-id' => 'gobbledygook' }
+      get "#{api("1.0")}/portfolios", :headers => headers
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "allows the request through if entitlements isn't present" do
+      headers = { 'x-rh-identity' => encoded_user_hash(missing_hash), 'x-rh-insights-request-id' => 'gobbledygook' }
+      get "#{api("1.0")}/portfolios", :headers => headers
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
