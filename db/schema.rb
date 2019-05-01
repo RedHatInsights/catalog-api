@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_09_143525) do
+ActiveRecord::Schema.define(version: 2019_05_01_163638) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2019_04_09_143525) do
     t.jsonb "context"
     t.string "owner"
     t.string "external_url"
+    t.string "insights_request_id"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
