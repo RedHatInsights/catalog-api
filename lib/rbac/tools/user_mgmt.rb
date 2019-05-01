@@ -1,6 +1,6 @@
 module RBAC
   module Tools
-    class UserMgmt
+    class UserMgmt < Base
       def initialize(options)
         @options = options.dup
         @request = create_request(@options[:user_file])
@@ -52,12 +52,6 @@ module RBAC
         RBAC::Service.call(RBACApiClient::GroupApi) do |api|
           api.add_principal_to_group(@group_uuid, group_principal_in)
         end
-      end
-
-      def create_request(user_file)
-        raise "File #{user_file} not found" unless File.exist?(user_file)
-        user = YAML.load_file(user_file)
-        {:headers => {'x-rh-identity' => Base64.strict_encode64(user.to_json)}, :original_url => '/'}
       end
     end
   end

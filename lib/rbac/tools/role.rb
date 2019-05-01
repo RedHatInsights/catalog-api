@@ -1,25 +1,13 @@
 module RBAC
   module Tools
-    class Role
-      def initialize(options)
-        @options = options.dup
-        @debug = options[:debug]
-        @request = create_request(@options[:user_file])
-      end
-
-      def process
-        ManageIQ::API::Common::Request.with_request(@request) do
-          list_roles
-        end
-      end
-
+    class Role < Base
       private
 
-      def list_roles
-        @debug ? (puts @user) : print_details(:user)
+      def list
+        user_output
         RBAC::Service.call(RBACApiClient::RoleApi) do |api|
-          RBAC::Service.paginate(api, :list_roles,  {}).each do |role|
-            @debug ? (puts role) : print_details(:role, role)
+          RBAC::Service.paginate(api, :list_roles, {}).each do |role|
+            list_output(role)
           end
         end
       end
@@ -34,12 +22,6 @@ module RBAC
           puts "Description: #{object.description}"
           puts "UUID: #{object.uuid}"
         end
-      end
-
-      def create_request(user_file)
-        raise "File #{user_file} not found" unless File.exist?(user_file)
-        @user = YAML.load_file(user_file)
-        {:headers => {'x-rh-identity' => Base64.strict_encode64(@user.to_json)}, :original_url => '/'}
       end
     end
   end
