@@ -1454,6 +1454,13 @@
             "type": "string",
             "title": "External url",
             "description": "The external url of the service instance used with relation to this order item"
+          },
+          "insights_request_id":{
+            "type": "string",
+            "title": "Insights Request ID ",
+            "example": "364498f142194beba576833d7303abe5",
+            "description": "The insights request id can be used to collect log data for this order item as its processed by the system",
+            "readOnly": true
           }
         }
       },

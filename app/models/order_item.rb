@@ -15,8 +15,8 @@ class OrderItem < ApplicationRecord
   has_many :approval_requests, :dependent => :destroy
   before_create :set_defaults
 
-  AS_JSON_ATTRIBUTES = %w(id order_id service_plan_ref portfolio_item_id state service_parameters external_url
-                          provider_control_parameters external_ref created_at ordered_at completed_at updated_at).freeze
+  AS_JSON_ATTRIBUTES = %w[id order_id service_plan_ref portfolio_item_id state service_parameters external_url
+                          provider_control_parameters external_ref insights_request_id created_at ordered_at completed_at updated_at].freeze
 
   def as_json(_options = {})
     super.slice(*AS_JSON_ATTRIBUTES)
@@ -24,7 +24,11 @@ class OrderItem < ApplicationRecord
 
   def set_defaults
     self.state = "Created"
-    self.context = ManageIQ::API::Common::Request.current.to_h
+
+    if ManageIQ::API::Common::Request.current.present?
+      self.context = ManageIQ::API::Common::Request.current.to_h
+      self.insights_request_id = ManageIQ::API::Common::Request.current.request_id
+    end
   end
 
   def update_message(level, message)

@@ -5,5 +5,6 @@ FactoryBot.define do
     service_plan_ref { "something" }
     count { 1 }
     owner { default_username }
+    insights_request_id { "insights-request-id" }
   end
 end
