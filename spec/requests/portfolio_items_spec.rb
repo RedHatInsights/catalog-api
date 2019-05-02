@@ -86,9 +86,10 @@ describe "PortfolioItemRequests", :type => :request do
   context "when adding portfolio items" do
     let(:add_to_portfolio_svc) { double(ServiceOffering::AddToPortfolioItem) }
     let(:params) { { :service_offering_ref => service_offering_ref } }
+    let(:permitted_params) { ActionController::Parameters.new(params).permit(:service_offering_ref) }
 
     before do
-      allow(ServiceOffering::AddToPortfolioItem).to receive(:new).and_return(add_to_portfolio_svc)
+      allow(ServiceOffering::AddToPortfolioItem).to receive(:new).with(permitted_params).and_return(add_to_portfolio_svc)
     end
 
     it "returns not found when topology doesn't have the service_offering_ref" do
