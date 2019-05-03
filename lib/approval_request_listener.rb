@@ -43,9 +43,9 @@ class ApprovalRequestListener
       Rails.logger.info("Starting update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
       update_and_log_state(approval, topic)
       Rails.logger.info("Finished update_and_log_state for Approval ID: #{approval.id} with payload: #{topic.payload}")
-      Rails.logger.info("Staring Catalog::OrderItemTransition for order_item_id: #{approval.order_item_id}")
-      Catalog::OrderItemTransition.new(approval.order_item_id).process
-      Rails.logger.info("Finished Catalog::OrderItemTransition for order_item_id: #{approval.order_item_id}")
+      Rails.logger.info("Staring Catalog::ApprovalTransition for order_item_id: #{approval.order_item_id}")
+      Catalog::ApprovalTransition.new(approval.order_item_id).process
+      Rails.logger.info("Finished Catalog::ApprovalTransition for order_item_id: #{approval.order_item_id}")
     end
   rescue ActiveRecord::RecordNotFound
     Rails.logger.error("Could not find Approval Request with payload of #{topic.payload}")

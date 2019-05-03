@@ -1,4 +1,4 @@
-describe Catalog::OrderItemTransition do
+describe Catalog::ApprovalTransition do
   let(:so) { class_double(Catalog::SubmitOrder).as_stubbed_const(:transfer_nested_constants => true) }
   let(:submit_order) { instance_double(Catalog::SubmitOrder) }
   let(:topo_ex) { Catalog::TopologyError.new("boom") }
@@ -43,6 +43,12 @@ describe Catalog::OrderItemTransition do
         expect(submit_order).to receive(:process).once
         order_item_transition.process
       end
+
+      it "finalizes the Order" do
+        order_item_transition.process
+        order.reload
+        expect(order.state).to eq("Approved")
+      end
     end
 
     context "when denied" do
@@ -69,6 +75,12 @@ describe Catalog::OrderItemTransition do
         order_item_transition.process
         order.reload
         expect(order.state).to eq "Denied"
+      end
+
+      it "finalizes the Order" do
+        order_item_transition.process
+        order.reload
+        expect(order.state).to eq("Denied")
       end
     end
 

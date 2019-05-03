@@ -1340,7 +1340,9 @@
               "Approval Pending",
               "Ordered",
               "Failed",
-              "Completed"
+              "Completed",
+              "Approved",
+              "Denied"
             ],
             "title": "State",
             "description": "Current State of the order."
@@ -1414,6 +1416,7 @@
               "Ordered",
               "Failed",
               "Completed",
+              "Approved",
               "Denied"
             ],
             "title": "State",
