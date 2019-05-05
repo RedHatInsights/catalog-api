@@ -11,7 +11,7 @@ module Catalog
       TopologicalInventory.call do |api_instance|
         # TODO: Temporay till we get this call in the topology service
         projects = api_instance.list_source_container_projects(source_ref).data
-        update_project_list(projects.collect(&:name))
+        update_project_list(project_names(projects))
         self
       end
     rescue StandardError => e
@@ -20,6 +20,10 @@ module Catalog
     end
 
     private
+
+    def project_names(projects)
+      projects.collect(&:name).sort
+    end
 
     def update_project_list(projects)
       @data = JSON.parse(read_control_parameters)
