@@ -20,13 +20,13 @@ module Catalog
 
     def state_transitions
       if approved?
-        @state = "approved"
+        @state = "Approved"
         submit_order
       elsif denied?
-        @state = "denied"
+        @state = "Denied"
         mark_denied
       else
-        @state = "pending"
+        @state = "Pending"
         @order_item.order.transition_state
       end
     end
@@ -34,19 +34,19 @@ module Catalog
     def submit_order
       @order_item.update_message("info", "Submitting Order #{@order_item.order_id} for provisioning ")
       Catalog::SubmitOrder.new(@order_item.order_id).process
-      finalize_order("Approved")
+      finalize_order
     rescue Catalog::TopologyError => e
       Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
       @order_item.update_message("error", "Error Submitting Order #{@order_item.order_id}, #{e.message}")
     end
 
     def mark_denied
-      finalize_order("Denied")
+      finalize_order
       @order_item.update_message("info", "Order #{@order_item.order_id} has been denied")
     end
 
-    def finalize_order(state)
-      @order_item.update(:state => state)
+    def finalize_order
+      @order_item.update(:state => @state)
       @order_item.order.transition_state
     end
 

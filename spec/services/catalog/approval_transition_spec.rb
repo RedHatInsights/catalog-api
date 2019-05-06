@@ -35,7 +35,7 @@ describe Catalog::ApprovalTransition do
       end
 
       it "returns the state as approved" do
-        expect(order_item_transition.process.state).to eq "approved"
+        expect(order_item_transition.process.state).to eq "Approved"
       end
 
       it "calls out to Catalog::SubmitOrder" do
@@ -57,7 +57,7 @@ describe Catalog::ApprovalTransition do
       end
 
       it "returns the state as denied" do
-        expect(order_item_transition.process.state).to eq "denied"
+        expect(order_item_transition.process.state).to eq "Denied"
       end
 
       it "does not call out to submit order" do
@@ -86,7 +86,7 @@ describe Catalog::ApprovalTransition do
 
     context "when pending" do
       it "returns the state as pending" do
-        expect(order_item_transition.process.state).to eq "pending"
+        expect(order_item_transition.process.state).to eq "Pending"
       end
     end
 

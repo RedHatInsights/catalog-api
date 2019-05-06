@@ -19,19 +19,24 @@ class Order < ApplicationRecord
   end
 
   def transition_state
+    update!(:state => determine_order_state)
+  end
+
+  private
+
+  def determine_order_state
     item_states = order_items.collect(&:state)
 
     if item_states.include?('Failed')
-      self.state = "Failed"
+      'Failed'
     elsif item_states.include?('Denied')
-      self.state = "Denied"
+      'Denied'
     elsif item_states.all? { |state| state == "Approved" }
-      self.state = 'Approved'
+      'Approved'
     elsif item_states.all? { |state| state == "Completed" }
-      self.state = 'Completed'
+      'Completed'
     else
-      self.state = 'Ordered'
+      'Ordered'
     end
-    save!
   end
 end
