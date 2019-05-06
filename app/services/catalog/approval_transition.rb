@@ -27,7 +27,7 @@ module Catalog
         mark_denied
       else
         @state = "Pending"
-        @order_item.order.transition_state
+        Catalog::OrderStateTransition.new(@order_item.order_id).process
       end
     end
 
@@ -47,7 +47,7 @@ module Catalog
 
     def finalize_order
       @order_item.update(:state => @state)
-      @order_item.order.transition_state
+      Catalog::OrderStateTransition.new(@order_item.order_id).process
     end
 
     def approved?

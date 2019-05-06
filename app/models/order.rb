@@ -17,26 +17,4 @@ class Order < ApplicationRecord
   def set_defaults
     self.state = "Created"
   end
-
-  def transition_state
-    update!(:state => determine_order_state)
-  end
-
-  private
-
-  def determine_order_state
-    item_states = order_items.collect(&:state)
-
-    if item_states.include?('Failed')
-      'Failed'
-    elsif item_states.include?('Denied')
-      'Denied'
-    elsif item_states.all? { |state| state == "Approved" }
-      'Approved'
-    elsif item_states.all? { |state| state == "Completed" }
-      'Completed'
-    else
-      'Ordered'
-    end
-  end
 end

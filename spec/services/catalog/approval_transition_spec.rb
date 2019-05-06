@@ -47,7 +47,7 @@ describe Catalog::ApprovalTransition do
       it "finalizes the Order" do
         order_item_transition.process
         order.reload
-        expect(order.state).to eq("Approved")
+        expect(order.state).to eq("Ordered")
       end
     end
 
@@ -71,16 +71,16 @@ describe Catalog::ApprovalTransition do
         expect(order_item.state).to eq "Denied"
       end
 
-      it "marks the order as denied" do
+      it "marks the order as failed" do
         order_item_transition.process
         order.reload
-        expect(order.state).to eq "Denied"
+        expect(order.state).to eq "Failed"
       end
 
       it "finalizes the Order" do
         order_item_transition.process
         order.reload
-        expect(order.state).to eq("Denied")
+        expect(order.state).to eq("Failed")
       end
     end
 
