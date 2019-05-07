@@ -6,8 +6,8 @@ describe ApprovalRequestListener do
   let(:payload)              { { "request_id" => request_id, "decision" => decision, "reason" => reason } }
   let(:request_id)           { "1" }
 
-  let(:transition_class) { class_double(Catalog::OrderItemTransition).as_stubbed_const(:transfer_nested_constants => true) }
-  let(:transition_instance) { instance_double(Catalog::OrderItemTransition) }
+  let(:transition_class) { class_double(Catalog::ApprovalTransition).as_stubbed_const(:transfer_nested_constants => true) }
+  let(:transition_instance) { instance_double(Catalog::ApprovalTransition) }
 
   describe "#subscribe_to_approval_updates" do
     let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil, client) }

@@ -1,5 +1,5 @@
 module Catalog
-  class OrderItemTransition
+  class ApprovalTransition
     attr_reader :order_item_id
     attr_reader :order_item
     attr_reader :state
@@ -20,28 +20,34 @@ module Catalog
 
     def state_transitions
       if approved?
+        @state = "Approved"
         submit_order
-        @state = "approved"
       elsif denied?
+        @state = "Denied"
         mark_denied
-        @state = "denied"
       else
-        @state = "pending"
+        @state = "Pending"
+        Catalog::OrderStateTransition.new(@order_item.order_id).process
       end
     end
 
     def submit_order
       @order_item.update_message("info", "Submitting Order #{@order_item.order_id} for provisioning ")
       Catalog::SubmitOrder.new(@order_item.order_id).process
+      finalize_order
     rescue Catalog::TopologyError => e
       Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
       @order_item.update_message("error", "Error Submitting Order #{@order_item.order_id}, #{e.message}")
     end
 
     def mark_denied
-      @order_item.update!(:state => "Denied")
-      @order_item.order.update!(:state => "Denied")
+      finalize_order
       @order_item.update_message("info", "Order #{@order_item.order_id} has been denied")
+    end
+
+    def finalize_order
+      @order_item.update(:state => @state)
+      Catalog::OrderStateTransition.new(@order_item.order_id).process
     end
 
     def approved?

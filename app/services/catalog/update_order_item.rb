@@ -49,14 +49,14 @@ module Catalog
         case @payload["state"]
         when "completed"
           mark_item_finished
-          @order_item.order.finalize_order
+          Catalog::OrderStateTransition.new(@order_item.order_id).process
         when "running"
           @order_item.update_message("info", "Order Item being processed with context: #{@payload["context"]}")
           @order_item.save!
         end
       when "error"
         mark_item_failed
-        @order_item.order.finalize_order
+        Catalog::OrderStateTransition.new(@order_item.order_id).process
       else
         # Do nothing for now, only other case is "warn"
       end

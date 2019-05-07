@@ -1414,6 +1414,7 @@
               "Ordered",
               "Failed",
               "Completed",
+              "Approved",
               "Denied"
             ],
             "title": "State",
