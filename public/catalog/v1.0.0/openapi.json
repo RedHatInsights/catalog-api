@@ -1119,6 +1119,58 @@
           }
         }
       }
+    },
+    "/portfolio_items/{portfolio_item_id}/copy": {
+      "post": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "Make a copy of the Portfolio Item",
+        "operationId": "postCopyPortfolioItem",
+        "description": "Make a copy of the Portfolio Item.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioItemID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The new Portfolio Item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Item not found"
+          },
+          "422": {
+            "description": "Portfolio not found"
+          },
+          "500": {
+            "description": "Failed to copy Portfolio Item"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopyPortfolioItem"
+              }
+            }
+          },
+          "required": false
+        }
+      }
     }
   },
   "servers": [
@@ -1328,6 +1380,17 @@
             "title": "Portfolio Item Id",
             "example": "100",
             "description": "This is the ID of the portfolio item object."
+          }
+        }
+      },
+      "CopyPortfolioItem": {
+        "type": "object",
+        "properties": {
+          "portfolio_id": {
+            "type": "string",
+            "title": "Portfolio ID",
+            "example": "2",
+            "description": "The portfolio to place the new copy of the Portfolio Item in"
           }
         }
       },
@@ -1542,7 +1605,7 @@
             "title": "External url",
             "description": "The external url of the service instance used with relation to this order item"
           },
-          "insights_request_id":{
+          "insights_request_id": {
             "type": "string",
             "title": "Insights Request ID ",
             "example": "364498f142194beba576833d7303abe5",

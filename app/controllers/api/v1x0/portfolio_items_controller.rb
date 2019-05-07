@@ -3,7 +3,7 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
 
-      before_action :write_access_check, :only => %i[create update destroy]
+      before_action :write_access_check, :only => %i[create update destroy copy]
 
       def index
         if params[:portfolio_id]
@@ -36,6 +36,13 @@ module Api
         head :no_content
       end
 
+      def copy
+        svc = Catalog::CopyPortfolioItem.new(portfolio_copy_params)
+        render :json => svc.process.new_portfolio_item
+      rescue ActiveRecord::RecordNotFound => e
+        render :json => { :errors => e.message }, :status => :unprocessable_entity
+      end
+
       private
 
       def portfolio_item_params
@@ -45,6 +52,11 @@ module Api
 
       def portfolio_item_patch_params
         params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref)
+      end
+
+      def portfolio_copy_params
+        params.require(:portfolio_item_id)
+        params.permit(:portfolio_item_id, :portfolio_id)
       end
     end
   end

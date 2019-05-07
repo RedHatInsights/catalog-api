@@ -232,4 +232,37 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
   end
+
+  describe "copying portfolio items" do
+    let(:copy_portfolio_item) do
+      post "#{api("1.0")}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
+    end
+
+    context "when copying into the same portfolio" do
+      let(:params) { { :portfolio_id => portfolio_item.portfolio_id } }
+
+      before do
+        portfolio_item.update!(:portfolio_id => "1")
+        copy_portfolio_item
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns a copy of the portfolio_item" do
+        expect(json["description"]).to eq portfolio_item.description
+        expect(json["owner"]).to eq portfolio_item.owner
+        expect(json["workflow_ref"]).to eq portfolio_item.workflow_ref
+      end
+
+      it "modifies the name to not collide" do
+        expect(json["name"]).to_not eq portfolio_item.name
+        expect(json["name"]).to match(/^Copy of.*/)
+      end
+    end
+
+    context "when copying into a different portfolio" do
+    end
+  end
 end
