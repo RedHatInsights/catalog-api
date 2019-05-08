@@ -36,6 +36,17 @@
     }
   ],
   "paths": {
+    "/openapi.json": {
+      "get": {
+        "summary": "Return this API document in JSON format",
+        "operationId": "getDocumentation",
+        "responses": {
+          "200": {
+            "description": "The API document for this version of the API"
+          }
+        }
+      }
+    },
     "/portfolios": {
       "get": {
         "tags": [
@@ -901,6 +912,81 @@
           },
           "404": {
             "description": "Order not found"
+          }
+        }
+      }
+    },
+    "/order_items": {
+      "get": {
+        "tags": [
+          "OrderItem"
+        ],
+        "summary": "List Order Items",
+        "operationId": "listOrderItems",
+        "description": "Gets a list of order items.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of order items. An empty list indicate either undefined orders in the system or inaccessibility to the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderItemsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/order_items/{id}": {
+      "get": {
+        "tags": [
+          "OrderItem"
+        ],
+        "summary": "Gets a specific order item",
+        "operationId": "showOrderItem",
+        "description": "Gets a specific order item based on the portfolio item ID passed\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order item specified by the given ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "The Order item ID was not found"
           }
         }
       }
