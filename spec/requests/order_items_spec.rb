@@ -23,12 +23,26 @@ describe "OrderItemsRequests", :type => :request do
 
   describe "CRUD" do
     context "when listing order_items" do
-      it "lists order items under an order" do
-        get "/api/v1.0/orders/#{order_1.id}/order_items", :headers => default_headers
+      describe "GET /orders/:order_id/order_items" do
+        it "lists order items under an order" do
+          get "/api/v1.0/orders/#{order_1.id}/order_items", :headers => default_headers
 
-        expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)['data'].first['id']).to eq(order_item_1.id.to_s)
+          expect(response.content_type).to eq("application/json")
+          expect(response).to have_http_status(:ok)
+          expect(JSON.parse(response.body)['data'].first['id']).to eq(order_item_1.id.to_s)
+        end
+
+        context "when the order does not exist" do
+          let(:order_id) { 0 }
+
+          it "returns a 404" do
+            get "/api/v1.0/orders/#{order_id}/order_items", :headers => default_headers
+
+            expect(response.content_type).to eq("application/json")
+            expect(JSON.parse(response.body)["message"]).to eq("Not Found")
+            expect(response).to have_http_status(:not_found)
+          end
+        end
       end
 
       it "list all order items by tenant" do
@@ -68,25 +82,6 @@ describe "OrderItemsRequests", :type => :request do
         get "/api/v1.0/order_items/#{order_item_1.id}", :headers => default_headers
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(:ok)
-      end
-    end
-  end
-
-  describe "#approval_requests" do
-    let!(:approval) { create(:approval_request, :order_item_id => order_item_1.id, :workflow_ref => "1", :tenant_id => tenant.id) }
-
-    context "list" do
-      before do
-        get "#{api}/order_items/#{order_item_1.id}/approval_requests", :headers => default_headers
-      end
-
-      it "returns a 200 http status" do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "lists approval requests" do
-        expect(json["data"].count).to eq 1
-        expect(json["data"].first["id"]).to eq approval.id.to_s
       end
     end
   end

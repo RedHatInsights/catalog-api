@@ -9,6 +9,9 @@ describe "PortfolioItemRequests", :type => :request do
   let(:service_offering_source_ref) { "568" }
   let(:tenant) { create(:tenant) }
   let(:order) { create(:order, :tenant_id => tenant.id) }
+  let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
+  let(:portfolio_id) { portfolio.id }
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
                             :service_offering_source_ref => service_offering_source_ref,
@@ -31,21 +34,53 @@ describe "PortfolioItemRequests", :type => :request do
         expect(json["id"]).to eq portfolio_item.id.to_s
       end
     end
+
+    context 'the portfolio_item does not exist' do
+      let(:portfolio_item_id) { 0 }
+
+      it "can't be requested" do
+        expect(response).to have_http_status(404)
+      end
+    end
   end
 
-  describe "GET v1.0 /portfolio_items/:portfolio_item_id" do
+  describe "GET /portfolios/:portfolio_id/portfolio_items" do
     before do
-      get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+      get "#{api}/portfolios/#{portfolio_id}/portfolio_items", :headers => default_headers
     end
 
-    context 'the portfolio_item exists' do
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
+    context "when the portfolio exists" do
+      it 'returns all associated portfolio_items' do
+        expect(json).not_to be_empty
+        expect(json['meta']['count']).to eq 1
+        portfolio_item_ids = portfolio_items.map { |x| x.id.to_s }.sort
+        expect(json['data'].map { |x| x['id'] }.sort).to eq portfolio_item_ids
       end
+    end
 
-      it 'returns the portfolio_item we asked for' do
-        expect(json["id"]).to eq portfolio_item.id.to_s
+    context "when the portfolio does not exist" do
+      let(:portfolio_id) { portfolio.id + 100 }
+
+      it 'returns a 404' do
+        expect(json["message"]).to eq("Not Found")
+        expect(response.status).to eq(404)
       end
+    end
+  end
+
+  describe "POST /portfolios/:portfolio_id/portfolio_items" do
+    let(:params) { {:portfolio_item_id => portfolio_item.id} }
+    before do
+      post "#{api}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers
+    end
+
+    it 'returns a 200' do
+      expect(response).to have_http_status(200)
+    end
+
+    it 'returns the portfolio_item which now points back to the portfolio' do
+      expect(json.size).to eq 1
+      expect(json.first['portfolio_id']).to eq portfolio.id.to_s
     end
   end
 
@@ -66,9 +101,6 @@ describe "PortfolioItemRequests", :type => :request do
         expect(PortfolioItem.with_discarded.find_by(:id => portfolio_item_id).discarded_at).to_not be_nil
       end
 
-      it "can't be requested" do
-        expect { get("/#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers) }.to raise_error(ActiveRecord::RecordNotFound)
-      end
     end
   end
 
