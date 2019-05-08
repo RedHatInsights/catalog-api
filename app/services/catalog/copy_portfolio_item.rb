@@ -4,7 +4,7 @@ module Catalog
 
     def initialize(params)
       @portfolio_item = PortfolioItem.find(params[:portfolio_item_id])
-      @to_portfolio = Portfolio.find_by!(:id => params[:portfolio_id]) if params[:portfolio_id].present?
+      @to_portfolio = Portfolio.find(params[:portfolio_id] || @portfolio_item.portfolio_id)
     end
 
     def process
@@ -17,14 +17,13 @@ module Catalog
     private
 
     def make_copy
-      new_portfolio_item = @portfolio_item.dup
+      @portfolio_item.dup.tap do |new_portfolio_item|
+        if new_portfolio_item.portfolio_id == @to_portfolio.id
+          new_portfolio_item.name = "Copy of " + new_portfolio_item.name
+        end
 
-      if new_portfolio_item.portfolio_id == @to_portfolio.id
-        new_portfolio_item.name = "Copy of " + new_portfolio_item.name
+        new_portfolio_item.save
       end
-
-      new_portfolio_item.save
-      new_portfolio_item
     end
   end
 end

@@ -3,7 +3,12 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
 
-      before_action :write_access_check, :only => %i[create update destroy copy]
+      before_action :write_access_check, :only => %i[create update destroy]
+
+      before_action :only => [:copy] do
+        resource_check('read', params.require(:portfolio_item_id))
+        permission_check('write', Portfolio)
+      end
 
       def index
         if params[:portfolio_id]
@@ -55,7 +60,6 @@ module Api
       end
 
       def portfolio_copy_params
-        params.require(:portfolio_item_id)
         params.permit(:portfolio_item_id, :portfolio_id)
       end
     end

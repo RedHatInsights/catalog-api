@@ -8,6 +8,10 @@ describe Catalog::CopyPortfolioItem do
 
   describe "#process" do
     context "when copying into the same portfolio" do
+      around do |example|
+        bypass_rbac { example.call }
+      end
+
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
       it "makes a copy of the portfolio_item" do
@@ -23,6 +27,10 @@ describe Catalog::CopyPortfolioItem do
     end
 
     context "when copying into a different portfolio" do
+      around do |example|
+        bypass_rbac { example.call }
+      end
+
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio2.id } }
 
       it "makes a complete copy of the portfolio_item" do
