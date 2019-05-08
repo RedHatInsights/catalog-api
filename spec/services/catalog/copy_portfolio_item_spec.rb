@@ -1,12 +1,14 @@
 describe Catalog::CopyPortfolioItem do
   let(:tenant) { create(:tenant) }
-  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => "1", :tenant_id => 1) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio2) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => 1) }
 
   let(:copy_portfolio_item) { described_class.new(params).process }
 
   describe "#process" do
     context "when copying into the same portfolio" do
-      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => "1" } }
+      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
       it "makes a copy of the portfolio_item" do
         new = copy_portfolio_item.new_portfolio_item
@@ -21,7 +23,7 @@ describe Catalog::CopyPortfolioItem do
     end
 
     context "when copying into a different portfolio" do
-      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => "2" } }
+      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio2.id } }
 
       it "makes a complete copy of the portfolio_item" do
         new = copy_portfolio_item.new_portfolio_item

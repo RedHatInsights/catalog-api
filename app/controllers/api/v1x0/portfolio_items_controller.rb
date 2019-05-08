@@ -40,7 +40,7 @@ module Api
         svc = Catalog::CopyPortfolioItem.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio_item
       rescue ActiveRecord::RecordNotFound => e
-        render :json => { :errors => e.message }, :status => :unprocessable_entity
+        json_response({ :errors => e.message }, :unprocessable_entity)
       end
 
       private
