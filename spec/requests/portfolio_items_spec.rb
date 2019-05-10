@@ -259,7 +259,6 @@ describe "PortfolioItemRequests", :type => :request do
         expect(json["name"]).to_not eq portfolio_item.name
         expect(json["name"]).to match(/^Copy of.*/)
       end
-
     end
 
     context "when copying with a specified name" do

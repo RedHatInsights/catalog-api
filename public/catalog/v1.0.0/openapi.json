@@ -433,6 +433,45 @@
         }
       }
     },
+    "/portfolios/{portfolio_id}/copy": {
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Make a copy of the Portfolio",
+        "operationId": "postCopyPortfolio",
+        "description": "Make a copy of the Portfolio.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The new Portfolio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Portfolio"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio  not found"
+          },
+          "500": {
+            "description": "Failed to copy Portfolio"
+          }
+        }
+      }
+    },
     "/portfolio_items": {
       "get": {
         "tags": [
