@@ -258,7 +258,7 @@ describe 'Portfolios API' do
       end
     end
 
-    context "copy" do
+    context "copy without specifying name" do
       before do
         post "#{api}/portfolios/#{portfolio.id}/copy", :headers => default_headers
       end
@@ -283,6 +283,18 @@ describe 'Portfolios API' do
         expect(item.name).to eq portfolio_item.name
         expect(item.description).to eq portfolio_item.description
         expect(item.owner).to eq portfolio_item.owner
+      end
+    end
+
+    context "copy when specifying name" do
+      let(:params) { { :portfolio_name => "NameyMcNameFace" } }
+
+      before do
+        post "#{api}/portfolios/#{portfolio.id}/copy", :params => params, :headers => default_headers
+      end
+
+      it "sets the name properly" do
+        expect(json["name"]).to eq params[:portfolio_name]
       end
     end
   end

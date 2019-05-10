@@ -85,7 +85,7 @@ module Api
       def copy
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio
-      rescue ActiveRecord::RecordNotFound => e
+      rescue Catalog::InvalidParameter => e
         json_response({ :errors => e.message }, :unprocessable_entity)
       end
 
@@ -96,7 +96,7 @@ module Api
       end
 
       def portfolio_copy_params
-        params.permit(:portfolio_id)
+        params.permit(:portfolio_id, :portfolio_name)
       end
     end
   end

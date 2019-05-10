@@ -9,25 +9,40 @@ describe Catalog::CopyPortfolio do
   describe "#process" do
     let(:new_portfolio) { copy_portfolio.new_portfolio }
 
-    it "copies the portfolio over" do
-      expect(new_portfolio.owner).to eq portfolio.owner
-      expect(new_portfolio.description).to eq portfolio.description
+    context "when there isn't a conflicting name" do
+      it "copies the portfolio over" do
+        expect(new_portfolio.owner).to eq portfolio.owner
+        expect(new_portfolio.description).to eq portfolio.description
+      end
+
+      it "modifies the name" do
+        expect(new_portfolio.name).to match(/^Copy of.*/)
+      end
+
+      it "copies over all of the portfolio items" do
+        expect(new_portfolio.portfolio_items.count).to eq 2
+      end
+
+      it "copies over the portfolio_items fields" do
+        items = new_portfolio.portfolio_items
+
+        expect(items.collect(&:name)).to match_array([portfolio_item1.name, portfolio_item2.name])
+        expect(items.collect(&:description)).to match_array([portfolio_item1.description, portfolio_item2.description])
+        expect(items.collect(&:owner)).to match_array([portfolio_item1.owner, portfolio_item2.owner])
+      end
     end
 
-    it "modifies the name" do
-      expect(new_portfolio.name).to match(/^Copy of.*/)
-    end
+    context "copy when there is a copy already" do
+      let!(:another_portfolio) { create(:portfolio, :tenant_id => tenant.id, :name => "Copy of #{portfolio.name}") }
 
-    it "copies over all of the portfolio items" do
-      expect(new_portfolio.portfolio_items.count).to eq 2
-    end
+      it "adds a (1) to the name" do
+        expect(new_portfolio.name).to eq "Copy (1) of #{portfolio.name}"
+      end
 
-    it "copies over the portfolio_items fields" do
-      items = new_portfolio.portfolio_items
-
-      expect(items.collect(&:name)).to match_array([portfolio_item1.name, portfolio_item2.name])
-      expect(items.collect(&:description)).to match_array([portfolio_item1.description, portfolio_item2.description])
-      expect(items.collect(&:owner)).to match_array([portfolio_item1.owner, portfolio_item2.owner])
+      it "increments when requesting again" do
+        another_portfolio.update(:name => "Copy (1) of #{portfolio.name}")
+        expect(new_portfolio.name).to eq "Copy (2) of #{portfolio.name}"
+      end
     end
   end
 end

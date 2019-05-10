@@ -3,6 +3,7 @@ module Catalog
     attr_reader :new_portfolio
 
     def initialize(params)
+      @name = params[:portfolio_name]
       @portfolio = Portfolio.find(params[:portfolio_id])
     end
 
@@ -16,8 +17,8 @@ module Catalog
 
     def make_copy
       @portfolio.dup.tap do |new_portfolio|
-        new_portfolio.name = "Copy of " + new_portfolio.name
-        new_portfolio.save
+        new_portfolio.name = @name || Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name))
+        new_portfolio.save!
 
         copy_portfolio_items(new_portfolio.id)
       end
