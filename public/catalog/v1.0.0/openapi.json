@@ -1391,6 +1391,12 @@
             "title": "Portfolio ID",
             "example": "2",
             "description": "The portfolio to place the new copy of the Portfolio Item in"
+          },
+          "portfolio_item_name": {
+            "type": "string",
+            "title": "Portfolio Item Name",
+            "example": "nginx copy",
+            "description": "The name of the copied portfolio item"
           }
         }
       },

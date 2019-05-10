@@ -45,7 +45,7 @@ describe 'Portfolio Items RBAC API' do
   end
 
   context "when user has RBAC write portfolios access" do
-    let(:portfolio_access_obj) { instance_double(RBAC::Access, :accessible? => true, :owner_scoped? => true, :id_list => [portfolio.id.to_s]) }
+    let(:portfolio_access_obj) { instance_double(RBAC::Access, :accessible? => true, :owner_scoped? => false, :id_list => [portfolio.id.to_s]) }
     before do
       allow(RBAC::Access).to receive(:new).with('portfolio_items', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)

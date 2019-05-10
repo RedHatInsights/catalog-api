@@ -10,18 +10,18 @@ module Api
           resource_check('read')
         end
 
-        def resource_check(verb, id = params[:id], clazz = controller_name.classify.constantize)
+        def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)
           return unless RBAC::Access.enabled?
           access_obj = RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
-          raise Catalog::NotAuthorized, "#{verb.titleize}  access not authorized for #{clazz}" unless access_obj.accessible?
+          raise Catalog::NotAuthorized, "#{verb.titleize}  access not authorized for #{klass}" unless access_obj.accessible?
           ids = access_obj.id_list
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{clazz}" if ids.any? && ids.exclude?(id)
+          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.any? && ids.exclude?(id)
         end
 
-        def permission_check(verb, clazz = controller_name.classify.constantize)
+        def permission_check(verb, klass = controller_name.classify.constantize)
           return unless RBAC::Access.enabled?
-          access_obj = RBAC::Access.new(clazz.table_name, verb).process
-          raise Catalog::NotAuthorized, "#{verb.titleize}  access not authorized for #{clazz}" unless access_obj.accessible?
+          access_obj = RBAC::Access.new(klass.table_name, verb).process
+          raise Catalog::NotAuthorized, "#{verb.titleize}  access not authorized for #{klass}" unless access_obj.accessible?
         end
       end
     end
