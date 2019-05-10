@@ -259,6 +259,31 @@ describe "PortfolioItemRequests", :type => :request do
         expect(json["name"]).to_not eq portfolio_item.name
         expect(json["name"]).to match(/^Copy of.*/)
       end
+
+    end
+
+    context "when copying with a specified name" do
+      let(:params) { { :portfolio_item_name => "NewPortfolioItem" } }
+
+      it "returns the name specified" do
+        copy_portfolio_item
+        expect(json["name"]).to eq params[:portfolio_item_name]
+      end
+    end
+
+    context "when copying an item multiple times" do
+      let(:params) { { :portfolio_id => portfolio.id } }
+      let!(:another_portfolio_item) do
+        create(:portfolio_item,
+               :tenant_id    => tenant.id,
+               :portfolio_id => portfolio.id,
+               :name         => "Copy of #{portfolio_item.name}")
+      end
+
+      it "adds a (1) to the name if there is already a copy" do
+        copy_portfolio_item
+        expect(json["name"]).to_not eq portfolio_item.name
+      end
     end
 
     context "when copying with a specified name" do
