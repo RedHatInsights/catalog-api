@@ -44,5 +44,38 @@ describe 'Portfolios RBAC API' do
         expect(result['data'][0]['name']).to eq(portfolio1.name)
       end
     end
+
+    context "when user does not have RBAC write portfolios access" do
+      before do
+        allow(RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
+        allow(access_obj).to receive(:process).and_return(access_obj)
+
+        allow(RBAC::Access).to receive(:new).with('portfolios', 'write').and_return(block_access_obj)
+        allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+      end
+
+      it 'returns a 403' do
+        post "#{api("1.0")}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
+
+        expect(response).to have_http_status(403)
+      end
+    end
+
+    context "when user has RBAC write portfolios access" do
+      let(:portfolio_access_obj) { instance_double(RBAC::Access, :accessible? => true, :owner_scoped? => true, :id_list => [portfolio1.id.to_s]) }
+      before do
+        allow(RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
+        allow(access_obj).to receive(:process).and_return(access_obj)
+
+        allow(RBAC::Access).to receive(:new).with('portfolios', 'write').and_return(portfolio_access_obj)
+        allow(portfolio_access_obj).to receive(:process).and_return(portfolio_access_obj)
+      end
+
+      it 'returns a 200' do
+        post "#{api("1.0")}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 end
