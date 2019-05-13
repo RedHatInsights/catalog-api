@@ -7,7 +7,7 @@ module Api
 
       def index
         if params[:portfolio_id]
-          collection(PortfolioItem.where(:portfolio_id => params.require(:portfolio_id)))
+          collection(Portfolio.find(params.require(:portfolio_id)).portfolio_items)
         else
           collection(PortfolioItem.all)
         end

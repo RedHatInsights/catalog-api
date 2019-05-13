@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   include Response
+  include ExceptionHandler
   include Api::V1x0::Mixins::RBACMixin
   rescue_from Catalog::TopologyError, :with => :topology_service_error
   rescue_from Catalog::NotAuthorized, :with => :forbidden_error

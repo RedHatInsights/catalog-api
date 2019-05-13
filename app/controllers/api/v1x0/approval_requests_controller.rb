@@ -4,7 +4,7 @@ module Api
       include Api::V1x0::Mixins::IndexMixin
 
       def index
-        collection(ApprovalRequest.where(:order_item_id => params.require(:order_item_id)))
+        collection(OrderItem.find(params.require(:order_item_id)).approval_requests)
       end
     end
   end

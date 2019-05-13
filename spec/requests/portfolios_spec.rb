@@ -5,13 +5,11 @@ describe 'Portfolios API' do
     end
   end
 
-  let(:tenant) { create(:tenant) }
-  let!(:portfolio)            { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio_item)       { create(:portfolio_item, :tenant_id => tenant.id) }
-  let!(:portfolio_items)      { portfolio.portfolio_items << portfolio_item }
-  let(:portfolio_id)          { portfolio.id }
-  let(:portfolio_item_id)     { portfolio_items.first.id }
-  let(:new_portfolio_item_id) { portfolio_item.id }
+  let(:tenant)           { create(:tenant) }
+  let!(:portfolio)       { create(:portfolio, :tenant_id => tenant.id) }
+  let!(:portfolio_item)  { create(:portfolio_item, :tenant_id => tenant.id) }
+  let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
+  let(:portfolio_id)     { portfolio.id }
 
   describe "GET /portfolios/:portfolio_id" do
     before do
@@ -27,6 +25,14 @@ describe 'Portfolios API' do
         expect(json).not_to be_empty
         expect(json['id']).to eq(portfolio_id.to_s)
         expect(json['created_at']).to eq(portfolio.created_at.iso8601)
+      end
+    end
+
+    context 'when the portfolio does not exist' do
+      let(:portfolio_id) { 0 }
+
+      it "cannot be requested" do
+        expect(response).to have_http_status(404)
       end
     end
   end
@@ -45,46 +51,6 @@ describe 'Portfolios API' do
         expect(json).not_to be_empty
         expect(json['id']).to eq(portfolio_id.to_s)
       end
-    end
-  end
-
-  describe "GET /portfolios/:portfolio_id/portfolio_items" do
-    before do
-      get "#{api}/portfolios/#{portfolio_id}/portfolio_items", :headers => default_headers
-    end
-
-    it 'returns all associated portfolio_items' do
-      expect(json).not_to be_empty
-      expect(json['meta']['count']).to eq 1
-      portfolio_item_ids = portfolio_items.map { |x| x.id.to_s }.sort
-      expect(json['data'].map { |x| x['id'] }.sort).to eq portfolio_item_ids
-    end
-  end
-
-  describe "GET /portfolios_items/:portfolio_item_id" do
-    before do
-      get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
-    end
-
-    it 'returns an associated portfolio_item for a specific portfolio' do
-      expect(json).not_to be_empty
-      expect(json['id']).to eq portfolio_item_id.to_s
-    end
-  end
-
-  describe "POST /portfolios/:portfolio_id/portfolio_items" do
-    let(:params) { {:portfolio_item_id => portfolio_item.id} }
-    before do
-      post "#{api}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers
-    end
-
-    it 'returns a 200' do
-      expect(response).to have_http_status(200)
-    end
-
-    it 'returns the portfolio_item which now points back to the portfolio' do
-      expect(json.size).to eq 1
-      expect(json.first['portfolio_id']).to eq portfolio.id.to_s
     end
   end
 
@@ -150,10 +116,6 @@ describe 'Portfolios API' do
 
       it 'sets the discarded_at column' do
         expect(Portfolio.with_discarded.find_by(:id => portfolio_id).discarded_at).to_not be_nil
-      end
-
-      it "cannot be requested" do
-        expect { get("/#{api}/portfolios/#{portfolio_id}", :headers => default_headers) }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
       it 'allows adding portfolios with the same name when one is discarded' do
