@@ -24,11 +24,9 @@ describe "OpenAPI stuff" do
     let(:app_name)    { "catalog" }
     let(:path_prefix) { "/api" }
 
-    around do |example|
-      with_modified_env :PATH_PREFIX => path_prefix, :APP_NAME => app_name do
-        Rails.application.reload_routes!
-        example.call
-      end
+    before do
+      stub_const("ENV", ENV.to_h.merge("PATH_PREFIX" => path_prefix, "APP_NAME" => app_name))
+      Rails.application.reload_routes!
     end
 
     after(:all) do
@@ -45,10 +43,13 @@ describe "OpenAPI stuff" do
     end
 
     context "customizable route prefixes" do
+      let(:path_prefix) { random_path_part }
+      let(:app_name)    { random_path }
+
       it "with a random prefix" do
         expect(ENV["PATH_PREFIX"]).not_to be_nil
         expect(ENV["APP_NAME"]).not_to be_nil
-        expect(api_v1x0_orders_url(:only_path => true)).to eq("#{URI.encode(ENV["PATH_PREFIX"])}/#{URI.encode(ENV["APP_NAME"])}/v1.0/orders")
+        expect(api_v1x0_orders_url(:only_path => true)).to eq("/#{URI.encode(ENV["PATH_PREFIX"])}/#{URI.encode(ENV["APP_NAME"])}/v1.0/orders")
       end
 
       it "with extra slashes" do
