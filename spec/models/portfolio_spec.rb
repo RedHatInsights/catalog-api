@@ -3,7 +3,7 @@ describe Portfolio do
   let(:tenant2)           { create(:tenant, :external_tenant => "2") }
   let(:portfolio)         { create(:portfolio, :tenant_id => tenant1.id) }
   let(:portfolio_id)      { portfolio.id }
-  let(:portfolio_item)    { create(:portfolio_item, :tenant_id => tenant1.id) }
+  let!(:portfolio_item)   { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant1.id) }
   let(:portfolio_item_id) { portfolio_item.id }
 
   context "when setting portfolio fields" do
@@ -87,6 +87,12 @@ describe Portfolio do
           expect(Portfolio.first.tenant_id).to eq tenant2.id
         end
       end
+    end
+  end
+
+  describe "portfolio_items#collect_with_regex" do
+    it "returns the portfolio_items that match the specified regex" do
+      expect(portfolio.portfolio_items.collect_with_regex(:name, "Item").count).to eq 1
     end
   end
 end

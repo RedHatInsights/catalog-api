@@ -40,9 +40,9 @@ module Catalog
     COPY_REGEX = '^Copy (\(\d\) )?of'.freeze
 
     def create_copy_name
-      names = @to_portfolio.portfolio_items.collect(&:name)
+      names = @to_portfolio.portfolio_items.collect_with_regex(:name, "#{COPY_REGEX} #{@portfolio_item.name.sub(COPY_REGEX, '')}")
 
-      if names.any? { |name| name.match(/#{COPY_REGEX} #{@portfolio_item.name.sub(COPY_REGEX, "")}/) }
+      if names.any?
         num = get_index(names)
         "Copy (#{num + 1}) of " + @portfolio_item.name
       else
@@ -61,7 +61,7 @@ module Catalog
       # 5. 2                                  - max
       # 6. || 0, if there weren't any numbers, let's return 0 by default.
       names
-        .map { |name| name.match(/#{COPY_REGEX} #{@portfolio_item.name.sub(COPY_REGEX, "")}/)&.captures&.first }
+        .map { |name| name.match(COPY_REGEX)&.captures&.first }
         .compact
         .map { |match| match.gsub(/(\(|\))/, "").to_i }
         .max || 0
