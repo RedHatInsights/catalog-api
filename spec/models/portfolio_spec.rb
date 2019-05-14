@@ -3,7 +3,7 @@ describe Portfolio do
   let(:tenant2)           { create(:tenant, :external_tenant => "2") }
   let(:portfolio)         { create(:portfolio, :tenant_id => tenant1.id) }
   let(:portfolio_id)      { portfolio.id }
-  let(:portfolio_item)    { create(:portfolio_item, :tenant_id => tenant1.id) }
+  let!(:portfolio_item)   { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant1.id) }
   let(:portfolio_item_id) { portfolio_item.id }
 
   context "when setting portfolio fields" do

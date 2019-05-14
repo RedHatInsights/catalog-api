@@ -5,6 +5,11 @@ module Api
 
       before_action :write_access_check, :only => %i[create update destroy]
 
+      before_action :only => [:copy] do
+        resource_check('read', params.require(:portfolio_item_id))
+        permission_check('write', Portfolio)
+      end
+
       def index
         if params[:portfolio_id]
           collection(Portfolio.find(params.require(:portfolio_id)).portfolio_items)
@@ -36,6 +41,13 @@ module Api
         head :no_content
       end
 
+      def copy
+        svc = Catalog::CopyPortfolioItem.new(portfolio_copy_params)
+        render :json => svc.process.new_portfolio_item
+      rescue Catalog::InvalidParameter => e
+        json_response({ :errors => e.message }, :unprocessable_entity)
+      end
+
       private
 
       def portfolio_item_params
@@ -45,6 +57,10 @@ module Api
 
       def portfolio_item_patch_params
         params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref)
+      end
+
+      def portfolio_copy_params
+        params.permit(:portfolio_item_id, :portfolio_id, :portfolio_item_name)
       end
     end
   end

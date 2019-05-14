@@ -15,6 +15,7 @@ describe "PortfolioItemRequests", :type => :request do
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
                             :service_offering_source_ref => service_offering_source_ref,
+                            :portfolio_id                => portfolio.id,
                             :tenant_id                   => tenant.id)
   end
   let(:portfolio_item_id)    { portfolio_item.id }
@@ -100,7 +101,6 @@ describe "PortfolioItemRequests", :type => :request do
       it 'is still present in the db, just with deleted_at set' do
         expect(PortfolioItem.with_discarded.find_by(:id => portfolio_item_id).discarded_at).to_not be_nil
       end
-
     end
   end
 
@@ -229,6 +229,80 @@ describe "PortfolioItemRequests", :type => :request do
 
       it "does not update the read-only field" do
         expect(json["service_offering_ref"]).to_not eq invalid_attributes[:service_offering_ref]
+      end
+    end
+  end
+
+  describe "copying portfolio items" do
+    let(:copy_portfolio_item) do
+      post "#{api("1.0")}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
+    end
+
+    context "when copying into the same portfolio" do
+      let(:params) { { :portfolio_id => portfolio.id } }
+
+      before do
+        copy_portfolio_item
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns a copy of the portfolio_item" do
+        expect(json["description"]).to eq portfolio_item.description
+        expect(json["owner"]).to eq portfolio_item.owner
+        expect(json["workflow_ref"]).to eq portfolio_item.workflow_ref
+      end
+
+      it "modifies the name to not collide" do
+        expect(json["name"]).to_not eq portfolio_item.name
+        expect(json["name"]).to match(/^Copy of.*/)
+      end
+    end
+
+    context "when copying with a specified name" do
+      let(:params) { { :portfolio_item_name => "NewPortfolioItem" } }
+
+      it "returns the name specified" do
+        copy_portfolio_item
+        expect(json["name"]).to eq params[:portfolio_item_name]
+      end
+    end
+
+    context "when copying into a different portfolio" do
+      let(:params) { { :portfolio_id => new_portfolio.id } }
+      let(:new_portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+
+      before do
+        copy_portfolio_item
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns a copy of the portfolio_item" do
+        expect(json["description"]).to eq portfolio_item.description
+        expect(json["owner"]).to eq portfolio_item.owner
+        expect(json["workflow_ref"]).to eq portfolio_item.workflow_ref
+      end
+
+      it "does not modify the name" do
+        expect(json["name"]).to eq portfolio_item.name
+      end
+    end
+
+    context "when copying into a different portfolio in a different tenant" do
+      let(:params) { { :portfolio_id => not_my_portfolio.id } }
+      let(:not_my_portfolio) { create(:portfolio) }
+
+      before do
+        copy_portfolio_item
+      end
+
+      it 'returns a 422' do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
