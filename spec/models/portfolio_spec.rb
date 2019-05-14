@@ -89,10 +89,4 @@ describe Portfolio do
       end
     end
   end
-
-  describe "portfolio_items#collect_with_regex" do
-    it "returns the portfolio_items that match the specified regex" do
-      expect(portfolio.portfolio_items.collect_with_regex(:name, "Item").count).to eq 1
-    end
-  end
 end

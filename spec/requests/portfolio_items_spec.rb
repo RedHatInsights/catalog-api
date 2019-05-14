@@ -270,21 +270,6 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
 
-    context "when copying an item multiple times" do
-      let(:params) { { :portfolio_id => portfolio.id } }
-      let!(:another_portfolio_item) do
-        create(:portfolio_item,
-               :tenant_id    => tenant.id,
-               :portfolio_id => portfolio.id,
-               :name         => "Copy of #{portfolio_item.name}")
-      end
-
-      it "adds a (1) to the name if there is already a copy" do
-        copy_portfolio_item
-        expect(json["name"]).to eq "Copy (1) of #{portfolio_item.name}"
-      end
-    end
-
     context "when copying into a different portfolio" do
       let(:params) { { :portfolio_id => new_portfolio.id } }
       let(:new_portfolio) { create(:portfolio, :tenant_id => tenant.id) }

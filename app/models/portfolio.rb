@@ -8,16 +8,7 @@ class Portfolio < ApplicationRecord
   validates :image_url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :allow_blank => true
   validates :enabled_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
 
-  has_many :portfolio_items, :dependent => :destroy do
-    def collect_with_regex(attr, regex)
-      [].tap do |arr|
-        each do |item|
-          arr << item.send(attr) if item.send(attr).match(regex)
-        end
-        arr.compact
-      end
-    end
-  end
+  has_many :portfolio_items, :dependent => :destroy
 
   before_discard do
     if portfolio_items.map(&:discard).any? { |result| result == false }
