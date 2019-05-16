@@ -21,6 +21,17 @@ class Portfolio < ApplicationRecord
     end
   end
 
+  before_undiscard do
+    if portfolio_items.with_discarded.discarded.map(&:undiscard).any? { |result| result == false }
+      portfolio_items.with_discarded.discarded.each do |item|
+        errors.add(item.name.to_sym, "PortfolioItem ID #{item.id}: #{item.name} failed to be restored")
+      end
+
+      Rails.logger.error("Failed to restore items from Portfolio '#{name}' id: #{id} - not undiscarding portfolio")
+      throw :abort
+    end
+  end
+
   def add_portfolio_item(portfolio_item_id)
     portfolio_item = PortfolioItem.find_by(id: portfolio_item_id)
     portfolio_items << portfolio_item

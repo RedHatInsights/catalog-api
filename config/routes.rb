@@ -26,9 +26,11 @@ Rails.application.routes.draw do
       post '/portfolios/:portfolio_id/share', :action => 'share', :controller => 'portfolios', :as => 'share'
       post '/portfolios/:portfolio_id/unshare', :action => 'unshare', :controller => 'portfolios', :as => 'unshare'
       get '/portfolios/:portfolio_id/share_info', :action => 'share_info', :controller => 'portfolios', :as => 'share_info'
+      get '/portfolios/discarded', :action => 'discarded_index', :controller => 'portfolios'
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
         post :copy, :action => 'copy', :controller => 'portfolios'
+        get :undelete, :action => 'undestroy', :controller => 'portfolios'
       end
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]

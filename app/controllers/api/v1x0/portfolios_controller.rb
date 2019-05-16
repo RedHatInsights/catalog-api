@@ -15,6 +15,10 @@ module Api
         collection(Portfolio.all)
       end
 
+      def discarded_index
+        collection(Portfolio.with_discarded.discarded.all)
+      end
+
       def add_portfolio_item_to_portfolio
         portfolio = Portfolio.find(params.require(:portfolio_id))
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
@@ -46,6 +50,15 @@ module Api
         portfolio = Portfolio.find(params.require(:id))
         if portfolio.discard
           head :no_content
+        else
+          render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity
+        end
+      end
+
+      def undestroy
+        portfolio = Portfolio.with_discarded.discarded.find(params.require(:portfolio_id))
+        if portfolio.undiscard
+          render :json => portfolio
         else
           render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity
         end

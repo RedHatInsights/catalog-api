@@ -93,6 +93,22 @@ describe 'Portfolios API' do
     end
   end
 
+  describe "GET /portfolios/discarded" do
+    before do
+      portfolio.discard
+      get "#{api}/portfolios/discarded", :headers => default_headers
+    end
+
+    it "returns a 200" do
+      expect(response).to have_http_status :ok
+    end
+
+    it "returns the discarded portfolios" do
+      expect(json["meta"]["count"]).to eq 1
+      expect(json["data"].first["id"]).to eq portfolio_id.to_s
+    end
+  end
+
   describe '/portfolios', :type => :routing do
     let(:valid_attributes) { { :name => 'rspec 1', :description => 'rspec 1 description' } }
     context 'with wrong header' do
@@ -133,6 +149,45 @@ describe 'Portfolios API' do
 
       it 'reports errors when discarding child portfolio_items fails' do
         delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
+
+  describe "GET /portfolios/:portfolio_id/undelete" do
+    before do
+      portfolio.discard
+    end
+
+    context "when restoring a portfolio" do
+      before do
+        get "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the restored record" do
+        expect(json["id"]).to eq portfolio.id.to_s
+        expect(json["name"]).to eq portfolio.name
+      end
+    end
+
+    context "when restoring the portfolio_items fails" do
+      before do
+        allow(Portfolio).to receive(:with_discarded).and_return(Portfolio)
+        allow(Portfolio).to receive(:discarded).and_return(Portfolio)
+        allow(Portfolio).to receive(:find).with(portfolio.id.to_s).and_return(portfolio)
+
+        allow(PortfolioItem).to receive(:with_discarded).and_return(PortfolioItem)
+        allow(PortfolioItem).to receive(:discarded).and_return([portfolio_item])
+        allow(portfolio_item).to receive(:undiscard).and_return(false)
+      end
+
+      it 'reports errors when undiscarding the child portfolio_items fails' do
+        get "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
