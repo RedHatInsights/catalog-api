@@ -697,6 +697,44 @@
         }
       }
     },
+    "/portfolio_items/{portfolio_item_id}/undelete": {
+      "get": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "UnDelete a specified Portfolio Item",
+        "description": "If a record has been discarded, this operation will undelete it so it can be requested normally.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioItemID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The undeleted Portfolio Item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Item not found"
+          },
+          "500": {
+            "description": "Failed to undelete Portfolio Item"
+          }
+        }
+      }
+    },
     "/orders": {
       "get": {
         "tags": [

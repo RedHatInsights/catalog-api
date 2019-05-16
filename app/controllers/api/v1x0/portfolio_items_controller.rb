@@ -48,6 +48,12 @@ module Api
         json_response({ :errors => e.message }, :unprocessable_entity)
       end
 
+      def undestroy
+        item = PortfolioItem.with_discarded.discarded.find(params.require(:portfolio_item_id))
+        item.undiscard
+        render :json => item
+      end
+
       private
 
       def portfolio_item_params

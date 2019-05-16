@@ -104,6 +104,33 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
+  describe 'GET /portfolio_items/{portfolio_item_id}/undelete' do
+    let(:undelete) { get "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :headers => default_headers }
+
+    before do
+      delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+      undelete
+    end
+
+    context "when restoring a portfolio_item that has been discarded" do
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the undeleted portfolio_item" do
+        expect(json["id"]).to eq portfolio_item_id.to_s
+        expect(json["name"]).to eq portfolio_item.name
+      end
+    end
+
+    context 'when attempting to restore a portfolio_item that not been discarded' do
+      it "returns a 404" do
+        get "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :headers => default_headers
+        expect(response).to have_http_status :not_found
+      end
+    end
+  end
+
   describe 'GET portfolio items' do
     context "v1.0" do
       it "success" do
