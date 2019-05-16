@@ -257,5 +257,45 @@ describe 'Portfolios API' do
         end
       end
     end
+
+    context "copy without specifying name" do
+      before do
+        post "#{api}/portfolios/#{portfolio.id}/copy", :headers => default_headers
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns a copy of the portfolio" do
+        expect(json["id"]).to_not eq portfolio.id
+        expect(json["name"]).to match(/^Copy of.*/)
+      end
+
+      it "copies the fields completely" do
+        expect(json["description"]).to eq portfolio.description
+        expect(json["owner"]).to eq portfolio.owner
+      end
+
+      it "copies the portfolio item over" do
+        item = PortfolioItem.find(Portfolio.find(json["id"]).portfolio_items.first.id)
+
+        expect(item.name).to eq portfolio_item.name
+        expect(item.description).to eq portfolio_item.description
+        expect(item.owner).to eq portfolio_item.owner
+      end
+    end
+
+    context "copy when specifying name" do
+      let(:params) { { :portfolio_name => "NameyMcNameFace" } }
+
+      before do
+        post "#{api}/portfolios/#{portfolio.id}/copy", :params => params, :headers => default_headers
+      end
+
+      it "sets the name properly" do
+        expect(json["name"]).to eq params[:portfolio_name]
+      end
+    end
   end
 end
