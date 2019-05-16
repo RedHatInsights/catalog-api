@@ -126,6 +126,45 @@
         }
       }
     },
+    "/portfolios/discarded": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "List discarded portfolios",
+        "operationId": "listDiscardedPortfolios",
+        "description": "Gets a list of discarded portfolios.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of discarded portfolios. An empty list indicate either undefined portfolios in the system or inaccessibility to the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfoliosCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
     "/portfolios/{id}": {
       "get": {
         "tags": [
@@ -468,6 +507,45 @@
           },
           "500": {
             "description": "Failed to copy Portfolio"
+          }
+        }
+      }
+    },
+    "/portfolios/{id}/undelete": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "UnDelete specific portfolio",
+        "operationId": "unDeletePortfolio",
+        "description": "UnDeletes the portfolio specified by the portfolio ID.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The undeleted portfolio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Portfolio"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio not found."
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
           }
         }
       }
