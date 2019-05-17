@@ -15,10 +15,6 @@ module Api
         collection(Portfolio.all)
       end
 
-      def discarded_index
-        collection(Portfolio.with_discarded.discarded.all)
-      end
-
       def add_portfolio_item_to_portfolio
         portfolio = Portfolio.find(params.require(:portfolio_id))
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
@@ -48,8 +44,11 @@ module Api
 
       def destroy
         portfolio = Portfolio.find(params.require(:id))
-        if portfolio.discard
-          head :no_content
+        svc = Catalog::SoftDelete.new(portfolio)
+        key = svc.process.restore_key
+
+        if portfolio.discarded?
+          render :json => { :restore_key => key }
         else
           render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity
         end
@@ -57,7 +56,9 @@ module Api
 
       def undestroy
         portfolio = Portfolio.with_discarded.discarded.find(params.require(:portfolio_id))
-        if portfolio.undiscard
+        Catalog::SoftDeleteRestore.new(portfolio, params.require(:restore_key)).process
+
+        if !portfolio.discarded?
           render :json => portfolio
         else
           render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity

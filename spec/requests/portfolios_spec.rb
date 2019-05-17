@@ -93,22 +93,6 @@ describe 'Portfolios API' do
     end
   end
 
-  describe "GET /portfolios/discarded" do
-    before do
-      portfolio.discard
-      get "#{api}/portfolios/discarded", :headers => default_headers
-    end
-
-    it "returns a 200" do
-      expect(response).to have_http_status :ok
-    end
-
-    it "returns the discarded portfolios" do
-      expect(json["meta"]["count"]).to eq 1
-      expect(json["data"].first["id"]).to eq portfolio_id.to_s
-    end
-  end
-
   describe '/portfolios', :type => :routing do
     let(:valid_attributes) { { :name => 'rspec 1', :description => 'rspec 1 description' } }
     context 'with wrong header' do
@@ -127,7 +111,7 @@ describe 'Portfolios API' do
       end
 
       it 'deletes the record' do
-        expect(response).to have_http_status(204)
+        expect(response).to have_http_status(:ok)
       end
 
       it 'sets the discarded_at column' do
@@ -138,6 +122,10 @@ describe 'Portfolios API' do
         post "#{api}/portfolios", :headers => default_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the restore_key in the body' do
+        expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(Portfolio.with_discarded.find(portfolio_id).discarded_at.to_s)
       end
     end
 
@@ -156,13 +144,16 @@ describe 'Portfolios API' do
   end
 
   describe "GET /portfolios/:portfolio_id/undelete" do
+    let(:restore_key) { Digest::SHA1.hexdigest(portfolio.discarded_at.to_s) }
+    let(:params) { { :restore_key => restore_key } }
+
     before do
       portfolio.discard
     end
 
     context "when restoring a portfolio" do
       before do
-        get "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
       end
 
       it "returns a 200" do
@@ -172,6 +163,19 @@ describe 'Portfolios API' do
       it "returns the restored record" do
         expect(json["id"]).to eq portfolio.id.to_s
         expect(json["name"]).to eq portfolio.name
+      end
+    end
+
+    context "when restoring a portfolio with the wrong restore key" do
+      let(:restore_key) { "MrMaliciousRestoreKey" }
+
+      before do
+        portfolio.discard
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+      end
+
+      it "returns a 403" do
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
@@ -187,7 +191,7 @@ describe 'Portfolios API' do
       end
 
       it 'reports errors when undiscarding the child portfolio_items fails' do
-        get "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
