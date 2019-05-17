@@ -39,7 +39,7 @@ describe Catalog::UpdateOrderItem do
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
 
         before do
-          stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/tasks/123")
+          stub_request(:get, "http://localhost:3000/api/topological-inventory/v1.0/tasks/123")
             .with(:headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json'})
             .to_return(:status => 200, :body => task.to_json, :headers => {})
         end
@@ -49,7 +49,7 @@ describe Catalog::UpdateOrderItem do
 
           context "when the service instance can be found" do
             before do
-              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321")
+              stub_request(:get, "http://localhost:3000/api/topological-inventory/v1.0/service_instances/321")
                 .with(:headers => {'Content-Type'=>'application/json'})
                 .to_return(:status => 200, :body => service_instance.to_json, :headers => {})
             end
@@ -98,7 +98,7 @@ describe Catalog::UpdateOrderItem do
 
           context "when the service instance does not have an external url" do
             before do
-              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321")
+              stub_request(:get, "http://localhost:3000/api/topological-inventory/v1.0/service_instances/321")
                 .with(:headers => {'Content-Type'=>'application/json'})
                 .to_return(:status => 200, :body => "".to_json, :headers => {})
             end
