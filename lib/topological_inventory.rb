@@ -2,7 +2,7 @@ require 'topological_inventory-api-client'
 class TopologicalInventory
   DEFAULT_PATH_PREFIX = 'api'.freeze
   SERVICE_NAME = 'topological-inventory'.freeze
-  VERSION = 'v0.1'.freeze
+  VERSION = 'v1.0'.freeze
 
   def self.api
     Thread.current[:api_instance] ||= raw_api
