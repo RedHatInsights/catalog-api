@@ -562,8 +562,15 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Portfolio item deleted."
+          "200": {
+            "description": "Portfolio item deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestoreKey"
+                }
+              }
+            }
           },
           "404": {
             "description": "Portfolio item not found."
@@ -698,11 +705,11 @@
       }
     },
     "/portfolio_items/{portfolio_item_id}/undelete": {
-      "get": {
+      "post": {
         "tags": [
           "PortfolioItem"
         ],
-        "summary": "UnDelete a specified Portfolio Item",
+        "summary": "Undelete a specified Portfolio Item",
         "description": "If a record has been discarded, this operation will undelete it so it can be requested normally.",
         "parameters": [
           {
@@ -732,6 +739,16 @@
           "500": {
             "description": "Failed to undelete Portfolio Item"
           }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreKey"
+              }
+            }
+          },
+          "required": true
         }
       }
     },
@@ -1435,6 +1452,17 @@
             "title": "Portfolio Item Name",
             "example": "nginx copy",
             "description": "The name of the copied portfolio item"
+          }
+        }
+      },
+      "RestoreKey": {
+        "type": "object",
+        "properties": {
+          "restore_key": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Restore Key",
+            "example": "3c1d765c1453916143e517bfc27b57ace3da693c"
           }
         }
       },

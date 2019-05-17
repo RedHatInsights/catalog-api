@@ -86,33 +86,35 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe 'DELETE admin tagged /portfolio_items/:portfolio_item_id' do
-    # TODO: https://github.com/ManageIQ/catalog-api/issues/85
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
-
     context 'when v1.0 :portfolio_item_id is valid' do
       before do
-        delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers, :params => valid_attributes
+        delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
       end
 
       it 'discards the record' do
-        expect(response).to have_http_status(204)
+        expect(response).to have_http_status(:ok)
       end
 
       it 'is still present in the db, just with deleted_at set' do
         expect(PortfolioItem.with_discarded.find_by(:id => portfolio_item_id).discarded_at).to_not be_nil
       end
+
+      it 'returns the restore_key in the body' do
+        expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(PortfolioItem.with_discarded.find(portfolio_item_id).discarded_at.to_s)
+      end
     end
   end
 
-  describe 'GET /portfolio_items/{portfolio_item_id}/undelete' do
-    let(:undelete) { get "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :headers => default_headers }
-
-    before do
-      delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
-      undelete
-    end
+  describe 'POST /portfolio_items/{portfolio_item_id}/undelete' do
+    let(:undelete) { post "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :params => { :restore_key => restore_key }, :headers => default_headers }
+    let(:restore_key) { Digest::SHA1.hexdigest(portfolio_item.discarded_at.to_s) }
 
     context "when restoring a portfolio_item that has been discarded" do
+      before do
+        portfolio_item.discard
+        undelete
+      end
+
       it "returns a 200" do
         expect(response).to have_http_status :ok
       end
@@ -123,9 +125,22 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
 
+    context 'when attempting to restore with the wrong restore_key' do
+      let(:restore_key) { "MrMaliciousRestoreKey" }
+
+      before do
+        portfolio_item.discard
+        undelete
+      end
+
+      it "returns a 403" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
     context 'when attempting to restore a portfolio_item that not been discarded' do
       it "returns a 404" do
-        get "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :headers => default_headers
+        undelete
         expect(response).to have_http_status :not_found
       end
     end

@@ -37,8 +37,10 @@ module Api
       end
 
       def destroy
-        PortfolioItem.find(params.require(:id)).discard
-        head :no_content
+        item = PortfolioItem.find(params.require(:id))
+        soft_delete = Catalog::SoftDelete.new(item)
+
+        render :json => { :restore_key => soft_delete.process.restore_key }
       end
 
       def copy
@@ -50,7 +52,8 @@ module Api
 
       def undestroy
         item = PortfolioItem.with_discarded.discarded.find(params.require(:portfolio_item_id))
-        item.undiscard
+        Catalog::SoftDeleteRestore.new(item, params.require(:restore_key)).process
+
         render :json => item
       end
 
