@@ -196,6 +196,21 @@ describe 'Portfolios API' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "when restoring a portfolio with portfolio_items that were discarded previously" do
+      let!(:second_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :discarded_at => 1.minute.ago, :tenant_id => tenant.id) }
+
+      before do
+        portfolio.discard
+      end
+
+      it "only undeletes the one that was discarded at the same time as the portfolio" do
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+
+        second_item.reload
+        expect(second_item.discarded?).to be_truthy
+      end
+    end
   end
 
   describe 'PATCH /portfolios/:portfolio_id' do
