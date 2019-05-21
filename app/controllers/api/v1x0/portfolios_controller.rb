@@ -85,8 +85,6 @@ module Api
       def copy
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio
-      rescue Catalog::InvalidParameter => e
-        json_response({ :errors => e.message }, :unprocessable_entity)
       end
 
       private
