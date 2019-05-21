@@ -6,7 +6,8 @@ describe OpenApi::Serializer do
 
   it "converts id columns to strings" do
     expect(portfolio_item.as_json(:prefixes => [request_path])).to include(
-      'id' => portfolio_item.id.to_s,
+      'id'   => portfolio_item.id.to_s,
+      'name' => portfolio_item.name
     )
   end
 
@@ -18,6 +19,6 @@ describe OpenApi::Serializer do
   end
 
   it 'excludes properties with nil values' do
-    expect(portfolio_item.as_json(:prefixes => [request_path]).keys).to_not include('archived_at')
+    expect(portfolio_item.as_json(:prefixes => [request_path]).keys).to_not include('discarded_at')
   end
 end

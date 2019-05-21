@@ -17,7 +17,7 @@ describe "ProgressMessageRequests", :type => :request do
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)['data'].first['id']).to eq(progress_message.id.to_s)
+      expect(JSON.parse(response.body)['data'].first['message']).to eq(progress_message.message)
     end
 
     context "when the order item does not exist" do
