@@ -47,22 +47,14 @@ module Api
         svc = Catalog::SoftDelete.new(portfolio)
         key = svc.process.restore_key
 
-        if portfolio.discarded?
-          render :json => { :restore_key => key }
-        else
-          render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity
-        end
+        render :json => { :restore_key => key }
       end
 
-      def undestroy
+      def restore
         portfolio = Portfolio.with_discarded.discarded.find(params.require(:portfolio_id))
         Catalog::SoftDeleteRestore.new(portfolio, params.require(:restore_key)).process
 
-        if !portfolio.discarded?
-          render :json => portfolio
-        else
-          render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity
-        end
+        render :json => portfolio
       end
 
       def share

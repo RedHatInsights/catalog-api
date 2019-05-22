@@ -27,23 +27,25 @@ class Portfolio < ApplicationRecord
         errors.add(item.name.to_sym, "PortfolioItem ID #{item.id}: #{item.name} failed to be discarded")
       end
 
-      Rails.logger.error("Failed to discard items from Portfolio '#{name}' id: #{id} - not discarding portfolio")
-      throw :abort
+      err = "Failed to discard items from Portfolio '#{name}' id: #{id} - not discarding portfolio"
+      Rails.logger.error(err)
+      raise Discard::DiscardError, err
     end
   end
 
   def undiscard_portfolio_items
-    if portfolio_items_to_undelete.map(&:undiscard).any? { |result| result == false }
-      portfolio_items_to_undelete.select(&:discarded?).each do |item|
+    if portfolio_items_to_restore.map(&:undiscard).any? { |result| result == false }
+      portfolio_items_to_restore.select(&:discarded?).each do |item|
         errors.add(item.name.to_sym, "PortfolioItem ID #{item.id}: #{item.name} failed to be restored")
       end
 
-      Rails.logger.error("Failed to restore items from Portfolio '#{name}' id: #{id} - not undiscarding portfolio")
-      throw :abort
+      err = "Failed to restore items from Portfolio '#{name}' id: #{id} - not restoring portfolio"
+      Rails.logger.error(err)
+      raise Discard::DiscardError, err
     end
   end
 
-  def portfolio_items_to_undelete
+  def portfolio_items_to_restore
     portfolio_items
       .with_discarded
       .discarded

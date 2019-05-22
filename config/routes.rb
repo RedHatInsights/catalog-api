@@ -29,7 +29,7 @@ Rails.application.routes.draw do
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
         post :copy, :action => 'copy', :controller => 'portfolios'
-        post :undelete, :action => 'undestroy', :controller => 'portfolios'
+        post :undelete, :action => 'restore', :controller => 'portfolios'
       end
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
