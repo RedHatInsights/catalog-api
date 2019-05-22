@@ -19,6 +19,13 @@ describe "OpenAPI stuff" do
     end
   end
 
+  let(:exception_routes) do
+    [
+      {:path => "/404", :verb => "GET"},
+      {:path => "/:status", :verb => ""}
+    ]
+  end
+
   describe "Routing" do
     include Rails.application.routes.url_helpers
     let(:app_name)    { "catalog" }
@@ -38,7 +45,7 @@ describe "OpenAPI stuff" do
         redirect_routes = [
           {:path => "#{path_prefix}/#{app_name}/v1/*path", :verb => "DELETE|GET|OPTIONS|PATCH|POST"}
         ]
-        expect(rails_routes).to match_array(open_api_routes + redirect_routes)
+        expect(rails_routes).to match_array(open_api_routes + redirect_routes + exception_routes)
       end
     end
 
