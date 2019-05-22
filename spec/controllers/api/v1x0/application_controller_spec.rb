@@ -47,6 +47,7 @@ RSpec.describe ApplicationController, :type => :request do
 
       get("/api/v1.0/portfolios/#{portfolio_id}", :headers => headers)
 
+      expect(response.content_type).to eq("application/json")
       expect(response.status).to eq(401)
     end
 
@@ -61,6 +62,7 @@ RSpec.describe ApplicationController, :type => :request do
 
       get("/api/v1.0/portfolios", :headers => headers)
 
+      expect(response.content_type).to eq("application/json")
       expect(response.status).to eq(401)
     end
   end
@@ -87,6 +89,7 @@ RSpec.describe ApplicationController, :type => :request do
       headers =  { 'x-rh-identity' => encoded_user_hash(false_hash), 'x-rh-insights-request-id' => 'gobbledygook' }
       get "#{api("1.0")}/portfolios", :headers => headers
 
+      expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:forbidden)
     end
 
