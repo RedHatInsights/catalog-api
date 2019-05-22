@@ -207,7 +207,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(svc_object).to receive(:process).and_raise(topo_ex)
 
       get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
-      expect(response).to have_http_status(:internal_server_error)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -234,7 +234,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       get url, :headers => default_headers
 
-      expect(response).to have_http_status(:internal_server_error)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
