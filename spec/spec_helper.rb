@@ -24,7 +24,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include UserHeaderSpecHelper
 
-  config.include RequestSpecHelper
+  config.include RequestSpecHelper, :type => :request
 
   config.include ServiceSpecHelper
 
