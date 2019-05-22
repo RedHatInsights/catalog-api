@@ -6,10 +6,6 @@ describe Catalog::CopyPortfolioItem do
 
   let(:copy_portfolio_item) { described_class.new(params).process }
 
-  around do |example|
-    bypass_rbac { example.call }
-  end
-
   describe "#process" do
     context "when copying into the same portfolio" do
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
