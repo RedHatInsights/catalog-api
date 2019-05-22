@@ -21,8 +21,6 @@ module Api
       def create
         so = ServiceOffering::AddToPortfolioItem.new(portfolio_item_params)
         render :json => so.process.item
-      rescue Catalog::TopologyError => e
-        render :json => { :errors => e.message }, :status => :not_found
       end
 
       def update
@@ -46,8 +44,6 @@ module Api
       def copy
         svc = Catalog::CopyPortfolioItem.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio_item
-      rescue Catalog::InvalidParameter => e
-        json_response({ :errors => e.message }, :unprocessable_entity)
       end
 
       def undestroy

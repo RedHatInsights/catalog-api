@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::API
   include Response
-  include ExceptionHandler
   include Api::V1x0::Mixins::RBACMixin
 
   around_action :with_current_request

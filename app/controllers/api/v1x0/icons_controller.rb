@@ -13,8 +13,6 @@ module Api
         send_data(icon.data,
                   :type        => MimeMagic.by_magic(icon.data).type,
                   :disposition => 'inline')
-      rescue ActiveRecord::RecordNotFound, Catalog::TopologyError => e
-        render :json => { :message => e.message }, :status => :not_found
       end
     end
   end
