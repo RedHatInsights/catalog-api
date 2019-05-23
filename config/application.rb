@@ -32,12 +32,12 @@ module Catalog
 
     config.autoload_paths << Rails.root.join('lib').to_s
 
-    config.exceptions_app = self.routes
+    config.exceptions_app = routes
 
     ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
-      "Catalog::InvalidParameter"               => :unprocessable_entity,
-      "Catalog::NotAuthorized"                  => :forbidden,
-      "Catalog::TopologyError"                  => :not_found
+      "Catalog::InvalidParameter" => :unprocessable_entity,
+      "Catalog::NotAuthorized"    => :forbidden,
+      "Catalog::TopologyError"    => :not_found
     )
 
     ActionDispatch::ExceptionWrapper.class_eval do

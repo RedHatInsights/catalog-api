@@ -4,8 +4,8 @@ Rails.application.routes.draw do
 
   routing_helper = ManageIQ::API::Common::Routing.new(self)
 
-  get '/404', to: 'errors#not_found'
-  match '/:status', to: 'errors#catch_all', constraints: {status: /\d{3}/}, via: :all
+  get '/404', :to => 'errors#not_found'
+  match '/:status', :to => 'errors#catch_all', :constraints => {:status => /\d{3}/}, :via => :all
 
   prefix = "api"
   if ENV["PATH_PREFIX"].present? && ENV["APP_NAME"].present?
