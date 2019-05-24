@@ -35,9 +35,10 @@ module Catalog
     config.exceptions_app = routes
 
     ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
-      "Catalog::InvalidParameter" => :unprocessable_entity,
-      "Catalog::NotAuthorized"    => :forbidden,
-      "Catalog::TopologyError"    => :not_found
+      "ActionController::ParameterMissing" => :unprocessable_entity,
+      "Catalog::InvalidParameter"          => :unprocessable_entity,
+      "Catalog::NotAuthorized"             => :forbidden,
+      "Catalog::TopologyError"             => :not_found
     )
 
     ActionDispatch::ExceptionWrapper.class_eval do
