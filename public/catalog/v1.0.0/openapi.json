@@ -1447,12 +1447,6 @@
             "example": "jdoe",
             "readOnly": true
           },
-          "service_offering_icon_ref": {
-            "type": "string",
-            "readOnly": true,
-            "title": "Service Offering Icon Ref",
-            "example": 20
-          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -1591,6 +1585,12 @@
             "title": "Owner",
             "example": "jdoe",
             "readOnly": true
+          },
+          "service_offering_icon_ref": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Service Offering Icon Ref",
+            "example": 20
           },
           "created_at": {
             "type": "string",
