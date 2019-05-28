@@ -44,11 +44,17 @@ module Api
 
       def destroy
         portfolio = Portfolio.find(params.require(:id))
-        if portfolio.discard
-          head :no_content
-        else
-          render :json => { :errors => portfolio.errors }, :status => :unprocessable_entity
-        end
+        svc = Catalog::SoftDelete.new(portfolio)
+        key = svc.process.restore_key
+
+        render :json => { :restore_key => key }
+      end
+
+      def restore
+        portfolio = Portfolio.with_discarded.discarded.find(params.require(:portfolio_id))
+        Catalog::SoftDeleteRestore.new(portfolio, params.require(:restore_key)).process
+
+        render :json => portfolio
       end
 
       def share

@@ -18,6 +18,10 @@ module ExceptionHandler
       Rails.logger.error("Unauthorized error: #{err.message}")
       json_response({:message => "Unauthorized"}, :unauthorized)
     end
+
+    rescue_from Discard::DiscardError do |err|
+      json_response({:message => err.message}, :unprocessable_entity)
+    end
   end
 
   private

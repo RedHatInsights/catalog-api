@@ -111,7 +111,7 @@ describe 'Portfolios API' do
       end
 
       it 'deletes the record' do
-        expect(response).to have_http_status(204)
+        expect(response).to have_http_status(:ok)
       end
 
       it 'sets the discarded_at column' do
@@ -122,6 +122,10 @@ describe 'Portfolios API' do
         post "#{api}/portfolios", :headers => default_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the restore_key in the body' do
+        expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(Portfolio.with_discarded.find(portfolio_id).discarded_at.to_s)
       end
     end
 
@@ -135,6 +139,76 @@ describe 'Portfolios API' do
         delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
+
+  describe "GET /portfolios/:portfolio_id/undelete" do
+    let(:restore_key) { Digest::SHA1.hexdigest(portfolio.discarded_at.to_s) }
+    let(:params) { { :restore_key => restore_key } }
+
+    before do
+      portfolio.discard
+    end
+
+    context "when restoring a portfolio" do
+      before do
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the restored record" do
+        expect(json["id"]).to eq portfolio.id.to_s
+        expect(json["name"]).to eq portfolio.name
+      end
+    end
+
+    context "when restoring a portfolio with the wrong restore key" do
+      let(:restore_key) { "MrMaliciousRestoreKey" }
+
+      before do
+        portfolio.discard
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+      end
+
+      it "returns a 403" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "when restoring the portfolio_items fails" do
+      before do
+        allow(Portfolio).to receive(:with_discarded).and_return(Portfolio)
+        allow(Portfolio).to receive(:discarded).and_return(Portfolio)
+        allow(Portfolio).to receive(:find).with(portfolio.id.to_s).and_return(portfolio)
+
+        allow(PortfolioItem).to receive(:with_discarded).and_return(PortfolioItem)
+        allow(PortfolioItem).to receive(:discarded).and_return([portfolio_item])
+        allow(portfolio_item).to receive(:undiscard).and_return(false)
+      end
+
+      it 'reports errors when undiscarding the child portfolio_items fails' do
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when restoring a portfolio with portfolio_items that were discarded previously" do
+      let!(:second_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :discarded_at => 1.minute.ago, :tenant_id => tenant.id) }
+
+      before do
+        portfolio.discard
+      end
+
+      it "only undeletes the one that was discarded at the same time as the portfolio" do
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+
+        second_item.reload
+        expect(second_item.discarded?).to be_truthy
       end
     end
   end

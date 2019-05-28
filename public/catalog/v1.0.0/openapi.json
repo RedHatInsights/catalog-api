@@ -222,8 +222,15 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Portfolio Deleted."
+          "200": {
+            "description": "Portfolio Deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestoreKey"
+                }
+              }
+            }
           },
           "404": {
             "description": "Portfolio Not Found."
@@ -469,6 +476,55 @@
           "500": {
             "description": "Failed to copy Portfolio"
           }
+        }
+      }
+    },
+    "/portfolios/{id}/undelete": {
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Undelete specific portfolio",
+        "operationId": "unDeletePortfolio",
+        "description": "Undeletes the portfolio specified by the portfolio ID.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The undeleted portfolio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Portfolio"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio not found."
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreKey"
+              }
+            }
+          },
+          "required": true
         }
       }
     },
