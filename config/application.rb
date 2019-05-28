@@ -38,7 +38,8 @@ module Catalog
       "ActionController::ParameterMissing" => :unprocessable_entity,
       "Catalog::InvalidParameter"          => :unprocessable_entity,
       "Catalog::NotAuthorized"             => :forbidden,
-      "Catalog::TopologyError"             => :not_found
+      "Catalog::TopologyError"             => :not_found,
+      "Discard::DiscardError"              => :unprocessable_entity
     )
 
     ActionDispatch::ExceptionWrapper.class_eval do
