@@ -13,6 +13,12 @@ describe Catalog::UpdateOrderItem do
     end
     let(:order) { create(:order) }
     let(:subject) { described_class.new(topic) }
+    let(:api_instance) { instance_double("TopologicalInventoryApiClient::DefaultApi") }
+    let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
+
+    before do
+      allow(ti_class).to receive(:call).and_yield(api_instance)
+    end
 
     context "when the order item is not findable" do
       let(:topology_task_ref) { "0" }
@@ -26,22 +32,17 @@ describe Catalog::UpdateOrderItem do
 
     context "when the order item is findable" do
       let(:topology_task_ref) { "123" }
-
-      around do |e|
-        with_modified_env :TOPOLOGICAL_INVENTORY_URL => 'http://localhost:3000' do
-          e.run
-        end
-      end
+      let(:service_instance_id) { "321" }
 
       context "when the status of the task is ok" do
         let(:status) { "ok" }
-        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => "321"}}.to_json) }
+        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => service_instance_id}}.to_json) }
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
+        let(:service_instance_no_external_url) { TopologicalInventoryApiClient::ServiceInstance.new }
 
         before do
-          stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/tasks/123")
-            .with(:headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json'})
-            .to_return(:status => 200, :body => task.to_json, :headers => {})
+          allow(ti_class).to receive(:call).and_yield(api_instance)
+          allow(api_instance).to receive(:show_task).with(topology_task_ref).and_return(task)
         end
 
         context "when the state is completed" do
@@ -49,9 +50,7 @@ describe Catalog::UpdateOrderItem do
 
           context "when the service instance can be found" do
             before do
-              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321")
-                .with(:headers => {'Content-Type'=>'application/json'})
-                .to_return(:status => 200, :body => service_instance.to_json, :headers => {})
+              allow(api_instance).to receive(:show_service_instance).with(service_instance_id).and_return(service_instance)
             end
 
             it "creates a progress message about the payload" do
@@ -98,9 +97,7 @@ describe Catalog::UpdateOrderItem do
 
           context "when the service instance does not have an external url" do
             before do
-              stub_request(:get, "http://localhost:3000/api/topological-inventory/v0.1/service_instances/321")
-                .with(:headers => {'Content-Type'=>'application/json'})
-                .to_return(:status => 200, :body => "".to_json, :headers => {})
+              allow(api_instance).to receive(:show_service_instance).with(service_instance_id).and_return(service_instance_no_external_url)
             end
 
             it "raises an error" do
