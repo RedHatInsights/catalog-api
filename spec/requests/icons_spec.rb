@@ -39,7 +39,7 @@ describe "IconsRequests", :type => :request do
       end
     end
 
-    context "when the portfolio item doesn't have a service_offering_icon_ref" do
+    context "when the icon does not exist" do
       before do
         portfolio_item.update(:service_offering_icon_ref => nil)
       end
@@ -51,15 +51,15 @@ describe "IconsRequests", :type => :request do
       end
     end
 
-    context "when an icon doesn't exist" do
+    context "when there is an error fetching the icon" do
       before do
         allow(api_instance).to receive(:show_service_offering_icon).and_raise(topo_ex)
       end
 
-      it "throws not found" do
+      it "returns a 503" do
         get "#{api}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
 
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:service_unavailable)
       end
     end
   end

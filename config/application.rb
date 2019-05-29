@@ -38,7 +38,7 @@ module Catalog
       "ActionController::ParameterMissing" => :unprocessable_entity,
       "Catalog::InvalidParameter"          => :unprocessable_entity,
       "Catalog::NotAuthorized"             => :forbidden,
-      "Catalog::TopologyError"             => :not_found,
+      "Catalog::TopologyError"             => :service_unavailable,
       "Discard::DiscardError"              => :unprocessable_entity
     )
 

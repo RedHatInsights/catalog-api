@@ -170,7 +170,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
 
       post "#{api}/portfolio_items", :params => params, :headers => default_headers
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:service_unavailable)
     end
 
     it "returns the new portfolio item when topology has the service_offering_ref" do
@@ -207,7 +207,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(svc_object).to receive(:process).and_raise(topo_ex)
 
       get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:service_unavailable)
     end
   end
 
@@ -234,7 +234,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       get url, :headers => default_headers
 
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:service_unavailable)
     end
   end
 
