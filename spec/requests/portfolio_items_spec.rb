@@ -81,7 +81,6 @@ describe "PortfolioItemRequests", :type => :request do
 
     it 'returns the portfolio_item which now points back to the portfolio' do
       expect(json.size).to eq 1
-      expect(json.first['portfolio_id']).to eq portfolio.id.to_s
     end
   end
 
@@ -180,7 +179,7 @@ describe "PortfolioItemRequests", :type => :request do
       post "#{api}/portfolio_items", :params => params, :headers => default_headers
       expect(response).to have_http_status(:ok)
       expect(json["id"]).to eq portfolio_item.id.to_s
-      expect(json["service_offering_ref"]).to eq service_offering_ref
+      expect(json["owner"]).to eq portfolio_item.owner
     end
   end
 

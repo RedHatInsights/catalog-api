@@ -1503,11 +1503,17 @@
             "example": "jdoe",
             "readOnly": true
           },
-          "service_offering_icon_ref": {
+          "created_at": {
             "type": "string",
-            "readOnly": true,
-            "title": "Service Offering Icon Ref",
-            "example": 20
+            "format": "date-time",
+            "title": "Created at",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated at",
+            "readOnly": true
           }
         }
       },
@@ -1634,6 +1640,24 @@
             "type": "string",
             "title": "Owner",
             "example": "jdoe",
+            "readOnly": true
+          },
+          "service_offering_icon_ref": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Service Offering Icon Ref",
+            "example": 20
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created at",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated at",
             "readOnly": true
           }
         }

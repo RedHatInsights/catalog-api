@@ -80,4 +80,20 @@ describe "OpenAPI stuff" do
       rand(1..10).times.collect { random_path_part }.join("/")
     end
   end
+
+  describe "Model serialization" do
+    context "v1.0" do
+      ActiveRecord::Base.connection.tables.each do |table|
+        next if %w[tenants schema_migrations ar_internal_metadata].include?(table)
+
+        model_name = table.singularize.camelize
+        model = model_name.constantize
+        Api::Docs["1.0"].definitions[model_name].properties.keys.each do |attr|
+          it "The JSON Schema #{attr} matches the #{table} attribute #{attr}" do
+            expect(model.new.attributes.include?(attr)).to be_truthy
+          end
+        end
+      end
+    end
+  end
 end
