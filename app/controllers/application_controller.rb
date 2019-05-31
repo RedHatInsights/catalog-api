@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::API
   include Response
-  include ExceptionHandler
   include Api::V1x0::Mixins::RBACMixin
 
   around_action :with_current_request
@@ -17,6 +16,10 @@ class ApplicationController < ActionController::API
         ActsAsTenant.without_tenant { yield }
       end
     end
+  rescue ManageIQ::API::Common::EntitlementError => e
+    json_response({:errors => e.message}, :forbidden)
+  rescue ManageIQ::API::Common::IdentityError => e
+    json_response({:errors => e.message}, :unauthorized)
   end
 
   def current_tenant(current_user)

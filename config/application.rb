@@ -32,6 +32,26 @@ module Catalog
 
     config.autoload_paths << Rails.root.join('lib').to_s
 
+    config.exceptions_app = routes
+
+    ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
+      "ActionController::ParameterMissing" => :unprocessable_entity,
+      "Catalog::InvalidParameter"          => :unprocessable_entity,
+      "Catalog::NotAuthorized"             => :forbidden,
+      "Catalog::TopologyError"             => :service_unavailable,
+      "Discard::DiscardError"              => :unprocessable_entity
+    )
+
+    ActionDispatch::ExceptionWrapper.class_eval do
+      # Until we get an updated version of ActionDispatch with the linked fix below,
+      # this monkey patch is a temporary fix
+      #
+      # https://github.com/rails/rails/commit/ef40fb6fd88f2e3c3f989aef65e3ddddfadee814#diff-7a283d03093301fecfe4dca46dc37c2c
+      def original_exception(exception)
+        exception
+      end
+    end
+
     ManageIQ::API::Common::Logging.activate(config)
     ManageIQ::API::Common::Metrics.activate(config, "catalog_api")
   end
