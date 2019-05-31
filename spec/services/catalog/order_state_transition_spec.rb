@@ -63,5 +63,14 @@ describe Catalog::OrderStateTransition do
         expect(order.state).to eq 'Completed'
       end
     end
+
+    context "when the order item gets updated to canceled" do
+      let(:expected_state) { "Canceled" }
+
+      it "sets the state to Canceled" do
+        transition
+        expect(order.state).to eq 'Canceled'
+      end
+    end
   end
 end

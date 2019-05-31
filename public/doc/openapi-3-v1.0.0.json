@@ -2014,9 +2014,10 @@
             "enum": [
               "undecided",
               "approved",
-              "denied"
+              "denied",
+              "canceled"
             ],
-            "description": "The state of the approval request (approved, denied, undecided)",
+            "description": "The state of the approval request (approved, denied, undecided, canceled)",
             "readOnly": true
           },
           "workflow_ref": {
