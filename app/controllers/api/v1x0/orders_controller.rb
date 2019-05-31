@@ -11,6 +11,11 @@ module Api
         render :json => Order.create
       end
 
+      def cancel_order
+        canceller = Catalog::CancelOrder.new(params.require(:order_id))
+        render :json => canceller.process.order
+      end
+
       def submit_order
         approval = Catalog::CreateApprovalRequest.new(params.require(:order_id))
         render :json => approval.process.order

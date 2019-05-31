@@ -1128,6 +1128,45 @@
         }
       }
     },
+    "/orders/{order_id}/cancel": {
+      "patch": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Cancels a given order",
+        "operationId": "cancelOrder",
+        "description": "Returns an updated order.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OrderID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated order object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      }
+    },
     "/order_items": {
       "get": {
         "tags": [
@@ -1547,6 +1586,9 @@
       },
       "Unauthorized": {
         "description": "The caller is not authorized to access this resource."
+      },
+      "Conflict": {
+        "description": "The entity is currently in a state that does not allow the requested action"
       }
     },
     "requestBodies": {
@@ -1808,7 +1850,8 @@
               "Approval Pending",
               "Ordered",
               "Failed",
-              "Completed"
+              "Completed",
+              "Canceled"
             ],
             "title": "State",
             "description": "Current State of the order."
