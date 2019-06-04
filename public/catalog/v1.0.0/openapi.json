@@ -1648,6 +1648,13 @@
             "title": "Service Offering Icon Ref",
             "example": 20
           },
+          "service_offering_source_ref": {
+            "type": "string",
+            "title": "Service Offering Source Ref",
+            "description": "The source reference this product was created from",
+            "readOnly": true,
+            "example": "20"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
