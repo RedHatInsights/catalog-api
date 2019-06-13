@@ -12,6 +12,14 @@ Rails.application.routes.draw do
     prefix = File.join(ENV["PATH_PREFIX"], ENV["APP_NAME"]).gsub(/^\/+|\/+$/, "")
   end
 
+  scope :as => :internal, :module => "internal", :path => "internal" do
+    match "/v0/*path", :via => [:post], :to => redirect(:path => "/internal/v0.0/%{path}", :only_path => true)
+
+    namespace :v0x0, :path => "v0.0" do
+      post '/notify', :action => 'notify', :controller => 'notify'
+    end
+  end
+
   scope :as => :api, :module => "api", :path => prefix do
     routing_helper.redirect_major_version("v1.0", prefix)
 
