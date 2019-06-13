@@ -1,51 +1,38 @@
 RSpec.describe("v1.0 - GraphQL") do
-  let!(:ext_tenant_a) { rand(1000).to_s }
-  let!(:identity_a)   { Base64.encode64({'identity' => { 'account_number' => ext_tenant_a }}.to_json) }
-  let!(:tenant_a)     { Tenant.create!(:name => "tenant_a", :external_tenant => ext_tenant_a) }
-  let!(:portfolio_a)  { Portfolio.create!(:tenant_id => tenant_a.id, :name => "test_a", :owner => "234") }
 
-  let!(:ext_tenant_b) { rand(1000).to_s }
-  let!(:identity_b)   { Base64.encode64({'identity' => { 'account_number' => ext_tenant_b }}.to_json) }
-  let!(:tenant_b)     { Tenant.create!(:name => "tenant_b", :external_tenant => ext_tenant_b) }
-  let!(:portfolio_b)  { Portfolio.create!(:tenant_id => tenant_b.id, :name => "test_b", :owner => "123") }
-
-  let!(:graphql_source_query) { { "query" => "{ portfolios { edges { node { id tenant_id name } } } }" }.to_json }
-
-  def result_portfolio_tenant_ids(response_body)
-    JSON.parse(response_body).fetch_path("data", "portfolios", "edges").collect { |edge| edge.fetch_path("node", "tenant_id").to_i }
-  end
-
-  context "with tenancy enforcement" do
-    before { stub_const("ENV", "BYPASS_TENANCY" => nil) }
-
-    it "querying sources as tenant_a only return tenant_a's sources" do
-      headers = { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity_a }
-
-      post("/api/v1.0/graphql", :headers => headers, :params => graphql_source_query)
-      expect(response.status).to eq(200)
-      expect(result_portfolio_tenant_ids(response.body)).to match_array([tenant_a.id])
-    end
-
-    it "querying sources as tenant_b only return tenant_b's sources" do
-      headers = { "CONTENT_TYPE" => "application/json", "x-rh-identity" => identity_b }
-
-      post("/api/v1.0/graphql", :headers => headers, :params => graphql_source_query)
-
-      expect(response.status).to eq(200)
-      expect(result_portfolio_tenant_ids(response.body)).to match_array([tenant_b.id])
+  around do |example|
+    bypass_rbac do
+      example.call
     end
   end
 
-  context "without tenancy enforcement" do
-    before { stub_const("ENV", "BYPASS_TENANCY" => "true") }
+  let(:tenant)      { create(:tenant) }
+  let!(:portfolio_a) { create(:portfolio, :tenant_id => tenant.id, :description => 'test a desc', :name => "test_a", :owner => "234") }
+  let!(:portfolio_b) { create(:portfolio, :tenant_id => tenant.id, :description => 'test b desc', :name => "test_b", :owner => "123") }
 
-    it "querying sources without identity returns all sources" do
-      headers = { "CONTENT_TYPE" => "application/json" }
+  let(:graphql_portfolio_query) { { "query" => "{ portfolios { edges { node { id name } } } }" } }
 
-      post("/api/v1.0/graphql", :headers => headers, :params => graphql_source_query)
+  def result_portfolio_ids(response_body)
+    JSON.parse(response_body).fetch_path("data", "portfolios", "edges").collect { |edge| edge.fetch_path("node", "id").to_i }
+  end
 
+  def result_portfolio_names(response_body)
+    JSON.parse(response_body).fetch_path("data", "portfolios", "edges").collect { |edge| edge.fetch_path("node", "name") }
+  end
+
+  context "different graphql queries" do
+    before do
+      post("/api/v1.0/graphql", :headers => default_headers, :params => graphql_portfolio_query)
+    end
+
+    it "querying portfolios return portfolio ids" do
       expect(response.status).to eq(200)
-      expect(result_portfolio_tenant_ids(response.body)).to match_array([tenant_a.id, tenant_b.id])
+      expect(result_portfolio_ids(response.body)).to match_array([portfolio_a.id, portfolio_b.id])
+    end
+
+    it "querying portfolios return portfolio names" do
+      expect(response.status).to eq(200)
+      expect(result_portfolio_names(response.body)).to match_array([portfolio_a.name, portfolio_b.name])
     end
   end
 end
