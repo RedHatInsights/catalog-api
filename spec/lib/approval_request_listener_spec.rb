@@ -10,7 +10,7 @@ describe ApprovalRequestListener do
   let(:transition_instance) { instance_double(Catalog::ApprovalTransition) }
 
   describe "#subscribe_to_approval_updates" do
-    let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil, client, nil) }
+    let(:message) { ManageIQ::Messaging::ReceivedMessage.new(nil, event, payload, nil, client) }
     let(:order) { create(:order) }
     let!(:order_item) do
       create(:order_item,
