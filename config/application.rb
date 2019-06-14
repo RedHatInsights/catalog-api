@@ -37,6 +37,7 @@ module Catalog
     ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
       "ActionController::ParameterMissing" => :unprocessable_entity,
       "Catalog::InvalidParameter"          => :unprocessable_entity,
+      "Catalog::InvalidNotificationClass"  => :unprocessable_entity,
       "Catalog::NotAuthorized"             => :forbidden,
       "Catalog::TopologyError"             => :service_unavailable,
       "Discard::DiscardError"              => :unprocessable_entity

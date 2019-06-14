@@ -2,12 +2,13 @@ module Internal
   module V0
     class NotifyController < ::ApplicationController
       def notify
-        klass = @params[:class]
-        id = @params[:id]
+        klass = params[:klass]
+        id = params[:id]
+        payload = params[:payload]
 
-        found_object = klass.constantize.find(id)
+        notification_object = Catalog::Notify.new(klass, id, payload).process
 
-        Catalog::Notify.new(found_object).process
+        render :json => {:notification_object => notification_object}
       end
     end
   end
