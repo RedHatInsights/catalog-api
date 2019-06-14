@@ -1,7 +1,7 @@
 describe Catalog::UpdateOrderItem do
   describe "#process" do
     let(:client) { double(:client) }
-    let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client) }
+    let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client, nil) }
     let(:payload) { {"task_id" => "123", "status" => status, "state" => state, "context" => "payloadcontext"} }
     let!(:item) do
       ManageIQ::API::Common::Request.with_request(default_request) do
