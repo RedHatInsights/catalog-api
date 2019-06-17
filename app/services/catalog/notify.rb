@@ -1,24 +1,25 @@
 module Catalog
   class Notify
-    ACCEPTABLE_NOTIFICATION_CLASSES = %w[OrderItem ApprovalRequest]
+    ACCEPTABLE_NOTIFICATION_CLASSES = %w[OrderItem ApprovalRequest].freeze
 
     attr_reader :notification_object
 
     def initialize(klass, id, payload)
-      raise Catalog::InvalidNotificationClass unless ACCEPTABLE_NOTIFICATION_CLASSES.include?(klass)
+      raise Catalog::InvalidNotificationClass unless ACCEPTABLE_NOTIFICATION_CLASSES.include?(klass.camelcase)
 
-      @notification_object = klass.constantize.find(id)
+      @notification_object = klass.camelcase.constantize.find(id)
       @payload = payload
     end
 
     def process
-      @notification_object.update(:state, @payload[:decision])
+      @notification_object.update(:state => @payload["decision"])
 
-      case @notification_object.class
+      case @notification_object
       when OrderItem
-        OrderStateTransition.new(@notification_object.order.id).process
+        Catalog::OrderStateTransition.new(@notification_object.order.id).process
       when ApprovalRequest
-        ApprovalTransition.new(@notification_object.order_item.id).process
+        @notification_object.update(:reason => @payload["reason"])
+        Catalog::ApprovalTransition.new(@notification_object.order_item.id).process
       end
 
       self

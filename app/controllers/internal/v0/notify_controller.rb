@@ -4,11 +4,11 @@ module Internal
       def notify
         klass = params[:klass]
         id = params[:id]
-        payload = params[:payload]
+        payload = JSON.parse(params[:payload])
 
-        notification_object = Catalog::Notify.new(klass, id, payload).process
+        notify = Catalog::Notify.new(klass, id, payload).process
 
-        render :json => {:notification_object => notification_object}
+        render :json => {:notification_object => notify.notification_object}
       end
     end
   end
