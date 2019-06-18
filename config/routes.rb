@@ -13,9 +13,9 @@ Rails.application.routes.draw do
   end
 
   scope :as => :internal, :module => "internal", :path => "internal" do
-    match "/v0/*path", :via => [:post], :to => redirect(:path => "/internal/v0.0/%{path}", :only_path => true)
+    match "/v0/*path", :via => [:post], :to => redirect(:path => "/internal/v1.0/%{path}", :only_path => true)
 
-    namespace :v0x0, :controller => 'notify', :path => "v0.0" do
+    namespace :v1x0, :controller => 'notify', :path => "v1.0" do
       post '/notify/:klass/:id', :action => 'notify'
     end
   end

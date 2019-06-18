@@ -29,7 +29,7 @@ describe "OpenAPI stuff" do
   let(:internal_api_routes) do
     [
       {:path => "/internal/v0/*path", :verb => "POST"},
-      {:path => "/internal/v0.0/notify/:klass/:id", :verb => "POST"},
+      {:path => "/internal/v1.0/notify/:klass/:id", :verb => "POST"},
     ]
   end
 
