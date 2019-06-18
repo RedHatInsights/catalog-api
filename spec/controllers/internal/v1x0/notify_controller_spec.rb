@@ -1,4 +1,4 @@
-describe Internal::V0x0::NotifyController, :type => :request do
+describe Internal::V1x0::NotifyController, :type => :request do
   describe "POST /notify/:klass/:id" do
     around do |example|
       bypass_rbac do
@@ -10,7 +10,7 @@ describe Internal::V0x0::NotifyController, :type => :request do
       let(:klass) { "portfolio" }
 
       it "returns a 422" do
-        post "/internal/v0.0/notify/#{klass}/123", :headers => default_headers
+        post "/internal/v1.0/notify/#{klass}/123", :headers => default_headers, :params => {:payload => {:decision => "test"}.to_json}
 
         expect(response.status).to eq(422)
       end
@@ -23,10 +23,11 @@ describe Internal::V0x0::NotifyController, :type => :request do
       let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
       let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
-      it "returns the object" do
-        post "/internal/v0.0/notify/#{klass}/#{order_item.id}", :headers => default_headers, :params => {:payload => {:decision => "test"}.to_json}
+      it "returns the object with the updated state" do
+        post "/internal/v1.0/notify/#{klass}/#{order_item.id}", :headers => default_headers, :params => {:payload => {:decision => "test"}.to_json}
 
-        expect(response.body).to eq(order_item)
+        json_response = {:notification_object => order_item.reload}.to_json(:prefixes => ["/internal/v1.0/notify"])
+        expect(response.body).to eq(json_response)
       end
     end
   end
