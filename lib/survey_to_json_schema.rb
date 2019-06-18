@@ -20,6 +20,7 @@ class SurveyToJSONSchema
   def add_property(item)
     raise ArgumentError, "Invalid Item" unless item.kind_of?(Hash)
     raise ArgumentError, "Unsupported Type #{item['type']}" unless SUPPORTED_TYPES.include?(item['type'])
+
     @converted_hash['required'] << item['variable'] if item['required']
     @converted_hash['properties'][item['variable']] = send("convert_#{item['type']}".to_sym, item)
   end
