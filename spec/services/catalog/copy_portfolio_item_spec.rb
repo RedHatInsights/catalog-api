@@ -30,7 +30,7 @@ describe Catalog::CopyPortfolioItem do
 
         expect(new.description).to eq portfolio_item.description
         expect(new.owner).to eq portfolio_item.owner
-        expect(new.name).to eq portfolio_item.name
+        expect(new.name).to match(/^Copy of.*/)
       end
     end
 
