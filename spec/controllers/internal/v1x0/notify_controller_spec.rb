@@ -23,11 +23,10 @@ describe Internal::V1x0::NotifyController, :type => :request do
       let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
       let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
-      it "returns the object with the updated state" do
+      it "returns a 200" do
         post "/internal/v1.0/notify/#{klass}/#{order_item.id}", :headers => default_headers, :params => {:payload => {:decision => "test"}.to_json}
 
-        json_response = {:notification_object => order_item.reload}.to_json(:prefixes => ["/internal/v1.0/notify"])
-        expect(response.body).to eq(json_response)
+        expect(response.status).to eq(200)
       end
     end
   end
