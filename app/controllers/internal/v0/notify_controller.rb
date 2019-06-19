@@ -6,9 +6,9 @@ module Internal
         id = params[:id]
         payload = JSON.parse(params[:payload])
 
-        notify = Catalog::Notify.new(klass, id, payload).process
+        Catalog::Notify.new(klass, id, payload).process
 
-        render :json => {:notification_object => notify.notification_object}
+        json_response(nil)
       end
     end
   end
