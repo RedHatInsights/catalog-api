@@ -53,6 +53,11 @@ module Api
         render :json => item
       end
 
+      def next_name
+        svc = Catalog::NextName.new(params.require(:portfolio_item_id), params[:destination_portfolio_id])
+        render :json => { :next_name => svc.process.next_name }
+      end
+
       private
 
       def portfolio_item_params

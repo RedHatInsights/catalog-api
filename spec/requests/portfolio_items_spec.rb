@@ -347,4 +347,18 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
   end
+
+  describe '#next_name' do
+    context "when querying the next name on a portfolio item" do
+      before { get "#{api}/portfolio_items/#{portfolio_item.id}/next_name", :headers => default_headers }
+
+      it "returns a 200" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns a json object with the next name" do
+        expect(json["next_name"]).to eq 'Copy of ' + portfolio_item.display_name
+      end
+    end
+  end
 end
