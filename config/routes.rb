@@ -47,6 +47,7 @@ Rails.application.routes.draw do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
         get :icon, :action => 'show', :controller => 'icons'
+        get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
       end

@@ -1383,6 +1383,45 @@
           "required": false
         }
       }
+    },
+    "/portfolio_items/{portfolio_item_id}/next_name": {
+      "get": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "Get the next name for a the Portfolio Item prior to a copy operation",
+        "operationId": "getPortfolioItemNextName",
+        "description": "Get the next name for a the Portfolio Item prior to a copy operation",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioItemID"
+          },
+          {
+            "$ref": "#/components/parameters/DestinationPortfolioID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Portfolio Item next name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioItemNextName"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Item not found"
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -1451,6 +1490,15 @@
         "in": "path",
         "description": "The Order Item ID",
         "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "DestinationPortfolioID": {
+        "in": "query",
+        "name": "destination_portfolio_id",
+        "description": "The destination portfolio to compare names against",
+        "required": false,
         "schema": {
           "type": "string"
         }
@@ -1626,6 +1674,17 @@
             "readOnly": true,
             "title": "Restore Key",
             "example": "3c1d765c1453916143e517bfc27b57ace3da693c"
+          }
+        }
+      },
+      "PortfolioItemNextName": {
+        "type": "object",
+        "properties": {
+          "next_name": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Next Name",
+            "example": "Copy of Nginx"
           }
         }
       },
