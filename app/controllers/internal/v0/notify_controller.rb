@@ -2,11 +2,13 @@ module Internal
   module V0
     class NotifyController < ::ApplicationController
       def notify
-        klass = params[:klass]
-        id = params[:id]
-        payload = JSON.parse(params[:payload])
+        klass = params.require(:klass)
+        id = params.require(:id)
+        payload = params.require(:payload)
 
-        Catalog::Notify.new(klass, id, payload).process
+        ActsAsTenant.without_tenant do
+          Catalog::Notify.new(klass, id, payload).process
+        end
 
         json_response(nil)
       end
