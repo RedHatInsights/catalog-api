@@ -307,7 +307,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       it "returns the name specified" do
         copy_portfolio_item
-        expect(json["name"]).to eq params[:portfolio_item_name]
+        expect(json["display_name"]).to eq "Copy of " + params[:portfolio_item_name]
       end
     end
 
@@ -329,8 +329,8 @@ describe "PortfolioItemRequests", :type => :request do
         expect(json["workflow_ref"]).to eq portfolio_item.workflow_ref
       end
 
-      it "does not modify the name" do
-        expect(json["name"]).to eq portfolio_item.name
+      it "prefixes the name with Copy of" do
+        expect(json["name"]).to match(/^Copy of.*/)
       end
     end
 
