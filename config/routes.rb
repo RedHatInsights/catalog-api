@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
     namespace :v1x0, :path => "v1.0" do
       get "/openapi.json", :to => "root#openapi"
+      post "/graphql" => "graphql#query"
       post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
       resources :orders,                :only => [:create, :index] do
         resources :order_items,           :only => [:create, :index, :show]
