@@ -26,6 +26,13 @@ describe "OpenAPI stuff" do
     ]
   end
 
+  let(:internal_api_routes) do
+    [
+      {:path => "/internal/v0/*path", :verb => "POST"},
+      {:path => "/internal/v1.0/notify/:klass/:id", :verb => "POST"},
+    ]
+  end
+
   describe "Routing" do
     include Rails.application.routes.url_helpers
     let(:app_name)    { "catalog" }
@@ -45,7 +52,7 @@ describe "OpenAPI stuff" do
         redirect_routes = [
           {:path => "#{path_prefix}/#{app_name}/v1/*path", :verb => "DELETE|GET|OPTIONS|PATCH|POST"}
         ]
-        expect(rails_routes).to match_array(open_api_routes + redirect_routes + exception_routes)
+        expect(rails_routes).to match_array(open_api_routes + redirect_routes + exception_routes + internal_api_routes)
       end
     end
 
