@@ -1,6 +1,7 @@
 module Catalog
   class Notify
     ACCEPTABLE_NOTIFICATION_CLASSES = %w[OrderItem ApprovalRequest].freeze
+    EVENT_REQUEST_FINISHED = "request_finished".freeze
 
     attr_reader :notification_object
 
@@ -12,6 +13,8 @@ module Catalog
     end
 
     def process
+      return self unless request_finished?
+
       @notification_object.update(:state => @payload["decision"])
 
       case @notification_object
@@ -23,6 +26,12 @@ module Catalog
       end
 
       self
+    end
+
+    private
+
+    def request_finished?
+      @payload["message"] == EVENT_REQUEST_FINISHED
     end
   end
 end
