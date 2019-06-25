@@ -9,7 +9,7 @@ describe Catalog::Notify do
         let(:portfolio_item) { create(:portfolio_item) }
         let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
         let(:id) { order_item.id }
-        let(:payload) { {"decision" => "yes"} }
+        let(:payload) { {"decision" => "yes", "message" => message} }
         let(:order_state_transition) { instance_double("Catalog::OrderStateTransition") }
 
         before do
@@ -19,17 +19,38 @@ describe Catalog::Notify do
           order_item.reload
         end
 
-        it "updates the state" do
-          expect(order_item.state).to eq("yes")
+        context "when the message is request_finished" do
+          let(:message) { "request_finished" }
+
+          it "updates the state" do
+            expect(order_item.state).to eq("yes")
+          end
+
+          it "delegates to the order state transition" do
+            expect(order_state_transition).to have_received(:process)
+          end
+
+          it "returns the notify object" do
+            expect(@return_value.class).to eq(Catalog::Notify)
+            expect(@return_value.notification_object).to eq(order_item)
+          end
         end
 
-        it "delegates to the order state transition" do
-          expect(order_state_transition).to have_received(:process)
-        end
+        context "when the message is anything else" do
+          let(:message) { "not_request_finished" }
 
-        it "returns the notify object" do
-          expect(@return_value.class).to eq(Catalog::Notify)
-          expect(@return_value.notification_object).to eq(order_item)
+          it "does not update the state" do
+            expect(order_item.state).to eq("Created")
+          end
+
+          it "does not call the order state transition" do
+            expect(order_state_transition).to_not have_received(:process)
+          end
+
+          it "returns the notify object" do
+            expect(@return_value.class).to eq(Catalog::Notify)
+            expect(@return_value.notification_object).to eq(order_item)
+          end
         end
       end
 
@@ -40,7 +61,7 @@ describe Catalog::Notify do
         let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
         let(:approval_request) { create(:approval_request, :order_item_id => order_item.id) }
         let(:id) { approval_request.id }
-        let(:payload) { {"decision" => "approved", "reason" => "because"} }
+        let(:payload) { {"decision" => "approved", "reason" => "because", "message" => message} }
         let(:approval_transition) { instance_double("Catalog::ApprovalTransition") }
 
         before do
@@ -50,21 +71,46 @@ describe Catalog::Notify do
           approval_request.reload
         end
 
-        it "updates the state" do
-          expect(approval_request.state).to eq("approved")
+        context "when the message is request_finished" do
+          let(:message) { "request_finished" }
+
+          it "updates the state" do
+            expect(approval_request.state).to eq("approved")
+          end
+
+          it "updates the reason" do
+            expect(approval_request.reason).to eq("because")
+          end
+
+          it "delegates to the approval transition" do
+            expect(approval_transition).to have_received(:process)
+          end
+
+          it "returns the notify object" do
+            expect(@return_value.class).to eq(Catalog::Notify)
+            expect(@return_value.notification_object).to eq(approval_request)
+          end
         end
 
-        it "updates the reason" do
-          expect(approval_request.reason).to eq("because")
-        end
+        context "when the message is anything else" do
+          let(:message) { "not_request_finished" }
 
-        it "delegates to the approval transition" do
-          expect(approval_transition).to have_received(:process)
-        end
+          it "does not update the state" do
+            expect(approval_request.state).to eq("undecided")
+          end
 
-        it "returns the notify object" do
-          expect(@return_value.class).to eq(Catalog::Notify)
-          expect(@return_value.notification_object).to eq(approval_request)
+          it "does not update the reason" do
+            expect(approval_request.reason).to eq(nil)
+          end
+
+          it "does not call the approval transition" do
+            expect(approval_transition).to_not have_received(:process)
+          end
+
+          it "returns the notify object" do
+            expect(@return_value.class).to eq(Catalog::Notify)
+            expect(@return_value.notification_object).to eq(approval_request)
+          end
         end
       end
     end
