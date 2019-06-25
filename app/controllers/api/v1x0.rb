@@ -2,7 +2,7 @@ module Api
   module V1x0
     class RootController < ApplicationController
       def openapi
-        render :json => Rails.root.join('public', 'catalog', 'v1.0.0', 'openapi.json').read
+        render :json => Rails.root.join('public', 'doc', 'openapi-3-v1.0.0.json').read
       end
     end
   end
