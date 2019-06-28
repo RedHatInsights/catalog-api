@@ -10,20 +10,23 @@ module Catalog
     def process
       raise Catalog::OrderUncancelable if UNCANCELABLE_STATES.include?(@order.state)
 
-      Approval.call do |api|
-        # Make API call to approval to cancel the approval request
-        # for the order.
+      approval_requests.each do |approval_request|
+        Approval.call_action_api do |api|
+          api.create_action_by_request(approval_request.first.id, canceled_action)
+        end
       end
 
-      # This will be handled by the approval API event callback,
-      # but it's weird to me that we're returning the object right
-      # away and it doesn't have the canceled state even though we
-      # know it should be cancled right now
-      #
-      # @order.order_items.update!(:state => 'Canceled')
-      # Catalog::OrderStateTransition.new(@order.id).process
-
       self
+    end
+
+    private
+
+    def approval_requests
+      @order.order_items.map(&:approval_requests)
+    end
+
+    def canceled_action
+      @canceled_action ||= ApprovalApiClient::ActionIn.new(:operation => "cancel")
     end
   end
 end
