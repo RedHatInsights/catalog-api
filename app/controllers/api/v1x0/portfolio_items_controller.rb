@@ -68,11 +68,11 @@ module Api
 
       def portfolio_item_params
         params.require(:service_offering_ref)
-        params.permit(:service_offering_ref, :workflow_ref)
+        params.permit(:service_offering_ref, :workflow_ref, :icon_id)
       end
 
       def portfolio_item_patch_params
-        params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref)
+        params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref, :icon_id)
       end
 
       def portfolio_copy_params
