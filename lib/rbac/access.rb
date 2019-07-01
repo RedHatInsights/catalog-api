@@ -1,6 +1,7 @@
 module RBAC
   class Access
     attr_reader :acl
+    DEFAULT_LIMIT = 500
     def initialize(resource, verb)
       @resource = resource
       @verb     = verb
@@ -11,7 +12,7 @@ module RBAC
     def process
       RBAC::Service.call(RBACApiClient::AccessApi) do |api|
         Rails.logger.info("Fetch access list for #{@app_name}")
-        @acl = RBAC::Service.paginate(api, :get_principal_access, {}, @app_name).select do |item|
+        @acl = RBAC::Service.paginate(api, :get_principal_access, {:limit => DEFAULT_LIMIT}, @app_name).select do |item|
           Rails.logger.info("Found ACL: #{item}")
           @regexp.match(item.permission)
         end
