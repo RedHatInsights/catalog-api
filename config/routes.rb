@@ -54,6 +54,7 @@ Rails.application.routes.draw do
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
       end
       resources :icons, :only => [:create, :destroy, :show, :update] do
+        post :override, :to => 'icons#override_icon'
         get :icon_data, :to => 'icons#raw_icon'
       end
     end

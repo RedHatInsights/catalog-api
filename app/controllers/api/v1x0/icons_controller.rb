@@ -31,6 +31,12 @@ module Api
                   :disposition => 'inline')
       end
 
+      def override_icon
+        overriden_icon = Catalog::OverrideIcon.new(params.require(:icon_id), params.require(:portfolio_item_id))
+
+        render :json => overriden_icon.process.icon
+      end
+
       private
 
       def icon_params

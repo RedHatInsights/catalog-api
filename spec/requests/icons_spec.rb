@@ -91,4 +91,17 @@ describe "IconsRequests", :type => :request do
       end
     end
   end
+
+  describe "#override_icon" do
+    let!(:new_icon) { create(:icon, :tenant_id => tenant.id) }
+
+    it "overrides the icon" do
+      post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id }, :headers => default_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(json["id"]).to eq new_icon.id.to_s
+
+      expect { Icon.find(icon.id) }.to raise_exception(ActiveRecord::RecordNotFound)
+    end
+  end
 end
