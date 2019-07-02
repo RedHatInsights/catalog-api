@@ -62,7 +62,7 @@ module Api
         options = {:app_name      => ENV['APP_NAME'],
                    :resource_name => 'portfolios',
                    :resource_ids  => [portfolio.id.to_s],
-                   :permissions   => permissions,
+                   :permissions   => permissions_params,
                    :group_uuids   => params.require(:group_uuids)}
         RBAC::ShareResource.new(options).process
         head :no_content
@@ -73,7 +73,7 @@ module Api
         options = {:app_name      => ENV['APP_NAME'],
                    :resource_name => 'portfolios',
                    :resource_ids  => [portfolio.id.to_s],
-                   :permissions   => permissions,
+                   :permissions   => permissions_params,
                    :group_uuids   => params[:group_uuids] || []}
         RBAC::UnshareResource.new(options).process
         head :no_content
@@ -103,8 +103,8 @@ module Api
         params.permit(:portfolio_id, :portfolio_name)
       end
 
-      def permissions
-        params.require(:permissions).tap {|perm| RBAC::Permission.verify_permissions(perm) }
+      def permissions_params
+        params.require(:permissions).tap { |perm| Catalog::PortfolioPermission.verify_permissions(perm) }
       end
     end
   end

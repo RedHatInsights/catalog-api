@@ -277,7 +277,7 @@ describe 'Portfolios API' do
       let(:group_uuids) { %w[1 2 3] }
       let(:permissions) { %w[catalog:portfolios:read] }
       let(:app_name) { "catalog" }
-      let(:http_status) {'204'}
+      let(:http_status) { '204' }
       let(:dummy) { double("RBAC::ShareResource", :process => self) }
       let(:attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
     end
@@ -303,7 +303,7 @@ describe 'Portfolios API' do
     end
 
     context 'bad permissions' do
-      let(:http_status) {'422'}
+      let(:http_status) { '422' }
 
       context 'invalid verb in permissions' do
         let(:permissions) { %w[catalog:portfolios:something] }
@@ -320,7 +320,6 @@ describe 'Portfolios API' do
         it_behaves_like "#shared_test"
       end
     end
-
 
     context 'unshare' do
       include_context "sharing_objects"
