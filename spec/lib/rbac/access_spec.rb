@@ -5,6 +5,7 @@ describe RBAC::Access do
   let(:rbac_access) { described_class.new(resource, verb) }
   let(:api_instance) { double }
   let(:rs_class) { class_double("RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:opts) { { :limit => RBAC::Access::DEFAULT_LIMIT }}
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::AccessApi).and_yield(api_instance)
@@ -12,7 +13,7 @@ describe RBAC::Access do
 
   it "fetches the array of plans" do
     with_modified_env :APP_NAME => app_name do
-      allow(RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, {}, app_name).and_return([access1])
+      allow(RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return([access1])
       svc_obj = rbac_access.process
       expect(svc_obj.acl.count).to eq(1)
       expect(svc_obj.accessible?).to be_truthy
@@ -22,7 +23,7 @@ describe RBAC::Access do
 
   it "* in id gives access to all instances" do
     with_modified_env :APP_NAME => app_name do
-      allow(RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, {}, app_name).and_return([admin_access])
+      allow(RBAC::Service).to receive(:paginate).with(api_instance, :get_principal_access, opts, app_name).and_return([admin_access])
       svc_obj = rbac_access.process
       expect(svc_obj.acl.count).to eq(1)
       expect(svc_obj.accessible?).to be_truthy
