@@ -30,7 +30,6 @@ module Catalog
         mark_canceled
       else
         @state = "Pending"
-        # Should we be just finalizing order here?
         Catalog::OrderStateTransition.new(@order_item.order_id).process
       end
     end

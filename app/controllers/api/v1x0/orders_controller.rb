@@ -12,8 +12,8 @@ module Api
       end
 
       def cancel_order
-        canceller = Catalog::CancelOrder.new(params.require(:order_id))
-        render :json => canceller.process.order
+        canceler = Catalog::CancelOrder.new(params.require(:order_id))
+        render :json => canceler.process.order
       end
 
       def submit_order
