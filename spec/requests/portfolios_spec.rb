@@ -354,7 +354,7 @@ describe 'Portfolios API' do
       it "copies the portfolio item over" do
         item = PortfolioItem.find(Portfolio.find(json["id"]).portfolio_items.first.id)
 
-        expect(item.name).to eq "Copy of " + portfolio_item.name
+        expect(item.name).to eq portfolio_item.name
         expect(item.description).to eq portfolio_item.description
         expect(item.owner).to eq portfolio_item.owner
       end
