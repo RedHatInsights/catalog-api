@@ -275,14 +275,15 @@ describe 'Portfolios API' do
 
     RSpec.shared_context "sharing_objects" do
       let(:group_uuids) { %w[1 2 3] }
-      let(:permissions) { %w[read] }
+      let(:permissions) { %w[catalog:portfolios:read] }
       let(:app_name) { "catalog" }
+      let(:http_status) { '204' }
+      let(:dummy) { double("RBAC::ShareResource", :process => self) }
+      let(:attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
     end
 
-    context 'share' do
+    shared_examples_for "#shared_test" do
       include_context "sharing_objects"
-      let(:sharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-      let(:dummy) { double("RBAC::ShareResource", :process => self) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           options = {:app_name      => app_name,
@@ -291,9 +292,32 @@ describe 'Portfolios API' do
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/share", :params => sharing_attributes, :headers => default_headers
-          expect(response).to have_http_status(204)
+          post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers
+          expect(response).to have_http_status(http_status)
         end
+      end
+    end
+
+    context 'share' do
+      it_behaves_like "#shared_test"
+    end
+
+    context 'bad permissions' do
+      let(:http_status) { '422' }
+
+      context 'invalid verb in permissions' do
+        let(:permissions) { %w[catalog:portfolios:something] }
+        it_behaves_like "#shared_test"
+      end
+
+      context 'invalid appname in permissions' do
+        let(:permissions) { %w[bad:portfolios:something] }
+        it_behaves_like "#shared_test"
+      end
+
+      context 'invalid object in permissions' do
+        let(:permissions) { %w[catalog:bad:read] }
+        it_behaves_like "#shared_test"
       end
     end
 

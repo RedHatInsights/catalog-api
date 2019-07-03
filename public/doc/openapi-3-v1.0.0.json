@@ -2221,10 +2221,11 @@
           "permissions": {
             "type": "array",
             "title": "Name",
-            "description": "The permissions to apply for this share.",
+            "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, write and order",
             "items": {
               "type": "string"
-            }
+            },
+	    "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
           },
           "group_uuids": {
             "type": "array",
