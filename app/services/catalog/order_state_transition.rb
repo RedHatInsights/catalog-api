@@ -22,6 +22,8 @@ module Catalog
         'Failed'
       elsif item_states.all? { |state| state == "Completed" }
         'Completed'
+      elsif item_states.include?('Canceled')
+        'Canceled'
       else
         'Ordered'
       end

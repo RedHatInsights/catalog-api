@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       get "/openapi.json", :to => "root#openapi"
       post "/graphql" => "graphql#query"
       post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
+      patch '/orders/:order_id/cancel', :action => 'cancel_order', :controller => 'orders', :as => 'order_cancel'
       resources :orders,                :only => [:create, :index] do
         resources :order_items,           :only => [:create, :index, :show]
       end

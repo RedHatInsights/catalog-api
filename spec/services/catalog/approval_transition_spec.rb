@@ -84,6 +84,33 @@ describe Catalog::ApprovalTransition do
       end
     end
 
+    context "when canceled" do
+      before do
+        approval.update(:state => "canceled")
+      end
+
+      it "returns the state as canceled" do
+        expect(order_item_transition.process.state).to eq "Canceled"
+      end
+
+      it "does not call out to submit order" do
+        expect(submit_order).to receive(:process).exactly(0).times
+        order_item_transition.process
+      end
+
+      it "marks the order item as canceled" do
+        order_item_transition.process
+        order_item.reload
+        expect(order_item.state).to eq "Canceled"
+      end
+
+      it "marks the order as canceled" do
+        order_item_transition.process
+        order.reload
+        expect(order.state).to eq "Canceled"
+      end
+    end
+
     context "when pending" do
       it "returns the state as pending" do
         expect(order_item_transition.process.state).to eq "Pending"
