@@ -2,7 +2,7 @@
 version: '2'
 prepare:
   fetch:
-  - url: https://raw.githubusercontent.com/ManageIQ/catalog-api/master/.rubocop_catalog.yml
+  - url: https://raw.githubusercontent.com/ManageIQ/guides/master/.rubocop_base.yml
     path: ".rubocop_base.yml"
   - url: https://raw.githubusercontent.com/ManageIQ/guides/master/.rubocop_cc_base.yml
     path: ".rubocop_cc_base.yml"
@@ -27,5 +27,5 @@ checks:
 plugins:
   rubocop:
     enabled: true
-    channel: rubocop-0-67
+    channel: rubocop-0-69
     config: ".rubocop_cc.yml"
