@@ -8,7 +8,7 @@ module Catalog
     end
 
     def process
-      raise Catalog::OrderUncancelable if UNCANCELABLE_STATES.include?(@order.state)
+      raise uncancelable_error if UNCANCELABLE_STATES.include?(@order.state)
 
       approval_requests.each do |approval_request|
         Approval.call_action_api do |api|
@@ -27,6 +27,10 @@ module Catalog
 
     def canceled_action
       @canceled_action ||= ApprovalApiClient::ActionIn.new(:operation => "cancel")
+    end
+
+    def uncancelable_error
+      Catalog::OrderUncancelable.new("Order #{@order.id} is not cancelable in its current state")
     end
   end
 end

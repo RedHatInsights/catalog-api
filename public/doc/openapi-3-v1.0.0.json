@@ -1158,8 +1158,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
           },
           "404": {
             "description": "Order not found"
@@ -1587,7 +1587,7 @@
       "Unauthorized": {
         "description": "The caller is not authorized to access this resource."
       },
-      "Conflict": {
+      "UnprocessableEntity": {
         "description": "The entity is currently in a state that does not allow the requested action"
       }
     },

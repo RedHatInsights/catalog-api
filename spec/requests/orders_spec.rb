@@ -51,14 +51,15 @@ describe "OrderRequests", :type => :request do
 
     context "when the order is not cancelable" do
       before do
-        allow(cancel_order).to receive(:process).and_raise(Catalog::OrderUncancelable)
+        allow(cancel_order).to receive(:process).and_raise(Catalog::OrderUncancelable.new("Order not cancelable"))
       end
 
-      it "returns a 409" do
+      it "returns a 422" do
         patch "/api/v1.0/orders/#{order.id}/cancel", :headers => default_headers
 
         expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:conflict)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to eq({"error" => "Order not cancelable"}.to_json)
       end
     end
   end

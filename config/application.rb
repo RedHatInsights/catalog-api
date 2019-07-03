@@ -39,7 +39,7 @@ module Catalog
       "Catalog::InvalidParameter"          => :unprocessable_entity,
       "Catalog::InvalidNotificationClass"  => :unprocessable_entity,
       "Catalog::NotAuthorized"             => :forbidden,
-      "Catalog::OrderUncancelable"         => :conflict, # Any other suggestions?
+      "Catalog::OrderUncancelable"         => :unprocessable_entity,
       "Catalog::TopologyError"             => :service_unavailable,
       "Discard::DiscardError"              => :unprocessable_entity
     )

@@ -21,7 +21,7 @@ describe Catalog::CancelOrder do
       let(:state) { "Completed" }
 
       it "raises an error" do
-        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable)
+        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable, "Order #{order.id} is not cancelable in its current state")
       end
     end
 
@@ -29,7 +29,7 @@ describe Catalog::CancelOrder do
       let(:state) { "Failed" }
 
       it "raises an error" do
-        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable)
+        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable, "Order #{order.id} is not cancelable in its current state")
       end
     end
 
