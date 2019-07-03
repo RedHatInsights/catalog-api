@@ -24,13 +24,15 @@ describe Catalog::CopyPortfolioItem do
 
     context "when copying into a different portfolio" do
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio2.id } }
+      let(:new) { copy_portfolio_item.new_portfolio_item }
 
       it "makes a complete copy of the portfolio_item" do
-        new = copy_portfolio_item.new_portfolio_item
-
         expect(new.description).to eq portfolio_item.description
         expect(new.owner).to eq portfolio_item.owner
-        expect(new.name).to match(/^Copy of.*/)
+      end
+
+      it "does not modify the name with 'Copy of'" do
+        expect(new.name).to eq portfolio_item.name
       end
     end
 
