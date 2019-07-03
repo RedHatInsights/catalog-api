@@ -65,7 +65,7 @@ describe "IconsRequests", :type => :request do
     end
   end
 
-  describe "#show_icon" do
+  describe "#raw_icon" do
     context "when the icon exists" do
       it "/portfolio_items/{portfolio_item_id}/icon returns the icon" do
         get "#{api}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers

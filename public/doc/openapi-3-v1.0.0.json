@@ -1579,7 +1579,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "The Icon was not found"
+            "description": "Icon not found."
           }
         }
       },
@@ -1634,7 +1634,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "Icon Not Found/Not Present on Portfolio Item"
+            "description": "Icon Not Found."
           }
         }
       }

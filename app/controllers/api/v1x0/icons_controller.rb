@@ -24,8 +24,8 @@ module Api
         render :json => icon
       end
 
-      def show_icon
-        icon = find_icon
+      def raw_icon
+        icon = find_icon(params.permit(:icon_id, :portfolio_item_id))
         send_data(icon.data,
                   :type        => MimeMagic.by_magic(icon.data).type,
                   :disposition => 'inline')
@@ -42,8 +42,8 @@ module Api
         params.permit(:data, :source_ref, :source_id, :portfolio_item_id)
       end
 
-      def find_icon
-        params[:icon_id].present? ? Icon.find(params[:icon_id]) : Icon.find_by!(:portfolio_item_id => params[:portfolio_item_id])
+      def find_icon(ids)
+        ids[:icon_id].present? ? Icon.find(ids[:icon_id]) : Icon.find_by!(:portfolio_item_id => ids[:portfolio_item_id])
       end
     end
   end
