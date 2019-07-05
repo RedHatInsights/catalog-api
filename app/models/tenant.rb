@@ -3,13 +3,13 @@ class Tenant < ApplicationRecord
 
   after_initialize :setup_settings, :unless => proc { settings.nil? }
 
-  def add_settings(setting)
-    settings.merge!(setting)
+  def add_setting(name, value)
+    settings[name] = value
     save!
   end
 
-  def update_setting(setting)
-    add_settings(setting)
+  def update_setting(name, value)
+    add_setting(name, value)
   end
 
   def delete_setting(setting)

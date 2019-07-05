@@ -53,6 +53,11 @@ module Api
         def invalid_parameter(str)
           raise Catalog::InvalidParameter, str
         end
+
+        def org_admin_check
+          return unless RBAC::Access.enabled?
+          raise Catalog::NotAuthorized unless ManageIQ::API::Common::Request.current.user.org_admin?
+        end
       end
     end
   end

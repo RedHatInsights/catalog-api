@@ -28,7 +28,7 @@ describe Tenant, :type => :model do
   end
 
   describe "#add_settings" do
-    before { tenant.add_settings(:telephone => "555-867-5309") }
+    before { tenant.add_setting(:telephone, "555-867-5309") }
 
     it "adds the specified setting" do
       expect(retreived_tenant.telephone).to eq "555-867-5309"
@@ -36,7 +36,7 @@ describe Tenant, :type => :model do
   end
 
   describe "#update_setting" do
-    before { tenant.update_setting(:default_workflow => "2") }
+    before { tenant.update_setting(:default_workflow, "2") }
 
     it "updates the setting" do
       expect(retreived_tenant.default_workflow).to eq "2"
