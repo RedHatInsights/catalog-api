@@ -5,7 +5,7 @@ module RBAC
         uuids = SortedSet.new
         RBAC::Service.paginate(api, :list_groups, {}).each { |group| uuids << group.uuid }
         missing = @group_uuids - uuids
-        raise ActiveRecord::RecordNotFound, "The following group uuids are missing #{missing.to_a.join(",")}" unless missing.empty?
+        raise Catalog::InvalidParameter, "The following group uuids are missing #{missing.to_a.join(",")}" unless missing.empty?
       end
     end
 
