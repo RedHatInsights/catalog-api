@@ -419,7 +419,10 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "The Portfolio Object or or one or more of the groups was not found."
+            "description": "The Portfolio Object was not found."
+          },
+          "422": { 
+            "description": "One or more of the RBAC groups was not found"
           }
         }
       }
