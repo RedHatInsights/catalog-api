@@ -26,7 +26,7 @@ describe Catalog::CopyPortfolio do
       it "copies over the portfolio_items fields" do
         items = new_portfolio.portfolio_items
 
-        expect(items.collect(&:name)).to match_array(["Copy of #{portfolio_item1.name}", "Copy of #{portfolio_item2.name}"])
+        expect(items.collect(&:name)).to match_array([portfolio_item1.name, portfolio_item2.name])
         expect(items.collect(&:description)).to match_array([portfolio_item1.description, portfolio_item2.description])
         expect(items.collect(&:owner)).to match_array([portfolio_item1.owner, portfolio_item2.owner])
       end

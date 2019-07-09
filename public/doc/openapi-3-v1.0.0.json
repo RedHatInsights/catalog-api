@@ -419,7 +419,10 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "The Portfolio Object or or one or more of the groups was not found."
+            "description": "The Portfolio Object was not found."
+          },
+          "422": { 
+            "description": "One or more of the RBAC groups was not found"
           }
         }
       }
@@ -1128,6 +1131,45 @@
         }
       }
     },
+    "/orders/{order_id}/cancel": {
+      "patch": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Cancels a given order",
+        "operationId": "cancelOrder",
+        "description": "Returns an updated order.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OrderID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated order object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      }
+    },
     "/order_items": {
       "get": {
         "tags": [
@@ -1547,6 +1589,9 @@
       },
       "Unauthorized": {
         "description": "The caller is not authorized to access this resource."
+      },
+      "UnprocessableEntity": {
+        "description": "The entity is currently in a state that does not allow the requested action"
       }
     },
     "requestBodies": {
@@ -1808,7 +1853,8 @@
               "Approval Pending",
               "Ordered",
               "Failed",
-              "Completed"
+              "Completed",
+              "Canceled"
             ],
             "title": "State",
             "description": "Current State of the order."
@@ -1971,9 +2017,10 @@
             "enum": [
               "undecided",
               "approved",
-              "denied"
+              "denied",
+              "canceled"
             ],
-            "description": "The state of the approval request (approved, denied, undecided)",
+            "description": "The state of the approval request (approved, denied, undecided, canceled)",
             "readOnly": true
           },
           "workflow_ref": {
@@ -2221,10 +2268,11 @@
           "permissions": {
             "type": "array",
             "title": "Name",
-            "description": "The permissions to apply for this share.",
+            "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, write and order",
             "items": {
               "type": "string"
-            }
+            },
+	    "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
           },
           "group_uuids": {
             "type": "array",

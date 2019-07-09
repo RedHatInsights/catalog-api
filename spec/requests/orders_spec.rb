@@ -29,6 +29,41 @@ describe "OrderRequests", :type => :request do
     end
   end
 
+  context "#cancel_order" do
+    let(:cancel_order) { instance_double("Catalog::CancelOrder", :order => "test") }
+
+    before do
+      allow(Catalog::CancelOrder).to receive(:new).and_return(cancel_order)
+    end
+
+    context "when the order is cancelable" do
+      before do
+        allow(cancel_order).to receive(:process).and_return(cancel_order)
+      end
+
+      it "successfully cancels the order" do
+        patch "/api/v1.0/orders/#{order.id}/cancel", :headers => default_headers
+
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when the order is not cancelable" do
+      before do
+        allow(cancel_order).to receive(:process).and_raise(Catalog::OrderUncancelable.new("Order not cancelable"))
+      end
+
+      it "returns a 422" do
+        patch "/api/v1.0/orders/#{order.id}/cancel", :headers => default_headers
+
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to eq({"error" => "Order not cancelable"}.to_json)
+      end
+    end
+  end
+
   context "add to order" do
     let(:svc_object) { instance_double("Catalog::AddToOrder") }
     before do

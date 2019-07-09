@@ -31,7 +31,12 @@ module Catalog
     end
 
     def new_name(name, field)
-      Catalog::NameAdjust.create_copy_name(name, @to_portfolio.portfolio_items.pluck(field))
+      portfolio_names = @to_portfolio.portfolio_items.pluck(field)
+      if portfolio_names.include?(name)
+        Catalog::NameAdjust.create_copy_name(name, portfolio_names)
+      else
+        name
+      end
     end
   end
 end

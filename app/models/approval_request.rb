@@ -1,7 +1,7 @@
 class ApprovalRequest < ApplicationRecord
   acts_as_tenant(:tenant)
   validates :workflow_ref, :presence => true
-  enum :state => [:undecided, :approved, :denied]
+  enum :state => [:undecided, :approved, :denied, :canceled]
 
   belongs_to :order_item
 

@@ -25,6 +25,9 @@ module Catalog
       elsif denied?
         @state = "Denied"
         mark_denied
+      elsif canceled?
+        @state = "Canceled"
+        mark_canceled
       else
         @state = "Pending"
         Catalog::OrderStateTransition.new(@order_item.order_id).process
@@ -38,6 +41,11 @@ module Catalog
     rescue Catalog::TopologyError => e
       Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
       @order_item.update_message("error", "Error Submitting Order #{@order_item.order_id}, #{e.message}")
+    end
+
+    def mark_canceled
+      finalize_order
+      @order_item.update_message("info", "Order #{@order_item.order_id} has been canceled")
     end
 
     def mark_denied
@@ -56,6 +64,10 @@ module Catalog
 
     def denied?
       @approvals.present? && @approvals.any? { |req| req.state == "denied" }
+    end
+
+    def canceled?
+      @approvals.present? && @approvals.any? { |req| req.state == "canceled" }
     end
   end
 end
