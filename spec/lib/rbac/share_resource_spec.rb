@@ -23,7 +23,7 @@ describe RBAC::ShareResource do
     it "raises exception if group id is invalid" do
       allow(RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
       allow(RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, pagination_options).and_return(roles)
-      expect { subject.process }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { subject.process }.to raise_exception(Catalog::InvalidParameter)
     end
   end
 

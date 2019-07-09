@@ -34,7 +34,7 @@ describe RBAC::UnshareResource do
     let(:group_uuids) { %w[1] }
     it "raises exception if group id is invalid" do
       allow(RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
-      expect { subject.process }.to raise_exception(ActiveRecord::RecordNotFound)
+      expect { subject.process }.to raise_exception(Catalog::InvalidParameter)
     end
   end
 
