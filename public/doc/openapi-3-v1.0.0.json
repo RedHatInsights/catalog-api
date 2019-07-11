@@ -1733,10 +1733,13 @@
         "operationId": "listSettings",
         "responses": {
           "200": {
-            "description": "A json object with key/value pairs of tenant settings",
+            "description": "The current tenant settings and schema",
             "content": {
               "application/json": {
-                "example": "{\n  \"default_workflow\": \"2\",\n  \"icon\": \"<svg rel='stylesheet'>thing</svg>\"\n}\n"
+                "schema": {
+                  "$ref": "#/components/schemas/TenantSettings"
+                },
+                "example": "{\n  \"current\": {\n    \"default_workflow\": \"2\",\n    \"icon\": \"<svg rel='stylesheet'>thing</svg>\"\n  },\n  \"schema\": {}\n}\n"
               }
             }
           },
@@ -1787,7 +1790,7 @@
         }
       }
     },
-    "/settings/{setting_name}": {
+    "/settings/{name}": {
       "get": {
         "tags": [
           "Settings"
@@ -1961,7 +1964,7 @@
         }
       },
       "SettingName": {
-        "name": "setting_name",
+        "name": "name",
         "in": "path",
         "description": "name of the setting",
         "required": true,
@@ -2718,6 +2721,26 @@
         "type": "object",
         "title": "Provider Control Parameters",
         "description": "JSON Schema for Provider control parameters."
+      },
+      "TenantSettings": {
+        "type": "object",
+        "title": "Tenant Settings",
+        "description": "The tenant settings and schema",
+        "properties": {
+          "current": {
+            "type": "object",
+            "title": "Current Settings",
+            "description": "The current settings for this tenant"
+          },
+          "schema": {
+            "$ref": "#/components/schemas/TenantSettingsSchema"
+          }
+        }
+      },
+      "TenantSettingsSchema": {
+        "type": "object",
+        "title": "Tenant Settings Schema",
+        "description": "JSON Schema for the Tenant Settings"
       },
       "SharePolicy": {
         "type": "object",

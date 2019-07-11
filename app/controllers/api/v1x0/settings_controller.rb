@@ -4,7 +4,8 @@ module Api
       before_action :org_admin_check
 
       def index
-        render :json => tenant.settings
+        settings = Catalog::TenantSettings.new(tenant)
+        render :json => settings.process.response
       end
 
       def show
