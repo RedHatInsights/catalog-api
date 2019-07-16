@@ -17,7 +17,7 @@ module Internal
         payload = params.require(:payload)
         message = params.require(:message)
 
-        topic = Struct.new(:payload, :message).new(payload.merge({"task_id" => task_id}), message)
+        topic = Struct.new(:payload, :message).new(payload.merge("task_id" => task_id), message)
         ActsAsTenant.without_tenant do
           Catalog::UpdateOrderItem.new(topic).process
         end
