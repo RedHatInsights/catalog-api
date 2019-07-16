@@ -18,4 +18,12 @@ module ServiceOfferingHelper
   def build_service_offering(params)
     TopologicalInventoryApiClient::ServiceOffering.new(params)
   end
+
+  def fully_populated_service_offering_icon
+    TopologicalInventoryApiClient::ServiceOfferingIcon.new(
+      :data       => "<svg data=example>thing</svg>",
+      :source_id  => "127",
+      :source_ref => "icon-ref"
+    )
+  end
 end

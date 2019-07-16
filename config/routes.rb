@@ -44,13 +44,17 @@ Rails.application.routes.draw do
         post :copy, :action => 'copy', :controller => 'portfolios'
         post :undelete, :action => 'restore', :controller => 'portfolios'
       end
+      post '/portfolio_items/:portfolio_item_id/icon', :to => 'portfolio_items#add_icon_to_portfolio_item'
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
-        get :icon, :action => 'show', :controller => 'icons'
+        get :icon, :to => 'icons#raw_icon'
         get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
+      end
+      resources :icons, :only => [:create, :destroy, :show, :update] do
+        get :icon_data, :to => 'icons#raw_icon'
       end
     end
   end
