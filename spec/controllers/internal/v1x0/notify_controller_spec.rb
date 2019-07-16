@@ -6,10 +6,10 @@ describe Internal::V1x0::NotifyController, :type => :request do
   end
 
   describe "POST /notify/approval_request/:id" do
-    let(:approval_request) { create(:approval_request) }
+    let(:approval_request) { create(:approval_request, :approval_request_ref => "123") }
 
     it "returns a 200" do
-      post "/internal/v1.0/notify/approval_request/#{approval_request.id}", :headers => default_headers, :params => {:payload => {:decision => "test"}.to_json}
+      post "/internal/v1.0/notify/approval_request/123", :headers => default_headers, :params => {:payload => {:decision => "test"}.to_json}
 
       expect(response.status).to eq(200)
     end

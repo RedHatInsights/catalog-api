@@ -2,11 +2,11 @@ module Internal
   module V0
     class NotifyController < ::ApplicationController
       def notify_approval_request
-        id = params.require(:id)
+        request_id = params.require(:request_id)
         payload = params.require(:payload)
 
         ActsAsTenant.without_tenant do
-          Catalog::NotifyApprovalRequest.new(id, payload).process
+          Catalog::NotifyApprovalRequest.new(request_id, payload).process
         end
 
         json_response(nil)
