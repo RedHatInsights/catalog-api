@@ -4,8 +4,8 @@ module Catalog
 
     attr_reader :notification_object
 
-    def initialize(id, payload)
-      @notification_object = ApprovalRequest.find(id)
+    def initialize(ref_id, payload)
+      @notification_object = ApprovalRequest.find_by(:approval_request_ref => ref_id)
       @payload = payload
     end
 
