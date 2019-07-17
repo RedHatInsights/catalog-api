@@ -4,9 +4,10 @@ module Catalog
 
     attr_reader :notification_object
 
-    def initialize(ref_id, payload)
+    def initialize(ref_id, payload, message)
       @notification_object = ApprovalRequest.find_by(:approval_request_ref => ref_id)
       @payload = payload
+      @message = message
     end
 
     def process
@@ -21,8 +22,7 @@ module Catalog
     private
 
     def request_finished?
-      Rails.logger.info("#request_finished? #{@payload["message"] == EVENT_REQUEST_FINISHED} payload: #{@payload}")
-      @payload["message"] == EVENT_REQUEST_FINISHED
+      @message == EVENT_REQUEST_FINISHED
     end
   end
 end

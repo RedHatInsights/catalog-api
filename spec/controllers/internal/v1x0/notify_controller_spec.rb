@@ -6,11 +6,19 @@ describe Internal::V1x0::NotifyController, :type => :request do
   end
 
   describe "POST /notify/approval_request/:id" do
-    let(:approval_request) { create(:approval_request, :approval_request_ref => "123") }
+    let(:order) { create(:order) }
+    let(:portfolio_item) { create(:portfolio_item) }
+    let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :context => default_request) }
+    let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id, :approval_request_ref => "123") }
+    let(:approval_transition) { instance_double("Catalog::UpdateOrderItem") }
+
+    before do
+      allow(Catalog::ApprovalTransition).to receive(:new).and_return(approval_transition)
+      allow(approval_transition).to receive(:process)
+    end
 
     it "returns a 200" do
-      post "/internal/v1.0/notify/approval_request/123", :headers => default_headers, :params => {:payload => {:decision => "test"}.to_json}
-
+      post "/internal/v1.0/notify/approval_request/123", :headers => default_headers, :params => {:payload => {:decision => "approved", :request_id => "123"}, :message => "request_finished"}
       expect(response.status).to eq(200)
     end
   end
