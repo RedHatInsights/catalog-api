@@ -1,0 +1,4 @@
+default:
+  a_setting: a value
+my_namespace:
+  another_setting: another value

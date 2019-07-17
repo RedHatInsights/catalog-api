@@ -2,16 +2,11 @@ module Catalog
   class Settings
     attr_reader :values
 
-    CONFIG_LOCATION = "config/settings.yml".freeze
+    CONFIG_FILE = "config/settings.yml".freeze
     NAMESPACE = "default".freeze
 
-    def initialize(namespace = nil, config_file = CONFIG_LOCATION)
-      if namespace.nil?
-        Rails.logger.debug("Loading default settings from #{CONFIG_LOCATION}")
-        load(NAMESPACE, config_file)
-      else
-        load(namespace, config_file)
-      end
+    def initialize(namespace = nil, config_file = nil)
+      load(namespace || NAMESPACE, config_file || CONFIG_FILE)
     end
 
     private
