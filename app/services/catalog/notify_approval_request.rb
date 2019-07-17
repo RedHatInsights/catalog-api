@@ -21,6 +21,7 @@ module Catalog
     private
 
     def request_finished?
+      Rails.logger.info("#request_finished? #{@payload["message"] == EVENT_REQUEST_FINISHED} payload: #{@payload}")
       @payload["message"] == EVENT_REQUEST_FINISHED
     end
   end
