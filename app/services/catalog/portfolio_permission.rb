@@ -3,8 +3,6 @@ module Catalog
     VALID_RESOURCE_VERBS = %w[read write order].freeze
 
     def self.verify_permissions(values)
-      raise Catalog::InvalidParameter, 'Permission should be an array' unless values.kind_of?(Array)
-
       values.each do |perm|
         perm_list = perm.split(':')
         raise Catalog::InvalidParameter, "Permission should be : delimited and contain app_name:resource:verb, where verb has to be one of #{VALID_RESOURCE_VERBS}" unless perm_list.length == 3
