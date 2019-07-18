@@ -8,8 +8,9 @@ module Catalog
     end
 
     def process
-      @portfolio_item.icon.destroy
-      @portfolio_item.icon = @icon
+      # there should only ever be one icon, the others are discarded.
+      Catalog::SoftDelete.new(@portfolio_item.icons.first).process
+      @portfolio_item.icons << @icon
 
       self
     end

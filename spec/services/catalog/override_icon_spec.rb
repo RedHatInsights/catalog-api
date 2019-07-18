@@ -13,7 +13,7 @@ describe Catalog::OverrideIcon do
       end
 
       it "sets the portfolio_item icon to the one specified" do
-        expect(portfolio_item.icon.id).to eq icon2.id
+        expect(portfolio_item.icons.first.id).to eq icon2.id
       end
     end
   end

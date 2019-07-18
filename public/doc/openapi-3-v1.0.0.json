@@ -1670,7 +1670,7 @@
             "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "description": "Icon Not Found/Not Present on Portfolio Item"
+            "description": "Icon Not Found."
           }
         },
         "requestBody": {
