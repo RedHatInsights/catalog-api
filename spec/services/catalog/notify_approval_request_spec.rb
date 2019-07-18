@@ -1,5 +1,5 @@
 describe Catalog::NotifyApprovalRequest do
-  let(:subject) { described_class.new(ref_id, payload) }
+  let(:subject) { described_class.new(ref_id, payload['payload'], payload['message']) }
 
   describe "#process" do
     context "when the class is an approval request" do
@@ -8,7 +8,7 @@ describe Catalog::NotifyApprovalRequest do
       let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
       let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id, :approval_request_ref => "123") }
       let(:ref_id) { "123" }
-      let(:payload) { {"decision" => "approved", "reason" => "because", "message" => message} }
+      let(:payload) { { "payload" => {"decision" => "approved", "reason" => "because" }, "message" => message } }
       let(:approval_transition) { instance_double("Catalog::ApprovalTransition") }
 
       before do

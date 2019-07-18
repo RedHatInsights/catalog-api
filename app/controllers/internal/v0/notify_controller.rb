@@ -4,11 +4,11 @@ module Internal
       def notify_approval_request
         request_id = params.require(:request_id)
         payload = params.require(:payload)
+        message = params.require(:message)
 
         ActsAsTenant.without_tenant do
-          Catalog::NotifyApprovalRequest.new(request_id, payload).process
+          Catalog::NotifyApprovalRequest.new(request_id, payload, message).process
         end
-
         json_response(nil)
       end
 
