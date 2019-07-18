@@ -20,7 +20,8 @@ namespace :db do
             :data              => icon.data,
             :source_ref        => icon.source_ref,
             :source_id         => icon.source_id,
-            :portfolio_item_id => item.id
+            :portfolio_item_id => item.id,
+            :tenant_id         => item.tenant_id
           )
         end
       end
