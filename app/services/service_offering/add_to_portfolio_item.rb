@@ -16,6 +16,7 @@ module ServiceOffering
 
       # Get the fields that we're going to pull over
       @item = PortfolioItem.create!(generate_attributes)
+      @item.icon = create_icon(@service_offering.service_offering_icon_id)
       self
     rescue StandardError => e
       Rails.logger.error("Service Offering Ref: #{@params[:service_offering_ref]} #{e.message}")
@@ -40,11 +41,19 @@ module ServiceOffering
     # If certain fields are empty populate them from the other fields that we do have.
     def populate_missing_fields
       @params[:service_offering_source_ref] = @service_offering.source_id
-      @params[:service_offering_icon_ref] = @service_offering.service_offering_icon_id
       # Fill up empty fields if they're empty with fields we already have, this is really easy with the ||= and subsequent || operators
       @params[:long_description] ||= @params[:description] || @params[:display_name]
       @params[:display_name] ||= @params[:name]
       @params
+    end
+
+    def create_icon(icon_id)
+      service_offering_icon = TopologicalInventory.call { |topo| topo.show_service_offering_icon(icon_id) }
+      Icon.create!(
+        :data       => service_offering_icon.data,
+        :source_ref => service_offering_icon.source_ref,
+        :source_id  => service_offering_icon.source_id
+      )
     end
   end
 end

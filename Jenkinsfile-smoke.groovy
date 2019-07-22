@@ -12,5 +12,7 @@ if (env.CHANGE_ID) {
         ocDeployerServiceSets: "catalog,topological-inventory,sources,approval,platform-mq",
         iqePlugins: ["iqe-self-service-portal-plugin"],
         pytestMarker: "catalog_api_smoke",
+        // local settings file
+        configFileCredentialsId: "catalog-config",
     )
 }

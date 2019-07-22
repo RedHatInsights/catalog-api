@@ -10,6 +10,7 @@ describe ServiceOffering::AddToPortfolioItem do
   let(:params) { HashWithIndifferentAccess.new(:name => user_defined_name, :description => user_defined_description, :service_offering_ref => service_offering_ref) }
 
   let(:topology_service_offering) { fully_populated_service_offering }
+  let(:service_offering_icon) { fully_populated_service_offering_icon }
   let(:topological_inventory) do
     class_double("TopologicalInventory")
       .as_stubbed_const(:transfer_nested_constants => true)
@@ -18,6 +19,7 @@ describe ServiceOffering::AddToPortfolioItem do
   before do
     allow(topological_inventory).to receive(:call).and_yield(api_instance)
     allow(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
+    allow(api_instance).to receive(:show_service_offering_icon).with(topology_service_offering.service_offering_icon_id).and_return(service_offering_icon)
   end
 
   context "user provided params" do
@@ -37,6 +39,10 @@ describe ServiceOffering::AddToPortfolioItem do
         result = subject.process
         expect(result.item.name).to eq("test name")
         expect(result.item.description).to eq("test description")
+
+        expect(result.item.icon.data).to eq service_offering_icon.data
+        expect(result.item.icon.source_id).to eq service_offering_icon.source_id
+        expect(result.item.icon.source_ref).to eq service_offering_icon.source_ref
       end
     end
   end

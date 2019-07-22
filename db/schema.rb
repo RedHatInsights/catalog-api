@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_01_163638) do
+ActiveRecord::Schema.define(version: 2019_06_25_173111) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,17 @@ ActiveRecord::Schema.define(version: 2019_05_01_163638) do
     t.integer "state", default: 0
     t.bigint "tenant_id"
     t.index ["tenant_id"], name: "index_approval_requests_on_tenant_id"
+  end
+
+  create_table "icons", force: :cascade do |t|
+    t.string "data"
+    t.string "source_ref"
+    t.string "source_id"
+    t.bigint "portfolio_item_id"
+    t.bigint "tenant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id"], name: "index_icons_on_tenant_id"
   end
 
   create_table "order_items", force: :cascade do |t|
@@ -80,7 +91,6 @@ ActiveRecord::Schema.define(version: 2019_05_01_163638) do
     t.datetime "discarded_at"
     t.string "workflow_ref"
     t.string "owner"
-    t.string "service_offering_icon_ref"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end

@@ -1340,9 +1340,9 @@
         "tags": [
           "PortfolioItem"
         ],
-        "summary": "Fetches the specified portfolio item's icon information",
-        "operationId": "listServiceOfferingIcon",
-        "description": "Fetch the specified portfolio item's icon information.",
+        "summary": "Fetches the specified portfolio item's icon image",
+        "operationId": "showPortfolioItemIcon",
+        "description": "Fetch the specified portfolio item's icon image.",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioItemID"
@@ -1352,10 +1352,8 @@
           "200": {
             "description": "Portfolio Item Icon",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ServiceOfferingIcon"
-                }
+              "image/svg+xml": {
+                "example": "<svg rel=\"stylesheet\">thing</svg>"
               }
             }
           },
@@ -1371,6 +1369,50 @@
           "500": {
             "description": "Could not access the Topology Service"
           }
+        }
+      },
+      "post": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "Add an Icon to a Portfolio Item",
+        "operationId": "addIconToPortfolioItem",
+        "description": "Add an Icon to a Portfolio Item",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioItemID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The added Icon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Icon"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Icon not found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddIcon"
+              }
+            }
+          },
+          "required": true
         }
       }
     },
@@ -1423,6 +1465,177 @@
             }
           },
           "required": false
+        }
+      }
+    },
+    "/icons": {
+      "post": {
+        "tags": [
+          "Icon"
+        ],
+        "summary": "Create an Icon",
+        "description": "Creates an Icon from the specified parameters",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Icon"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The newly created Icon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Icon"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/icons/{id}": {
+      "get": {
+        "tags": [
+          "Icon"
+        ],
+        "summary": "Fetch an Icon by ID",
+        "description": "Fetch an Icon by ID",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Icon matching the Icon ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Icon"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Icon not found"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Icon"
+        ],
+        "summary": "Edit an existing Icon",
+        "description": "Edits Icon specified by the given ID.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Icon"
+              }
+            }
+          },
+          "description": "Parameters needed to update an Icon",
+          "required": true
+        },
+        "operationId": "updateIcon",
+        "responses": {
+          "200": {
+            "description": "Return the updated Icon object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Icon"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Icon not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Icon"
+        ],
+        "summary": "Delete an existing Icon",
+        "operationId": "destroyIcon",
+        "description": "Deletes the icon based on the icon ID passed\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Icon deleted."
+          },
+          "404": {
+            "description": "Icon not found."
+          }
+        }
+      }
+    },
+    "/icons/{id}/icon_data": {
+      "get": {
+        "tags": [
+          "Icon"
+        ],
+        "summary": "Fetches the specified icon's image",
+        "operationId": "showIconData",
+        "description": "Fetch the specified portfolio item's icon image.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio Item Icon",
+            "content": {
+              "image/svg+xml": {
+                "example": "<svg rel=\"stylesheet\">thing</svg>"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Icon Not Found."
+          }
         }
       }
     },
@@ -1733,6 +1946,17 @@
           }
         }
       },
+      "AddIcon": {
+        "type": "object",
+        "properties": {
+          "icon_id": {
+            "type": "string",
+            "title": "Icon Id",
+            "example": "100",
+            "description": "This is the ID of the icon object."
+          }
+        }
+      },
       "PortfolioItem": {
         "type": "object",
         "properties": {
@@ -1807,12 +2031,6 @@
             "title": "Owner",
             "example": "jdoe",
             "readOnly": true
-          },
-          "service_offering_icon_ref": {
-            "type": "string",
-            "readOnly": true,
-            "title": "Service Offering Icon Ref",
-            "example": 20
           },
           "service_offering_source_ref": {
             "type": "string",
@@ -2031,7 +2249,7 @@
           }
         }
       },
-      "ServiceOfferingIcon": {
+      "Icon": {
         "type": "object",
         "properties": {
           "id": {
@@ -2050,6 +2268,12 @@
             "type": "string",
             "title": "Source Ref",
             "description": "Stores the Source Ref for this icon",
+            "readOnly": true
+          },
+          "source_id": {
+            "type": "string",
+            "title": "Source ID",
+            "description": "The source ID for this icon",
             "readOnly": true
           }
         }
