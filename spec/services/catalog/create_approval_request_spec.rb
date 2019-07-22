@@ -5,7 +5,10 @@ describe Catalog::CreateApprovalRequest do
   let(:workflow_ref) { "1" }
   let!(:order) { create(:order, :tenant_id => tenant.id) }
   let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :workflow_ref => workflow_ref, :tenant_id => tenant.id) }
+  let!(:portfolio_item) do
+    allow(Approval).to receive(:call_workflow_api).and_return(true)
+    create(:portfolio_item, :portfolio_id => portfolio.id, :workflow_ref => workflow_ref, :tenant_id => tenant.id)
+  end
   let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
   let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }

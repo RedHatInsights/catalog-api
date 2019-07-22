@@ -5,6 +5,11 @@ describe PortfolioItem do
   let(:service_offering_ref) { "1" }
   let(:owner) { 'wilma' }
 
+  before do
+    # for approval validations
+    allow(Approval).to receive(:call_workflow_api).and_return(true)
+  end
+
   context "requires a service_offering_ref" do
     before do
       item.owner = owner
