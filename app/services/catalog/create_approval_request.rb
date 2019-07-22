@@ -22,7 +22,7 @@ module Catalog
 
     def submit_approval_requests(order_item)
       workflows(order_item.portfolio_item).each do |workflow|
-        response = Approval.call { |api| api.create_request(workflow, request_body_from(order_item)) }
+        response = Approval::Service.call(ApprovalApiClient::RequestApi) { |api| api.create_request(workflow, request_body_from(order_item)) }
         order_item.approval_requests << create_approval_request(response)
 
         order_item.update_message("info", "Approval Request Submitted for workflow #{workflow}, ID: #{order_item.approval_requests.last.id}")

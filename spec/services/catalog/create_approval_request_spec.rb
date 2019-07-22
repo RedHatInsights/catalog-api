@@ -6,12 +6,12 @@ describe Catalog::CreateApprovalRequest do
   let!(:order) { create(:order, :tenant_id => tenant.id) }
   let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
   let!(:portfolio_item) do
-    allow(Approval).to receive(:call_workflow_api).and_return(true)
+    allow(Approval::Service).to receive(:call).and_return(true)
     create(:portfolio_item, :portfolio_id => portfolio.id, :workflow_ref => workflow_ref, :tenant_id => tenant.id)
   end
   let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
-  let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }
+  let(:approval) { class_double(Approval::Service).as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { instance_double(ApprovalApiClient::RequestApi) }
   let(:approval_response) { ApprovalApiClient::RequestOut.new(:id => 1, :decision => "undecided", :workflow_id => workflow_ref) }
 
@@ -32,7 +32,7 @@ describe Catalog::CreateApprovalRequest do
 
     context "when the approval succeeds" do
       before do
-        allow(approval).to receive(:call).and_yield(api_instance)
+        allow(approval).to receive(:call).with(ApprovalApiClient::RequestApi).and_yield(api_instance)
         allow(api_instance).to receive(:create_request).and_return(approval_response)
       end
 

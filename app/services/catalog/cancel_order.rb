@@ -11,7 +11,7 @@ module Catalog
       raise_uncancelable_error if UNCANCELABLE_STATES.include?(@order.state)
 
       approval_requests.each do |approval_request|
-        Approval.call_action_api do |api|
+        Approval::Service.call(ApprovalApiClient::ActionApi) do |api|
           api.create_action_by_request(approval_request.first.approval_request_ref, canceled_action)
         end
       end

@@ -20,7 +20,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
-  let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }
+  let(:approval) { class_double(Approval::Service).as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { instance_double(ApprovalApiClient::WorkflowApi) }
 
   describe "GET /portfolio_items/:portfolio_item_id" do
@@ -245,7 +245,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in valid attributes" do
       before do
-        allow(approval).to receive(:call_workflow_api).and_yield(api_instance)
+        allow(approval).to receive(:call).with(ApprovalApiClient::WorkflowApi).and_yield(api_instance)
         allow(api_instance).to receive(:show_workflow).and_return(true)
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
       end
@@ -279,7 +279,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in an invalid workflow_ref" do
       before do
-        allow(approval).to receive(:call_workflow_api).and_yield(api_instance)
+        allow(approval).to receive(:call).with(ApprovalApiClient::WorkflowApi).and_yield(api_instance)
         allow(api_instance).to receive(:show_workflow).and_raise(Catalog::ApprovalError)
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
       end

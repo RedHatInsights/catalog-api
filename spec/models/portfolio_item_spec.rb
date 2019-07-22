@@ -7,7 +7,7 @@ describe PortfolioItem do
 
   before do
     # for approval validations
-    allow(Approval).to receive(:call_workflow_api).and_return(true)
+    allow(Approval::Service).to receive(:call).with(ApprovalApiClient::WorkflowApi).and_return(true)
   end
 
   context "requires a service_offering_ref" do
