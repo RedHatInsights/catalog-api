@@ -1,7 +1,7 @@
 describe "PortfolioItemRequests", :type => :request do
   around do |example|
     bypass_rbac do
-      example.call
+      with_modified_env(:APPROVAL_URL => "http://localhost") { example.call }
     end
   end
 
@@ -241,6 +241,9 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in valid attributes" do
       before do
+        stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
+          .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
+
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
       end
 
@@ -268,6 +271,19 @@ describe "PortfolioItemRequests", :type => :request do
 
       it "does not update the read-only field" do
         expect(json["service_offering_ref"]).to_not eq invalid_attributes[:service_offering_ref]
+      end
+    end
+
+    context "when passing in an invalid workflow_ref" do
+      before do
+        stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
+          .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
+
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
+      end
+
+      it 'returns a 422' do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end

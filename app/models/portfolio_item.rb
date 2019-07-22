@@ -10,9 +10,7 @@ class PortfolioItem < ApplicationRecord
   validates :service_offering_ref, :name, :display_name, :presence => true
   validates :favorite_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
 
-  def add_icon(icon)
-    self.icon = icon
-  end
+  validate :validate_workflow, :if => proc { workflow_ref.present? }, :on => %i[create update]
 
   def resolved_workflow_refs
     # TODO: Add lookup to platform workflow ref
@@ -24,5 +22,12 @@ class PortfolioItem < ApplicationRecord
 
   def item_workflow_ref
     [self, portfolio].detect(&:workflow_ref)&.workflow_ref
+  end
+
+  def validate_workflow
+    Approval.call_workflow_api { |api| api.show_workflow(workflow_ref) }
+  rescue Catalog::ApprovalError
+    errors.add(:workflow, "invalid")
+    throw :abort
   end
 end
