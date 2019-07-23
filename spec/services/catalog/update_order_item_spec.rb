@@ -1,3 +1,5 @@
+require "manageiq-messaging"
+
 describe Catalog::UpdateOrderItem do
   describe "#process" do
     let(:client) { double(:client) }
