@@ -16,7 +16,8 @@ Rails.application.routes.draw do
     match "/v0/*path", :via => [:post], :to => redirect(:path => "/internal/v1.0/%{path}", :only_path => true)
 
     namespace :v1x0, :controller => 'notify', :path => "v1.0" do
-      post '/notify/:klass/:id', :action => 'notify'
+      post '/notify/approval_request/:request_id', :action => 'notify_approval_request'
+      post '/notify/order_item/:task_id', :action => 'notify_order_item'
     end
   end
 
@@ -26,8 +27,8 @@ Rails.application.routes.draw do
     namespace :v1x0, :path => "v1.0" do
       get "/openapi.json", :to => "root#openapi"
       post "/graphql" => "graphql#query"
-      post '/orders/:order_id/submit_order', :action => 'submit_order', :controller => 'orders', :as => 'order_submit_order'
-      patch '/orders/:order_id/cancel', :action => 'cancel_order', :controller => 'orders', :as => 'order_cancel'
+      post '/orders/:order_id/submit_order', :to => "orders#submit_order", :as => 'order_submit_order'
+      patch '/orders/:order_id/cancel', :to => "orders#cancel_order", :as => 'order_cancel'
       resources :orders,                :only => [:create, :index] do
         resources :order_items,           :only => [:create, :index, :show]
       end
@@ -35,22 +36,26 @@ Rails.application.routes.draw do
         resources :progress_messages,     :only => [:index]
         resources :approval_requests,     :only => [:index]
       end
-      post '/portfolios/:portfolio_id/portfolio_items', :action => 'add_portfolio_item_to_portfolio', :controller => 'portfolios', :as => 'add_portfolio_item_to_portfolio'
-      post '/portfolios/:portfolio_id/share', :action => 'share', :controller => 'portfolios', :as => 'share'
-      post '/portfolios/:portfolio_id/unshare', :action => 'unshare', :controller => 'portfolios', :as => 'unshare'
-      get '/portfolios/:portfolio_id/share_info', :action => 'share_info', :controller => 'portfolios', :as => 'share_info'
+      post '/portfolios/:portfolio_id/portfolio_items', :to => "portfolios#add_portfolio_item_to_portfolio", :as => 'add_portfolio_item_to_portfolio'
+      post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'
+      post '/portfolios/:portfolio_id/unshare', :to => "portfolios#unshare", :as => 'unshare'
+      get '/portfolios/:portfolio_id/share_info', :to => "portfolios#share_info", :as => 'share_info'
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
-        post :copy, :action => 'copy', :controller => 'portfolios'
-        post :undelete, :action => 'restore', :controller => 'portfolios'
+        post :copy, :to => "portfolios#copy"
+        post :undelete, :to => "portfolios#restore"
       end
+      post '/portfolio_items/:portfolio_item_id/icon', :to => 'portfolio_items#add_icon_to_portfolio_item'
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
-        get :icon, :action => 'show', :controller => 'icons'
+        get :icon, :to => 'icons#raw_icon'
         get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
+      end
+      resources :icons, :only => [:create, :destroy, :show, :update] do
+        get :icon_data, :to => 'icons#raw_icon'
       end
     end
   end

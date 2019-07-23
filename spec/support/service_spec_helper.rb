@@ -10,7 +10,7 @@ module ServiceSpecHelper
   end
 
   def original_url
-    "whatever"
+    "http://whatever.com"
   end
 
   def default_request
