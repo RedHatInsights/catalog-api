@@ -29,9 +29,7 @@ module Api
 
           if !verbs.kind_of?(Array)
             invalid_parameter('Permission should be an array')
-          elsif !verbs.all? { |verb| verb.kind_of?(String) }
-            invalid_parameter('Permissions should all be strings')
-          elsif verbs.blank?
+          elsif verbs.blank? || verbs.any?(&:blank?)
             invalid_parameter('Permissions should not be empty')
           end
         end
