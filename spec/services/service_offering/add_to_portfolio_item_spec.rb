@@ -40,9 +40,9 @@ describe ServiceOffering::AddToPortfolioItem do
         expect(result.item.name).to eq("test name")
         expect(result.item.description).to eq("test description")
 
-        expect(result.item.icon.data).to eq service_offering_icon.data
-        expect(result.item.icon.source_id).to eq service_offering_icon.source_id
-        expect(result.item.icon.source_ref).to eq service_offering_icon.source_ref
+        expect(result.item.icons.first.data).to eq service_offering_icon.data
+        expect(result.item.icons.first.source_id).to eq service_offering_icon.source_id
+        expect(result.item.icons.first.source_ref).to eq service_offering_icon.source_ref
       end
     end
   end

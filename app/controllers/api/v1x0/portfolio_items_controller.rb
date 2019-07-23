@@ -61,7 +61,7 @@ module Api
       def add_icon_to_portfolio_item
         icon = Icon.find(params.require(:icon_id))
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        render :json => portfolio_item.add_icon(icon)
+        render :json => portfolio_item.icons << icon
       end
 
       private
