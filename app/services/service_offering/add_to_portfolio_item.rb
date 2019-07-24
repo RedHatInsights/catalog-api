@@ -16,7 +16,7 @@ module ServiceOffering
 
       # Get the fields that we're going to pull over
       @item = PortfolioItem.create!(generate_attributes)
-      @item.icons << create_icon(@service_offering.service_offering_icon_id)
+      @item.icons << create_icon(@service_offering.service_offering_icon_id) if @service_offering.service_offering_icon_id.present?
       self
     rescue StandardError => e
       Rails.logger.error("Service Offering Ref: #{@params[:service_offering_ref]} #{e.message}")
