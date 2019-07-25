@@ -47,6 +47,17 @@ describe ServiceOffering::AddToPortfolioItem do
     end
   end
 
+  context "when there is no icon" do
+    let(:topology_service_offering)  { fully_populated_service_offering.tap { |so| so.service_offering_icon_id = nil } }
+
+    it "does not copy over the icon" do
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        result = subject.process
+        expect(result.item.icons.count).to eq 0
+      end
+    end
+  end
+
   context "raises an error" do
     let(:params) { HashWithIndifferentAccess.new(:service_offering_ref => service_offering_ref) }
     it "#process" do
