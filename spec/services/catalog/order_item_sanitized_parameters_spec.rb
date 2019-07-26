@@ -21,7 +21,7 @@ describe Catalog::OrderItemSanitizedParameters do
   end
 
   #let(:json_schema) { { :properties => properties } }
-  let(:json_schema) { { :fields => fields } }
+  let(:json_schema) { {:schema => {:fields => fields}} }
 
   #let(:properties) do
   #  {'user'     => {:title => 'User Name', :type => 'string'},
