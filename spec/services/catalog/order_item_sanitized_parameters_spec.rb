@@ -20,14 +20,43 @@ describe Catalog::OrderItemSanitizedParameters do
                         :count                       => 1)
   end
 
-  let(:json_schema) { { :properties => properties } }
+  #let(:json_schema) { { :properties => properties } }
+  let(:json_schema) { { :fields => fields } }
 
-  let(:properties) do
-    {'user'     => {:title => 'User Name', :type => 'string'},
-     'password' => {:title => 'Secret', :type => 'string'},
-     'newpwd'   => {:title => 'Users Password', :type => 'string'},
-     'salary'   => {:title => 'Salary', :format => 'password', :type => 'number'},
-     'db_name'  => {:title => 'Database Name', :type => 'string'}}
+  #let(:properties) do
+  #  {'user'     => {:title => 'User Name', :type => 'string'},
+  #   'password' => {:title => 'Secret', :type => 'string'},
+  #   'newpwd'   => {:title => 'Users Password', :type => 'string'},
+  #   'salary'   => {:title => 'Salary', :format => 'password', :type => 'number'},
+  #   'db_name'  => {:title => 'Database Name', :type => 'string'}}
+  #end
+
+  let(:fields) do
+      [
+        {
+          "name": "password",
+          "type": "password",
+          "label": "Password Field",
+          "component": "text-field",
+          "helperText": "",
+          "isRequired": true,
+          "initialValue": ""
+        },
+        {
+          "name": "most_important_var1",
+          "label": "secret field 1",
+          "component": "textarea-field",
+          "helperText": "Has no effect on anything, ever.",
+          "initialValue": ""
+        },
+        {
+          "name": "token idea",
+          "label": "field 1",
+          "component": "textarea-field",
+          "helperText": "Don't look.",
+          "initialValue": ""
+        }
+      ]
   end
 
   let(:service_parameters) do

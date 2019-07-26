@@ -40,9 +40,22 @@ module Catalog
 
     def sanitized_parameters
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
-      service_plan_schema[:properties].each_with_object({}) do |(key, attrs), result|
-        value = hide?(key, attrs) ? MASKED_VALUE : svc_params[key]
-        result[attrs[:title]] = value
+      if service_plan_schema[:properties].present?
+        service_plan_schema[:properties].each_with_object({}) do |(key, attrs), result|
+          value = hide?(key, attrs) ? MASKED_VALUE : svc_params[key]
+          result[attrs[:title]] = value
+        end
+      else
+        service_plan_schema[:fields].each_with_object({}) do |(field), result|
+          value = hide_ansible?(field) ? MASKED_VALUE : svc_params[field[:name]]
+          result[field[:name]] = value
+        end
+      end
+    end
+
+    def hide_ansible?(field)
+      FILTERED_PARAMS.reduce(field[:type] == "password") do |result, param|
+        result || /#{param}/i.match?(field[:name]) || /#{param}/i.match?(field[:label])
       end
     end
 
