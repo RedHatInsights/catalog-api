@@ -20,45 +20,6 @@ describe Catalog::OrderItemSanitizedParameters do
                         :count                       => 1)
   end
 
-  #let(:json_schema) { { :properties => properties } }
-  let(:json_schema) { {:schema => {:fields => fields}} }
-
-  #let(:properties) do
-  #  {'user'     => {:title => 'User Name', :type => 'string'},
-  #   'password' => {:title => 'Secret', :type => 'string'},
-  #   'newpwd'   => {:title => 'Users Password', :type => 'string'},
-  #   'salary'   => {:title => 'Salary', :format => 'password', :type => 'number'},
-  #   'db_name'  => {:title => 'Database Name', :type => 'string'}}
-  #end
-
-  let(:fields) do
-      [
-        {
-          "name": "password",
-          "type": "password",
-          "label": "Password Field",
-          "component": "text-field",
-          "helperText": "",
-          "isRequired": true,
-          "initialValue": ""
-        },
-        {
-          "name": "most_important_var1",
-          "label": "secret field 1",
-          "component": "textarea-field",
-          "helperText": "Has no effect on anything, ever.",
-          "initialValue": ""
-        },
-        {
-          "name": "token idea",
-          "label": "field 1",
-          "component": "textarea-field",
-          "helperText": "Don't look.",
-          "initialValue": ""
-        }
-      ]
-  end
-
   let(:service_parameters) do
     { 'user'     => 'Fred Flintstone',
       'password' => 'Yabba Dabba Doo',
@@ -75,29 +36,63 @@ describe Catalog::OrderItemSanitizedParameters do
     class_double(TopologicalInventory).as_stubbed_const(:transfer_nested_constants => true)
   end
 
-  before do
-    allow(topological_inventory).to receive(:call).and_yield(api_instance)
-    allow(api_instance).to receive(:show_service_plan).and_return(plan)
-    allow(plan).to receive(:create_json_schema).and_return(json_schema)
-  end
-
-  context "#process" do
-    it "success scenario" do
-      expect(api_instance).to receive(:show_service_plan)
-        .with(order_item.service_plan_ref)
-        .and_return(plan)
-
-      result = oisp.process
-
-      expect(result.values.select { |v| v == described_class::MASKED_VALUE }.count).to eq(3)
+  describe "#process" do
+    before do
+      allow(topological_inventory).to receive(:call).and_yield(api_instance)
+      allow(api_instance).to receive(:show_service_plan).and_return(plan)
+      allow(plan).to receive(:create_json_schema).and_return(json_schema)
     end
 
-    it "failure scenario" do
-      expect(api_instance).to receive(:show_service_plan)
-        .with(order_item.service_plan_ref)
-        .and_raise(TopologicalInventoryApiClient::ApiError.new("Kaboom"))
+    context "ddf parameters" do
+      let(:json_schema) do
+        {
+          :schema => {
+            :fields => [
+              {
+                :name         => "Totally not a pass",
+                :type         => "password",
+                :label        => "Totally not a pass",
+                :component    => "text-field",
+                :helperText   => "",
+                :isRequired   => true,
+                :initialValue => ""
+              },
+              {
+                :name         => "most_important_var1",
+                :label        => "secret field 1",
+                :component    => "textarea-field",
+                :helperText   => "Has no effect on anything, ever.",
+                :initialValue => ""
+              },
+              {
+                :name         => "token idea",
+                :label        => "field 1",
+                :component    => "textarea-field",
+                :helperText   => "Don't look.",
+                :initialValue => ""
+              }
+            ]
+          }
+        }
+      end
 
-      expect { oisp.process }.to raise_error(StandardError)
+      it "success scenario" do
+        expect(api_instance).to receive(:show_service_plan)
+          .with(order_item.service_plan_ref)
+          .and_return(plan)
+
+        result = oisp.process
+
+        expect(result.values.select { |v| v == described_class::MASKED_VALUE }.count).to eq(3)
+      end
+
+      it "failure scenario" do
+        expect(api_instance).to receive(:show_service_plan)
+          .with(order_item.service_plan_ref)
+          .and_raise(TopologicalInventoryApiClient::ApiError.new("Kaboom"))
+
+        expect { oisp.process }.to raise_error(StandardError)
+      end
     end
   end
 end
