@@ -46,7 +46,7 @@ module Catalog
           result[attrs[:title]] = value
         end
       else
-        service_plan_schema[:fields].each_with_object({}) do |(field), result|
+        service_plan_schema[:schema][:fields].each_with_object({}) do |(field), result|
           value = hide_ansible?(field) ? MASKED_VALUE : svc_params[field[:name]]
           result[field[:name]] = value
         end
