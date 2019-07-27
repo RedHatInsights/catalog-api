@@ -41,8 +41,6 @@ module ServiceOffering
     # If certain fields are empty populate them from the other fields that we do have.
     def populate_missing_fields
       @params[:service_offering_source_ref] = @service_offering.source_id
-      # Fill up empty fields if they're empty with fields we already have, this is really easy with the ||= and subsequent || operators
-      @params[:long_description] ||= @params[:description] || @params[:display_name]
       @params[:display_name] ||= @params[:name]
       @params
     end
