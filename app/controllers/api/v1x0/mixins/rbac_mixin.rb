@@ -54,9 +54,11 @@ module Api
           raise Catalog::InvalidParameter, str
         end
 
-        def org_admin_check
+        def catalog_admin_check
           return unless RBAC::Access.enabled?
-          raise Catalog::NotAuthorized unless ManageIQ::API::Common::Request.current.user.org_admin?
+
+          access_obj = RBAC::Access.new("portfolios", "write").process
+          raise Catalog::NotAuthorized unless access_obj.catalog_admin?
         end
       end
     end

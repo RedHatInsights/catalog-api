@@ -1,7 +1,7 @@
 module Api
   module V1x0
     class SettingsController < ApplicationController
-      before_action :org_admin_check
+      before_action :catalog_admin_check
 
       def index
         settings = Catalog::TenantSettings.new(tenant)

@@ -7,21 +7,20 @@ describe 'Settings API' do
            })
   end
   let(:retreived_tenant) { Tenant.find(tenant.id) }
+  let(:rbac) { instance_double(RBAC::Access) }
 
-  let(:org_admin_hash) do
-    user = default_user_hash
-    user["identity"]["user"]["is_org_admin"] = true
-    encoded_user_hash(user)
+  before do
+    allow(RBAC::Access).to receive(:new).and_return(rbac)
+    allow(rbac).to receive(:process).and_return(rbac)
   end
 
-  let(:manipulated_headers) do
-    { 'x-rh-identity'            => org_admin_hash,
-      'x-rh-insights-request-id' => 'gobbledygook' }
-  end
+  context "when the user is a catalog admin" do
+    before do
+      allow(rbac).to receive(:catalog_admin?).and_return(true)
+    end
 
-  context "when the user is an org admin" do
     describe "#index" do
-      before { get "#{api}/settings", :headers => manipulated_headers }
+      before { get "#{api}/settings", :headers => default_headers }
 
       it "returns the current settings of the tenant" do
         expect(response).to have_http_status(:ok)
@@ -35,7 +34,7 @@ describe 'Settings API' do
     end
 
     describe "#show" do
-      before { get "#{api}/settings/icon", :headers => manipulated_headers }
+      before { get "#{api}/settings/icon", :headers => default_headers }
 
       it "returns the specified setting" do
         expect(response).to have_http_status(:ok)
@@ -45,7 +44,7 @@ describe 'Settings API' do
 
     describe "#create" do
       let(:params) { { :name => "new_setting", :value => "17" } }
-      before { post "#{api}/settings", :headers => manipulated_headers, :params => params }
+      before { post "#{api}/settings", :headers => default_headers, :params => params }
 
       it "creates a new setting" do
         expect(response).to have_http_status(:ok)
@@ -55,7 +54,7 @@ describe 'Settings API' do
 
     describe "#update" do
       let(:params) { { :value => "<svg rel='stylesheet'>new image!</svg>" } }
-      before { patch "#{api}/settings/icon", :headers => manipulated_headers, :params => params }
+      before { patch "#{api}/settings/icon", :headers => default_headers, :params => params }
 
       it "patches the settings" do
         expect(response).to have_http_status(:ok)
@@ -64,7 +63,7 @@ describe 'Settings API' do
     end
 
     describe "#delete" do
-      before { delete "#{api}/settings/default_workflow", :headers => manipulated_headers }
+      before { delete "#{api}/settings/default_workflow", :headers => default_headers }
 
       it "deletes the specified setting" do
         expect(response).to have_http_status(:no_content)
@@ -75,7 +74,7 @@ describe 'Settings API' do
     context "when the key already exists" do
       describe "#create" do
         let(:params) { { :name => "icon", :value => "17" } }
-        before { post "#{api}/settings", :headers => manipulated_headers, :params => params }
+        before { post "#{api}/settings", :headers => default_headers, :params => params }
 
         it "returns a 422" do
           expect(response).to have_http_status(:unprocessable_entity)
@@ -86,7 +85,7 @@ describe 'Settings API' do
     context "when the key does not exist" do
       describe "#update" do
         let(:params) { { :value => "<svg rel='stylesheet'>new image!</svg>" } }
-        before { patch "#{api}/settings/a_fake_setting", :headers => manipulated_headers, :params => params }
+        before { patch "#{api}/settings/a_fake_setting", :headers => default_headers, :params => params }
 
         it "returns a 404" do
           expect(response).to have_http_status(:not_found)
@@ -94,7 +93,7 @@ describe 'Settings API' do
       end
 
       describe "#delete" do
-        before { delete "#{api}/settings/not_real", :headers => manipulated_headers }
+        before { delete "#{api}/settings/not_real", :headers => default_headers }
 
         it "returns a 404" do
           expect(response).to have_http_status(:not_found)
@@ -103,7 +102,11 @@ describe 'Settings API' do
     end
   end
 
-  context "when the user is not an org admin" do
+  context "when the user is not a catalog admin" do
+    before do
+      allow(rbac).to receive(:catalog_admin?).and_return(false)
+    end
+
     it "does not allow any operations" do
       get "#{api}/settings", :headers => default_headers
 
