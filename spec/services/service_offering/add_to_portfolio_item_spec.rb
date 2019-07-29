@@ -30,6 +30,17 @@ describe ServiceOffering::AddToPortfolioItem do
         expect(result.item.description).to eq(user_defined_description)
       end
     end
+
+    context "when service_offering does not have a long_description" do
+      let(:topology_service_offering) { fully_populated_service_offering.tap { |so| so.long_description = nil } }
+
+      it "should leave long_description set to nil" do
+        ManageIQ::API::Common::Request.with_request(default_request) do
+          result = subject.process
+          expect(result.item.long_description).to be_nil
+        end
+      end
+    end
   end
 
   context "no user provided params" do
