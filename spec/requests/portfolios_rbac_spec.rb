@@ -6,6 +6,8 @@ describe 'Portfolios RBAC API' do
   let(:double_access_obj) { instance_double(RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => [portfolio1.id.to_s, portfolio2.id.to_s]) }
 
   let(:block_access_obj) { instance_double(RBAC::Access, :accessible? => false) }
+  let(:share_resource) { instance_double(RBAC::ShareResource) }
+  let(:unshare_resource) { instance_double(RBAC::UnshareResource) }
 
   describe "GET /portfolios" do
     it 'returns status code 200' do
@@ -94,6 +96,39 @@ describe 'Portfolios RBAC API' do
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to match(/should be an array/)
+    end
+  end
+
+  context "when the permissions array is proper" do
+    before do
+      allow(RBAC::ShareResource).to receive(:new).and_return(share_resource)
+      allow(RBAC::UnshareResource).to receive(:new).and_return(unshare_resource)
+      allow(share_resource).to receive(:process).and_return(share_resource)
+      allow(unshare_resource).to receive(:process).and_return(unshare_resource)
+    end
+
+    describe "#share" do
+      it "goes through validation" do
+        permissions = ["catalog:portfolios:write"]
+        post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
+          :permissions => permissions,
+          :group_uuids => %w[1]
+        }
+
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+
+    describe "#unshare" do
+      it "goes through validation" do
+        permissions = ["catalog:portfolios:write"]
+        post "#{api}/portfolios/#{portfolio1.id}/unshare", :headers => default_headers, :params => {
+          :permissions => permissions,
+          :group_uuids => %w[1]
+        }
+
+        expect(response).to have_http_status(:no_content)
+      end
     end
   end
 end
