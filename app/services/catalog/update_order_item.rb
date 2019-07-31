@@ -40,7 +40,7 @@ module Catalog
       end
     rescue ServiceInstanceWithoutExternalUrl
       Rails.logger.error("Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}")
-      raise "Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}"
+      nil
     end
 
     def mark_item_based_on_status
