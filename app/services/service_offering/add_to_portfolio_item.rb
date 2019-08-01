@@ -16,7 +16,10 @@ module ServiceOffering
 
       # Get the fields that we're going to pull over
       @item = PortfolioItem.create!(generate_attributes)
-      @item.icons << create_icon(@service_offering.service_offering_icon_id) if @service_offering.service_offering_icon_id.present?
+
+      icon = create_icon(@service_offering.service_offering_icon_id) if @service_offering.service_offering_icon_id.present?
+      @item.icons << icon unless icon.nil?
+
       self
     rescue StandardError => e
       Rails.logger.error("Service Offering Ref: #{@params[:service_offering_ref]} #{e.message}")
@@ -47,6 +50,8 @@ module ServiceOffering
 
     def create_icon(icon_id)
       service_offering_icon = TopologicalInventory.call { |topo| topo.show_service_offering_icon(icon_id) }
+      return if service_offering_icon.data.nil?
+
       Icon.create!(
         :data       => service_offering_icon.data,
         :source_ref => service_offering_icon.source_ref,
