@@ -4,5 +4,5 @@ class Icon < ApplicationRecord
   default_scope -> { kept }
 
   belongs_to :portfolio_item
-  validates :data, :presence => true
+  validates :image_id, :presence => true
 end

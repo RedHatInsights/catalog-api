@@ -8,7 +8,7 @@ module Api
       end
 
       def create
-        icon = Icon.create!(icon_params)
+        icon = Catalog::CreateIcon.new(icon_params).process.icon
         render :json => icon
       end
 
@@ -26,8 +26,9 @@ module Api
 
       def raw_icon
         icon = find_icon(params.permit(:icon_id, :portfolio_item_id))
-        send_data(icon.data,
-                  :type        => MimeMagic.by_magic(icon.data).type,
+        image = Image.find(icon.image_id)
+        send_data(image.content,
+                  :type        => MimeMagic.by_magic(image.content).type,
                   :disposition => 'inline')
       end
 
@@ -39,12 +40,13 @@ module Api
       private
 
       def icon_params
-        params.require(:data)
+        params.require(:content)
+        params.require(:filename)
         icon_patch_params
       end
 
       def icon_patch_params
-        params.permit(:data, :source_ref, :source_id, :portfolio_item_id)
+        params.permit(:content, :filename, :source_ref, :source_id, :portfolio_item_id)
       end
 
       def find_icon(ids)

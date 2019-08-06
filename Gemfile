@@ -23,6 +23,7 @@ end
 
 gem 'acts_as_tenant'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
+gem 'dhash-vips' # TODO: Get this working in the container
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.2'
 gem 'manageiq-messaging', '~> 0.1.2', :require => false
