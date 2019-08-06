@@ -7,8 +7,8 @@
 
 if (env.CHANGE_ID) {
     runSmokeTest (
-        ocDeployerBuilderPath: "catalog/catalog-api,catalog/catalog-api-minion",
-        ocDeployerComponentPath: "catalog/catalog-api,catalog/catalog-api-minion-approval,catalog/catalog-api-minion-order",
+        ocDeployerBuilderPath: "catalog/catalog-api",
+        ocDeployerComponentPath: "catalog/catalog-api",
         ocDeployerServiceSets: "catalog,topological-inventory,sources,approval,platform-mq",
         iqePlugins: ["iqe-self-service-portal-plugin"],
         pytestMarker: "catalog_api_smoke",
