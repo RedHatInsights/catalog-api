@@ -19,14 +19,23 @@ module Api
 
       def update
         icon = Icon.find(params.require(:id))
+        if params.key?(:content)
+          params.require(:content)
+          params.require(:filename)
+
+          icon.image.update!(
+            :content   => params.delete(:content),
+            :extension => params.delete(:filename).split(".").last
+          )
+        end
+
         icon.update!(icon_patch_params)
 
         render :json => icon
       end
 
       def raw_icon
-        icon = find_icon(params.permit(:icon_id, :portfolio_item_id))
-        image = Image.find(icon.image_id)
+        image = find_icon(params.permit(:icon_id, :portfolio_item_id)).image
         send_data(image.content,
                   :type        => MimeMagic.by_magic(image.content).type,
                   :disposition => 'inline')

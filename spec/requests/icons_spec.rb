@@ -1,7 +1,8 @@
 describe "IconsRequests", :type => :request do
   let(:tenant) { create(:tenant) }
   let!(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
-  let!(:icon) { create(:icon, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+  let(:image) { create(:image, :extension => "svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :tenant_id => tenant.id) }
+  let!(:icon) { create(:icon, :image_id => image.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
   describe "#show" do
     before { get "#{api}/icons/#{icon.id}", :headers => default_headers }
@@ -31,14 +32,14 @@ describe "IconsRequests", :type => :request do
     before { post "#{api}/icons", :params => params, :headers => default_headers }
 
     context "when providing proper parameters" do
-      let(:params) { { :data => "<svg rel=\"stylesheet\">thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
+      let(:params) { { :filename => "test.svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
       end
 
       it "returns the created icon" do
-        expect(json["data"]).to eq params[:data]
+        expect(json["image_id"]).to be_truthy
         expect(json["source_id"]).to eq params[:source_id]
       end
     end
@@ -53,7 +54,7 @@ describe "IconsRequests", :type => :request do
   end
 
   describe "#update" do
-    let(:params) { { :data => "<svg rel=\"new_data\">thing</svg" } }
+    let(:params) { { :filename => "new.svg", :content => "<svg rel=\"new_data\">thing</svg" } }
     before { patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers }
 
     it "returns a 200" do
@@ -61,7 +62,7 @@ describe "IconsRequests", :type => :request do
     end
 
     it "updates the fields passed in" do
-      expect(json["data"]).to eq params[:data]
+      expect(icon.image.content).to eq params[:content]
     end
   end
 

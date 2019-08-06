@@ -1,7 +1,7 @@
 class CreateImageTable < ActiveRecord::Migration[5.2]
   def up
     create_table :images do |t|
-      t.binary :content
+      t.binary(:content)
       t.string :type
       t.bigint :tenant_id
       t.index :tenant_id

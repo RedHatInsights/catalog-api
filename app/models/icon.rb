@@ -5,4 +5,8 @@ class Icon < ApplicationRecord
 
   belongs_to :portfolio_item
   validates :image_id, :presence => true
+
+  def image
+    Image.find(image_id)
+  end
 end

@@ -421,7 +421,7 @@
           "404": {
             "description": "The Portfolio Object was not found."
           },
-          "422": { 
+          "422": {
             "description": "One or more of the RBAC groups was not found"
           }
         }
@@ -1191,11 +1191,11 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/UnprocessableEntity"
-          },
           "404": {
             "description": "Order not found"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
           }
         }
       }
@@ -2658,10 +2658,10 @@
             "description": "The unique identifier for this Service Offering Icon",
             "readOnly": true
           },
-          "data": {
+          "image_id": {
             "type": "string",
-            "title": "Data",
-            "description": "The raw SVG data for this icon",
+            "title": "Image ID",
+            "description": "The Image reference containing the binary image data for this icon",
             "readOnly": false
           },
           "source_ref": {
@@ -2674,6 +2674,17 @@
             "type": "string",
             "title": "Source ID",
             "description": "The source ID for this icon",
+            "readOnly": true
+          }
+        }
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "ID",
+            "description": "The unique identifier for this Service Offering Icon",
             "readOnly": true
           }
         }

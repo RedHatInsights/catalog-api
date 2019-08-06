@@ -10,7 +10,7 @@ module Catalog
 
     def process
       image = Image.create!(:extension => @extension, :content => image_content)
-      @icon = Icon.create!(@params.merge!(:image_id => image.id))
+      @icon = Icon.create!(@params.merge(:image_id => image.id))
 
       self
     end
