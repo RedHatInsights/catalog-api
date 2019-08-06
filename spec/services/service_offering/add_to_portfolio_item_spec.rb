@@ -30,6 +30,17 @@ describe ServiceOffering::AddToPortfolioItem do
         expect(result.item.description).to eq(user_defined_description)
       end
     end
+
+    context "when service_offering does not have a long_description" do
+      let(:topology_service_offering) { fully_populated_service_offering.tap { |so| so.long_description = nil } }
+
+      it "should leave long_description set to nil" do
+        ManageIQ::API::Common::Request.with_request(default_request) do
+          result = subject.process
+          expect(result.item.long_description).to be_nil
+        end
+      end
+    end
   end
 
   context "no user provided params" do
@@ -40,9 +51,31 @@ describe ServiceOffering::AddToPortfolioItem do
         expect(result.item.name).to eq("test name")
         expect(result.item.description).to eq("test description")
 
-        expect(result.item.icon.data).to eq service_offering_icon.data
-        expect(result.item.icon.source_id).to eq service_offering_icon.source_id
-        expect(result.item.icon.source_ref).to eq service_offering_icon.source_ref
+        expect(result.item.icons.first.data).to eq service_offering_icon.data
+        expect(result.item.icons.first.source_id).to eq service_offering_icon.source_id
+        expect(result.item.icons.first.source_ref).to eq service_offering_icon.source_ref
+      end
+    end
+  end
+
+  context "when there is no icon" do
+    let(:topology_service_offering)  { fully_populated_service_offering.tap { |so| so.service_offering_icon_id = nil } }
+
+    it "does not copy over the icon" do
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        result = subject.process
+        expect(result.item.icons.count).to eq 0
+      end
+    end
+  end
+
+  context 'when the icon has no data' do
+    let(:service_offering_icon) { fully_populated_service_offering_icon.tap { |icon| icon.data = nil } }
+
+    it "does not copy over the icon" do
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        result = subject.process
+        expect(result.item.icons.count).to eq 0
       end
     end
   end

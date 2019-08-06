@@ -13,7 +13,7 @@ module Api
       end
 
       def destroy
-        Icon.find(params.require(:id)).destroy
+        Catalog::SoftDelete.new(Icon.find(params.require(:id))).process
         head :no_content
       end
 
@@ -29,6 +29,11 @@ module Api
         send_data(icon.data,
                   :type        => MimeMagic.by_magic(icon.data).type,
                   :disposition => 'inline')
+      end
+
+      def override_icon
+        overriden_icon = Catalog::OverrideIcon.new(params.require(:icon_id), params.require(:portfolio_item_id))
+        render :json => overriden_icon.process.icon
       end
 
       private

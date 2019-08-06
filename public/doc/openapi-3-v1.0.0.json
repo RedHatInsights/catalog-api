@@ -1639,6 +1639,51 @@
         }
       }
     },
+    "/icons/{id}/override": {
+      "post": {
+        "tags": [
+          "Icon"
+        ],
+        "summary": "Override the specified Portfolio Item's Icon",
+        "operationId": "overrideIcon",
+        "description": "Override the specified Portfolio Item's Icon",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The new Icon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Icon"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Icon Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideIcon"
+              }
+            }
+          }
+        }
+      }
+    },
     "/portfolio_items/{portfolio_item_id}/next_name": {
       "get": {
         "tags": [
@@ -1954,6 +1999,17 @@
             "title": "Icon Id",
             "example": "100",
             "description": "This is the ID of the icon object."
+          }
+        }
+      },
+      "OverrideIcon": {
+        "type": "object",
+        "properties": {
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "example": "100",
+            "description": "Tthe ID of the portfolio which the icon will override"
           }
         }
       },

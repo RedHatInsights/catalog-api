@@ -40,16 +40,20 @@ module Catalog
 
     def sanitized_parameters
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
-      service_plan_schema[:properties].each_with_object({}) do |(key, attrs), result|
-        value = hide?(key, attrs) ? MASKED_VALUE : svc_params[key]
-        result[attrs[:title]] = value
+      fields.each_with_object({}) do |field, result|
+        value = mask_value?(field) ? MASKED_VALUE : svc_params[field[:name]]
+        result[field[:name]] = value
       end
     end
 
-    def hide?(key, attrs)
-      FILTERED_PARAMS.reduce(attrs[:format] == "password") do |result, param|
-        result || /#{param}/i.match?(attrs[:title]) || /#{param}/i.match(key)
+    def mask_value?(field)
+      FILTERED_PARAMS.reduce(field[:type] == "password") do |result, param|
+        result || /#{param}/i.match?(field[:name]) || /#{param}/i.match?(field[:label])
       end
+    end
+
+    def fields
+      service_plan_schema.dig(:schema, :fields) || []
     end
   end
 end

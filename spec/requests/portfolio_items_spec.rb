@@ -373,7 +373,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       it "adds the icon to the portfolio_item" do
         portfolio_item.reload
-        expect(portfolio_item.icon.id).to eq icon.id
+        expect(portfolio_item.icons.first.id).to eq icon.id
       end
     end
   end

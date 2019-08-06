@@ -1,3 +1,5 @@
+require "manageiq-messaging"
+
 describe Catalog::UpdateOrderItem do
   describe "#process" do
     let(:client) { double(:client) }
@@ -100,8 +102,30 @@ describe Catalog::UpdateOrderItem do
               allow(api_instance).to receive(:show_service_instance).with(service_instance_id).and_return(service_instance_no_external_url)
             end
 
-            it "raises an error" do
-              expect { subject.process }.to raise_error("Could not find an external url on service instance (id: 321) attached to task_id: 123")
+            it "updates the order item to be completed" do
+              subject.process
+              item.reload
+              expect(item.state).to eq("Completed")
+            end
+
+            it "creates a progress message about the completion" do
+              subject.process
+              latest_progress_message = ProgressMessage.last
+              expect(latest_progress_message.level).to eq("info")
+              expect(latest_progress_message.message).to eq("Order Item Complete")
+            end
+
+            it "sets the external_url to nil" do
+              subject.process
+              item.reload
+              expect(item.external_url).to eq(nil)
+            end
+
+            it "finalizes the order" do
+              expect(order.state).to_not eq("Completed")
+              subject.process
+              order.reload
+              expect(order.state).to eq("Completed")
             end
           end
         end
