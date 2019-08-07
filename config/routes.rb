@@ -33,7 +33,9 @@ Rails.application.routes.draw do
         resources :order_items,           :only => [:create, :index, :show]
       end
       resources :order_items,           :only => [:index, :show, :destroy] do
-        resources :progress_messages,     :only => [:index]
+        resources :progress_messages,     :only => [:index, :destroy] do
+          post :restore, :to => "progress_messages#restore"
+        end
         resources :approval_requests,     :only => [:index]
 
         post :restore, :to => "order_items#restore"

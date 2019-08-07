@@ -123,6 +123,8 @@ ActiveRecord::Schema.define(version: 2019_08_07_153851) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_progress_messages_on_discarded_at"
     t.index ["tenant_id"], name: "index_progress_messages_on_tenant_id"
   end
 
