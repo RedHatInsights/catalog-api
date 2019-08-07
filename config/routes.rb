@@ -32,9 +32,11 @@ Rails.application.routes.draw do
       resources :orders,                :only => [:create, :index] do
         resources :order_items,           :only => [:create, :index, :show]
       end
-      resources :order_items,           :only => [:index, :show] do
+      resources :order_items,           :only => [:index, :show, :destroy] do
         resources :progress_messages,     :only => [:index]
         resources :approval_requests,     :only => [:index]
+
+        post :restore, :to => "order_items#restore"
       end
       post '/portfolios/:portfolio_id/portfolio_items', :to => "portfolios#add_portfolio_item_to_portfolio", :as => 'add_portfolio_item_to_portfolio'
       post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'
