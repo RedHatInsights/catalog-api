@@ -32,7 +32,7 @@ describe "IconsRequests", :type => :request do
     before { post "#{api}/icons", :params => params, :headers => default_headers }
 
     context "when providing proper parameters" do
-      let(:params) { { :filename => "test.svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
+      let(:params) { { :filename => "test.svg", :content => "<svg rel=\"stylesheet\">creating a thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -41,6 +41,14 @@ describe "IconsRequests", :type => :request do
       it "returns the created icon" do
         expect(json["image_id"]).to be_truthy
         expect(json["source_id"]).to eq params[:source_id]
+      end
+    end
+
+    context "when uploading a duplicate icon" do
+      let(:params) { { :filename => "test.svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
+
+      it "uses the reference from the one that is already there" do
+        expect(json["image_id"]).to eq image.id.to_s
       end
     end
 
@@ -55,7 +63,11 @@ describe "IconsRequests", :type => :request do
 
   describe "#update" do
     let(:params) { { :filename => "new.svg", :content => "<svg rel=\"new_data\">thing</svg" } }
-    before { patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers }
+
+    before do
+      patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers
+      icon.reload
+    end
 
     it "returns a 200" do
       expect(response).to have_http_status(:ok)
@@ -63,6 +75,10 @@ describe "IconsRequests", :type => :request do
 
     it "updates the fields passed in" do
       expect(icon.image.content).to eq params[:content]
+    end
+
+    it "updated to a new image record" do
+      expect(icon.image_id).to_not eq image.id
     end
   end
 

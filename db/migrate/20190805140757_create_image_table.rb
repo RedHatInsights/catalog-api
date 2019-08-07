@@ -2,17 +2,26 @@ class CreateImageTable < ActiveRecord::Migration[5.2]
   def up
     create_table :images do |t|
       t.binary(:content)
-      t.string :type
+      t.string :extension
       t.bigint :tenant_id
       t.index :tenant_id
 
       t.timestamps
     end
 
-    ### TODO: move all current icons to new table.
+    add_column :icons, :image_id, :bigint
+
+    Icon.all.each do |icon|
+      image = Image.create!(
+        :content   => icon.data,
+        :extension => "svg",
+        :tenant_id => icon.tenant_id
+      )
+
+      icon.update(:image_id => image.id)
+    end
 
     remove_column :icons, :data
-    add_column :icons, :image_id, :bigint
   end
 
   def down

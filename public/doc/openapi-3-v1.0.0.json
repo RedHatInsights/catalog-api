@@ -2927,11 +2927,7 @@
             "items": {
               "type": "string"
             },
-            "example": [
-              "catalog:portfolios:read",
-              "catalog:portfolios:write",
-              "catalog:portfolios:order"
-            ]
+            "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
           },
           "group_uuids": {
             "type": "array",

@@ -22,11 +22,12 @@ module Api
         if params.key?(:content)
           params.require(:content)
           params.require(:filename)
+          new_image = Image.new(:content   => params.delete(:content),
+                                :extension => params.delete(:filename).split(".").last)
+          image_id = Catalog::DuplicateImage.new(new_image).process.image_id
+          Image.destroy(icon.image_id) if Icon.where(:image_id => icon.image_id).count.zero?
 
-          icon.image.update!(
-            :content   => params.delete(:content),
-            :extension => params.delete(:filename).split(".").last
-          )
+          icon.update(:image_id => image_id)
         end
 
         icon.update!(icon_patch_params)

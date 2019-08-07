@@ -22,7 +22,7 @@ group :development do
 end
 
 gem 'acts_as_tenant'
-gem 'dhash-vips' # TODO: Get this working in the container
+gem 'dhash'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.2'
