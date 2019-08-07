@@ -17,6 +17,9 @@ module Catalog
       end
 
       self
+    rescue Catalog::ApprovalError => e
+      Rails.logger.error("Approval error while canceling order: #{e.message}")
+      raise uncancelable_error
     end
 
     private
