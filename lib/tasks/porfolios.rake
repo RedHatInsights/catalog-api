@@ -24,7 +24,7 @@ namespace :portfolios do
 
   def delete_roles(current_user)
     roles = fetch_roles
-    ActsAsTenant.with_tenant(current_tenant(current_user)) do  
+    ActsAsTenant.with_tenant(current_tenant(current_user)) do
       Portfolio.with_discarded.discarded.each do |portfolio|
         role_name_prefix = "catalog-portfolios-#{portfolio.id}-"
         matching_roles = roles.select do |role|
