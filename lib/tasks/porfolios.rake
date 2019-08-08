@@ -31,9 +31,9 @@ namespace :portfolios do
           role.name.start_with?(role_name_prefix)
         end
 
-        matching_roles.each do |role|
-          puts "Deleting role #{role.name}"
-          RBAC::Service.call(RBACApiClient::RoleApi) do |api|
+        RBAC::Service.call(RBACApiClient::RoleApi) do |api|
+          matching_roles.each do |role|
+            puts "Deleting role #{role.name}"
             api.delete_role(role.uuid)
           end
         end
