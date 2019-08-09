@@ -50,6 +50,14 @@ describe "ProgressMessageRequests", :type => :request do
       it "returns the restore_key in the body" do
         expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(ProgressMessage.with_discarded.find(progress_message.id).discarded_at.to_s)
       end
+
+      context "when attempting to delete a progress message that is not part of the order item" do
+        let!(:progress_message) { create(:progress_message, :order_item_id => (order_item.id + 1).to_s, :tenant_id => tenant.id) }
+
+        it "returns a 404" do
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
 
     describe "POST /order_items/:order_item_id/progress_messages/:id/restore" do
@@ -77,6 +85,14 @@ describe "ProgressMessageRequests", :type => :request do
 
         it "returns a 403" do
           expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      context "when attempting to restore a progress message that is not part of the order item" do
+        let!(:progress_message) { create(:progress_message, :order_item_id => (order_item.id + 1).to_s, :tenant_id => tenant.id) }
+
+        it "returns a 404" do
+          expect(response).to have_http_status(:not_found)
         end
       end
     end
