@@ -975,7 +975,9 @@
             "$ref": "#/components/responses/Forbidden"
           }
         }
-      },
+      }
+    },
+    "/orders/{id}": {
       "delete": {
         "tags": [
           "Order"
@@ -1011,7 +1013,7 @@
           "Order"
         ],
         "summary": "Gets a list of items in a given order",
-        "operationId": "listOrderItems",
+        "operationId": "listOrderItemsFromOrder",
         "description": "Gets a list of items associated with an order.\n",
         "parameters": [
           {
@@ -1090,7 +1092,7 @@
           "Order"
         ],
         "summary": "Gets an individual order item from a given order",
-        "operationId": "showOrderItem",
+        "operationId": "showOrderItemFromOrder",
         "description": "Gets an order item associated with an order.\n",
         "parameters": [
           {
@@ -1282,34 +1284,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "OrderItem"
-        ],
-        "summary": "Delete an existing OrderItem",
-        "operationId": "destroyOrderItem",
-        "description": "Deletes the order item  based on order item ID passed\n",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Order item deleted.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RestoreKey"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Order item not found."
           }
         }
       }
@@ -1515,10 +1489,10 @@
         "description": "Restores the progress message specified by the progress message and order item IDs.\n",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/OrderItemID"
           },
           {
-            "$ref": "#/components/parameters/OrderItemID"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "responses": {

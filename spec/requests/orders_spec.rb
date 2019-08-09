@@ -142,9 +142,7 @@ describe "OrderRequests", :type => :request do
 
     before do
       order.discard
-      post "/#{api}/orders/#{order.id}/restore",
-        :headers => default_headers,
-        :params  => params
+      post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
     end
 
     context "when restoring an order is successful" do

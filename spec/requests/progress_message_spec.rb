@@ -58,9 +58,7 @@ describe "ProgressMessageRequests", :type => :request do
 
       before do
         progress_message.discard
-        post "/#{api}/order_items/#{order_item.id}/progress_messages/#{progress_message.id}/restore",
-          :headers => default_headers,
-          :params  => params
+        post "/#{api}/order_items/#{order_item.id}/progress_messages/#{progress_message.id}/restore", :headers => default_headers, :params => params
       end
 
       context "when restoring a progress_message is successful" do

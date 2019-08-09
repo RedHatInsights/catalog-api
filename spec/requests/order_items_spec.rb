@@ -113,9 +113,7 @@ describe "OrderItemsRequests", :type => :request do
 
     before do
       order_item.discard
-      post "/#{api}/order_items/#{order_item.id}/restore",
-        :headers => default_headers,
-        :params  => params
+      post "/#{api}/order_items/#{order_item.id}/restore", :headers => default_headers, :params => params
     end
 
     context "when restoring a progress_message is successful" do
