@@ -38,7 +38,7 @@ describe Catalog::UpdateOrderItem do
 
       context "when the status of the task is ok" do
         let(:status) { "ok" }
-        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => service_instance_id}}.to_json) }
+        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => service_instance_id}}) }
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
         let(:service_instance_no_external_url) { TopologicalInventoryApiClient::ServiceInstance.new }
 
