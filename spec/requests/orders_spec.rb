@@ -119,20 +119,38 @@ describe "OrderRequests", :type => :request do
   end
 
   describe "DELETE /orders/:id" do
-    before do
-      delete "/#{api}/orders/#{order.id}", :headers => default_headers
+    context "when deleting an order is sucessful" do
+      before do
+        delete "/#{api}/orders/#{order.id}", :headers => default_headers
+      end
+
+      it "deletes the record" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "sets the discarded_at column" do
+        expect(Order.with_discarded.find_by(:id => order.id).discarded_at).to_not be_nil
+      end
+
+      it "returns the restore_key in the body" do
+        expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(Order.with_discarded.find(order.id).discarded_at.to_s)
+      end
     end
 
-    it "deletes the record" do
-      expect(response).to have_http_status(:ok)
-    end
+    context "when deleting an order where a linked order item fails" do
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
 
-    it "sets the discarded_at column" do
-      expect(Order.with_discarded.find_by(:id => order.id).discarded_at).to_not be_nil
-    end
+      before do
+        order.order_items << order_item
+        allow(Order).to receive(:find).with(order.id.to_s).and_return(order)
+        allow(order_item).to receive(:discard).and_return(false)
+        delete "/#{api}/orders/#{order.id}", :headers => default_headers
+      end
 
-    it "returns the restore_key in the body" do
-      expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(Order.with_discarded.find(order.id).discarded_at.to_s)
+      it "returns a 422" do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 
@@ -140,12 +158,12 @@ describe "OrderRequests", :type => :request do
     let(:restore_key) { Digest::SHA1.hexdigest(order.discarded_at.to_s) }
     let(:params) { {:restore_key => restore_key} }
 
-    before do
-      order.discard
-      post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
-    end
-
     context "when restoring an order is successful" do
+      before do
+        order.discard
+        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+      end
+
       it "returns a 200" do
         expect(response).to have_http_status :ok
       end
@@ -155,11 +173,34 @@ describe "OrderRequests", :type => :request do
       end
     end
 
-    context "when restoring a progress_message with the wrong restore key" do
+    context "when restoring an order with the wrong restore key" do
       let(:restore_key) { "MrMaliciousRestoreKey" }
+
+      before do
+        order.discard
+        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+      end
 
       it "returns a 403" do
         expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "when restoring an order where a linked order item fails to be restored" do
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+
+      before do
+        order.order_items << order_item
+        order.discard
+        allow(Order).to receive_message_chain(:with_discarded, :discarded, :find).with(order.id.to_s).and_return(order)
+        allow(order).to receive_message_chain(:order_items, :with_discarded, :discarded).and_return([order_item])
+        allow(order_item).to receive(:undiscard).and_return(false)
+        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+      end
+
+      it "returns a 422" do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
