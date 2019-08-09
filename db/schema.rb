@@ -129,6 +129,7 @@ ActiveRecord::Schema.define(version: 2019_07_18_144713) do
     t.bigint "external_tenant"
     t.string "name"
     t.string "description"
+    t.jsonb "settings", default: {}
     t.index ["external_tenant"], name: "index_tenants_on_external_tenant"
   end
 

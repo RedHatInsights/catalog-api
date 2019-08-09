@@ -1,0 +1,22 @@
+{
+  "title": "Tenant Settings",
+  "description": "Catalog Tenant Settings",
+  "type": "object",
+  "required": [
+    "default_workflow"
+  ],
+  "properties": {
+    "default_workflow": {
+      "type": "string",
+      "title": "Default Workflow",
+      "enum": [
+          "Auto-Approve"
+        ]
+    },
+    "icon": {
+      "type": "string",
+      "title": "Icon",
+      "default": ""
+    }
+  }
+}

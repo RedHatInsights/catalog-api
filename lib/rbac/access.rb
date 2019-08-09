@@ -36,6 +36,11 @@ module RBAC
       @ids.include?('*') ? false : owner_scope_filter?
     end
 
+    def catalog_admin?
+      generate_ids
+      @ids.include?('*')
+    end
+
     def self.enabled?
       ENV['BYPASS_RBAC'].blank?
     end

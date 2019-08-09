@@ -58,6 +58,7 @@ Rails.application.routes.draw do
         post :override, :to => 'icons#override_icon'
         get :icon_data, :to => 'icons#raw_icon'
       end
+      resources :settings
     end
   end
 end
