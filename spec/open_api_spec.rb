@@ -6,7 +6,7 @@ describe "OpenAPI stuff" do
       next if r.engine? # Don't care right now...
       next if r.action == "invalid_url_error"
 
-      array << {:verb => r.verb, :path => r.path.split("(").first.sub(/:[_a-z]*id/, ":id")}
+      array << {:verb => r.verb, :path => r.path.split("(").first.gsub(/:[_a-z]*id/, ":id")}
     end
   end
 
