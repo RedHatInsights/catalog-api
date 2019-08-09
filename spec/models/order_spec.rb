@@ -12,4 +12,40 @@ describe Order do
       end
     end
   end
+
+  describe "#discard before hook" do
+    context "when the order has order items" do
+      let!(:order_item) { create(:order_item, :order_id => order1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+
+      it "destroys order_items associated with the order" do
+        order1.order_items << order_item
+        order1.discard
+        expect(Order.find_by(:id => order1.id)).to be_nil
+        expect(OrderItem.find_by(:id => order_item.id)).to be_nil
+      end
+    end
+  end
+
+  describe "#undiscard before hook" do
+    context "when the order has order items" do
+      let!(:order_item) { create(:order_item, :order_id => order1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+
+      before do
+        order1.order_items << order_item
+        order1.save
+        order1.discard
+      end
+
+      it "restores the order items associated with the order" do
+        expect(Order.find_by(:id => order1.id)).to be_nil
+        expect(OrderItem.find_by(:id => order_item.id)).to be_nil
+        order1 = Order.with_discarded.discarded.first
+        order1.undiscard
+        expect(Order.find_by(:id => order1.id)).to_not be_nil
+        expect(OrderItem.find_by(:id => order_item.id)).to_not be_nil
+      end
+    end
+  end
 end

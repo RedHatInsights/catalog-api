@@ -117,4 +117,52 @@ describe "OrderRequests", :type => :request do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  describe "DELETE /orders/:id" do
+    before do
+      delete "/#{api}/orders/#{order.id}", :headers => default_headers
+    end
+
+    it "deletes the record" do
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "sets the discarded_at column" do
+      expect(Order.with_discarded.find_by(:id => order.id).discarded_at).to_not be_nil
+    end
+
+    it "returns the restore_key in the body" do
+      expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(Order.with_discarded.find(order.id).discarded_at.to_s)
+    end
+  end
+
+  describe "POST /orders/:id/restore" do
+    let(:restore_key) { Digest::SHA1.hexdigest(order.discarded_at.to_s) }
+    let(:params) { {:restore_key => restore_key} }
+
+    before do
+      order.discard
+      post "/#{api}/orders/#{order.id}/restore",
+        :headers => default_headers,
+        :params  => params
+    end
+
+    context "when restoring an order is successful" do
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the restored record" do
+        expect(json["id"]).to eq order.id.to_s
+      end
+    end
+
+    context "when restoring a progress_message with the wrong restore key" do
+      let(:restore_key) { "MrMaliciousRestoreKey" }
+
+      it "returns a 403" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
 end
