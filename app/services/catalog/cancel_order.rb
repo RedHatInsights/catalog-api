@@ -35,7 +35,7 @@ module Catalog
     def raise_uncancelable_error
       error_message = "Order #{@order.id} is not cancelable in its current state: #{@order.state}"
       Rails.logger.error(error_message)
-      raise Catalog::OrderUncancelable.new(error_message)
+      raise Catalog::OrderUncancelable, error_message
     end
   end
 end
