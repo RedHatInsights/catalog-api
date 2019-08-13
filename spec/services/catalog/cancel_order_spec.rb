@@ -21,7 +21,7 @@ describe Catalog::CancelOrder do
       let(:state) { "Completed" }
 
       it "raises an error" do
-        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable, "Order #{order.id} is not cancelable in its current state")
+        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable, "Order #{order.id} is not cancelable in its current state: #{order.state}")
       end
     end
 
@@ -29,7 +29,15 @@ describe Catalog::CancelOrder do
       let(:state) { "Failed" }
 
       it "raises an error" do
-        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable, "Order #{order.id} is not cancelable in its current state")
+        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable, "Order #{order.id} is not cancelable in its current state: #{order.state}")
+      end
+    end
+
+    describe "when the state of the order is Ordered" do
+      let(:state) { "Ordered" }
+
+      it "raises an error" do
+        expect { subject.process }.to raise_exception(Catalog::OrderUncancelable, "Order #{order.id} is not cancelable in its current state: #{order.state}")
       end
     end
 
@@ -38,12 +46,24 @@ describe Catalog::CancelOrder do
       let(:cancel_order_url) { "http://localhost/api/approval/v1.0/requests/#{approval_request.id}/actions" }
 
       before do
-        stub_request(:post, cancel_order_url).with(:body => {"operation" => "cancel"})
+        stub_request(:post, cancel_order_url).with(:body => {"operation" => "cancel"}).to_return(api_response)
       end
 
-      it "calls the approval api" do
-        subject.process
-        expect(a_request(:post, cancel_order_url).with(:body => {"operation" => "cancel"})).to have_been_made
+      context "when the request returns a 200" do
+        let(:api_response) { {:status => 200} }
+
+        it "calls the approval api" do
+          subject.process
+          expect(a_request(:post, cancel_order_url).with(:body => {"operation" => "cancel"})).to have_been_made
+        end
+      end
+
+      context "when the request returns a 500" do
+        let(:api_response) { {:status => 500} }
+
+        it "rescues the exception" do
+          expect { subject.process }.to raise_exception(Catalog::OrderUncancelable)
+        end
       end
     end
   end
