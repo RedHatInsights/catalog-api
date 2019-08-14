@@ -1,6 +1,8 @@
 module Catalog
   class NotifyApprovalRequest
     EVENT_REQUEST_FINISHED = "request_finished".freeze
+    EVENT_REQUEST_CANCELED = "request_canceled".freeze
+    COMPLETED_EVENTS = [EVENT_REQUEST_FINISHED, EVENT_REQUEST_CANCELED].freeze
 
     attr_reader :notification_object
 
@@ -11,7 +13,7 @@ module Catalog
     end
 
     def process
-      return self unless request_finished?
+      return self unless request_complete?
 
       @notification_object.update(:state => @payload["decision"], :reason => @payload["reason"])
       Catalog::ApprovalTransition.new(@notification_object.order_item.id).process
@@ -21,8 +23,8 @@ module Catalog
 
     private
 
-    def request_finished?
-      @message == EVENT_REQUEST_FINISHED
+    def request_complete?
+      COMPLETED_EVENTS.include?(@message)
     end
   end
 end
