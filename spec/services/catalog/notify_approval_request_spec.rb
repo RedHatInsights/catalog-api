@@ -8,7 +8,6 @@ describe Catalog::NotifyApprovalRequest do
       let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
       let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id, :approval_request_ref => "123") }
       let(:ref_id) { "123" }
-      let(:payload) { {"payload" => {"decision" => decision, "reason" => "because" }, "message" => message} }
       let(:approval_transition) { instance_double("Catalog::ApprovalTransition") }
 
       before do
@@ -19,7 +18,7 @@ describe Catalog::NotifyApprovalRequest do
       end
 
       context "when the message is request_finished" do
-        let(:decision) { "approved" }
+        let(:payload) { {"payload" => {"decision" => "approved", "reason" => "because"}, "message" => message} }
         let(:message) { "request_finished" }
 
         it "updates the state" do
@@ -41,7 +40,7 @@ describe Catalog::NotifyApprovalRequest do
       end
 
       context "when the message is request_canceled" do
-        let(:decision) { "canceled" }
+        let(:payload) { {"payload" => {"reason" => "because"}, "message" => message} }
         let(:message) { "request_canceled" }
 
         it "updates the state" do
@@ -63,7 +62,7 @@ describe Catalog::NotifyApprovalRequest do
       end
 
       context "when the message is anything else" do
-        let(:decision) { "approved" }
+        let(:payload) { {"payload" => {"decision" => "approved", "reason" => "because"}, "message" => message} }
         let(:message) { "not_request_finished" }
 
         it "does not update the state" do

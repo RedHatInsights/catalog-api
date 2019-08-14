@@ -15,7 +15,7 @@ module Catalog
     def process
       return self unless request_complete?
 
-      @notification_object.update(:state => @payload["decision"], :reason => @payload["reason"])
+      update_state
       Catalog::ApprovalTransition.new(@notification_object.order_item.id).process
 
       self
@@ -25,6 +25,17 @@ module Catalog
 
     def request_complete?
       COMPLETED_EVENTS.include?(@message)
+    end
+
+    def update_state
+      case @message
+      when EVENT_REQUEST_CANCELED
+        state = "canceled"
+      when EVENT_REQUEST_FINISHED
+        state = @payload["decision"]
+      end
+
+      @notification_object.update(:state => state, :reason => @payload["reason"])
     end
   end
 end
