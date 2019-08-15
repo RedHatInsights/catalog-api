@@ -7,16 +7,10 @@ describe 'Settings API' do
            })
   end
   let(:retreived_tenant) { Tenant.find(tenant.id) }
-  let(:rbac) { instance_double(RBAC::Access) }
-
-  before do
-    allow(RBAC::Access).to receive(:new).and_return(rbac)
-    allow(rbac).to receive(:process).and_return(rbac)
-  end
 
   context "when the user is a catalog admin" do
     before do
-      allow(rbac).to receive(:catalog_admin?).and_return(true)
+      allow(RBAC::Roles).to receive(:assigned_role?).and_return(true)
     end
 
     describe "#index" do
@@ -104,7 +98,7 @@ describe 'Settings API' do
 
   context "when the user is not a catalog admin" do
     before do
-      allow(rbac).to receive(:catalog_admin?).and_return(false)
+      allow(RBAC::Roles).to receive(:assigned_role?).and_return(false)
     end
 
     it "does not allow any operations" do
