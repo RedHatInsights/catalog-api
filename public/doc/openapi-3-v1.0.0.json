@@ -2044,8 +2044,7 @@
       "Portfolio": {
         "type": "object",
         "required": [
-          "name",
-          "description"
+          "name"
         ],
         "properties": {
           "id": {
@@ -2199,6 +2198,9 @@
       },
       "PortfolioItem": {
         "type": "object",
+        "required": [
+          "name"
+        ],
         "properties": {
           "id": {
             "type": "string",
