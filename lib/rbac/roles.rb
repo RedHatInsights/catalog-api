@@ -40,11 +40,11 @@ module RBAC
     end
 
     def self.assigned_role?(role_name)
-      opts = { :limit => 100,
+      opts = { :name  => role_name,
                :scope => 'principal' }
 
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
-        RBAC::Service.paginate(api_instance, :list_roles, opts).any? { |role| role.name == role_name }
+        RBAC::Service.paginate(api_instance, :list_roles, opts).count.positive?
       end
     end
 

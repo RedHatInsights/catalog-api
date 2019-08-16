@@ -9,9 +9,7 @@ describe 'Settings API' do
   let(:retreived_tenant) { Tenant.find(tenant.id) }
 
   context "when the user is a catalog admin" do
-    before do
-      allow(RBAC::Roles).to receive(:assigned_role?).and_return(true)
-    end
+    before { allow(RBAC::Roles).to receive(:assigned_role?).with("Catalog Administrator").and_return(true) }
 
     describe "#index" do
       before { get "#{api}/settings", :headers => default_headers }
@@ -97,9 +95,7 @@ describe 'Settings API' do
   end
 
   context "when the user is not a catalog admin" do
-    before do
-      allow(RBAC::Roles).to receive(:assigned_role?).and_return(false)
-    end
+    before { allow(RBAC::Roles).to receive(:assigned_role?).with("Catalog Administrator").and_return(false) }
 
     it "does not allow any operations" do
       get "#{api}/settings", :headers => default_headers
