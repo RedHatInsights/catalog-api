@@ -1,6 +1,6 @@
 module Catalog
   class CancelOrder
-    UNCANCELABLE_STATES = %w[Completed Failed].freeze
+    UNCANCELABLE_STATES = %w[Completed Failed Ordered].freeze
     attr_reader :order
 
     def initialize(order_id)
@@ -8,7 +8,7 @@ module Catalog
     end
 
     def process
-      raise uncancelable_error if UNCANCELABLE_STATES.include?(@order.state)
+      raise_uncancelable_error if UNCANCELABLE_STATES.include?(@order.state)
 
       approval_requests.each do |approval_request|
         Approval.call_action_api do |api|
@@ -17,6 +17,9 @@ module Catalog
       end
 
       self
+    rescue Catalog::ApprovalError => e
+      Rails.logger.error("Approval error while canceling order: #{e.message}")
+      raise_uncancelable_error
     end
 
     private
@@ -29,8 +32,10 @@ module Catalog
       @canceled_action ||= ApprovalApiClient::ActionIn.new(:operation => "cancel")
     end
 
-    def uncancelable_error
-      Catalog::OrderUncancelable.new("Order #{@order.id} is not cancelable in its current state")
+    def raise_uncancelable_error
+      error_message = "Order #{@order.id} is not cancelable in its current state: #{@order.state}"
+      Rails.logger.error(error_message)
+      raise Catalog::OrderUncancelable, error_message
     end
   end
 end

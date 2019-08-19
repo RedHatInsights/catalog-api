@@ -1722,6 +1722,166 @@
           }
         }
       }
+    },
+    "/settings": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "List Tenant Settings",
+        "description": "List Tenant Settings",
+        "operationId": "listSettings",
+        "responses": {
+          "200": {
+            "description": "The current tenant settings and schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantSettings"
+                },
+                "example": "{\n  \"current\": {\n    \"default_workflow\": \"2\",\n    \"icon\": \"<svg rel='stylesheet'>thing</svg>\"\n  },\n  \"schema\": {}\n}\n"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Create Tenant Setting",
+        "description": "Create Tenant Setting",
+        "operationId": "createSetting",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Setting"
+              }
+            }
+          },
+          "description": "Json encoded key/value pair to create a new setting",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Succesfully added the new setting.",
+            "content": {
+              "application/json": {
+                "example": "{ \n  \"default_workflow\": \"2\" \n} \n"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        }
+      }
+    },
+    "/settings/{name}": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Get a specific Tenant Setting",
+        "description": "Get a specific Tenant Setting",
+        "operationId": "showSetting",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SettingName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested Tenant Setting",
+            "content": {
+              "application/json": {
+                "example": "{ \n  \"default_workflow\": \"2\" \n} \n"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Update a Tenant Setting",
+        "description": "Update a Tenant Setting",
+        "operationId": "updateSetting",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SettingName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated Tenant Setting",
+            "content": {
+              "application/json": {
+                "example": "{ \n  \"default_workflow\": \"2\" \n} \n"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Delete a Tenant Setting",
+        "description": "Delete a Tenant Setting",
+        "operationId": "destroySetting",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SettingName"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tenant Setting successfully deleted."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -1803,6 +1963,15 @@
           "type": "string"
         }
       },
+      "SettingName": {
+        "name": "name",
+        "in": "path",
+        "description": "name of the setting",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
       "QueryLimit": {
         "in": "query",
         "name": "limit",
@@ -1875,8 +2044,7 @@
       "Portfolio": {
         "type": "object",
         "required": [
-          "name",
-          "description"
+          "name"
         ],
         "properties": {
           "id": {
@@ -2002,6 +2170,21 @@
           }
         }
       },
+      "Setting": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Setting Name",
+            "example": "default_workflow"
+          },
+          "value": {
+            "type": "string",
+            "title": "Setting Value",
+            "example": 2
+          }
+        }
+      },
       "OverrideIcon": {
         "type": "object",
         "properties": {
@@ -2015,6 +2198,9 @@
       },
       "PortfolioItem": {
         "type": "object",
+        "required": [
+          "name"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -2538,6 +2724,26 @@
         "title": "Provider Control Parameters",
         "description": "JSON Schema for Provider control parameters."
       },
+      "TenantSettings": {
+        "type": "object",
+        "title": "Tenant Settings",
+        "description": "The tenant settings and schema",
+        "properties": {
+          "current": {
+            "type": "object",
+            "title": "Current Settings",
+            "description": "The current settings for this tenant"
+          },
+          "schema": {
+            "$ref": "#/components/schemas/TenantSettingsSchema"
+          }
+        }
+      },
+      "TenantSettingsSchema": {
+        "type": "object",
+        "title": "Tenant Settings Schema",
+        "description": "JSON Schema for the Tenant Settings"
+      },
       "SharePolicy": {
         "type": "object",
         "required": [
@@ -2552,7 +2758,11 @@
             "items": {
               "type": "string"
             },
-	    "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
+            "example": [
+              "catalog:portfolios:read",
+              "catalog:portfolios:write",
+              "catalog:portfolios:order"
+            ]
           },
           "group_uuids": {
             "type": "array",
