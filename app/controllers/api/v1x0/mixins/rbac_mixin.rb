@@ -22,13 +22,12 @@ module Api
 
         def permission_check(verb, klass = controller_name.classify.constantize)
           return unless RBAC::Access.enabled?
+
           access_obj = RBAC::Access.new(klass.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
         end
 
         def permission_array_check(permissions)
-          return unless RBAC::Access.enabled?
-
           if !permissions.kind_of?(Array)
             invalid_parameter('Permission should be an array')
           elsif permissions.blank? || permissions.any?(&:blank?)
@@ -39,9 +38,8 @@ module Api
         private
 
         def permission_format_check(permissions)
-          return unless RBAC::Access.enabled?
-
           permissions.each do |perm|
+            invalid_parameter("Permission should be : delimited and contain app_name:resource:verb, where verb has to be one of #{VALID_RESOURCE_VERBS}") unless perm.kind_of?(String)
             perm_list = perm.split(':')
             invalid_parameter("Permission should be : delimited and contain app_name:resource:verb, where verb has to be one of #{VALID_RESOURCE_VERBS}") unless perm_list.length == 3
             invalid_parameter("Permission app_name should be catalog") unless perm_list.first == 'catalog'
