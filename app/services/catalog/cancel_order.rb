@@ -12,7 +12,7 @@ module Catalog
 
       approval_requests.each do |approval_request|
         Approval.call_action_api do |api|
-          api.create_action_by_request(approval_request.first.id, canceled_action)
+          api.create_action_by_request(approval_request.first.approval_request_ref, canceled_action)
         end
       end
 
