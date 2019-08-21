@@ -43,7 +43,7 @@ describe Catalog::CancelOrder do
 
     describe "when the state of the order is anything else" do
       let(:state) { "Pending" }
-      let(:cancel_order_url) { "http://localhost/api/approval/v1.0/requests/#{approval_request.id}/actions" }
+      let(:cancel_order_url) { "http://localhost/api/approval/v1.0/requests/#{approval_request.approval_request_ref}/actions" }
 
       before do
         stub_request(:post, cancel_order_url).with(:body => {"operation" => "cancel"}).to_return(api_response)
