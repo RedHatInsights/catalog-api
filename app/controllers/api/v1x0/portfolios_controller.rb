@@ -8,6 +8,7 @@ module Api
       before_action :only => %i[share unshare] do
         permission_array_check(params.require(:permissions))
         permission_format_check(params.require(:permissions))
+        group_id_array_check(params.require(:group_uuids))
       end
 
       before_action :only => %i[copy] do
@@ -105,6 +106,14 @@ module Api
 
       def portfolio_copy_params
         params.permit(:portfolio_id, :portfolio_name)
+      end
+
+      def group_id_array_check(uuids)
+        if !uuids.kind_of?(Array)
+          invalid_parameter('Group should be an array')
+        elsif uuids.blank? || uuids.any?(&:blank?)
+          invalid_parameter('Group should not be empty')
+        end
       end
     end
   end

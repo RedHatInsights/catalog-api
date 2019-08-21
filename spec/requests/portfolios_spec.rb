@@ -325,6 +325,16 @@ describe 'Portfolios API' do
         let(:permissions) { [123] }
         it_behaves_like "#shared_test"
       end
+
+      context 'invalid group uuids, empty array' do
+        let(:group_uuids) { [] }
+        it_behaves_like "#shared_test"
+      end
+
+      context 'invalid group uuids, data type' do
+        let(:group_uuids) { "fred" }
+        it_behaves_like "#shared_test"
+      end
     end
 
     context 'unshare' do
