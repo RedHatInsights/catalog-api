@@ -2480,10 +2480,11 @@
             "format": "date-time",
             "title": "Created at"
           },
-          "ordered_at": {
+          "order_request_sent_at": {
             "type": "string",
             "format": "date-time",
-            "title": "Ordered at"
+            "title": "Order request sent at",
+            "description": "The time at which the order request was sent to the Topology Service"
           },
           "completed_at": {
             "type": "string",
@@ -2562,10 +2563,11 @@
             "title": "Created at",
             "readOnly": true
           },
-          "ordered_at": {
+          "order_request_sent_at": {
             "type": "string",
             "format": "date-time",
-            "title": "Ordered at",
+            "title": "Order request sent at",
+            "description": "The time at which the order request was sent to the Topology Service",
             "readOnly": true
           },
           "completed_at": {
