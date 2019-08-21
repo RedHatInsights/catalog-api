@@ -9,6 +9,8 @@ module Catalog
     def process
       @order = Order.find_by!(:id => @order_id)
       @order.order_items.each do |order_item|
+        raise Catalog::NotAuthorized unless valid_source(order_item)
+
         submit_order_item(order_item)
       end
       @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
@@ -41,6 +43,10 @@ module Catalog
       item.order_request_sent_at = Time.now.utc
       item.update_message('info', 'Ordered')
       item.save!
+    end
+
+    def valid_source(order_item)
+      Catalog::ValidateSource.new(order_item.portfolio_item.service_offering_source_ref).process.valid
     end
   end
 end
