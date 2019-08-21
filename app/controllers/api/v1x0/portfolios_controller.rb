@@ -108,7 +108,6 @@ module Api
       def portfolio_copy_params
         params.permit(:portfolio_id, :portfolio_name)
       end
-
     end
   end
 end
