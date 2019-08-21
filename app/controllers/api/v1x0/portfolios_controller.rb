@@ -2,6 +2,7 @@ module Api
   module V1x0
     class PortfoliosController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
+      include Api::V1x0::Mixins::ValidationMixin
 
       before_action :write_access_check, :only => %i(add_portfolio_item_to_portfolio create update destroy)
       before_action :read_access_check, :only => %i(show)
@@ -108,13 +109,6 @@ module Api
         params.permit(:portfolio_id, :portfolio_name)
       end
 
-      def group_id_array_check(uuids)
-        if !uuids.kind_of?(Array)
-          invalid_parameter('Group should be an array')
-        elsif uuids.blank? || uuids.any?(&:blank?)
-          invalid_parameter('Group should not be empty')
-        end
-      end
     end
   end
 end
