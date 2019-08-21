@@ -5,7 +5,7 @@ module RequestSpecHelper
       allow(Rails.application.config).to receive(:consider_all_requests_local).and_return(false)
     end
 
-    config.include DefaultAs, type: :request
+    config.include DefaultAs, :type => :request
   end
 
   # Parse JSON response to ruby hash
