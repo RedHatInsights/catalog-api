@@ -36,6 +36,12 @@ module Api
           end
         end
 
+        def role_check(role)
+          return unless RBAC::Access.enabled?
+
+          raise Catalog::NotAuthorized unless RBAC::Roles.assigned_role?(role)
+        end
+
         private
 
         def permission_format_check(permissions)
@@ -52,13 +58,6 @@ module Api
 
         def invalid_parameter(str)
           raise Catalog::InvalidParameter, str
-        end
-
-        def catalog_admin_check
-          return unless RBAC::Access.enabled?
-
-          access_obj = RBAC::Access.new("portfolios", "write").process
-          raise Catalog::NotAuthorized unless access_obj.catalog_admin?
         end
       end
     end
