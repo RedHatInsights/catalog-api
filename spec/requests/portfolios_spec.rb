@@ -283,7 +283,6 @@ describe 'Portfolios API' do
     end
 
     shared_examples_for "#shared_test" do
-      include_context "sharing_objects"
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           options = {:app_name      => app_name,
@@ -291,18 +290,20 @@ describe 'Portfolios API' do
                      :resource_name => 'portfolios',
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
-          expect(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers
+          allow(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
+          post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers, :as => :json
           expect(response).to have_http_status(http_status)
         end
       end
     end
 
     context 'share' do
+      include_context "sharing_objects"
       it_behaves_like "#shared_test"
     end
 
     context 'bad permissions' do
+      include_context "sharing_objects"
       let(:http_status) { '422' }
 
       context 'invalid verb in permissions' do
@@ -317,6 +318,21 @@ describe 'Portfolios API' do
 
       context 'invalid object in permissions' do
         let(:permissions) { %w[catalog:bad:read] }
+        it_behaves_like "#shared_test"
+      end
+
+      context 'invalid object type in permissions' do
+        let(:permissions) { [123] }
+        it_behaves_like "#shared_test"
+      end
+
+      context 'invalid group uuids, empty array' do
+        let(:group_uuids) { [] }
+        it_behaves_like "#shared_test"
+      end
+
+      context 'invalid group uuids, data type' do
+        let(:group_uuids) { "fred" }
         it_behaves_like "#shared_test"
       end
     end
