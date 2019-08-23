@@ -1,6 +1,9 @@
 class OrderItem < ApplicationRecord
   include OwnerField
+  include Discard::Model
   acts_as_tenant(:tenant)
+
+  default_scope -> { kept }
 
   validates_presence_of :count
   validates_presence_of :service_parameters

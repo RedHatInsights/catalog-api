@@ -12,23 +12,25 @@ describe "ProgressMessageRequests", :type => :request do
   let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id.to_s, :tenant_id => tenant.id) }
 
   context "v1.0" do
-    it "lists progress messages" do
-      get "/#{api}/order_items/#{order_item.id}/progress_messages", :headers => default_headers
-
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)['data'].first['message']).to eq(progress_message.message)
-    end
-
-    context "when the order item does not exist" do
-      let(:order_item_id) { 0 }
-
-      it "returns a 404" do
-        get "/#{api}/order_items/#{order_item_id}/progress_messages", :headers => default_headers
+    describe "GET /order_items/:order_item_id/progress_messages" do
+      it "lists progress messages" do
+        get "/#{api}/order_items/#{order_item.id}/progress_messages", :headers => default_headers
 
         expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:not_found)
-        expect(JSON.parse(response.body)['message']).to eq("Not Found")
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['data'].first['message']).to eq(progress_message.message)
+      end
+
+      context "when the order item does not exist" do
+        let(:order_item_id) { 0 }
+
+        it "returns a 404" do
+          get "/#{api}/order_items/#{order_item_id}/progress_messages", :headers => default_headers
+
+          expect(response.content_type).to eq("application/json")
+          expect(response).to have_http_status(:not_found)
+          expect(JSON.parse(response.body)['message']).to eq("Not Found")
+        end
       end
     end
   end

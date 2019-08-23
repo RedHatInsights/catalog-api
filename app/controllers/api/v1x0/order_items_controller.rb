@@ -23,6 +23,20 @@ module Api
           render :json => OrderItem.find(params.require(:id))
         end
       end
+
+      def destroy
+        order_item = OrderItem.find(params.require(:id))
+        restore_key = Catalog::SoftDelete.new(order_item).process.restore_key
+
+        render :json => {:restore_key => restore_key}
+      end
+
+      def restore
+        order_item = OrderItem.with_discarded.discarded.find(params.require(:order_item_id))
+        Catalog::SoftDeleteRestore.new(order_item, params.require(:restore_key)).process
+
+        render :json => order_item
+      end
     end
   end
 end

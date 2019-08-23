@@ -1,5 +1,8 @@
 class ProgressMessage < ApplicationRecord
+  include Discard::Model
   acts_as_tenant(:tenant)
+
+  default_scope -> { kept }
 
   after_initialize :set_defaults, unless: :persisted?
 
