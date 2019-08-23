@@ -151,6 +151,10 @@ describe "OrderRequests", :type => :request do
       it "returns a 422" do
         expect(response).to have_http_status(:unprocessable_entity)
       end
+
+      it "does not delete the order" do
+        expect(Order.where(:id => order.id).first).to eq(order)
+      end
     end
   end
 
@@ -201,6 +205,10 @@ describe "OrderRequests", :type => :request do
 
       it "returns a 422" do
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "does not restore the order" do
+        expect(Order.where(:id => order.id).first).to be_nil
       end
     end
   end
