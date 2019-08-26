@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_08_161627) do
+ActiveRecord::Schema.define(version: 2019_08_21_224909) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,7 +45,7 @@ ActiveRecord::Schema.define(version: 2019_08_08_161627) do
     t.bigint "order_id"
     t.string "state"
     t.datetime "created_at", null: false
-    t.datetime "ordered_at"
+    t.datetime "order_request_sent_at"
     t.datetime "completed_at"
     t.datetime "updated_at", null: false
     t.string "topology_task_ref"
@@ -67,7 +67,7 @@ ActiveRecord::Schema.define(version: 2019_08_08_161627) do
     t.string "user_id"
     t.string "state"
     t.datetime "created_at", null: false
-    t.datetime "ordered_at"
+    t.datetime "order_request_sent_at"
     t.datetime "completed_at"
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"

@@ -11,7 +11,7 @@ module Catalog
         submit_approval_requests(order_item)
       end
 
-      @order.update(:state => "Approval Pending", :ordered_at => Time.now.utc)
+      @order.update(:state => "Approval Pending", :order_request_sent_at => Time.now.utc)
       self
     rescue Catalog::ApprovalError => e
       Rails.logger.error("Error putting in approval Request for #{order.id}: #{e.message}")
