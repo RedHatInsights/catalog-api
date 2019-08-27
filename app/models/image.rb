@@ -5,4 +5,6 @@ class Image < ApplicationRecord
   validates :extension,
             :presence  => true,
             :inclusion => { :in => %w[png jpg svg], :message => 'must be a png, jpg, or svg' }
+
+  has_many :icons, :dependent => :nullify
 end

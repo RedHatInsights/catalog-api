@@ -16,11 +16,5 @@ module Catalog
 
       self
     end
-
-    private
-
-    def image_content
-      @extension == "svg" ? @content : Base64.decode64(@content)
-    end
   end
 end

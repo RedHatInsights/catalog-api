@@ -25,7 +25,7 @@ module Api
           new_image = Image.new(:content   => params.delete(:content),
                                 :extension => params.delete(:filename).split(".").last)
           image_id = Catalog::DuplicateImage.new(new_image).process.image_id
-          Image.destroy(icon.image_id) if Icon.where(:image_id => icon.image_id).count.zero?
+          icon.image.destroy unless icon.image.icons.count > 1
 
           icon.update(:image_id => image_id)
         end
