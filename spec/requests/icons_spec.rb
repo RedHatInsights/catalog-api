@@ -4,6 +4,21 @@ describe "IconsRequests", :type => :request do
   let(:image) { create(:image, :extension => "svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :tenant_id => tenant.id) }
   let!(:icon) { create(:icon, :image_id => image.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
+  let!(:ocp_portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
+  let!(:ocp_jpg_image) do
+    create(:image,
+           :extension => "jpg",
+           :content   => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
+           :tenant_id => tenant.id)
+  end
+  let(:ocp_png_image) do
+    create(:image,
+           :extension => "png",
+           :content   => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
+           :tenant_id => tenant.id)
+  end
+  let!(:ocp_icon) { create(:icon, :image_id => ocp_png_image.id, :portfolio_item_id => ocp_portfolio_item.id, :tenant_id => tenant.id) }
+
   describe "#show" do
     before { get "#{api}/icons/#{icon.id}", :headers => default_headers }
 
@@ -44,11 +59,41 @@ describe "IconsRequests", :type => :request do
       end
     end
 
-    context "when uploading a duplicate icon" do
+    context "when uploading a duplicate svg icon" do
       let(:params) { { :filename => "test.svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
 
       it "uses the reference from the one that is already there" do
         expect(json["image_id"]).to eq image.id.to_s
+      end
+    end
+
+    context "when uploading a duplicate png icon" do
+      let(:params) do
+        {
+          :filename   => "ocp_logo_dupe.png",
+          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "uses the already-existing image" do
+        expect(json["image_id"]).to eq ocp_png_image.id.to_s
+      end
+    end
+
+    context "when uploading a duplicate jpg icon" do
+      let(:params) do
+        {
+          :filename   => "ocp_logo_dupe.jpg",
+          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "uses the already-existing image" do
+        expect(json["image_id"]).to eq ocp_jpg_image.id.to_s
       end
     end
 
@@ -57,6 +102,36 @@ describe "IconsRequests", :type => :request do
 
       it "throws a 422" do
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when uploading a png" do
+      let(:params) do
+        {
+          :filename   => "miq_logo.png",
+          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "makes a new image and icon" do
+        expect(json["image_id"]).to_not eq image.id
+      end
+    end
+
+    context "when uploading a jpg" do
+      let(:params) do
+        {
+          :filename   => "miq_logo.jpg",
+          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "makes a new image and icon" do
+        expect(json["image_id"]).to_not eq image.id
       end
     end
   end

@@ -1,28 +1,25 @@
 require 'fileutils'
-require 'dhash'
+require 'dhasher'
 
 module Catalog
   class DuplicateImage
     attr_reader :image_id
 
     def initialize(image)
-      @count = 0
-      @image = image
-      @extension = @image.extension
-      @og_path = write(image)
+      @new_image = image
+      @extension = @new_image.extension
     end
 
     def process
-      images = Image.where(:extension => @extension, :tenant_id => @image.tenant_id)
+      images = Image.where(:extension => @extension, :tenant_id => @new_image.tenant_id)
 
       if images.any? { |image| match?(image) }
         @image_id = @match.id
       else
-        @image.save!
-        @image_id = @image.id
+        @new_image.save!
+        @image_id = @new_image.id
       end
 
-      cleanup
       self
     end
 
@@ -31,27 +28,19 @@ module Catalog
     def match?(image)
       case @extension
       when "svg"
-        @match = image if @image.content == image.content
+        @match = image if @new_image.content == image.content
       when "jpg", "png"
-        hash1 = Dhash.calculate(@og_path)
-        hash2 = Dhash.calculate(write(image))
+        hash1 = DHasher.hash_from_blob(raw_image(@new_image.content))
+        hash2 = DHasher.hash_from_blob(raw_image(image.content))
 
-        @match = image if Dhash.hamming(hash1, hash2) < 10
+        @match = image if DHasher.similar?(hash1, hash2)
       end
 
       @match.present?
     end
 
-    def write(image)
-      File.open(Rails.root.join("tmp", "#{@count}.#{@extension}"), "w") do |fh|
-        fh.write(image.content)
-      end
-
-      "#{@count += 1}.#{@extension}"
-    end
-
-    def cleanup
-      (0..@count).each { |num| FileUtils.rm_f(Rails.root.join("tmp", "#{num}.#{@extension}")) }
+    def raw_image(encoded_content)
+      Base64.decode64(encoded_content)
     end
   end
 end

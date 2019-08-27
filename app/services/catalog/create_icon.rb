@@ -9,7 +9,7 @@ module Catalog
     end
 
     def process
-      image = Image.new(:extension => @extension, :content => image_content)
+      image = Image.new(:extension => @extension, :content => @content)
       image_id = Catalog::DuplicateImage.new(image).process.image_id
 
       @icon = Icon.create!(@params.merge(:image_id => image_id))
