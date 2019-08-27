@@ -18,13 +18,13 @@ module Catalog
     end
 
     def sources_api_call
-      Sources::Service.call(SourcesApiClient::DefaultApi) do |api_instance|
+      Sources.call do |api_instance|
         api_instance.list_application_type_sources(catalog_id)
       end
     end
 
     def catalog_id
-      Sources::Service.call(SourcesApiClient::DefaultApi) do |api_instance|
+      Sources.call do |api_instance|
         name = ENV['APP_NAME']&.capitalize || "Catalog"
         api_instance.list_application_types.data.select { |type| type.display_name == name }.first&.id
       end
