@@ -106,7 +106,6 @@ ActiveRecord::Schema.define(version: 2019_08_21_224909) do
     t.datetime "discarded_at"
     t.string "workflow_ref"
     t.string "owner"
-    t.string "service_offering_icon_ref"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end

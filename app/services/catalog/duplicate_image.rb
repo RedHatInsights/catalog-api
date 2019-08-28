@@ -7,7 +7,7 @@ module Catalog
 
     def initialize(image)
       @new_image = image
-      @extension = @new_image.extension
+      @extension = image.extension
     end
 
     def process
