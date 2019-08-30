@@ -156,6 +156,28 @@ describe "OrderRequests", :type => :request do
         expect(Order.where(:id => order.id).first).to eq(order)
       end
     end
+
+    context "when deleting an order where a linked order item has linked progress messages that fail" do
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+      let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+
+      before do
+        order.order_items << order_item
+        order_item.progress_messages << progress_message
+        allow(Order).to receive(:find).with(order.id.to_s).and_return(order)
+        allow(progress_message).to receive(:discard).and_return(false)
+        delete "/#{api}/orders/#{order.id}", :headers => default_headers
+      end
+
+      it "returns a 422" do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "does not delete the order" do
+        expect(Order.where(:id => order.id).first).to eq(order)
+      end
+    end
   end
 
   describe "POST /orders/:id/restore" do
@@ -200,6 +222,31 @@ describe "OrderRequests", :type => :request do
         allow(Order).to receive_message_chain(:with_discarded, :discarded, :find).with(order.id.to_s).and_return(order)
         allow(order).to receive_message_chain(:order_items, :with_discarded, :discarded).and_return([order_item])
         allow(order_item).to receive(:undiscard).and_return(false)
+        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+      end
+
+      it "returns a 422" do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "does not restore the order" do
+        expect(Order.where(:id => order.id).first).to be_nil
+      end
+    end
+
+    context "when restoring an order where a linked order item with a linked progress message fails to be restored" do
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+      let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+
+      before do
+        order.order_items << order_item
+        order_item.progress_messages << progress_message
+        order.discard
+        allow(Order).to receive_message_chain(:with_discarded, :discarded, :find).with(order.id.to_s).and_return(order)
+        allow(order).to receive_message_chain(:order_items, :with_discarded, :discarded).and_return([order_item])
+        allow(order_item).to receive_message_chain(:progress_messages, :with_discarded, :discarded).and_return([progress_message])
+        allow(progress_message).to receive(:undiscard).and_return(false)
         post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
       end
 
