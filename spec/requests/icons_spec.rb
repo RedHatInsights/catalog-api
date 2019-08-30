@@ -1,7 +1,19 @@
 describe "IconsRequests", :type => :request do
   let(:tenant) { create(:tenant) }
   let!(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
-  let!(:icon) { create(:icon, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+  let(:image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg"))), :tenant_id => tenant.id) }
+  let!(:icon) { create(:icon, :image_id => image.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+
+  let!(:ocp_portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
+  let!(:ocp_jpg_image) do
+    Image.create(:content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
+                 :tenant_id => tenant.id)
+  end
+  let(:ocp_png_image) do
+    Image.create(:content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
+                 :tenant_id => tenant.id)
+  end
+  let!(:ocp_icon) { create(:icon, :image_id => ocp_png_image.id, :portfolio_item_id => ocp_portfolio_item.id, :tenant_id => tenant.id) }
 
   describe "#show" do
     before { get "#{api}/icons/#{icon.id}", :headers => default_headers }
@@ -31,15 +43,51 @@ describe "IconsRequests", :type => :request do
     before { post "#{api}/icons", :params => params, :headers => default_headers }
 
     context "when providing proper parameters" do
-      let(:params) { { :data => "<svg rel=\"stylesheet\">thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
+      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref" } }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
       end
 
       it "returns the created icon" do
-        expect(json["data"]).to eq params[:data]
+        expect(json["image_id"]).to be_truthy
         expect(json["source_id"]).to eq params[:source_id]
+      end
+    end
+
+    context "when uploading a duplicate svg icon" do
+      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref" } }
+
+      it "uses the reference from the one that is already there" do
+        expect(json["image_id"]).to eq image.id.to_s
+      end
+    end
+
+    context "when uploading a duplicate png icon" do
+      let(:params) do
+        {
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "uses the already-existing image" do
+        expect(json["image_id"]).to eq ocp_png_image.id.to_s
+      end
+    end
+
+    context "when uploading a duplicate jpg icon" do
+      let(:params) do
+        {
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "uses the already-existing image" do
+        expect(json["image_id"]).to eq ocp_jpg_image.id.to_s
       end
     end
 
@@ -50,18 +98,54 @@ describe "IconsRequests", :type => :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "when uploading a png" do
+      let(:params) do
+        {
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "makes a new image and icon" do
+        expect(json["image_id"]).to_not eq image.id
+      end
+    end
+
+    context "when uploading a jpg" do
+      let(:params) do
+        {
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg"))),
+          :source_id  => "29",
+          :source_ref => "icon_ref"
+        }
+      end
+
+      it "makes a new image and icon" do
+        expect(json["image_id"]).to_not eq image.id
+      end
+    end
   end
 
   describe "#update" do
-    let(:params) { { :data => "<svg rel=\"new_data\">thing</svg" } }
-    before { patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers }
+    let(:params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg"))) } }
+
+    before do
+      patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers
+      icon.reload
+    end
 
     it "returns a 200" do
       expect(response).to have_http_status(:ok)
     end
 
     it "updates the fields passed in" do
-      expect(json["data"]).to eq params[:data]
+      expect(icon.image.content).to eq params[:content]
+    end
+
+    it "updated to a new image record" do
+      expect(icon.image_id).to_not eq image.id
     end
   end
 

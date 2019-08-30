@@ -28,7 +28,6 @@ ActiveRecord::Schema.define(version: 2019_08_21_224909) do
   end
 
   create_table "icons", force: :cascade do |t|
-    t.string "data"
     t.string "source_ref"
     t.string "source_id"
     t.bigint "portfolio_item_id"
@@ -36,8 +35,19 @@ ActiveRecord::Schema.define(version: 2019_08_21_224909) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
+    t.bigint "image_id"
     t.index ["discarded_at"], name: "index_icons_on_discarded_at"
     t.index ["tenant_id"], name: "index_icons_on_tenant_id"
+  end
+
+  create_table "images", force: :cascade do |t|
+    t.binary "content"
+    t.string "extension"
+    t.bigint "tenant_id"
+    t.string "hashcode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id"], name: "index_images_on_tenant_id"
   end
 
   create_table "order_items", force: :cascade do |t|
@@ -97,7 +107,6 @@ ActiveRecord::Schema.define(version: 2019_08_21_224909) do
     t.datetime "discarded_at"
     t.string "workflow_ref"
     t.string "owner"
-    t.string "service_offering_icon_ref"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
