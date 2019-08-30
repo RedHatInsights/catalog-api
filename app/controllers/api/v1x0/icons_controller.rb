@@ -21,9 +21,7 @@ module Api
         icon = Icon.find(params.require(:id))
         if params.key?(:content)
           params.require(:content)
-          params.require(:filename)
-          new_image = Image.new(:content   => params.delete(:content),
-                                :extension => params.delete(:filename).split(".").last)
+          new_image = Image.new(:content => params.delete(:content))
           image_id = Catalog::DuplicateImage.new(new_image).process.image_id
           icon.image.destroy unless icon.image.icons.count > 1
 
@@ -36,9 +34,9 @@ module Api
       end
 
       def raw_icon
-        image = find_icon(params.permit(:icon_id, :portfolio_item_id)).image
-        send_data(image.content,
-                  :type        => MimeMagic.by_magic(image.content).type,
+        image = find_icon(params.permit(:icon_id, :portfolio_item_id)).image.decoded_image
+        send_data(image,
+                  :type        => MimeMagic.by_magic(image).type,
                   :disposition => 'inline')
       end
 
@@ -51,12 +49,11 @@ module Api
 
       def icon_params
         params.require(:content)
-        params.require(:filename)
         icon_patch_params
       end
 
       def icon_patch_params
-        params.permit(:content, :filename, :source_ref, :source_id, :portfolio_item_id)
+        params.permit(:content, :source_ref, :source_id, :portfolio_item_id)
       end
 
       def find_icon(ids)

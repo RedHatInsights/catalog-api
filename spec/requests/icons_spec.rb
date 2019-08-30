@@ -1,21 +1,17 @@
 describe "IconsRequests", :type => :request do
   let(:tenant) { create(:tenant) }
   let!(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
-  let(:image) { create(:image, :extension => "svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :tenant_id => tenant.id) }
+  let(:image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg"))), :tenant_id => tenant.id) }
   let!(:icon) { create(:icon, :image_id => image.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
   let!(:ocp_portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
   let!(:ocp_jpg_image) do
-    create(:image,
-           :extension => "jpg",
-           :content   => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
-           :tenant_id => tenant.id)
+    Image.create(:content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
+                 :tenant_id => tenant.id)
   end
   let(:ocp_png_image) do
-    create(:image,
-           :extension => "png",
-           :content   => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
-           :tenant_id => tenant.id)
+    Image.create(:content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
+                 :tenant_id => tenant.id)
   end
   let!(:ocp_icon) { create(:icon, :image_id => ocp_png_image.id, :portfolio_item_id => ocp_portfolio_item.id, :tenant_id => tenant.id) }
 
@@ -47,7 +43,7 @@ describe "IconsRequests", :type => :request do
     before { post "#{api}/icons", :params => params, :headers => default_headers }
 
     context "when providing proper parameters" do
-      let(:params) { { :filename => "test.svg", :content => "<svg rel=\"stylesheet\">creating a thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
+      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref" } }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -60,7 +56,7 @@ describe "IconsRequests", :type => :request do
     end
 
     context "when uploading a duplicate svg icon" do
-      let(:params) { { :filename => "test.svg", :content => "<svg rel=\"stylesheet\">thing</svg>", :source_id => "27", :source_ref => "icon_ref" } }
+      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref" } }
 
       it "uses the reference from the one that is already there" do
         expect(json["image_id"]).to eq image.id.to_s
@@ -70,8 +66,7 @@ describe "IconsRequests", :type => :request do
     context "when uploading a duplicate png icon" do
       let(:params) do
         {
-          :filename   => "ocp_logo_dupe.png",
-          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
           :source_id  => "29",
           :source_ref => "icon_ref"
         }
@@ -85,8 +80,7 @@ describe "IconsRequests", :type => :request do
     context "when uploading a duplicate jpg icon" do
       let(:params) do
         {
-          :filename   => "ocp_logo_dupe.jpg",
-          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
           :source_id  => "29",
           :source_ref => "icon_ref"
         }
@@ -108,8 +102,7 @@ describe "IconsRequests", :type => :request do
     context "when uploading a png" do
       let(:params) do
         {
-          :filename   => "miq_logo.png",
-          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png"))),
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png"))),
           :source_id  => "29",
           :source_ref => "icon_ref"
         }
@@ -123,8 +116,7 @@ describe "IconsRequests", :type => :request do
     context "when uploading a jpg" do
       let(:params) do
         {
-          :filename   => "miq_logo.jpg",
-          :content    => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg"))),
+          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg"))),
           :source_id  => "29",
           :source_ref => "icon_ref"
         }
@@ -137,7 +129,7 @@ describe "IconsRequests", :type => :request do
   end
 
   describe "#update" do
-    let(:params) { { :filename => "new.svg", :content => "<svg rel=\"new_data\">thing</svg" } }
+    let(:params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg"))) } }
 
     before do
       patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers

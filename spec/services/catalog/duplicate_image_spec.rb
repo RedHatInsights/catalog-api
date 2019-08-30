@@ -1,11 +1,11 @@
 describe Catalog::DuplicateImage do
-  let(:subject) { described_class.new(new_image).process }
+  let(:subject) { described_class.new(new_image) }
 
   shared_examples_for "#process when there is not a duplicate image" do
     let(:filename) { "miq_logo.#{extension}" }
 
     it "returns a new image id" do
-      expect(subject.image_id).to_not eq base_image.id
+      expect(subject.process.image_id).to_not eq base_image.id
     end
   end
 
@@ -13,23 +13,13 @@ describe Catalog::DuplicateImage do
     let(:filename) { "ocp_logo_dupe.#{extension}" }
 
     it "returns the base_image image id" do
-      expect(subject.image_id).to eq base_image.id
+      expect(subject.process.image_id).to eq base_image.id
     end
   end
 
   describe "#process" do
-    let!(:base_image) do
-      create(:image,
-             :extension => extension,
-             :content   => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.#{extension}"))))
-    end
-
-    let(:new_image) do
-      Image.new(
-        :extension => extension,
-        :content   => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", filename)))
-      )
-    end
+    let!(:base_image) { Image.create(:content => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.#{extension}")))) }
+    let(:new_image) { Image.create(:content => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", filename)))) }
 
     context "PNG Images" do
       let(:extension) { "png" }

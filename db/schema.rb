@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2019_08_21_224909) do
     t.binary "content"
     t.string "extension"
     t.bigint "tenant_id"
+    t.string "hashcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_images_on_tenant_id"

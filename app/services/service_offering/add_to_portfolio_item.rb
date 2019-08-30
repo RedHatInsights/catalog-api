@@ -53,8 +53,7 @@ module ServiceOffering
       return if service_offering_icon.data.nil?
 
       svc = Catalog::CreateIcon.new(
-        :filename   => "icon.svg",
-        :content    => service_offering_icon.data,
+        :content    => Base64.strict_encode64(service_offering_icon.data),
         :source_ref => service_offering_icon.source_ref,
         :source_id  => service_offering_icon.source_id
       )
