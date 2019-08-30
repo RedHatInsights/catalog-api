@@ -21,7 +21,7 @@ module ServiceOfferingHelper
 
   def fully_populated_service_offering_icon
     TopologicalInventoryApiClient::ServiceOfferingIcon.new(
-      :data       => File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg")),
+      :data       => File.read(Rails.root.join("spec", "support", "images", "topology_image.svg")),
       :source_id  => "127",
       :source_ref => "icon-ref"
     )

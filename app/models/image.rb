@@ -1,4 +1,5 @@
 class Image < ApplicationRecord
+  XML_HEADER = "<?xml version=\"1.0\"?>".freeze
   acts_as_tenant(:tenant)
 
   validates :content, :presence => true
@@ -11,7 +12,12 @@ class Image < ApplicationRecord
   after_initialize :set_image_data_from_content, :if => proc { hashcode.nil? && content.present? }
 
   def set_image_data_from_content
-    self.extension = Magick::Image.from_blob(decoded_image).first&.format
+    begin
+      self.extension = Magick::Image.from_blob(decoded_image).first&.format
+    rescue StandardError
+      Rails.logger.debug("Bad image data, trying again with xml header added...")
+      self.extension = Magick::Image.from_blob(XML_HEADER + decoded_image).first&.format
+    end
 
     self.hashcode = case extension
                     when "SVG"
