@@ -25,8 +25,8 @@ module Catalog
 
     def catalog_id
       Sources.call do |api_instance|
-        name = ENV['APP_NAME']&.capitalize || "Catalog"
-        api_instance.list_application_types.data.select { |type| type.display_name == name }.first&.id
+        name = ENV['APP_NAME'] || "catalog"
+        api_instance.list_application_types.data.select { |type| type.name.split("/").last == name }.first&.id
       end
     end
   end

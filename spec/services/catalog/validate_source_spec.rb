@@ -2,7 +2,7 @@ describe Catalog::ValidateSource do
   let(:tenant) { create(:tenant) }
   let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :service_offering_source_ref => "17") }
   let(:response_headers) { {"Content-Type" => 'application/json'} }
-  let(:catalog_application_type) { {:data => [{:id => 1, :display_name => "Catalog"}]} }
+  let(:catalog_application_type) { {:data => [{:id => 1, :name => "/insights/platform/catalog"}]} }
 
   let(:validate_source) { described_class.new(portfolio_item.service_offering_source_ref).process }
 
