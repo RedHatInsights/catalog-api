@@ -13,12 +13,10 @@ class CreateImageTable < ActiveRecord::Migration[5.2]
     add_column :icons, :image_id, :bigint
 
     Icon.all.each do |icon|
-      image = Image.create!(
+      icon.create_image!(
         :content   => Base64.strict_encode64(icon.data),
         :tenant_id => icon.tenant_id
       )
-
-      icon.image = image
     end
 
     remove_column :icons, :data
