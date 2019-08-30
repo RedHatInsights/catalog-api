@@ -18,18 +18,7 @@ module Api
       end
 
       def update
-        icon = Icon.find(params.require(:id))
-        if params.key?(:content)
-          params.require(:content)
-          new_image = Image.new(:content => params.delete(:content))
-          image_id = Catalog::DuplicateImage.new(new_image).process.image_id
-          icon.image.destroy unless icon.image.icons.count > 1
-
-          icon.update(:image_id => image_id)
-        end
-
-        icon.update!(icon_patch_params)
-
+        icon = Catalog::UpdateIcon.new(params.require(:id), icon_patch_params).process.icon
         render :json => icon
       end
 
