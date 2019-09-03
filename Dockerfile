@@ -11,6 +11,8 @@ RUN yum -y install centos-release-scl-rh && \
                    # To compile pg gem
                    rh-postgresql10-postgresql-devel \
                    rh-postgresql10-postgresql-libs \
+                   # For the RMagick gem
+                   ImageMagick-devel \
                    && \
     yum clean all
 

@@ -1,6 +1,6 @@
 module ServiceOffering
   class AddToPortfolioItem
-    IGNORE_FIELDS = %w(id created_at updated_at portfolio_id tenant_id).freeze
+    IGNORE_FIELDS = %w[id created_at updated_at portfolio_id tenant_id].freeze
 
     attr_reader :item
 
@@ -52,11 +52,13 @@ module ServiceOffering
       service_offering_icon = TopologicalInventory.call { |topo| topo.show_service_offering_icon(icon_id) }
       return if service_offering_icon.data.nil?
 
-      Icon.create!(
-        :data       => service_offering_icon.data,
+      svc = Catalog::CreateIcon.new(
+        :content    => Base64.strict_encode64(service_offering_icon.data),
         :source_ref => service_offering_icon.source_ref,
         :source_id  => service_offering_icon.source_id
       )
+
+      svc.process.icon
     end
   end
 end

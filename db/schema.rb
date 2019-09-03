@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_18_144713) do
+ActiveRecord::Schema.define(version: 2019_08_21_224909) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,7 +28,6 @@ ActiveRecord::Schema.define(version: 2019_07_18_144713) do
   end
 
   create_table "icons", force: :cascade do |t|
-    t.string "data"
     t.string "source_ref"
     t.string "source_id"
     t.bigint "portfolio_item_id"
@@ -36,8 +35,19 @@ ActiveRecord::Schema.define(version: 2019_07_18_144713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
+    t.bigint "image_id"
     t.index ["discarded_at"], name: "index_icons_on_discarded_at"
     t.index ["tenant_id"], name: "index_icons_on_tenant_id"
+  end
+
+  create_table "images", force: :cascade do |t|
+    t.binary "content"
+    t.string "extension"
+    t.bigint "tenant_id"
+    t.string "hashcode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id"], name: "index_images_on_tenant_id"
   end
 
   create_table "order_items", force: :cascade do |t|
@@ -45,7 +55,7 @@ ActiveRecord::Schema.define(version: 2019_07_18_144713) do
     t.bigint "order_id"
     t.string "state"
     t.datetime "created_at", null: false
-    t.datetime "ordered_at"
+    t.datetime "order_request_sent_at"
     t.datetime "completed_at"
     t.datetime "updated_at", null: false
     t.string "topology_task_ref"
@@ -58,6 +68,8 @@ ActiveRecord::Schema.define(version: 2019_07_18_144713) do
     t.string "owner"
     t.string "external_url"
     t.string "insights_request_id"
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_order_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
@@ -65,11 +77,13 @@ ActiveRecord::Schema.define(version: 2019_07_18_144713) do
     t.string "user_id"
     t.string "state"
     t.datetime "created_at", null: false
-    t.datetime "ordered_at"
+    t.datetime "order_request_sent_at"
     t.datetime "completed_at"
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.string "owner"
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_orders_on_discarded_at"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
@@ -120,6 +134,8 @@ ActiveRecord::Schema.define(version: 2019_07_18_144713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_progress_messages_on_discarded_at"
     t.index ["tenant_id"], name: "index_progress_messages_on_tenant_id"
   end
 

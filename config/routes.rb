@@ -29,12 +29,16 @@ Rails.application.routes.draw do
       post "/graphql" => "graphql#query"
       post '/orders/:order_id/submit_order', :to => "orders#submit_order", :as => 'order_submit_order'
       patch '/orders/:order_id/cancel', :to => "orders#cancel_order", :as => 'order_cancel'
-      resources :orders,                :only => [:create, :index] do
+      resources :orders,                :only => [:create, :index, :destroy] do
         resources :order_items,           :only => [:create, :index, :show]
+
+        post :restore, :to => "orders#restore"
       end
-      resources :order_items,           :only => [:index, :show] do
-        resources :progress_messages,     :only => [:index]
-        resources :approval_requests,     :only => [:index]
+      resources :order_items, :only => [:index, :show, :destroy] do
+        resources :progress_messages, :only => [:index]
+        resources :approval_requests, :only => [:index]
+
+        post :restore, :to => "order_items#restore"
       end
       post '/portfolios/:portfolio_id/portfolio_items', :to => "portfolios#add_portfolio_item_to_portfolio", :as => 'add_portfolio_item_to_portfolio'
       post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'

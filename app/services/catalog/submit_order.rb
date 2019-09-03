@@ -11,7 +11,7 @@ module Catalog
       @order.order_items.each do |order_item|
         submit_order_item(order_item)
       end
-      @order.update(:state => 'Ordered', :ordered_at => Time.now.utc)
+      @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
       @order.reload
       self
     rescue StandardError => e
@@ -36,9 +36,9 @@ module Catalog
     end
 
     def update_item(item, result)
-      item.topology_task_ref = result.task_id
-      item.state             = 'Ordered'
-      item.ordered_at        = Time.now.utc
+      item.topology_task_ref     = result.task_id
+      item.state                 = 'Ordered'
+      item.order_request_sent_at = Time.now.utc
       item.update_message('info', 'Ordered')
       item.save!
     end

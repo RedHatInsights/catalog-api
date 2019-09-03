@@ -1,7 +1,9 @@
 module Api
   module V1x0
     class SettingsController < ApplicationController
-      before_action :catalog_admin_check
+      before_action do
+        role_check("Catalog Administrator")
+      end
 
       def index
         settings = Catalog::TenantSettings.new(tenant)
