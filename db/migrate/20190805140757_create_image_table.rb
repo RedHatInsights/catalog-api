@@ -25,5 +25,6 @@ class CreateImageTable < ActiveRecord::Migration[5.2]
   def down
     drop_table :images
     add_column :icons, :data, :string
+    remove_column :icons, :image_id
   end
 end
