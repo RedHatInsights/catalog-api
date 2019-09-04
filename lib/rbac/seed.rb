@@ -1,13 +1,13 @@
 require 'rbac-api-client'
 module RBAC
   class Seed
-    def initialize(seed_file, user_file)
+    def initialize(seed_file, user_file=nil)
       @acl_data = YAML.load_file(seed_file)
-      @request = create_request(user_file)
+      @request = create_request(user_file) if user_file
     end
 
     def process
-      ManageIQ::API::Common::Request.with_request(@request) do
+      with_request do
         create_groups
         create_roles
         create_policies
@@ -15,6 +15,14 @@ module RBAC
     end
 
     private
+
+    def with_request
+      if @request
+        ManageIQ::API::Common::Request.with_request(@request) { yield }
+      else
+        yield
+      end
+    end
 
     def create_groups
       current = current_groups
