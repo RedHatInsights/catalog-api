@@ -1,8 +1,10 @@
 describe Catalog::OverrideIcon do
   let(:tenant) { create(:tenant) }
-  let!(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
-  let!(:icon1) { create(:icon, :tenant_id => tenant.id, :portfolio_item_id => portfolio_item.id) }
-  let!(:icon2) { create(:icon, :tenant_id => tenant.id) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let!(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :tenant_id => tenant.id) }
+  let(:image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg"))), :tenant_id => tenant.id) }
+  let!(:icon1) { create(:icon, :image => image, :tenant_id => tenant.id, :portfolio_item_id => portfolio_item.id) }
+  let!(:icon2) { create(:icon, :image => image, :tenant_id => tenant.id, :portfolio_item_id => portfolio_item.id) }
 
   describe "#process" do
     context "when overriding an icon" do

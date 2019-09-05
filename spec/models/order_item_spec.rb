@@ -1,7 +1,9 @@
 describe OrderItem do
   let(:tenant) { create(:tenant) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :tenant_id => tenant.id) }
   let(:order) { create(:order, :tenant_id => tenant.id) }
-  let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => 123, :tenant_id => tenant.id) }
+  let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item => portfolio_item, :tenant_id => tenant.id) }
 
   context "updating order item progress messages" do
     it "syncs the time between order_item and progress message" do
@@ -16,7 +18,7 @@ describe OrderItem do
 
   describe "#discard before hook" do
     context "when the order item has progress messages" do
-      let(:progress_message) { create(:progress_message, :order_item_id => order_item.id) }
+      let(:progress_message) { create(:progress_message, :order_item_id => order_item.id, :tenant_id => tenant.id) }
 
       it "destroys progress_messages associated with the order" do
         order_item.progress_messages << progress_message
@@ -29,7 +31,7 @@ describe OrderItem do
 
   describe "#undiscard before hook" do
     context "when the order item has progress messages" do
-      let(:progress_message) { create(:progress_message, :order_item_id => order_item.id) }
+      let(:progress_message) { create(:progress_message, :order_item_id => order_item.id, :tenant_id => tenant.id) }
 
       before do
         order_item.progress_messages << progress_message

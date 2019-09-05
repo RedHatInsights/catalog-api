@@ -23,7 +23,7 @@ module Catalog
     def submit_approval_requests(order_item)
       workflows(order_item.portfolio_item).each do |workflow|
         response = Approval.call { |api| api.create_request(workflow, request_body_from(order_item)) }
-        order_item.approval_requests << create_approval_request(response)
+        order_item.approval_requests << create_approval_request(response, order_item)
 
         order_item.update_message("info", "Approval Request Submitted for workflow #{workflow}, ID: #{order_item.approval_requests.last.id}")
       end
@@ -47,11 +47,13 @@ module Catalog
       portfolio_item.resolved_workflow_refs
     end
 
-    def create_approval_request(req)
+    def create_approval_request(req, order_item)
       ApprovalRequest.new.tap do |approval|
         approval.workflow_ref         = req.workflow_id
         approval.approval_request_ref = req.id
         approval.state                = req.decision.to_sym
+        approval.tenant_id            = order.tenant_id
+        approval.order_item_id        = order_item.id
         approval.save!
       end
     end

@@ -5,15 +5,20 @@ describe Catalog::UpdateOrderItem do
     let(:client) { double(:client) }
     let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client, nil) }
     let(:payload) { {"task_id" => "123", "status" => status, "state" => state, "context" => "payloadcontext"} }
+    let(:tenant) { create(:tenant) }
+    let(:order) { create(:order, :tenant_id => tenant.id) }
+    let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+    let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :tenant_id => tenant.id) }
     let!(:item) do
       ManageIQ::API::Common::Request.with_request(default_request) do
         create(:order_item,
                :order_id          => order.id,
                :topology_task_ref => topology_task_ref,
-               :portfolio_item_id => "1")
+               :tenant_id         => tenant.id,
+               :portfolio_item_id => portfolio_item.id)
       end
     end
-    let(:order) { create(:order) }
+    let(:order) { create(:order, :tenant_id => tenant.id) }
     let(:subject) { described_class.new(topic) }
     let(:api_instance) { instance_double("TopologicalInventoryApiClient::DefaultApi") }
     let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }

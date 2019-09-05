@@ -6,12 +6,13 @@ describe "OrderItemsRequests", :type => :request do
   end
 
   let(:tenant) { create(:tenant) }
+  let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
   let!(:order_1) { create(:order, :tenant_id => tenant.id) }
   let!(:order_2) { create(:order, :tenant_id => tenant.id) }
   let!(:order_3) { create(:order, :tenant_id => tenant.id) }
   let!(:order_item_1) { create(:order_item, :order_id => order_1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
   let!(:order_item_2) { create(:order_item, :order_id => order_2.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id, :portfolio => portfolio) }
   let(:params) do
     { 'order_id'                    => order_1.id,
       'portfolio_item_id'           => portfolio_item.id,

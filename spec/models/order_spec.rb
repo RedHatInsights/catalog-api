@@ -16,7 +16,8 @@ describe Order do
   describe "#discard before hook" do
     context "when the order has order items" do
       let!(:order_item) { create(:order_item, :order_id => order1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :service_offering_ref => "123", :tenant_id => tenant.id) }
 
       it "destroys order_items associated with the order" do
         order1.order_items << order_item
@@ -30,7 +31,8 @@ describe Order do
   describe "#undiscard before hook" do
     context "when the order has order items" do
       let!(:order_item) { create(:order_item, :order_id => order1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :service_offering_ref => "123", :tenant_id => tenant.id) }
 
       before do
         order1.order_items << order_item

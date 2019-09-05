@@ -6,7 +6,9 @@ describe Catalog::ProviderControlParameters do
   let(:source_id) { "1" }
   let(:params) { portfolio_item.id }
   let(:provider_control_parameters) { described_class.new(params) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_source_ref => source_id) }
+  let(:tenant) { create(:tenant) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :portfolio => portfolio, :service_offering_source_ref => source_id) }
   let(:project1_name) { 'project-one' }
   let(:project2_name) { 'project-two' }
   let(:project1) do

@@ -1,6 +1,7 @@
 describe Catalog::SoftDeleteRestore do
   let(:tenant) { create(:tenant) }
-  let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :discarded_at => Time.current) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :tenant_id => tenant.id, :discarded_at => Time.current) }
 
   describe "#process" do
     context "when restoring a soft-deleted record" do

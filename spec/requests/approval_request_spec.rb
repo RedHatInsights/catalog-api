@@ -7,8 +7,9 @@ describe "ApprovalRequestRequests", :type => :request do
 
   let(:tenant) { create(:tenant) }
   let(:order) { create(:order, :tenant_id => tenant.id) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
   let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id, :portfolio => portfolio) }
   let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id.to_s, :tenant_id => tenant.id) }
 
   context "v1.0" do

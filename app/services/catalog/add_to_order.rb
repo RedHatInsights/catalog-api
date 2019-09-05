@@ -8,7 +8,7 @@ module Catalog
 
     def process
       @order = Order.find_by!(:id => @params[:order_id])
-      order.order_items << OrderItem.create!(order_item_params)
+      order.order_items << OrderItem.create!(order_item_params.merge(:tenant => order.tenant))
       self
     end
 

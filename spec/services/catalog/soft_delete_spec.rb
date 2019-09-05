@@ -1,6 +1,7 @@
 describe Catalog::SoftDelete do
   let(:tenant) { create(:tenant) }
-  let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :tenant_id => tenant.id) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
 
   describe "#process" do
     context "when soft-deleting a record" do

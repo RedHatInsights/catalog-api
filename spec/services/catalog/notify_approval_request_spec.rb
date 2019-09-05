@@ -3,10 +3,12 @@ describe Catalog::NotifyApprovalRequest do
 
   describe "#process" do
     context "when the class is an approval request" do
-      let(:order) { create(:order) }
-      let(:portfolio_item) { create(:portfolio_item) }
-      let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
-      let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id, :approval_request_ref => "123") }
+      let(:tenant) { create(:tenant) }
+      let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+      let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
+      let(:order) { create(:order, :tenant_id => tenant.id) }
+      let(:order_item) { create(:order_item, :order_id => order.id, :tenant_id => tenant.id, :portfolio_item_id => portfolio_item.id) }
+      let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id, :approval_request_ref => "123", :tenant_id => tenant.id) }
       let(:ref_id) { "123" }
       let(:approval_transition) { instance_double("Catalog::ApprovalTransition") }
 

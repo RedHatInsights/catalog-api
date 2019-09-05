@@ -1,8 +1,10 @@
 describe Catalog::CancelOrder do
-  let(:order) { create(:order) }
-  let(:portfolio_item) { create(:portfolio_item) }
-  let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
-  let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id) }
+  let(:tenant) { create(:tenant) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
+  let(:order) { create(:order, :tenant_id => tenant.id) }
+  let(:order_item) { create(:order_item, :tenant_id => tenant.id, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
+  let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id, :tenant_id => tenant.id) }
   let(:subject) { described_class.new(order.id) }
 
   describe "#process" do

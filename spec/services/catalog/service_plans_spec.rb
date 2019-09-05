@@ -1,6 +1,8 @@
 describe Catalog::ServicePlans do
   let(:service_offering_ref) { "998" }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
+  let(:tenant) { create(:tenant) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :portfolio => portfolio, :service_offering_ref => service_offering_ref) }
   let(:params) { portfolio_item.id }
   let(:service_plans) { described_class.new(params) }
   let(:api_instance) { double }

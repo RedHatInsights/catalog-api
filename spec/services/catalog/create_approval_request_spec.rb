@@ -69,7 +69,7 @@ describe Catalog::CreateApprovalRequest do
 
     context "#create_approval_request" do
       let(:request_out) { ApprovalApiClient::RequestOut.new(:workflow_id => "1", :id => 2) }
-      let(:approval_request) { create_approval_request.send(:create_approval_request, request_out) }
+      let(:approval_request) { create_approval_request.send(:create_approval_request, request_out, order_item) }
 
       it "returns an ApprovalRequest Object" do
         expect(approval_request.class.name).to eq "ApprovalRequest"

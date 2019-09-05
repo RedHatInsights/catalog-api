@@ -7,7 +7,7 @@ describe 'Portfolios API' do
 
   let(:tenant)           { create(:tenant) }
   let!(:portfolio)       { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio_item)  { create(:portfolio_item, :tenant_id => tenant.id) }
+  let!(:portfolio_item)  { create(:portfolio_item, :tenant_id => tenant.id, :portfolio => portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)     { portfolio.id }
 
@@ -198,7 +198,7 @@ describe 'Portfolios API' do
     end
 
     context "when restoring a portfolio with portfolio_items that were discarded previously" do
-      let!(:second_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :discarded_at => 1.minute.ago, :tenant_id => tenant.id) }
+      let!(:second_item) { create(:portfolio_item, :portfolio => portfolio, :discarded_at => 1.minute.ago, :tenant_id => tenant.id) }
 
       before do
         portfolio.discard

@@ -1,9 +1,16 @@
 describe Catalog::AddToOrder do
   let(:service_offering_ref) { "998" }
-  let(:order) { create(:order) }
+  let(:tenant) { create(:tenant) }
+  let(:order) { create(:order, :tenant_id => tenant.id) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
   let(:order_id) { order.id.to_s }
-  let(:order_item) { create(:order_item, :portfolio_item_id => portfolio_item.id) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref, :owner => 'wilma') }
+  let(:order_item) { create(:order_item, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+  let(:portfolio_item) do
+    create(:portfolio_item, :service_offering_ref => service_offering_ref,
+                            :portfolio            => portfolio,
+                            :tenant_id            => tenant.id,
+                            :owner                => 'wilma')
+  end
   let(:portfolio_item_id) { portfolio_item.id.to_s }
 
   let(:params) do

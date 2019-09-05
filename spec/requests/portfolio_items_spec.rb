@@ -20,6 +20,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
+  let(:image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg"))), :tenant_id => tenant.id) }
 
   describe "GET /portfolio_items/:portfolio_item_id" do
     before do
@@ -333,7 +334,8 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when copying into a different portfolio in a different tenant" do
       let(:params) { { :portfolio_id => not_my_portfolio.id } }
-      let(:not_my_portfolio) { create(:portfolio) }
+      let(:not_my_portfolio) { create(:portfolio, :tenant => other_tenant) }
+      let(:other_tenant) { create(:tenant, :external_tenant => "2") }
 
       before do
         copy_portfolio_item
@@ -360,7 +362,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe '#add_icon_to_portfolio_item' do
-    let!(:icon) { create(:icon, :tenant_id => tenant.id) }
+    let!(:icon) { create(:icon, :tenant_id => tenant.id, :portfolio_item => portfolio_item, :image => image) }
 
     context "when adding an icon to a portfolio_item" do
       before do

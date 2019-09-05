@@ -10,10 +10,15 @@ describe Catalog::OrderItemSanitizedParameters do
       Catalog::OrderItemSanitizedParameters.new(params)
     end
   end
+  let(:tenant) { create(:tenant) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
+  let(:order) { create(:order, :tenant_id => tenant.id) }
 
   let(:order_item) do
-    create(:order_item, :portfolio_item_id           => 100,
-                        :order_id                    => 45,
+    create(:order_item, :portfolio_item_id           => portfolio_item.id,
+                        :order_id                    => order.id,
+                        :tenant_id                   => tenant.id,
                         :service_plan_ref            => service_plan_ref,
                         :service_parameters          => service_parameters,
                         :provider_control_parameters => { 'a' => 1 },

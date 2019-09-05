@@ -5,20 +5,25 @@ describe Catalog::ApprovalTransition do
 
   let(:req) { { :headers => default_headers, :original_url => "localhost/nope" } }
 
-  let(:order) { create(:order) }
+  let(:tenant) { create(:tenant) }
+  let(:order) { create(:order, :tenant_id => tenant.id) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :tenant_id => tenant.id) }
 
   let!(:order_item) do
     ManageIQ::API::Common::Request.with_request(req) do
       create(:order_item,
              :order_id          => order.id,
-             :portfolio_item_id => "1")
+             :tenant_id         => tenant.id,
+             :portfolio_item_id => portfolio_item.id)
     end
   end
 
   let(:approval) do
     create(:approval_request,
            :workflow_ref  => "1",
-           :order_item_id => order_item.id)
+           :order_item_id => order_item.id,
+           :tenant_id     => tenant.id)
   end
 
   let(:order_item_transition) { described_class.new(order_item.id) }

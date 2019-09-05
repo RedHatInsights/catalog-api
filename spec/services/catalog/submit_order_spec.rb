@@ -1,7 +1,10 @@
 describe Catalog::SubmitOrder do
+  let(:tenant) { create(:tenant) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
-  let(:order) { create(:order) }
+  let(:order) { create(:order, :tenant_id => tenant.id) }
   let(:service_parameters) { { 'var1' => 'Fred', 'var2' => 'Wilma' } }
   let(:provider_control_parameters) { { 'namespace' => 'Bedrock' } }
   let!(:order_item) do
@@ -10,10 +13,11 @@ describe Catalog::SubmitOrder do
                         :service_plan_ref            => service_plan_ref,
                         :provider_control_parameters => provider_control_parameters,
                         :order_id                    => order.id,
+                        :tenant_id                   => tenant.id,
                         :count                       => 1,
                         :context                     => default_request)
   end
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
+  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref, :portfolio => portfolio, :tenant_id => tenant.id) }
   let(:portfolio_item_id) { portfolio_item.id.to_s }
   let(:params) { order.id.to_s }
   let(:submit_order) { described_class.new(params) }

@@ -1,9 +1,11 @@
 describe Catalog::OrderStateTransition do
   let(:tenant) { create(:tenant) }
+  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
   let(:order) { create(:order, :tenant_id => tenant.id) }
 
-  let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => "1", :tenant_id => tenant.id) }
-  let(:order_item2) { create(:order_item, :order_id => order.id, :portfolio_item_id => "1", :tenant_id => tenant.id) }
+  let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+  let(:order_item2) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
 
   describe "#process" do
     before do
