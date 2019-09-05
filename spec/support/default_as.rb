@@ -12,7 +12,7 @@ module DefaultAs
       super(path, kwargs)
     end
 
-    %w[get post patch put delete].each do |method|
+    %w[post patch put].each do |method|
       define_method(method, l)
     end
   end
