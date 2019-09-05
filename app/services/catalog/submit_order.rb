@@ -27,7 +27,7 @@ module Catalog
 
     def submit_order_item(item)
       TopologicalInventory.call do |api_instance|
-        result = api_instance.order_service_plan(item.service_plan_ref, parameters(item))
+        result = api_instance.order_service_offering(item.portfolio_item.service_offering_ref, parameters(item))
         update_item(item, result)
       end
     end
