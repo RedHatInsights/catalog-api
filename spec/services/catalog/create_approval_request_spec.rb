@@ -1,12 +1,10 @@
-describe Catalog::CreateApprovalRequest do
+describe Catalog::CreateApprovalRequest, :type => :service do
   let(:create_approval_request) { described_class.new(order.id) }
 
-  let(:tenant) { create(:tenant) }
   let(:workflow_ref) { "1" }
-  let!(:order) { create(:order, :tenant_id => tenant.id) }
-  let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :workflow_ref => workflow_ref, :tenant_id => tenant.id) }
-  let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+  let!(:order) { order_item.order }
+  let!(:portfolio_item) { create(:portfolio_item, :workflow_ref => workflow_ref) }
+  let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item) }
 
   let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { instance_double(ApprovalApiClient::RequestApi) }
@@ -69,7 +67,7 @@ describe Catalog::CreateApprovalRequest do
 
     context "#create_approval_request" do
       let(:request_out) { ApprovalApiClient::RequestOut.new(:workflow_id => "1", :id => 2) }
-      let(:approval_request) { create_approval_request.send(:create_approval_request, request_out) }
+      let(:approval_request) { create_approval_request.send(:create_approval_request, request_out, order_item) }
 
       it "returns an ApprovalRequest Object" do
         expect(approval_request.class.name).to eq "ApprovalRequest"
