@@ -7,16 +7,14 @@ describe "PortfolioItemRequests", :type => :request do
 
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
-  let(:tenant) { create(:tenant) }
-  let(:order) { create(:order, :tenant_id => tenant.id) }
-  let!(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+  let(:order) { create(:order) }
+  let!(:portfolio) { create(:portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id) { portfolio.id }
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
                             :service_offering_source_ref => service_offering_source_ref,
-                            :portfolio_id                => portfolio.id,
-                            :tenant_id                   => tenant.id)
+                            :portfolio_id                => portfolio.id)
   end
   let(:portfolio_item_id)    { portfolio_item.id }
   let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
@@ -313,7 +311,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when copying into a different portfolio" do
       let(:params) { { :portfolio_id => new_portfolio.id } }
-      let(:new_portfolio) { create(:portfolio, :tenant_id => tenant.id) }
+      let(:new_portfolio) { create(:portfolio) }
 
       before do
         copy_portfolio_item
@@ -360,7 +358,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe '#add_icon_to_portfolio_item' do
-    let!(:icon) { create(:icon, :tenant_id => tenant.id) }
+    let!(:icon) { create(:icon) }
 
     context "when adding an icon to a portfolio_item" do
       before do
