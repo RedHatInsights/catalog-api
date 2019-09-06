@@ -4,9 +4,9 @@ describe "OrderRequests", :type => :request do
       example.call
     end
   end
-  let(:tenant) { create(:tenant) }
-  let!(:order) { create(:order, :tenant_id => tenant.id) }
-  let!(:order2) { create(:order, :tenant_id => tenant.id) }
+
+  let!(:order) { create(:order) }
+  let!(:order2) { create(:order) }
 
   # TODO: Update this context with new logic. Will be fixed with
   # https://projects.engineering.redhat.com/browse/SSP-237

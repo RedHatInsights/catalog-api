@@ -5,9 +5,8 @@ describe 'Portfolios API' do
     end
   end
 
-  let(:tenant)           { create(:tenant) }
-  let!(:portfolio)       { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio_item)  { create(:portfolio_item, :tenant_id => tenant.id) }
+  let!(:portfolio)       { create(:portfolio) }
+  let!(:portfolio_item)  { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)     { portfolio.id }
 
@@ -72,8 +71,8 @@ describe 'Portfolios API' do
     end
 
     context "with filter" do
-      let!(:portfolio_filter1) { create(:portfolio, :tenant_id => tenant.id, :name => "testfilter1") }
-      let!(:portfolio_filter2) { create(:portfolio, :tenant_id => tenant.id, :name => "testfilter2") }
+      let!(:portfolio_filter1) { create(:portfolio, :name => "testfilter1") }
+      let!(:portfolio_filter2) { create(:portfolio, :name => "testfilter2") }
 
       it 'returns only the id specified in the filter' do
         get "#{api}/portfolios?filter[id]=#{portfolio_id}", :headers => default_headers
@@ -198,7 +197,7 @@ describe 'Portfolios API' do
     end
 
     context "when restoring a portfolio with portfolio_items that were discarded previously" do
-      let!(:second_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :discarded_at => 1.minute.ago, :tenant_id => tenant.id) }
+      let!(:second_item) { create(:portfolio_item, :portfolio => portfolio, :discarded_at => 1.minute.ago) }
 
       before do
         portfolio.discard

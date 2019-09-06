@@ -1,7 +1,5 @@
 describe OrderItem do
-  let(:tenant) { create(:tenant) }
-  let(:order) { create(:order, :tenant_id => tenant.id) }
-  let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => 123, :tenant_id => tenant.id) }
+  let(:order_item) { create(:order_item) }
 
   context "updating order item progress messages" do
     it "syncs the time between order_item and progress message" do
