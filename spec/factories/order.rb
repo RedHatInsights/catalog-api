@@ -1,5 +1,3 @@
 FactoryBot.define do
-  factory :order do
-    owner { default_username }
-  end
+  factory :order, :traits => [:has_owner, :has_tenant]
 end

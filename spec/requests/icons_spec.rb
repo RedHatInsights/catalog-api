@@ -1,19 +1,8 @@
 describe "IconsRequests", :type => :request do
-  let(:tenant) { create(:tenant) }
-  let!(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
-  let(:image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg"))), :tenant_id => tenant.id) }
-  let!(:icon) { create(:icon, :image_id => image.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
+  let!(:portfolio_item) { create(:portfolio_item) }
+  let!(:icon) { create(:icon, :image => image, :portfolio_item => portfolio_item) }
 
-  let!(:ocp_portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
-  let!(:ocp_jpg_image) do
-    Image.create(:content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
-                 :tenant_id => tenant.id)
-  end
-  let(:ocp_png_image) do
-    Image.create(:content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
-                 :tenant_id => tenant.id)
-  end
-  let!(:ocp_icon) { create(:icon, :image_id => ocp_png_image.id, :portfolio_item_id => ocp_portfolio_item.id, :tenant_id => tenant.id) }
+  let(:image) { create(:image) }
 
   describe "#show" do
     before { get "#{api}/icons/#{icon.id}", :headers => default_headers }
@@ -40,10 +29,23 @@ describe "IconsRequests", :type => :request do
   end
 
   describe "#create" do
+    let!(:ocp_jpg_image) do
+      create(:image,
+             :content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
+             :extension => "JPEG"
+            )
+    end
+    let!(:ocp_png_image) do
+      create(:image,
+             :content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
+             :extension => "PNG"
+            )
+    end
+
     before { post "#{api}/icons", :params => params, :headers => default_headers }
 
     context "when providing proper parameters" do
-      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref" } }
+      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -56,7 +58,7 @@ describe "IconsRequests", :type => :request do
     end
 
     context "when uploading a duplicate svg icon" do
-      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref" } }
+      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
 
       it "uses the reference from the one that is already there" do
         expect(json["image_id"]).to eq image.id.to_s
@@ -68,7 +70,8 @@ describe "IconsRequests", :type => :request do
         {
           :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
           :source_id  => "29",
-          :source_ref => "icon_ref"
+          :source_ref => "icon_ref",
+          :portfolio_item_id => portfolio_item.id
         }
       end
 
@@ -82,7 +85,8 @@ describe "IconsRequests", :type => :request do
         {
           :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
           :source_id  => "29",
-          :source_ref => "icon_ref"
+          :source_ref => "icon_ref",
+          :portfolio_item_id => portfolio_item.id
         }
       end
 
@@ -166,10 +170,8 @@ describe "IconsRequests", :type => :request do
     end
 
     context "when the icon does not exist" do
-      before { icon.update!(:portfolio_item_id => nil) }
-
       it "returns not found" do
-        get "#{api}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
+        get "#{api}/portfolio_items/0/icon", :headers => default_headers
 
         expect(response).to have_http_status(:not_found)
       end
@@ -177,7 +179,7 @@ describe "IconsRequests", :type => :request do
   end
 
   describe "#override_icon" do
-    let!(:new_icon) { create(:icon, :tenant_id => tenant.id) }
+    let!(:new_icon) { create(:icon) }
     before { post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id }, :headers => default_headers }
 
     it "returns the new icon" do

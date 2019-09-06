@@ -333,7 +333,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when copying into a different portfolio in a different tenant" do
       let(:params) { { :portfolio_id => not_my_portfolio.id } }
-      let(:not_my_portfolio) { create(:portfolio) }
+      let(:not_my_portfolio) { create(:portfolio, :tenant => create(:tenant, :external_tenant => "xyz")) }
 
       before do
         copy_portfolio_item

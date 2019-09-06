@@ -1,11 +1,10 @@
 describe ApprovalRequest, :type => :model do
-  let(:tenant) { create(:tenant) }
-  let(:order1) { create(:order) }
   let(:order2) { create(:order) }
-  let(:order_item1) { create(:order_item, :tenant_id => tenant.id, :portfolio_item_id => 1, :order_id => order1.id) }
-  let(:order_item2) { create(:order_item, :tenant_id => tenant.id, :portfolio_item_id => 1, :order_id => order2.id) }
-  let!(:approval_request1) { create(:approval_request, :order_item_id => order_item1.id) }
-  let!(:approval_request2) { create(:approval_request, :order_item_id => order_item2.id) }
+  let(:portfolio_item) { create(:portfolio_item) }
+  let(:order_item1) { create(:order_item, :portfolio_item => portfolio_item) }
+  let(:order_item2) { create(:order_item, :portfolio_item => portfolio_item, :order => order2) }
+  let!(:approval_request1) { create(:approval_request, :order_item => order_item1) }
+  let!(:approval_request2) { create(:approval_request, :order_item => order_item2) }
 
   around do |example|
     ManageIQ::API::Common::Request.with_request(default_request) { example.call }

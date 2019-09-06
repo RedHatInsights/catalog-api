@@ -9,16 +9,12 @@ describe Catalog::ApprovalTransition do
 
   let!(:order_item) do
     ManageIQ::API::Common::Request.with_request(req) do
-      create(:order_item,
-             :order_id          => order.id,
-             :portfolio_item_id => "1")
+      create(:order_item, :order => order)
     end
   end
 
   let(:approval) do
-    create(:approval_request,
-           :workflow_ref  => "1",
-           :order_item_id => order_item.id)
+    create(:approval_request, :workflow_ref  => "1", :order_item => order_item)
   end
 
   let(:order_item_transition) { described_class.new(order_item.id) }

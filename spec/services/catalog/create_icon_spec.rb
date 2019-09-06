@@ -1,4 +1,4 @@
-describe Catalog::CreateIcon do
+describe Catalog::CreateIcon, :type => :service do
   let(:subject) { described_class.new(params) }
 
   shared_examples_for "#process icon after being created" do
