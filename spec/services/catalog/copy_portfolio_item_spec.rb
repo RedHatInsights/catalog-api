@@ -1,8 +1,7 @@
 describe Catalog::CopyPortfolioItem do
-  let(:tenant) { create(:tenant) }
-  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
-  let(:portfolio2) { create(:portfolio, :tenant_id => tenant.id) }
-  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
+  let(:portfolio) { create(:portfolio) }
+  let(:portfolio2) { create(:portfolio) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
 
   let(:copy_portfolio_item) { described_class.new(params).process }
 
