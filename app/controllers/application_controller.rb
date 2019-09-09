@@ -23,7 +23,7 @@ class ApplicationController < ActionController::API
   end
 
   def current_tenant(current_user)
-    Tenant.find_or_create_by(:external_tenant => current_user.tenant)
+    Tenant.find_or_create_by(:external_tenant => current_user.tenant.to_i)
   end
 
   def check_entitled(entitlement)

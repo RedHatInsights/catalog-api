@@ -5,9 +5,8 @@ RSpec.describe("v1.0 - GraphQL") do
     end
   end
 
-  let(:tenant) { create(:tenant) }
-  let!(:portfolio_a) { create(:portfolio, :tenant_id => tenant.id, :description => 'test a desc', :name => "test_a", :owner => "234") }
-  let!(:portfolio_b) { create(:portfolio, :tenant_id => tenant.id, :description => 'test b desc', :name => "test_b", :owner => "123") }
+  let!(:portfolio_a) { create(:portfolio, :description => 'test a desc', :name => "test_a", :owner => "234") }
+  let!(:portfolio_b) { create(:portfolio, :description => 'test b desc', :name => "test_b", :owner => "123") }
 
   let(:graphql_portfolio_query) { { "query" => "{ portfolios { id name } }" } }
 

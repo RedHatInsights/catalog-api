@@ -1,7 +1,6 @@
 RSpec.describe ApplicationController, :type => :request do
-  let(:tenant) { create(:tenant) }
-  let(:portfolio)         { Portfolio.create!(:name => 'tenant_portfolio', :description => 'tenant desc', :tenant_id => tenant.id, :owner => 'wilma') }
-  let(:portfolio_id)      { portfolio.id }
+  let(:portfolio) { create(:portfolio, :name => 'tenant_portfolio', :description => 'tenant desc', :owner => 'wilma') }
+  let(:portfolio_id) { portfolio.id }
 
   context "with api version v1" do
     around do |example|

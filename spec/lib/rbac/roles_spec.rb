@@ -1,5 +1,4 @@
 describe RBAC::Roles do
-  let(:opts) { {:name => 'Catalog Administrator', :scope => 'principal'} }
   let(:response_headers) { {"Content-Type" => 'application/json'} }
   let(:catalog_admin) do
     { :data => data, :meta => { :count => count } }

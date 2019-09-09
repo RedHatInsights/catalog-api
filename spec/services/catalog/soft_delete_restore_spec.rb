@@ -1,6 +1,5 @@
-describe Catalog::SoftDeleteRestore do
-  let(:tenant) { create(:tenant) }
-  let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :discarded_at => Time.current) }
+describe Catalog::SoftDeleteRestore, :type => :service do
+  let(:portfolio_item) { create(:portfolio_item, :discarded_at => Time.current) }
 
   describe "#process" do
     context "when restoring a soft-deleted record" do

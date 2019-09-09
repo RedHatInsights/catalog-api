@@ -1,6 +1,5 @@
 describe OpenApi::Serializer do
-  let(:tenant) { create(:tenant) }
-  let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :portfolio => create(:portfolio, :tenant_id => tenant.id)) }
+  let(:portfolio_item) { create(:portfolio_item) }
   let(:request_path)   { "/api/v1.0/portfolio_items" }
 
 

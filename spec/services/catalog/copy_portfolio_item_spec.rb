@@ -1,8 +1,7 @@
-describe Catalog::CopyPortfolioItem do
-  let(:tenant) { create(:tenant) }
-  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
-  let(:portfolio2) { create(:portfolio, :tenant_id => tenant.id) }
-  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
+describe Catalog::CopyPortfolioItem, :type => :service do
+  let(:portfolio) { create(:portfolio) }
+  let(:portfolio2) { create(:portfolio) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
 
   let(:copy_portfolio_item) { described_class.new(params).process }
 
@@ -40,9 +39,8 @@ describe Catalog::CopyPortfolioItem do
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
       let!(:another_portfolio_item) do
         create(:portfolio_item,
-               :tenant_id    => tenant.id,
-               :portfolio_id => portfolio.id,
-               :name         => "Copy of #{portfolio_item.name}")
+               :portfolio => portfolio,
+               :name      => "Copy of #{portfolio_item.name}")
       end
 
       it "adds a (1) to the name if there is already a copy" do

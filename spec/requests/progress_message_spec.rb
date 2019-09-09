@@ -5,11 +5,10 @@ describe "ProgressMessageRequests", :type => :request do
     end
   end
 
-  let(:tenant) { create(:tenant) }
-  let(:order) { create(:order, :tenant_id => tenant.id) }
-  let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
-  let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id.to_s, :tenant_id => tenant.id) }
+  let(:order) { create(:order) }
+  let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
+  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123") }
+  let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id.to_s) }
 
   context "v1.0" do
     describe "GET /order_items/:order_item_id/progress_messages" do

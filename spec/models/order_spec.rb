@@ -1,8 +1,7 @@
 describe Order do
-  let(:tenant) { create(:tenant) }
-  let!(:order1) { create(:order, :tenant_id => tenant.id) }
-  let!(:order2) { create(:order, :tenant_id => tenant.id) }
-  let!(:order3) { create(:order, :tenant_id => tenant.id, :owner => 'barney') }
+  let!(:order1) { create(:order) }
+  let!(:order2) { create(:order) }
+  let!(:order3) { create(:order, :owner => 'barney') }
 
   context "scoped by owner" do
     it "#by_owner" do
@@ -15,8 +14,7 @@ describe Order do
 
   describe "#discard before hook" do
     context "when the order has order items" do
-      let!(:order_item) { create(:order_item, :order_id => order1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let!(:order_item) { create(:order_item, :order_id => order1.id) }
 
       it "destroys order_items associated with the order" do
         order1.order_items << order_item
@@ -29,8 +27,7 @@ describe Order do
 
   describe "#undiscard before hook" do
     context "when the order has order items" do
-      let!(:order_item) { create(:order_item, :order_id => order1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let!(:order_item) { create(:order_item, :order_id => order1.id) }
 
       before do
         order1.order_items << order_item

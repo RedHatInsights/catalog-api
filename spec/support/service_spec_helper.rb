@@ -1,4 +1,16 @@
 module ServiceSpecHelper
+  RSpec.configure do |config|
+    config.around(:example, :type => :service) do |example|
+      default_tenant = Tenant.first_or_create!(:external_tenant => default_account_number)
+
+      ActsAsTenant.with_tenant(default_tenant) do
+        example.call
+      end
+
+      Tenant.delete_all
+    end
+  end
+
   def with_modified_env(options, &block)
     Thread.current[:api_instance] = nil
     ClimateControl.modify(options, &block)

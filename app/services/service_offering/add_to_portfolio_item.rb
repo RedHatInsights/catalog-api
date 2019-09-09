@@ -53,9 +53,10 @@ module ServiceOffering
       return if service_offering_icon.data.nil?
 
       svc = Catalog::CreateIcon.new(
-        :content    => Base64.strict_encode64(service_offering_icon.data),
-        :source_ref => service_offering_icon.source_ref,
-        :source_id  => service_offering_icon.source_id
+        :content        => Base64.strict_encode64(service_offering_icon.data),
+        :source_ref     => service_offering_icon.source_ref,
+        :source_id      => service_offering_icon.source_id,
+        :portfolio_item => @item
       )
 
       svc.process.icon

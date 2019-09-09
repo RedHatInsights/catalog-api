@@ -6,10 +6,7 @@ describe Internal::V1x0::NotifyController, :type => :request do
   end
 
   describe "POST /notify/approval_request/:id" do
-    let(:order) { create(:order) }
-    let(:portfolio_item) { create(:portfolio_item) }
-    let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :context => default_request) }
-    let!(:approval_request) { create(:approval_request, :order_item_id => order_item.id, :approval_request_ref => "123") }
+    let!(:approval_request) { create(:approval_request, :approval_request_ref => "123") }
     let(:approval_transition) { instance_double("Catalog::UpdateOrderItem") }
 
     before do
@@ -24,15 +21,8 @@ describe Internal::V1x0::NotifyController, :type => :request do
   end
 
   describe "POST /notify/order_item/:task_id" do
-    let(:tenant) { create(:tenant) }
-    let(:order) { create(:order, :tenant_id => tenant.id) }
-    let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
     let!(:order_item) do
-      create(:order_item,
-             :order_id          => order.id,
-             :portfolio_item_id => portfolio_item.id,
-             :tenant_id         => tenant.id,
-             :topology_task_ref => "321")
+      create(:order_item, :topology_task_ref => "321")
     end
     let(:update_order_item) { instance_double("Catalog::UpdateOrderItem") }
 

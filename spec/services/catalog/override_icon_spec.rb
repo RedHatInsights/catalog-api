@@ -1,8 +1,7 @@
-describe Catalog::OverrideIcon do
-  let(:tenant) { create(:tenant) }
-  let!(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id) }
-  let!(:icon1) { create(:icon, :tenant_id => tenant.id, :portfolio_item_id => portfolio_item.id) }
-  let!(:icon2) { create(:icon, :tenant_id => tenant.id) }
+describe Catalog::OverrideIcon, :type => :service do
+  let!(:portfolio_item) { create(:portfolio_item) }
+  let!(:icon1) { create(:icon, :portfolio_item => portfolio_item) }
+  let!(:icon2) { create(:icon) }
 
   describe "#process" do
     context "when overriding an icon" do

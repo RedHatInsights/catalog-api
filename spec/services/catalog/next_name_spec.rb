@@ -1,8 +1,7 @@
-describe Catalog::NextName do
-  let(:tenant) { create(:tenant) }
-  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
-  let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
-  let(:portfolio_item2) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
+describe Catalog::NextName, :type => :service do
+  let(:portfolio) { create(:portfolio) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
+  let(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio) }
 
   let(:next_name) { described_class.new(portfolio_item.id, portfolio.id).process.next_name }
 

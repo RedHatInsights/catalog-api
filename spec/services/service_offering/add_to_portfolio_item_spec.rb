@@ -1,4 +1,4 @@
-describe ServiceOffering::AddToPortfolioItem do
+describe ServiceOffering::AddToPortfolioItem, :type => :service do
   include ServiceOfferingHelper
   let(:api_instance) { double }
   let(:service_offering_ref) { "1" }

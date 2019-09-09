@@ -1,11 +1,5 @@
-describe 'Settings API' do
-  let!(:tenant) do
-    create(:tenant,
-           :settings => {
-             :icon             => "<svg rel='stylesheet'>image</svg>",
-             :default_workflow => "1"
-           })
-  end
+describe 'Settings API', :type => :request do
+  let!(:tenant) { create(:tenant) }
   let(:retreived_tenant) { Tenant.find(tenant.id) }
 
   context "when the user is a catalog admin" do
