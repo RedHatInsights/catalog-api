@@ -5,16 +5,14 @@ describe "OrderItemsRequests", :type => :request do
     end
   end
 
-  let(:tenant) { create(:tenant) }
-  let!(:order_1) { create(:order, :tenant_id => tenant.id) }
-  let!(:order_2) { create(:order, :tenant_id => tenant.id) }
-  let!(:order_3) { create(:order, :tenant_id => tenant.id) }
-  let!(:order_item_1) { create(:order_item, :order_id => order_1.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-  let!(:order_item_2) { create(:order_item, :order_id => order_2.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+  let!(:order_1) { create(:order) }
+  let!(:order_2) { create(:order) }
+  let!(:order_3) { create(:order) }
+  let!(:order_item_1) { create(:order_item, :order => order_1) }
+  let!(:order_item_2) { create(:order_item, :order => order_2) }
   let(:params) do
     { 'order_id'                    => order_1.id,
-      'portfolio_item_id'           => portfolio_item.id,
+      'portfolio_item_id'           => order_item_1.portfolio_item.id,
       'count'                       => 1,
       'service_parameters'          => {'name' => 'fred'},
       'provider_control_parameters' => {'age' => 50},

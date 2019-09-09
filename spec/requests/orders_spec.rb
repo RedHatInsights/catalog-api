@@ -138,8 +138,8 @@ describe "OrderRequests", :type => :request do
     end
 
     context "when deleting an order where a linked order item fails" do
-      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123") }
 
       before do
         order.order_items << order_item
@@ -158,9 +158,9 @@ describe "OrderRequests", :type => :request do
     end
 
     context "when deleting an order where a linked order item has linked progress messages that fail" do
-      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
+      let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123") }
 
       before do
         order.order_items << order_item
@@ -213,8 +213,8 @@ describe "OrderRequests", :type => :request do
     end
 
     context "when restoring an order where a linked order item fails to be restored" do
-      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123") }
 
       before do
         order.order_items << order_item
@@ -235,9 +235,9 @@ describe "OrderRequests", :type => :request do
     end
 
     context "when restoring an order where a linked order item with a linked progress message fails to be restored" do
-      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id, :tenant_id => tenant.id) }
-      let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id, :tenant_id => tenant.id) }
-      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123", :tenant_id => tenant.id) }
+      let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
+      let!(:progress_message) { create(:progress_message, :order_item_id => order_item.id) }
+      let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123") }
 
       before do
         order.order_items << order_item
