@@ -1,8 +1,7 @@
-describe Catalog::CopyPortfolio do
-  let(:tenant) { create(:tenant) }
-  let(:portfolio) { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio_item1) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
-  let!(:portfolio_item2) { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant.id) }
+describe Catalog::CopyPortfolio, :type => :service do
+  let(:portfolio) { create(:portfolio) }
+  let!(:portfolio_item1) { create(:portfolio_item, :portfolio => portfolio) }
+  let!(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio) }
 
   let(:copy_portfolio) { described_class.new(:portfolio_id => portfolio.id).process }
 
@@ -33,7 +32,7 @@ describe Catalog::CopyPortfolio do
     end
 
     context "copy when there is a copy already" do
-      let!(:another_portfolio) { create(:portfolio, :tenant_id => tenant.id, :name => "Copy of #{portfolio.name}") }
+      let!(:another_portfolio) { create(:portfolio, :name => "Copy of #{portfolio.name}") }
 
       it "adds a (1) to the name" do
         expect(new_portfolio.name).to eq "Copy (1) of #{portfolio.name}"

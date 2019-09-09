@@ -1,9 +1,9 @@
-describe Catalog::UpdateIcon do
+describe Catalog::UpdateIcon, :type => :service do
   let(:subject) { described_class.new(icon.id, params) }
 
   describe "#process" do
-    let(:image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg")))) }
-    let(:icon) { create(:icon, :source_ref => "127", :image_id => image.id) }
+    let(:image) { create(:image, :content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg")))) }
+    let(:icon) { create(:icon, :source_ref => "127", :image => image) }
 
     context "when updating an icon" do
       let(:params) do
