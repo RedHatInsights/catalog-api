@@ -6,7 +6,7 @@ class PortfolioItem < ApplicationRecord
   default_scope -> { kept }
 
   has_many :icons, :dependent => :destroy
-  belongs_to :portfolio
+  belongs_to :portfolio, :optional => true
   validates :service_offering_ref, :presence => true
 
   def resolved_workflow_refs

@@ -1,9 +1,8 @@
 describe ProgressMessage, :type => :model do
-  let(:tenant) { create(:tenant) }
   let(:order1) { create(:order) }
   let(:order2) { create(:order) }
-  let(:order_item1) { create(:order_item, :tenant_id => tenant.id, :portfolio_item_id => 1, :order_id => order1.id) }
-  let(:order_item2) { create(:order_item, :tenant_id => tenant.id, :portfolio_item_id => 1, :order_id => order2.id) }
+  let(:order_item1) { create(:order_item, :order => order1) }
+  let(:order_item2) { create(:order_item, :order => order2) }
   let!(:progress_message1) { create(:progress_message, :order_item_id => order_item1.id) }
   let!(:progress_message2) { create(:progress_message, :order_item_id => order_item2.id) }
 

@@ -1,6 +1,5 @@
 describe PortfolioItem do
-  let(:tenant) { create(:tenant) }
-  let(:item) { PortfolioItem.new(:tenant_id => tenant.id) }
+  let(:item) { build(:portfolio_item) }
 
   let(:service_offering_ref) { "1" }
   let(:owner) { 'wilma' }
@@ -11,6 +10,7 @@ describe PortfolioItem do
     end
 
     it "is not valid without a service_offering_ref" do
+      item.service_offering_ref = nil
       expect(item).to_not be_valid
     end
 
@@ -26,6 +26,7 @@ describe PortfolioItem do
     end
 
     it "is not valid without an owner" do
+      item.owner = nil
       expect(item).to_not be_valid
     end
 
@@ -38,14 +39,13 @@ describe PortfolioItem do
   context "#item_workflow_ref" do
     let(:item_workflow_ref) { "portfolio_item_workflow_ref" }
     let(:portfolio_workflow_ref) { "portfolio_workflow_ref" }
-    let(:portfolio) { create(:portfolio, :workflow_ref => portfolio_workflow_ref, :tenant_id => tenant.id) }
+    let(:portfolio) { create(:portfolio, :workflow_ref => portfolio_workflow_ref) }
 
     let(:portfolio_item) do
       create(:portfolio_item,
              :service_offering_ref => "123",
              :portfolio_id         => portfolio.id,
-             :workflow_ref         => item_workflow_ref,
-             :tenant_id            => tenant.id)
+             :workflow_ref         => item_workflow_ref)
     end
 
     let(:ref) { portfolio_item.send(:item_workflow_ref) }
