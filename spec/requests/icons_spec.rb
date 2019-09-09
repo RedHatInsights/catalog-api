@@ -31,15 +31,13 @@ describe "IconsRequests", :type => :request do
   describe "#create" do
     let!(:ocp_jpg_image) do
       create(:image,
-             :content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
-             :extension => "JPEG"
-            )
+             :content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.jpg"))),
+             :extension => "JPEG")
     end
     let!(:ocp_png_image) do
       create(:image,
-             :content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
-             :extension => "PNG"
-            )
+             :content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
+             :extension => "PNG")
     end
 
     before { post "#{api}/icons", :params => params, :headers => default_headers }
@@ -68,9 +66,9 @@ describe "IconsRequests", :type => :request do
     context "when uploading a duplicate png icon" do
       let(:params) do
         {
-          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
-          :source_id  => "29",
-          :source_ref => "icon_ref",
+          :content           => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
+          :source_id         => "29",
+          :source_ref        => "icon_ref",
           :portfolio_item_id => portfolio_item.id
         }
       end
@@ -83,9 +81,9 @@ describe "IconsRequests", :type => :request do
     context "when uploading a duplicate jpg icon" do
       let(:params) do
         {
-          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
-          :source_id  => "29",
-          :source_ref => "icon_ref",
+          :content           => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
+          :source_id         => "29",
+          :source_ref        => "icon_ref",
           :portfolio_item_id => portfolio_item.id
         }
       end

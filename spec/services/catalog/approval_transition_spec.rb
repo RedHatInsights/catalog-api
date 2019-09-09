@@ -14,7 +14,7 @@ describe Catalog::ApprovalTransition do
   end
 
   let(:approval) do
-    create(:approval_request, :workflow_ref  => "1", :order_item => order_item)
+    create(:approval_request, :workflow_ref => "1", :order_item => order_item)
   end
 
   let(:order_item_transition) { described_class.new(order_item.id) }
