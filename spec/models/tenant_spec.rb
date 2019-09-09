@@ -1,11 +1,5 @@
 describe Tenant, :type => :model do
-  let(:tenant) do
-    create(:tenant,
-           :settings => {
-             :icon             => "<svg rel='stylesheet'>image</svg>",
-             :default_workflow => "1"
-           })
-  end
+  let!(:tenant) { create(:tenant) }
   let(:retreived_tenant) { Tenant.find(tenant.id) }
 
   describe "#setup_settings" do
