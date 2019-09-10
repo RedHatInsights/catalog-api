@@ -2355,7 +2355,9 @@
       "PortfolioItem": {
         "type": "object",
         "required": [
-          "name"
+          "name",
+          "display_name",
+          "service_offering_source_ref"
         ],
         "properties": {
           "id": {
