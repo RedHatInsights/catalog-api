@@ -64,23 +64,6 @@ describe "OrderRequests", :type => :request do
     end
   end
 
-  context "add to order" do
-    let(:svc_object) { instance_double("Catalog::AddToOrder") }
-    before do
-      allow(Catalog::AddToOrder).to receive(:new).and_return(svc_object)
-    end
-
-    it "successfully adds to an order" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:order).and_return(order)
-
-      post "/api/v1.0/orders/#{order.id}/order_items", :headers => default_headers
-
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-  end
-
   context "list orders" do
     context "without filter" do
       before do
