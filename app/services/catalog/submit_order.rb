@@ -27,15 +27,16 @@ module Catalog
 
     def submit_order_item(item)
       TopologicalInventory.call do |api_instance|
-        result = api_instance.order_service_plan(item.service_plan_ref, parameters(item))
+        result = api_instance.order_service_offering(item.portfolio_item.service_offering_ref, parameters(item))
         update_item(item, result)
       end
     end
 
     def parameters(item)
-      TopologicalInventoryApiClient::OrderParameters.new.tap do |obj|
+      TopologicalInventoryApiClient::OrderParametersServiceOffering.new.tap do |obj|
         obj.service_parameters = item.service_parameters
         obj.provider_control_parameters = item.provider_control_parameters
+        obj.service_plan_id = item.service_plan_ref
       end
     end
 
