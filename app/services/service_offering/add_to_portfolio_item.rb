@@ -1,5 +1,6 @@
 module ServiceOffering
   class AddToPortfolioItem
+    include SourceMixin
     IGNORE_FIELDS = %w[id created_at updated_at portfolio_id tenant_id].freeze
 
     attr_reader :item
@@ -13,6 +14,8 @@ module ServiceOffering
       TopologicalInventory.call do |api_instance|
         @service_offering = api_instance.show_service_offering(@params[:service_offering_ref])
       end
+
+      raise Catalog::NotAuthorized unless valid_source?(@service_offering.source_id)
 
       # Get the fields that we're going to pull over
       @item = PortfolioItem.create!(generate_attributes)

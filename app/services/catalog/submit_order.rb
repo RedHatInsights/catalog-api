@@ -1,5 +1,7 @@
 module Catalog
   class SubmitOrder
+    include SourceMixin
+
     attr_reader :order
 
     def initialize(order_id)
@@ -9,6 +11,8 @@ module Catalog
     def process
       @order = Order.find_by!(:id => @order_id)
       @order.order_items.each do |order_item|
+        raise Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
+
         submit_order_item(order_item)
       end
       @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
