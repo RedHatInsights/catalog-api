@@ -30,7 +30,11 @@ describe Catalog::SubmitOrder do
 
     before do
       request_stubs = {
-        :body    => {:service_parameters => service_parameters, :provider_control_parameters => provider_control_parameters}.to_json,
+        :body    => {
+          :service_parameters => service_parameters,
+          :provider_control_parameters => provider_control_parameters,
+          :service_plan_id => service_plan_ref,
+        }.to_json,
         :headers => default_headers
       }
       stub_request(:post, "http://localhost/api/topological-inventory/v1.0/service_offerings/998/order")

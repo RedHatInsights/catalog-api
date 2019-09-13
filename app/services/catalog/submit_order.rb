@@ -33,9 +33,10 @@ module Catalog
     end
 
     def parameters(item)
-      TopologicalInventoryApiClient::OrderParameters.new.tap do |obj|
+      TopologicalInventoryApiClient::OrderParametersServiceOffering.new.tap do |obj|
         obj.service_parameters = item.service_parameters
         obj.provider_control_parameters = item.provider_control_parameters
+        obj.service_plan_id = item.service_plan_ref
       end
     end
 
