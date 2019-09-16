@@ -1,3 +1,5 @@
+require "support/default_as_json"
+
 module RequestSpecHelper
   RSpec.configure do |config|
     config.before(:example, :type => :request) do
@@ -5,7 +7,7 @@ module RequestSpecHelper
       allow(Rails.application.config).to receive(:consider_all_requests_local).and_return(false)
     end
 
-    config.include DefaultAs, :type => :request
+    config.include DefaultAsJson, :type => :request
   end
 
   # Parse JSON response to ruby hash
