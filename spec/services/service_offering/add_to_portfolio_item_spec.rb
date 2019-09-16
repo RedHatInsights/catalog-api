@@ -1,4 +1,4 @@
-describe ServiceOffering::AddToPortfolioItem do
+describe ServiceOffering::AddToPortfolioItem, :type => :service do
   include ServiceOfferingHelper
   let(:api_instance) { double }
   let(:service_offering_ref) { "1" }
@@ -15,11 +15,16 @@ describe ServiceOffering::AddToPortfolioItem do
     class_double("TopologicalInventory")
       .as_stubbed_const(:transfer_nested_constants => true)
   end
+  let(:validater) { instance_double(Catalog::ValidateSource) }
+  let(:valid_source) { true }
 
   before do
     allow(topological_inventory).to receive(:call).and_yield(api_instance)
     allow(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
     allow(api_instance).to receive(:show_service_offering_icon).with(topology_service_offering.service_offering_icon_id).and_return(service_offering_icon)
+    allow(Catalog::ValidateSource).to receive(:new).with(topology_service_offering.source_id).and_return(validater)
+    allow(validater).to receive(:process).and_return(validater)
+    allow(validater).to receive(:valid).and_return(valid_source)
   end
 
   context "user provided params" do
@@ -85,6 +90,16 @@ describe ServiceOffering::AddToPortfolioItem do
       allow(topological_inventory).to receive(:call).and_raise(topo_ex)
       ManageIQ::API::Common::Request.with_request(default_request) do
         expect { subject.process }.to raise_exception(Catalog::TopologyError)
+      end
+    end
+  end
+
+  context "when the source is invalid" do
+    let(:valid_source) { false }
+
+    it "should raise unauthorized" do
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        expect { subject.process }.to raise_exception(Catalog::NotAuthorized)
       end
     end
   end

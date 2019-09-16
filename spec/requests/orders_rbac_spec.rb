@@ -1,8 +1,7 @@
 describe "OrderRequests", :type => :request do
-  let(:tenant) { create(:tenant) }
-  let!(:order1) { create(:order, :tenant_id => tenant.id) }
-  let!(:order2) { create(:order, :tenant_id => tenant.id) }
-  let!(:order3) { create(:order, :tenant_id => tenant.id, :owner => 'barney') }
+  let!(:order1) { create(:order) }
+  let!(:order2) { create(:order) }
+  let!(:order3) { create(:order, :owner => 'barney') }
   let(:user_access_obj) { instance_double(RBAC::Access, :owner_scoped? => true, :accessible? => true) }
   let(:admin_access_obj) { instance_double(RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => []) }
 

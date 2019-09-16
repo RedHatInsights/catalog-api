@@ -1,7 +1,6 @@
 describe 'Portfolios RBAC API' do
-  let(:tenant) { create(:tenant) }
-  let!(:portfolio1) { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio2) { create(:portfolio, :tenant_id => tenant.id) }
+  let!(:portfolio1) { create(:portfolio) }
+  let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => [portfolio1.id.to_s]) }
   let(:double_access_obj) { instance_double(RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => [portfolio1.id.to_s, portfolio2.id.to_s]) }
 

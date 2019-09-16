@@ -1,6 +1,7 @@
 class Tenant < ApplicationRecord
   validates :external_tenant, :uniqueness => true, :presence => true
 
+  before_validation :setup_settings, :unless => proc { settings.nil? }
   after_initialize :setup_settings, :unless => proc { settings.nil? }
 
   def add_setting(name, value)

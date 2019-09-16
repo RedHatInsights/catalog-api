@@ -1,4 +1,4 @@
-describe Catalog::CreateIcon do
+describe Catalog::CreateIcon, :type => :service do
   let(:subject) { described_class.new(params) }
 
   shared_examples_for "#process icon after being created" do
@@ -22,10 +22,11 @@ describe Catalog::CreateIcon do
 
   describe "#process" do
     let!(:base_image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg")))) }
+    let(:portfolio_item) { create(:portfolio_item) }
 
     context "when there is not an image record" do
       let(:image_params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg")))} }
-      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id" }.merge(image_params) }
+      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
 
       it "creates a new image record" do
         expect(subject.process.icon.image_id).to_not eq base_image.id
@@ -36,7 +37,7 @@ describe Catalog::CreateIcon do
 
     context "when there is an image record" do
       let(:image_params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.svg")))} }
-      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id"}.merge(image_params) }
+      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
 
       it "uses the existing record" do
         expect(subject.process.icon.image_id).to eq base_image.id

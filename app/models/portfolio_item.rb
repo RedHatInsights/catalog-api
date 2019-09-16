@@ -6,8 +6,8 @@ class PortfolioItem < ApplicationRecord
   default_scope -> { kept }
 
   has_many :icons, :dependent => :destroy
-  belongs_to :portfolio
-  validates :service_offering_ref, :presence => true
+  belongs_to :portfolio, :optional => true
+  validates :service_offering_ref, :name, :display_name, :presence => true
 
   def resolved_workflow_refs
     # TODO: Add lookup to platform workflow ref

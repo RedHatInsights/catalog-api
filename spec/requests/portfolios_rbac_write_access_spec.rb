@@ -1,7 +1,6 @@
 describe 'Portfolios Write Access RBAC API' do
-  let(:tenant) { create(:tenant) }
-  let!(:portfolio1) { create(:portfolio, :tenant_id => tenant.id) }
-  let!(:portfolio2) { create(:portfolio, :tenant_id => tenant.id) }
+  let!(:portfolio1) { create(:portfolio) }
+  let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(RBAC::Access, :accessible? => true, :id_list => id_list) }
   let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
   let(:updated_attributes) { {:name => 'Barney', :description => "Barney's Portfolio" } }

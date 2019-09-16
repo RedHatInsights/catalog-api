@@ -1,19 +1,16 @@
 require "manageiq-messaging"
 
-describe Catalog::UpdateOrderItem do
+describe Catalog::UpdateOrderItem, :type => :service do
   describe "#process" do
     let(:client) { double(:client) }
     let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client, nil) }
     let(:payload) { {"task_id" => "123", "status" => status, "state" => state, "context" => "payloadcontext"} }
     let!(:item) do
       ManageIQ::API::Common::Request.with_request(default_request) do
-        create(:order_item,
-               :order_id          => order.id,
-               :topology_task_ref => topology_task_ref,
-               :portfolio_item_id => "1")
+        create(:order_item, :topology_task_ref => topology_task_ref)
       end
     end
-    let(:order) { create(:order) }
+    let(:order) { item.order }
     let(:subject) { described_class.new(topic) }
     let(:api_instance) { instance_double("TopologicalInventoryApiClient::DefaultApi") }
     let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }

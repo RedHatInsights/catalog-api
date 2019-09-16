@@ -1,6 +1,4 @@
-describe Catalog::OrderItemSanitizedParameters do
-  include ServiceSpecHelper
-
+describe Catalog::OrderItemSanitizedParameters, :type => :service do
   Plan = Struct.new(:name, :id, :description, :create_json_schema)
   let(:plan) { Plan.new("Plan A", "1", "Plan A", json_schema) }
   let(:api_instance) { double(:api_instance) }
@@ -12,12 +10,11 @@ describe Catalog::OrderItemSanitizedParameters do
   end
 
   let(:order_item) do
-    create(:order_item, :portfolio_item_id           => 100,
-                        :order_id                    => 45,
-                        :service_plan_ref            => service_plan_ref,
-                        :service_parameters          => service_parameters,
-                        :provider_control_parameters => { 'a' => 1 },
-                        :count                       => 1)
+    create(:order_item,
+           :service_plan_ref            => service_plan_ref,
+           :service_parameters          => service_parameters,
+           :provider_control_parameters => { 'a' => 1 },
+           :count                       => 1)
   end
 
   let(:service_parameters) do

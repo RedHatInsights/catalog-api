@@ -1,7 +1,9 @@
 FactoryBot.define do
-  factory :icon do
+  factory :icon, :traits => [:has_tenant] do
     sequence(:source_ref) { |n| "source_ref_#{n}" }
     sequence(:source_id)  { |n| "source_id_#{n}" }
-    sequence(:image_id)
+
+    image
+    portfolio_item
   end
 end

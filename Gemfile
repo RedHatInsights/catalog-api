@@ -21,7 +21,6 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
-gem 'acts_as_tenant'
 gem 'dhasher'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
 gem 'jbuilder', '~> 2.0'
@@ -43,3 +42,4 @@ gem 'topological_inventory-api-client', '~> 1.0', :git => "https://github.com/Ma
 
 gem 'approval-api-client-ruby', :git => 'https://github.com/ManageIQ/approval-api-client-ruby', :branch => "master"
 gem 'rbac-api-client', :git => "https://github.com/RedHatInsights/insights-rbac-api-client-ruby", :branch => "master"
+gem 'sources-api-client', :git => 'https://github.com/ManageIQ/sources-api-client-ruby.git', :branch => "master"

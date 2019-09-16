@@ -1,5 +1,7 @@
 module Catalog
   class SubmitOrder
+    include SourceMixin
+
     attr_reader :order
 
     def initialize(order_id)
@@ -9,6 +11,8 @@ module Catalog
     def process
       @order = Order.find_by!(:id => @order_id)
       @order.order_items.each do |order_item|
+        raise Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
+
         submit_order_item(order_item)
       end
       @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
@@ -23,15 +27,16 @@ module Catalog
 
     def submit_order_item(item)
       TopologicalInventory.call do |api_instance|
-        result = api_instance.order_service_plan(item.service_plan_ref, parameters(item))
+        result = api_instance.order_service_offering(item.portfolio_item.service_offering_ref, parameters(item))
         update_item(item, result)
       end
     end
 
     def parameters(item)
-      TopologicalInventoryApiClient::OrderParameters.new.tap do |obj|
+      TopologicalInventoryApiClient::OrderParametersServiceOffering.new.tap do |obj|
         obj.service_parameters = item.service_parameters
         obj.provider_control_parameters = item.provider_control_parameters
+        obj.service_plan_id = item.service_plan_ref
       end
     end
 

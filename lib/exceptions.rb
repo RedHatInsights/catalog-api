@@ -5,4 +5,5 @@ module Catalog
   class NotAuthorized < StandardError; end
   class InvalidParameter < StandardError; end
   class OrderUncancelable < StandardError; end
+  class SourcesError < StandardError; end
 end

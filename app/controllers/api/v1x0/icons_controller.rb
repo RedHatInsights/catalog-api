@@ -37,7 +37,7 @@ module Api
       private
 
       def icon_params
-        params.require(:content)
+        params.require([:content, :portfolio_item_id])
         icon_patch_params
       end
 
