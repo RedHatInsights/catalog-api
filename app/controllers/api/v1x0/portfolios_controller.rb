@@ -43,7 +43,6 @@ module Api
 
       def show
         portfolio = Portfolio.find(params.require(:id))
-        portfolio.update!(portfolio_params)
 
         render :json => portfolio
       end
