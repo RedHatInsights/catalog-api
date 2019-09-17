@@ -2927,7 +2927,8 @@
             "title": "Name",
             "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, write and order",
             "items": {
-              "type": "string"
+              "type": "string",
+	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
             },
             "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
           },
@@ -2937,7 +2938,8 @@
             "description": "An array of group UUID's retrieved from the RBAC Service with whom the resource has to be shared.",
             "items": {
               "type": "string"
-            }
+            },
+	    "minItems": 1
           }
         }
       },
@@ -2952,7 +2954,8 @@
             "title": "Name",
             "description": "The permissions to remove for this resource.",
             "items": {
-              "type": "string"
+              "type": "string",
+	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
             }
           },
           "group_uuids": {
@@ -2983,7 +2986,8 @@
             "title": "Permissions",
             "description": "One or more permissions currently applied to this group.",
             "items": {
-              "type": "string"
+              "type": "string",
+	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
             }
           }
         }
