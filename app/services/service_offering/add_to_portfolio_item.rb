@@ -2,6 +2,7 @@ module ServiceOffering
   class AddToPortfolioItem
     include SourceMixin
     IGNORE_FIELDS = %w[id created_at updated_at portfolio_id tenant_id].freeze
+    ServiceOfferingIconFile = Struct.new(:tempfile)
 
     attr_reader :item
 
@@ -55,8 +56,13 @@ module ServiceOffering
       service_offering_icon = TopologicalInventory.call { |topo| topo.show_service_offering_icon(icon_id) }
       return if service_offering_icon.data.nil?
 
+      file = Tempfile.new('service_offering').tap do |fh|
+        fh.write(service_offering_icon.data)
+        fh.rewind
+      end
+
       svc = Catalog::CreateIcon.new(
-        :content        => Base64.strict_encode64(service_offering_icon.data),
+        :content        => ServiceOfferingIconFile.new(file),
         :source_ref     => service_offering_icon.source_ref,
         :source_id      => service_offering_icon.source_id,
         :portfolio_item => @item
