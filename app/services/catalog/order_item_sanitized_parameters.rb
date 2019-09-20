@@ -39,6 +39,8 @@ module Catalog
     end
 
     def sanitized_parameters
+      return {} if service_plan_ref == "DNE"
+
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
       fields.each_with_object({}) do |field, result|
         value = mask_value?(field) ? MASKED_VALUE : svc_params[field[:name]]
