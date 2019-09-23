@@ -16,8 +16,8 @@ module Api
           render :json => ManageIQ::API::Common::PaginatedResponse.new(
             :base_query => filtered(scoped(base_query)),
             :request    => request,
-            :limit      => pagination_params[:limit],
-            :offset     => pagination_params[:offset]
+            :limit      => params[:limit],
+            :offset     => params[:offset]
           ).response
         end
 
@@ -30,10 +30,6 @@ module Api
             ids = access_obj.id_list
             ids.any? ? relation.where(:id => ids) : relation
           end
-        end
-
-        def pagination_params
-          params.permit(:limit, :offset)
         end
 
         def filtered(base_query)
