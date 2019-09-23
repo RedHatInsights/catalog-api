@@ -354,7 +354,6 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it 'returns a 422' do
-        response.body
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
