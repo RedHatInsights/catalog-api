@@ -13,7 +13,7 @@ module Api
 
       def create
         so = Catalog::AddToOrder.new(params)
-        render :json => so.process.order
+        render :json => so.process.order_item
       end
 
       def show

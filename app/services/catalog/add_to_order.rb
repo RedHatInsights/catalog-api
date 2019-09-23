@@ -1,14 +1,14 @@
 module Catalog
   class AddToOrder
-    attr_reader :order
+    attr_reader :order_item
 
     def initialize(params)
       @params = params
     end
 
     def process
-      @order = Order.find_by!(:id => @params[:order_id])
-      order.order_items << OrderItem.create!(order_item_params)
+      order = Order.find_by!(:id => @params[:order_id])
+      @order_item = order.order_items.create!(order_item_params)
       self
     end
 
