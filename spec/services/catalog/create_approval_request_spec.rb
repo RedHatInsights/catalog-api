@@ -3,7 +3,16 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
   let(:workflow_ref) { "1" }
   let!(:order) { order_item.order }
-  let!(:portfolio_item) { create(:portfolio_item, :workflow_ref => workflow_ref) }
+  let!(:portfolio_item) do
+    stub_request(:get, "http://localhost/api/approval/v1.0/workflows/1")
+      .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
+
+    with_modified_env(:APPROVAL_URL => "http://localhost") do
+      ManageIQ::API::Common::Request.with_request(default_request) do
+        create(:portfolio_item, :workflow_ref => workflow_ref)
+      end
+    end
+  end
   let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item) }
 
   let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }
