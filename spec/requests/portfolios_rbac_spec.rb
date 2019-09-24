@@ -82,11 +82,10 @@ describe 'Portfolios RBAC API' do
 
   context "when the permissions array is malformed" do
     it "errors on a blank array" do
-      permissions = []
-      post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => { :permissions => permissions }
+      post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {:permissions => []}
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to match(/should not be empty/)
+      expect(response.body).to match(/the value is empty/)
     end
 
     it "errors when the object is not an array" do
