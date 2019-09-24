@@ -39,7 +39,7 @@ module Catalog
     end
 
     def sanitized_parameters
-      return {} if service_plan_ref == "DNE"
+      return {} if service_plan_does_not_exist?
 
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
       fields.each_with_object({}) do |field, result|
@@ -56,6 +56,10 @@ module Catalog
 
     def fields
       service_plan_schema.dig(:schema, :fields) || []
+    end
+
+    def service_plan_does_not_exist?
+      service_plan_ref == Catalog::ServicePlans::SERVICE_PLAN_DOES_NOT_EXIST
     end
   end
 end

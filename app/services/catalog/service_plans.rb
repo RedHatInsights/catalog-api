@@ -1,5 +1,7 @@
 module Catalog
   class ServicePlans
+    SERVICE_PLAN_DOES_NOT_EXIST = "DNE".freeze
+
     attr_reader :items
     def initialize(portfolio_item_id)
       @portfolio_item_id = portfolio_item_id
@@ -38,7 +40,7 @@ module Catalog
       [{
         'service_offering_id' => ref,
         'description'         => "Description",
-        'id'                  => "DNE",
+        'id'                  => SERVICE_PLAN_DOES_NOT_EXIST,
         'create_json_schema'  => {
           'type'       => 'object',
           'properties' => {}
