@@ -178,7 +178,7 @@ describe "IconsRequests", :type => :request do
 
   describe "#override_icon" do
     let!(:new_icon) { create(:icon) }
-    before { post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id }, :headers => default_headers }
+    before { post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id.to_s }, :headers => default_headers }
 
     it "returns the new icon" do
       expect(json["id"]).to eq new_icon.id.to_s
