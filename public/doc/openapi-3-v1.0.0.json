@@ -561,6 +561,101 @@
         }
       }
     },
+    "/tenants": {
+      "get": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "List Tenants",
+        "operationId": "listTenants",
+        "description": "Get a list of tenants.\n",
+        "responses": {
+          "200": {
+            "description": "Returns a lsit of tenants.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/tenants/:id": {
+      "get": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Get a specific Tenant",
+        "operationId": "showTenant",
+        "description": "Gets the tenant specified by the tenant id.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tenant matching the tenant ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tenant not found."
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        }
+      }
+    },
+    "/tenants/:id/seed": {
+      "post": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Seed Tenant Groups",
+        "operationId": "tenantSeed",
+        "description": "Run a task to seed the Tenant Groups required for an org admin to onboard additional users\n",
+        "responses": {
+          "201": {
+            "description": "The tenant was seeded"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePortfolioItem"
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
     "/portfolio_items": {
       "get": {
         "tags": [

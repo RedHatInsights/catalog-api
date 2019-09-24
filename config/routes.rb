@@ -63,8 +63,9 @@ Rails.application.routes.draw do
         get :icon_data, :to => 'icons#raw_icon'
       end
       resources :settings
-      post '/rbac/seed', :to => 'rbac#seed'
-      get '/rbac/seeded', :to => 'rbac#seeded?'
+      resources :tenants, :only => [:index, :show] do
+        post 'seed', :to => 'tenants#seed'
+      end
     end
   end
 end
