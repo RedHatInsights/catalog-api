@@ -2071,7 +2071,8 @@
         "description": "ID of the resource",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "PortfolioID": {
@@ -2080,7 +2081,8 @@
         "description": "The Portfolio ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "PortfolioItemID": {
@@ -2089,7 +2091,8 @@
         "description": "The Portfolio Item ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "OrderID": {
@@ -2098,7 +2101,8 @@
         "description": "The Order ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "OrderItemID": {
@@ -2107,7 +2111,8 @@
         "description": "The Order Item ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "DestinationPortfolioID": {
@@ -2116,7 +2121,8 @@
         "description": "The destination portfolio to compare names against",
         "required": false,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "SettingName": {
