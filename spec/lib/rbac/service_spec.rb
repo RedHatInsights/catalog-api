@@ -10,14 +10,14 @@ describe RBAC::Service do
   let(:result2) { double(:meta => meta, :data => page2_data) }
   let(:obj) { double }
 
-  it "raises RBACError" do
+  it "raises RBACApiClient::ApiError" do
     with_modified_env :RBAC_URL => 'http://www.example.com' do
       allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(:x => 1)
       expect do
         described_class.call(RBACApiClient::StatusApi) do |_klass|
           raise rbac_ex
         end
-      end.to raise_exception(Catalog::RBACError)
+      end.to raise_exception(RBACApiClient::ApiError)
     end
   end
 

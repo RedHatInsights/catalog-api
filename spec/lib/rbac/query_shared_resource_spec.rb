@@ -7,7 +7,7 @@ describe RBAC::QuerySharedResource do
       :resource_id   => resource_id1,
       :resource_name => resource }
   end
-  let(:pagination_options) { { :limit => 100, :name => "catalog-portfolios-#{resource_id1}" } }
+  let(:pagination_options) { { :limit => 500, :name => "catalog-portfolios-#{resource_id1}", :scope => "principal" } }
 
   let(:access1) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:read", :resource_definitions => [resource_def1]) }
   let(:access2) { instance_double(RBACApiClient::Access, :permission => "#{app_name}:#{resource}:write", :resource_definitions => [resource_def1]) }

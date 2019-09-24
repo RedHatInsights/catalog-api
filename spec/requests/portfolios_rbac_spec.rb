@@ -86,7 +86,6 @@ describe 'Portfolios RBAC API' do
       post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => { :permissions => permissions }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to match(/should not be empty/)
     end
 
     it "errors when the object is not an array" do
