@@ -1,30 +1,37 @@
 module Catalog
   class ServicePlans
+    include Catalog::JsonSchemaReader
+
     attr_reader :items
+
     def initialize(portfolio_item_id)
       @portfolio_item_id = portfolio_item_id
     end
 
     def process
-      ref = PortfolioItem.find(@portfolio_item_id).service_offering_ref
+      @reference = PortfolioItem.find(@portfolio_item_id).service_offering_ref
+
       TopologicalInventory.call do |api_instance|
-        result = api_instance.list_service_offering_service_plans(ref)
-        @items = filter_result(result.data)
+        result = api_instance.list_service_offering_service_plans(@reference)
+        @items = filter_data(result.data)
       end
+
       self
     rescue StandardError => e
       Rails.logger.error("Service Plans #{e.message}")
       raise
     end
 
-    def filter_result(result)
-      result.collect do |obj|
-        {
-          'name'               => obj.name,
-          'description'        => obj.description,
-          'id'                 => obj.id,
-          'create_json_schema' => obj.create_json_schema
-        }
+    private
+
+    def filter_data(data)
+      if data.empty?
+        [read_json_schema("no_service_plan.erb")]
+      else
+        data.collect do |service_plan|
+          @service_plan = service_plan
+          read_json_schema("service_plan.erb")
+        end
       end
     end
   end
