@@ -1,6 +1,10 @@
 class ApplicationController < ActionController::API
   include Response
   include Api::V1x0::Mixins::RBACMixin
+  include ManageIQ::API::Common::ApplicationControllerMixins::ApiDoc
+  include ManageIQ::API::Common::ApplicationControllerMixins::Common
+  include ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation
+  include ManageIQ::API::Common::ApplicationControllerMixins::RequestPath
 
   around_action :with_current_request
 

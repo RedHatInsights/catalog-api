@@ -1,6 +1,9 @@
 module Internal
   module V0
     class NotifyController < ::ApplicationController
+      skip_before_action :validate_primary_collection_id
+      self.openapi_enabled = false
+
       def notify_approval_request
         request_id = params.require(:request_id)
         payload = params.require(:payload)
