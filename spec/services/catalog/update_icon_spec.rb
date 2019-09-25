@@ -1,9 +1,10 @@
 describe Catalog::UpdateIcon, :type => :service do
   let(:subject) { described_class.new(icon.id, params) }
+  let(:portfolio_item) { create(:portfolio_item) }
 
   describe "#process" do
     let(:image) { create(:image, :content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg")))) }
-    let(:icon) { create(:icon, :source_ref => "127", :image => image) }
+    let(:icon) { create(:icon, :source_ref => "127", :image => image, :iconable => portfolio_item) }
 
     context "when updating an icon" do
       let(:params) do

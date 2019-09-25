@@ -44,10 +44,12 @@ Rails.application.routes.draw do
       post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'
       post '/portfolios/:portfolio_id/unshare', :to => "portfolios#unshare", :as => 'unshare'
       get '/portfolios/:portfolio_id/share_info', :to => "portfolios#share_info", :as => 'share_info'
+      post '/portfolios/:portfolio_id/icon', :to => 'portfolios#add_icon_to_portfolio'
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
         post :copy, :to => "portfolios#copy"
         post :undelete, :to => "portfolios#restore"
+        get :icon, :to => 'icons#raw_icon'
       end
       post '/portfolio_items/:portfolio_item_id/icon', :to => 'portfolio_items#add_icon_to_portfolio_item'
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do

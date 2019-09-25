@@ -566,6 +566,43 @@
         }
       }
     },
+    "/portfolios/{portfolio_id}/icon": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Fetches the specified portfolio's icon image",
+        "operationId": "showPortfolioIcon",
+        "description": "Fetch the specified portfolio's icon image.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio Icon",
+            "content": {
+              "image/svg+xml": {
+                "example": "<svg rel=\"stylesheet\">thing</svg>"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Icon Not Found/Not Present on Portfolio"
+          },
+          "500": {
+            "description": "Could not access the Topology Service"
+          }
+        }
+      }
+    },
     "/tenants": {
       "get": {
         "tags": [
@@ -1603,50 +1640,6 @@
             "$ref": "#/components/responses/Forbidden"
           }
         }
-      },
-      "post": {
-        "tags": [
-          "PortfolioItem"
-        ],
-        "summary": "Add an Icon to a Portfolio Item",
-        "operationId": "addIconToPortfolioItem",
-        "description": "Add an Icon to a Portfolio Item",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/PortfolioItemID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The added Icon",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon not found"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddIcon"
-              }
-            }
-          },
-          "required": true
-        }
       }
     },
     "/portfolio_items/{portfolio_item_id}/copy": {
@@ -1874,51 +1867,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          }
-        }
-      }
-    },
-    "/icons/{id}/override": {
-      "post": {
-        "tags": [
-          "Icon"
-        ],
-        "summary": "Override the specified Portfolio Item's Icon",
-        "operationId": "overrideIcon",
-        "description": "Override the specified Portfolio Item's Icon",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The new Icon",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon Not Found."
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIcon"
-              }
-            }
           }
         }
       }
@@ -2412,17 +2360,6 @@
           }
         }
       },
-      "AddIcon": {
-        "type": "object",
-        "properties": {
-          "icon_id": {
-            "type": "string",
-            "title": "Icon Id",
-            "example": "100",
-            "description": "This is the ID of the icon object."
-          }
-        }
-      },
       "Setting": {
         "type": "object",
         "properties": {
@@ -2435,17 +2372,6 @@
             "type": "string",
             "title": "Setting Value",
             "example": 2
-          }
-        }
-      },
-      "OverrideIcon": {
-        "type": "object",
-        "properties": {
-          "portfolio_item_id": {
-            "type": "string",
-            "title": "Portfolio Item ID",
-            "example": "100",
-            "description": "The ID of the portfolio which the icon will override"
           }
         }
       },

@@ -26,7 +26,7 @@ describe Catalog::CreateIcon, :type => :service do
 
     context "when there is not an image record" do
       let(:image_params) { {:content => form_upload_test_image("miq_logo.svg")} }
-      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
+      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item_id => portfolio_item.id}.merge(image_params) }
 
       it "creates a new image record" do
         expect(subject.process.icon.image_id).to_not eq base_image.id
@@ -37,7 +37,7 @@ describe Catalog::CreateIcon, :type => :service do
 
     context "when there is an image record" do
       let(:image_params) { {:content => form_upload_test_image("ocp_logo_dupe.svg")} }
-      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
+      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item_id => portfolio_item.id}.merge(image_params) }
 
       it "uses the existing record" do
         expect(subject.process.icon.image_id).to eq base_image.id

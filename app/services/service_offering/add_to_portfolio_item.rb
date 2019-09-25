@@ -61,10 +61,10 @@ module ServiceOffering
       end
 
       svc = Catalog::CreateIcon.new(
-        :content        => OpenStruct.new(:tempfile => file),
-        :source_ref     => service_offering_icon.source_ref,
-        :source_id      => service_offering_icon.source_id,
-        :portfolio_item => @item
+        :content           => OpenStruct.new(:tempfile => file),
+        :source_ref        => service_offering_icon.source_ref,
+        :source_id         => service_offering_icon.source_id,
+        :portfolio_item_id => @item.id
       )
 
       svc.process.icon

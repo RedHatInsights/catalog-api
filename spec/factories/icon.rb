@@ -4,6 +4,7 @@ FactoryBot.define do
     sequence(:source_id)  { |n| "source_id_#{n}" }
 
     image
-    portfolio_item
+
+    iconable { create(:portfolio_item) }
   end
 end
