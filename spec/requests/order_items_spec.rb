@@ -11,8 +11,8 @@ describe "OrderItemsRequests", :type => :request do
   let!(:order_item_1) { create(:order_item, :order => order_1) }
   let!(:order_item_2) { create(:order_item, :order => order_2) }
   let(:params) do
-    { 'order_id'                    => order_1.id,
-      'portfolio_item_id'           => order_item_1.portfolio_item.id,
+    { 'order_id'                    => order_1.id.to_s,
+      'portfolio_item_id'           => order_item_1.portfolio_item.id.to_s,
       'count'                       => 1,
       'service_parameters'          => {'name' => 'fred'},
       'provider_control_parameters' => {'age' => 50},
