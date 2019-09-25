@@ -30,7 +30,7 @@ module RBAC
     end
 
     def update_existing_role(role, resource_id)
-      role.access = @acls.update(role.access, resource_id, @permissions)
+      role.access = @acls.add(role.access, resource_id, @permissions)
       @roles.update(role) if role.access.present?
     end
 

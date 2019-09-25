@@ -1,9 +1,10 @@
 module RBAC
   class Roles
-    def initialize(prefix)
+    attr_reader :roles
+
+    def initialize(prefix = nil, scope = 'principal')
       @roles = {}
-      load(prefix)
-      @deleted_roles = SortedSet.new
+      load(prefix, scope)
     end
 
     def find(name)
@@ -22,7 +23,9 @@ module RBAC
         role_in = RBACApiClient::RoleIn.new
         role_in.name = name
         role_in.access = acls
-        api_instance.create_roles(role_in)
+        api_instance.create_roles(role_in).tap do |role|
+          @roles[name] = role.uuid
+        end
       end
     end
 
@@ -33,7 +36,7 @@ module RBAC
     end
 
     def delete(role)
-      @deleted_roles.add(role.uuid)
+      @roles.delete(role.name)
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
         api_instance.delete_role(role.uuid)
       end
@@ -50,9 +53,8 @@ module RBAC
 
     private
 
-    def load(prefix)
-      opts = { :limit => 100,
-               :name  => prefix }
+    def load(prefix, scope)
+      opts = { :scope => scope, :name => prefix, :limit => 500 }
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
         RBAC::Service.paginate(api_instance, :list_roles, opts).each do |role|
           @roles[role.name] = role.uuid
@@ -61,7 +63,6 @@ module RBAC
     end
 
     def get(uuid)
-      raise ArgumentError, "Role object #{uuid} has been deleted" if @deleted_roles.include?(uuid)
       RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
         api_instance.get_role(uuid)
       end

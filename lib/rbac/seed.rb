@@ -24,6 +24,7 @@ module RBAC
         RBAC::Service.call(RBACApiClient::GroupApi) do |api_instance|
           @acl_data['groups'].each do |grp|
             next if names.include?(grp['name'])
+
             Rails.logger.info("Creating #{grp['name']}")
             group.name = grp['name']
             group.description = grp['description']
@@ -50,12 +51,13 @@ module RBAC
         RBAC::Service.call(RBACApiClient::RoleApi) do |api_instance|
           @acl_data['roles'].each do |role|
             next if names.include?(role['name'])
+
             role_in.name = role['name']
             role_in.access = []
             role['access'].each do |obj|
               access = RBACApiClient::Access.new
               access.permission = obj['permission']
-              access.resource_definition = create_rds(obj)
+              access.resource_definitions = create_rds(obj)
               role_in.access << access
             end
             api_instance.create_roles(role_in)
@@ -94,6 +96,7 @@ module RBAC
         RBAC::Service.call(RBACApiClient::PolicyApi) do |api_instance|
           @acl_data['policies'].each do |policy|
             next if names.include?(policy['name'])
+
             policy_in.name = policy['name']
             policy_in.description = policy['description']
             policy_in.group = find_uuid('Group', groups, policy['group']['name'])
@@ -116,11 +119,13 @@ module RBAC
     def find_uuid(type, data, name)
       result = data.detect { |item| item.name == name }
       raise "#{type} #{name} not found in RBAC service" unless result
+
       result.uuid
     end
 
     def create_request(user_file)
       raise "File #{user_file} not found" unless File.exist?(user_file)
+
       user = YAML.load_file(user_file)
       {:headers => {'x-rh-identity' => Base64.strict_encode64(user.to_json)}, :original_url => '/'}
     end

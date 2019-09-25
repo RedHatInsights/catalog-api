@@ -18,13 +18,13 @@ describe "dev_credentials" do
     end
 
     it "username not set" do
-      with_modified_env :DEV_PASSWORD => 'pebbles' do
+      with_modified_env :DEV_PASSWORD => 'pebbles', :DEV_USERNAME => nil do
         expect { dev_credentials(config) }.to raise_error(RuntimeError, /DEV_USERNAME/)
       end
     end
 
     it "password not set" do
-      with_modified_env :DEV_USERNAME => 'fred' do
+      with_modified_env :DEV_USERNAME => 'fred', :DEV_PASSWORD => nil do
         expect { dev_credentials(config) }.to raise_error(RuntimeError, /DEV_PASSWORD/)
       end
     end

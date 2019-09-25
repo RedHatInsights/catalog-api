@@ -6,7 +6,7 @@ module RBAC
       @resource = resource
       @verb     = verb
       @regexp   = Regexp.new(":(#{@resource}|\\*):(#{@verb}|\\*)")
-      @app_name = ENV["APP_NAME"] || "catalog"
+      @app_name = ENV["APP_NAME"]
     end
 
     def process
@@ -47,6 +47,7 @@ module RBAC
         item.resource_definitions.each do |rd|
           next unless rd.attribute_filter.key == 'id'
           next unless rd.attribute_filter.operation == 'equal'
+
           ids << rd.attribute_filter.value
         end
       end
