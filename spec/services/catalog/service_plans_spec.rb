@@ -23,6 +23,7 @@ describe Catalog::ServicePlans, :type => :service do
     end
 
     context "when there are service plans based on the service offering" do
+      let(:items) { service_plans.process.items }
       let(:plan1) do
         TopologicalInventoryApiClient::ServicePlan.new(
           :name               => "Plan A",
@@ -41,9 +42,28 @@ describe Catalog::ServicePlans, :type => :service do
       end
       let(:data) { [plan1, plan2] }
 
-      it "fetches the array of plans" do
-        expect(service_plans.process.items.count).to eq(2)
-        expect(service_plans.process.items.first["name"]).to eq("Plan A")
+      it "returns an array with two objects" do
+        expect(items.count).to eq(2)
+      end
+
+      it "returns an array with the first object with an ID of '1'" do
+        expect(items.first["id"]).to eq("1")
+      end
+
+      it "returns an array with the first object with a service_offering_id" do
+        expect(items.first["service_offering_id"]).to eq("998")
+      end
+
+      it "returns an array with the first object with a create json schema" do
+        expect(items.first["create_json_schema"]).to eq({})
+      end
+
+      it "returns an array with the first object with its name" do
+        expect(items.first["name"]).to eq("Plan A")
+      end
+
+      it "returns an array with the first object with its description" do
+        expect(items.first["description"]).to eq("Plan A")
       end
     end
 
@@ -65,6 +85,14 @@ describe Catalog::ServicePlans, :type => :service do
 
       it "returns an array with one object with a relatively empty create_json_schema" do
         expect(items.first["create_json_schema"]).to eq("type" => "object", "properties" => {})
+      end
+
+      it "returns an array with one object without a name" do
+        expect(items.first["name"]).to be_nil
+      end
+
+      it "returns an array with one object without a description" do
+        expect(items.first["description"]).to be_nil
       end
     end
 

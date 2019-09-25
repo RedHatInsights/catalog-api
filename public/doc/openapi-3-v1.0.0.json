@@ -2745,6 +2745,12 @@
             "description": "The service plan description.",
             "readOnly": true
           },
+          "service_offering_id": {
+            "type": "string",
+            "title": "Service Offering ID",
+            "description": "The reference ID of the service offering",
+            "readOnly": true
+          },
           "id": {
             "type": "string",
             "title": "ID",
