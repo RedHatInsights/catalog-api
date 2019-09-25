@@ -6,5 +6,7 @@ module Api
         render :json => Api::Docs["1.0"]
       end
     end
+
+    class GraphqlController < Api::V1::GraphqlController; end
   end
 end
