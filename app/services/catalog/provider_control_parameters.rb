@@ -1,9 +1,11 @@
 module Catalog
   class ProviderControlParameters
+    include Catalog::JsonSchemaReader
+
     attr_reader :data
+
     def initialize(portfolio_item_id)
       @portfolio_item_id = portfolio_item_id
-      @data = {}
     end
 
     def process
@@ -11,7 +13,7 @@ module Catalog
       TopologicalInventory.call do |api_instance|
         # TODO: Temporay till we get this call in the topology service
         projects = api_instance.list_source_container_projects(source_ref).data
-        update_project_list(project_names(projects))
+        update_project_list(projects)
         self
       end
     rescue StandardError => e
@@ -21,18 +23,9 @@ module Catalog
 
     private
 
-    def project_names(projects)
-      projects.collect(&:name).sort
-    end
-
     def update_project_list(projects)
-      @data = JSON.parse(read_control_parameters)
-      @data['properties']['namespace']['enum'] = projects
-    end
-
-    def read_control_parameters
-      # TODO: This belongs in the topology service, temporarily hosting it in catalog
-      File.read(Rails.root.join("schemas", "json", "openshift_control_parameters.json"))
+      @project_names = projects.collect(&:name).sort
+      @data = read_json_schema("openshift_control_parameters.erb")
     end
   end
 end

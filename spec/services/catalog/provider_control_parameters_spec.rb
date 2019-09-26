@@ -1,8 +1,4 @@
-describe Catalog::ProviderControlParameters do
-  let(:api_instance) { double }
-  let(:provider_control) { described_class.new }
-  let(:name) { 'project1' }
-  let(:description) { 'test description' }
+describe Catalog::ProviderControlParameters, :type => :service do
   let(:source_id) { "1" }
   let(:params) { portfolio_item.id }
   let(:provider_control_parameters) { described_class.new(params) }
@@ -17,30 +13,43 @@ describe Catalog::ProviderControlParameters do
     TopologicalInventoryApiClient::ContainerProject.new('name'      => project2_name,
                                                         'source_id' => "2")
   end
-  let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
 
-  context "#{described_class}#process" do
-    before do
-      allow(ti_class).to receive(:call).and_yield(api_instance)
+  before do
+    allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+  end
 
-      container_projects = double('links' => {}, 'meta' => {}, 'data' => [project2, project1])
-      expect(api_instance).to receive(:list_source_container_projects).and_return(container_projects)
-    end
-
-    let(:namespace_list) do
-      data = provider_control_parameters.process.data
-      data['properties']['namespace']['enum']
-    end
-
-    it 'sorts project list' do
-      expect(namespace_list).to contain_exactly(project1_name, project2_name)
+  around do |example|
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost") do
+      example.call
     end
   end
 
-  context "invalid portfolio item" do
-    let(:params) { 1 }
-    it "raises exception" do
-      expect { provider_control_parameters.process }.to raise_error(ActiveRecord::RecordNotFound)
+  describe "#process" do
+    let(:container_project_response) do
+      TopologicalInventoryApiClient::ContainerProjectsCollection.new(:data => [project2, project1])
+    end
+
+    before do
+      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/1/container_projects")
+        .to_return(:status => 200, :body => container_project_response.to_json, :headers => default_headers)
+    end
+
+    context "with a valid portfolio item" do
+      let(:namespace_list) do
+        data = provider_control_parameters.process.data
+        data['properties']['namespace']['enum']
+      end
+
+      it 'sorts project list' do
+        expect(namespace_list).to contain_exactly(project1_name, project2_name)
+      end
+    end
+
+    context "with an invalid portfolio item" do
+      let(:params) { 1 }
+      it "raises exception" do
+        expect { provider_control_parameters.process }.to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
   end
 end
