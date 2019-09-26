@@ -118,7 +118,7 @@ describe 'Portfolios API' do
       end
 
       it 'allows adding portfolios with the same name when one is discarded' do
-        post "#{api}/portfolios", :headers => default_headers, :params => valid_attributes, :as => :json
+        post "#{api}/portfolios", :headers => default_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:ok)
       end
@@ -152,7 +152,7 @@ describe 'Portfolios API' do
 
     context "when restoring a portfolio" do
       before do
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params, :as => :json
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
       end
 
       it "returns a 200" do
@@ -170,7 +170,7 @@ describe 'Portfolios API' do
 
       before do
         portfolio.discard
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params, :as => :json
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
       end
 
       it "returns a 403" do
@@ -190,7 +190,7 @@ describe 'Portfolios API' do
       end
 
       it 'reports errors when undiscarding the child portfolio_items fails' do
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params, :as => :json
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
@@ -204,7 +204,7 @@ describe 'Portfolios API' do
       end
 
       it "only undeletes the one that was discarded at the same time as the portfolio" do
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params, :as => :json
+        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
 
         second_item.reload
         expect(second_item.discarded?).to be_truthy
@@ -217,7 +217,7 @@ describe 'Portfolios API' do
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
     context 'when patched portfolio is valid' do
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes, :as => :json
+        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
       end
 
       it 'returns status code 200' do
@@ -233,7 +233,7 @@ describe 'Portfolios API' do
 
     context 'when patched portfolio params are invalid' do
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => invalid_attributes, :as => :json
+        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => invalid_attributes
       end
 
       xit 'returns status code 200' do
@@ -251,7 +251,7 @@ describe 'Portfolios API' do
   describe 'POST /portfolios' do
     let(:valid_attributes) { { :name => 'rspec 1', :description => 'rspec 1 description' } }
     context 'when portfolio attributes are valid' do
-      before { post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers, :as => :json }
+      before { post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -262,7 +262,7 @@ describe 'Portfolios API' do
       end
 
       it 'returns a status code 422 when trying to create with the same name' do
-        post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers, :as => :json
+        post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers
 
         expect(response).to have_http_status(422)
       end
@@ -290,7 +290,7 @@ describe 'Portfolios API' do
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
           allow(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers, :as => :json
+          post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers
           expect(response).to have_http_status(http_status)
         end
       end
@@ -303,7 +303,7 @@ describe 'Portfolios API' do
 
     context 'bad permissions' do
       include_context "sharing_objects"
-      let(:http_status) { '422' }
+      let(:http_status) { '400' }
 
       context 'invalid verb in permissions' do
         let(:permissions) { %w[catalog:portfolios:something] }
@@ -349,7 +349,7 @@ describe 'Portfolios API' do
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
           expect(RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers, :as => :json
+          post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
           expect(response).to have_http_status(204)
         end
       end
@@ -374,7 +374,7 @@ describe 'Portfolios API' do
 
     context "copy without specifying name" do
       before do
-        post "#{api}/portfolios/#{portfolio.id}/copy", :headers => default_headers, :as => :json
+        post "#{api}/portfolios/#{portfolio.id}/copy", :headers => default_headers
       end
 
       it "returns a 200" do
@@ -404,7 +404,7 @@ describe 'Portfolios API' do
       let(:params) { { :portfolio_name => "NameyMcNameFace" } }
 
       before do
-        post "#{api}/portfolios/#{portfolio.id}/copy", :params => params, :headers => default_headers, :as => :json
+        post "#{api}/portfolios/#{portfolio.id}/copy", :params => params, :headers => default_headers
       end
 
       it "sets the name properly" do

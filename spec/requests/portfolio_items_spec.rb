@@ -70,7 +70,7 @@ describe "PortfolioItemRequests", :type => :request do
   describe "POST /portfolios/:portfolio_id/portfolio_items" do
     let(:params) { {:portfolio_item_id => portfolio_item_id} }
     before do
-      post "#{api}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers, :as => :json
+      post "#{api}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers
     end
 
     it 'returns a 200' do
@@ -103,7 +103,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe 'POST /portfolio_items/{portfolio_item_id}/undelete' do
-    let(:undelete) { post "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :params => { :restore_key => restore_key }, :headers => default_headers, :as => :json }
+    let(:undelete) { post "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :params => { :restore_key => restore_key }, :headers => default_headers }
     let(:restore_key) { Digest::SHA1.hexdigest(portfolio_item.discarded_at.to_s) }
 
     context "when restoring a portfolio_item that has been discarded" do
@@ -166,7 +166,7 @@ describe "PortfolioItemRequests", :type => :request do
     it "returns not found when topology doesn't have the service_offering_ref" do
       allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
 
-      post "#{api}/portfolio_items", :params => params, :headers => default_headers, :as => :json
+      post "#{api}/portfolio_items", :params => params, :headers => default_headers
       expect(response).to have_http_status(:service_unavailable)
     end
 
@@ -174,7 +174,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
       allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
 
-      post "#{api}/portfolio_items", :params => params, :headers => default_headers, :as => :json
+      post "#{api}/portfolio_items", :params => params, :headers => default_headers
       expect(response).to have_http_status(:ok)
       expect(json["id"]).to eq portfolio_item.id.to_s
       expect(json["owner"]).to eq portfolio_item.owner
@@ -244,7 +244,7 @@ describe "PortfolioItemRequests", :type => :request do
         stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
           .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
 
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers, :as => :json
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
       end
 
       it 'returns a 200' do
@@ -258,7 +258,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in read-only attributes" do
       before do
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers, :as => :json
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers
       end
 
       xit 'returns a 200' do
@@ -290,7 +290,7 @@ describe "PortfolioItemRequests", :type => :request do
 
   describe "copying portfolio items" do
     let(:copy_portfolio_item) do
-      post "#{api("1.0")}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers, :as => :json
+      post "#{api("1.0")}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
     end
 
     context "when copying into the same portfolio" do
@@ -378,7 +378,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when adding an icon to a portfolio_item" do
       before do
-        post "#{api}/portfolio_items/#{portfolio_item.id}/icon", :params => { :icon_id => icon.id.to_s }, :headers => default_headers, :as => :json
+        post "#{api}/portfolio_items/#{portfolio_item.id}/icon", :params => { :icon_id => icon.id.to_s }, :headers => default_headers
       end
 
       it "returns a 200" do
