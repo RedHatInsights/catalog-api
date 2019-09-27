@@ -40,7 +40,9 @@ describe "IconsRequests", :type => :request do
              :extension => "PNG")
     end
 
-    before { post "#{api}/icons", :params => params, :headers => default_headers }
+    before do
+      post "#{api}/icons", :params => params, :headers => default_headers, :as => :form
+    end
 
     context "when providing proper parameters" do
       let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
@@ -134,7 +136,7 @@ describe "IconsRequests", :type => :request do
     let(:params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg"))) } }
 
     before do
-      patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers
+      patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers, :as => :form
       icon.reload
     end
 

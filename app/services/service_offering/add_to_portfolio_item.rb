@@ -2,7 +2,6 @@ module ServiceOffering
   class AddToPortfolioItem
     include SourceMixin
     IGNORE_FIELDS = %w[id created_at updated_at portfolio_id tenant_id].freeze
-    ServiceOfferingIconFile = Struct.new(:tempfile)
 
     attr_reader :item
 
@@ -62,7 +61,7 @@ module ServiceOffering
       end
 
       svc = Catalog::CreateIcon.new(
-        :content        => ServiceOfferingIconFile.new(file),
+        :content        => OpenStruct.new(:tempfile => file),
         :source_ref     => service_offering_icon.source_ref,
         :source_id      => service_offering_icon.source_id,
         :portfolio_item => @item
