@@ -37,7 +37,7 @@ describe Catalog::ServicePlans, :type => :service do
           :name               => "Plan B",
           :id                 => "2",
           :description        => "Plan B",
-          :create_json_schema => {}
+          :create_json_schema => {"schema": {}}
         )
       end
       let(:data) { [plan1, plan2] }
