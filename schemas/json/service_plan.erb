@@ -1,7 +1,7 @@
 {
   "service_offering_id": "<%= @reference %>",
   "id": "<%= @service_plan.id %>",
-  "create_json_schema": <%= @service_plan.create_json_schema %>,
+  "create_json_schema": <%= @service_plan.create_json_schema.to_json %>,
   "name": "<%= @service_plan.name %>",
   "description": "<%= @service_plan.description %>"
 }
