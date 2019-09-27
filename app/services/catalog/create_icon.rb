@@ -3,7 +3,7 @@ module Catalog
     attr_reader :icon
 
     def initialize(args)
-      @content = args.delete(:content)
+      @content = Base64.strict_encode64(File.read(args.delete(:content).tempfile))
       @params = args
     end
 

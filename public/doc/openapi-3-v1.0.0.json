@@ -1634,9 +1634,15 @@
         "description": "Creates an Icon from the specified parameters",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Icon"
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
