@@ -22,7 +22,9 @@ module Catalog
 
     def submit_approval_requests(order_item)
       workflows(order_item.portfolio_item).each do |workflow|
-        response = Approval.call { |api| api.create_request(workflow, request_body_from(order_item)) }
+        response = Approval::Service.call(ApprovalApiClient::RequestApi) do |api|
+          api.create_request(workflow, request_body_from(order_item))
+        end
         order_item.approval_requests << create_approval_request(response, order_item)
 
         order_item.update_message("info", "Approval Request Submitted for workflow #{workflow}, ID: #{order_item.approval_requests.last.id}")
@@ -48,13 +50,12 @@ module Catalog
     end
 
     def create_approval_request(req, order_item)
-      ApprovalRequest.new.tap do |approval|
-        approval.workflow_ref         = req.workflow_id
-        approval.approval_request_ref = req.id
-        approval.state                = req.decision.to_sym
-        approval.order_item           = order_item
-        approval.save!
-      end
+      ApprovalRequest.create!(
+        :workflow_ref         => req.workflow_id,
+        :approval_request_ref => req.id,
+        :state                => req.decision.to_sym,
+        :order_item           => order_item
+      )
     end
   end
 end

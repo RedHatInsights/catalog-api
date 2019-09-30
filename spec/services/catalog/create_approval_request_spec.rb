@@ -1,34 +1,34 @@
 describe Catalog::CreateApprovalRequest, :type => :service do
   let(:create_approval_request) { described_class.new(order.id) }
 
+  around do |example|
+    with_modified_env(:APPROVAL_URL => "http://localhost") do
+      ManageIQ::API::Common::Request.with_request(default_request) { example.call }
+    end
+  end
+
   let(:workflow_ref) { "1" }
   let!(:order) { order_item.order }
   let!(:portfolio_item) do
-    stub_request(:get, "http://localhost/api/approval/v1.0/workflows/1")
-      .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
-
-    with_modified_env(:APPROVAL_URL => "http://localhost") do
-      ManageIQ::API::Common::Request.with_request(default_request) do
-        create(:portfolio_item, :workflow_ref => workflow_ref)
-      end
+    create(:portfolio_item).tap do |item|
+      item.workflow_ref = 1
+      item.save(:validate => false)
     end
   end
   let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item) }
-
-  let(:approval) { class_double(Approval).as_stubbed_const(:transfer_nested_constants => true) }
-  let(:api_instance) { instance_double(ApprovalApiClient::RequestApi) }
-  let(:approval_response) { ApprovalApiClient::RequestOut.new(:id => 1, :decision => "undecided", :workflow_id => workflow_ref) }
 
   let(:sanitize_service_class) do
     class_double(Catalog::OrderItemSanitizedParameters).as_stubbed_const(:transfer_nested_constants => true)
   end
   let(:sanitize_service_instance) { instance_double(Catalog::OrderItemSanitizedParameters) }
   let(:hashy) { { :a => 1 } }
-  let(:approval_error) { Catalog::ApprovalError.new("kaboom") }
 
   before do
     allow(sanitize_service_class).to receive(:new).and_return(sanitize_service_instance)
     allow(sanitize_service_instance).to receive(:process).and_return(hashy)
+
+    stub_request(:get, "http://localhost/api/approval/v1.0/workflows/1")
+      .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
   end
 
   describe "#process" do
@@ -36,8 +36,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
     context "when the approval succeeds" do
       before do
-        allow(approval).to receive(:call).and_yield(api_instance)
-        allow(api_instance).to receive(:create_request).and_return(approval_response)
+        stub_request(:post, "http://localhost/api/approval/v1.0/workflows/1/requests")
+          .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
       end
 
       it "submits the approval request" do
@@ -52,7 +52,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
     context "when the approval fails" do
       before do
-        allow(approval).to receive(:call).and_raise(approval_error)
+        stub_request(:post, "http://localhost/api/approval/v1.0/workflows/1/requests")
+          .to_return(:status => 401, :body => {}.to_json, :headers => {"Content-type" => "application/json"})
       end
 
       it "raises an error" do
@@ -63,14 +64,25 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
   context "private methods" do
     before do
-      allow(approval).to receive(:call).and_yield(api_instance)
-      allow(api_instance).to receive(:create_request).and_return(approval_response)
+      stub_request(:post, "http://localhost/api/approval/v1.0/workflows/1/requests")
+        .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
     end
 
     context "#submit_approval_requests" do
       it "calls out to Approval for every workflow on the order" do
-        expect(approval).to receive(:call).once
+        req = ApprovalApiClient::RequestIn.new.tap do |request|
+          request.name = order_item.portfolio_item.name
+          request.content = {
+            :product   => order_item.portfolio_item.name,
+            :portfolio => order_item.portfolio_item.portfolio.name,
+            :order_id  => order_item.order_id.to_s,
+            :params    => hashy
+          }
+        end.to_json
+
         create_approval_request.send(:submit_approval_requests, order_item)
+        expect(a_request(:post, "http://localhost/api/approval/v1.0/workflows/1/requests")
+          .with(:body => req)) .to have_been_made
       end
     end
 
