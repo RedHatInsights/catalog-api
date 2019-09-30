@@ -5,12 +5,6 @@ module Catalog
     def initialize(icon_id, params)
       @icon = Icon.find(icon_id)
       @params = params
-
-      if params.key?(:portfolio_item_id)
-        PortfolioItem.find(params.delete(:portfolio_item_id)).icon = @icon
-      elsif params.key?(:portfolio_id)
-        Portfolio.find(params.delete(:portfolio_id)).icon = @icon
-      end
     end
 
     def process

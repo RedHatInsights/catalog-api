@@ -391,23 +391,4 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
   end
-
-  describe '#add_icon_to_portfolio_item' do
-    let!(:icon) { create(:icon) }
-
-    context "when adding an icon to a portfolio_item" do
-      before do
-        post "#{api}/portfolio_items/#{portfolio_item.id}/icon", :params => { :icon_id => icon.id.to_s }, :headers => default_headers
-      end
-
-      it "returns a 200" do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "adds the icon to the portfolio_item" do
-        portfolio_item.reload
-        expect(portfolio_item.icons.first.id).to eq icon.id
-      end
-    end
-  end
 end

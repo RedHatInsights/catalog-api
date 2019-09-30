@@ -588,17 +588,14 @@
               }
             }
           },
+          "204": {
+            "description": "No icon present on Portfolio"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon Not Found/Not Present on Portfolio"
-          },
-          "500": {
-            "description": "Could not access the Topology Service"
           }
         }
       }

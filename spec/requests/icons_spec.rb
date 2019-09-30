@@ -1,6 +1,8 @@
 describe "IconsRequests", :type => :request do
   let!(:portfolio_item) { create(:portfolio_item) }
   let!(:icon) { create(:icon, :image => image, :iconable => portfolio_item) }
+  let!(:portfolio) { create(:portfolio) }
+  let!(:portfolio_icon) { create(:icon, :image => image, :iconable => portfolio) }
 
   let(:image) { create(:image) }
 
@@ -162,6 +164,13 @@ describe "IconsRequests", :type => :request do
         expect(response.content_type).to eq "image/svg+xml"
       end
 
+      it "/portfolios/{portfolio_id}/icon returns the icon" do
+        get "#{api}/portfolios/#{portfolio.id}/icon", :headers => default_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq "image/svg+xml"
+      end
+
       it "/icons/{icon_id}/icon_data returns the icon" do
         get "#{api}/icons/#{icon.id}/icon_data", :headers => default_headers
         expect(response).to have_http_status(:ok)
@@ -181,24 +190,6 @@ describe "IconsRequests", :type => :request do
 
         expect(response).to have_http_status(:no_content)
       end
-    end
-  end
-
-  xdescribe "#override_icon" do
-    let!(:new_icon) { create(:icon) }
-    before { post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id.to_s }, :headers => default_headers }
-
-    it "returns the new icon" do
-      expect(json["id"]).to eq new_icon.id.to_s
-    end
-
-    it "overrides the icon" do
-      expect(portfolio_item.icons.first.id).to eq new_icon.id
-    end
-
-    it "soft-deletes the old one" do
-      expect { Icon.find(icon.id) }.to raise_exception(ActiveRecord::RecordNotFound)
-      expect(Icon.with_discarded.find(icon.id)).to be_truthy
     end
   end
 end

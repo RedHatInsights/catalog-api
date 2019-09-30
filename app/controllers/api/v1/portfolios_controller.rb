@@ -93,12 +93,6 @@ module Api
         render :json => svc.process.new_portfolio
       end
 
-      def add_icon_to_portfolio
-        icon = Icon.find(params.require(:icon_id))
-        portfolio = Portfolio.find(params.require(:portfolio_id))
-        render :json => portfolio.icons << icon
-      end
-
       private
 
       def portfolio_params

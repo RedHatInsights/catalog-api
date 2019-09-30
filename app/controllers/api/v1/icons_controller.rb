@@ -35,11 +35,6 @@ module Api
         head :no_content
       end
 
-      def override_icon
-        overriden_icon = Catalog::OverrideIcon.new(params.require(:icon_id), params.permit(:portfolio_id, :portfolio_item_id))
-        render :json => overriden_icon.process.icon
-      end
-
       private
 
       def icon_params
