@@ -133,7 +133,7 @@ describe "IconsRequests", :type => :request do
   end
 
   describe "#update" do
-    let(:params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg"))) } }
+    let(:params) { {:content => form_upload_test_image("miq_logo.svg") } }
 
     before do
       patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers, :as => :form
@@ -145,7 +145,7 @@ describe "IconsRequests", :type => :request do
     end
 
     it "updates the fields passed in" do
-      expect(icon.image.content).to eq params[:content]
+      expect(icon.image.content).to eq Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg")))
     end
 
     it "updated to a new image record" do

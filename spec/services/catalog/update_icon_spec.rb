@@ -11,7 +11,7 @@ describe Catalog::UpdateIcon, :type => :service do
         {
           :source_id  => "4",
           :source_ref => "128",
-          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg")))
+          :content    => form_upload_test_image("miq_logo.jpg")
         }
       end
 

@@ -48,7 +48,7 @@ module Api
       end
 
       def icon_patch_params
-        params.permit(:content, :source_ref, :source_id, :portfolio_item_id, :portfolio_id)
+        params.permit(:content, :source_ref, :source_id, :portfolio_item_id, :portfolio_id, :id)
       end
 
       def find_icon(ids)
