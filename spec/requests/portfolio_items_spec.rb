@@ -274,6 +274,21 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
 
+    context "when passing in nullable attributes" do
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil, :display_name => 'Test', :service_offering_source_ref => "27"} }
+      before do
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
+      end
+
+      it 'returns a 200' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the field that is null' do
+        expect(json["workflow_ref"]).to eq nullable_attributes[:workflow_ref]
+      end
+    end
+
     context "when passing in an invalid workflow_ref" do
       before do
         stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
