@@ -1,10 +1,12 @@
 describe 'Portfolios Read Access RBAC API' do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
-  let(:access_obj) { instance_double(RBAC::Access, :accessible? => true, :id_list => id_list) }
+  let(:access_obj) { instance_double(RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => id_list) }
   let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
   let(:id_list) { [] }
   let(:block_access_obj) { instance_double(RBAC::Access, :accessible? => false) }
+  let(:graphql_query) { '{ portfolios { id name } }' }
+  let(:graphql_body) { { 'query' => graphql_query } }
 
   describe "GET /portfolios" do
     context "no permission to read portfolios" do
@@ -31,6 +33,35 @@ describe 'Portfolios Read Access RBAC API' do
 
       it 'forbidden' do
         get "#{api('1.0')}/portfolios/#{portfolio2.id}", :headers => default_headers
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      context "via graphql" do
+        let(:graphql_query) { "{ portfolios(id: #{portfolio1.id}) { id name } }" }
+        it 'ok' do
+          post "#{api('1.0')}/graphql", :headers => default_headers, :params => graphql_body
+          expect(response).to have_http_status(:ok)
+          expect(json['data']['portfolios'][0]['name']).to eq(portfolio1.name)
+        end
+      end
+
+      context "via graphql" do
+        let(:graphql_query) { "{ portfolios(id: #{portfolio2.id}) { id name } }" }
+        it 'gives an empty body' do
+          post "#{api('1.0')}/graphql", :headers => default_headers, :params => graphql_body
+          expect(response).to have_http_status(:ok)
+          expect(json['data']['portfolios']).to be_empty
+        end
+      end
+    end
+  end
+
+  describe "POST /graphql" do
+    context "no permission to read portfolios" do
+      it "no access" do
+        allow(RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(block_access_obj)
+        allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+        post "#{api('1.0')}/graphql", :headers => default_headers, :params => graphql_body
         expect(response).to have_http_status(:forbidden)
       end
     end
