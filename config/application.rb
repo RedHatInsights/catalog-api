@@ -40,6 +40,9 @@ module Catalog
       "Catalog::NotAuthorized"             => :forbidden,
       "Catalog::OrderUncancelable"         => :unprocessable_entity,
       "Catalog::TopologyError"             => :service_unavailable,
+      "Catalog::ApprovalError"             => :service_unavailable,
+      "Catalog::SourcesError"              => :service_unavailable,
+      "Catalog::RBACError"                 => :service_unavailable,
       "Discard::DiscardError"              => :unprocessable_entity
     )
 

@@ -1,7 +1,7 @@
 describe "PortfolioItemRequests", :type => :request do
   around do |example|
     bypass_rbac do
-      with_modified_env(:APPROVAL_URL => "http://localhost") { example.call }
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :APPROVAL_URL => "http://localhost") { example.call }
     end
   end
 
@@ -213,16 +213,11 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   context "v1.0 provider control parameters" do
-    let(:svc_object)  { instance_double("Catalog::ProviderControlParameters") }
-    let(:url)         { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
-
-    before do
-      allow(Catalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
-    end
+    let(:url) { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     it "fetches plans" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:data).and_return(:fred => 'bedrock')
+      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/568/container_projects")
+        .to_return(:status => 200, :body => {:data => [:name => 'fred']}.to_json, :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
 
@@ -231,7 +226,8 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     it "raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
+      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/568/container_projects")
+        .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
 
