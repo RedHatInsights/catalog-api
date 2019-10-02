@@ -231,6 +231,23 @@ describe 'Portfolios API' do
       end
     end
 
+    context 'when patched portfolio has openapi nullable values' do
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => nil } }
+      before do
+        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => nullable_attributes
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'returns an updated portfolio object' do
+        expect(json).not_to be_empty
+        expect(json).to be_a Hash
+        expect(json['workflow_ref']).to eq nullable_attributes[:workflow_ref]
+      end
+    end
+
     context 'when patched portfolio params are invalid' do
       before do
         patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => invalid_attributes

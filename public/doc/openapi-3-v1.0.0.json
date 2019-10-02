@@ -2245,7 +2245,8 @@
           "workflow_ref": {
             "type": "string",
             "title": "Approval Workflow ID",
-            "example": "The current approval workflow selected for a portfolio"
+            "example": "The current approval workflow selected for a portfolio",
+            "nullable": true
           },
           "owner": {
             "type": "string",
@@ -2437,7 +2438,8 @@
           "workflow_ref": {
             "type": "string",
             "title": "Approval Workflow ID",
-            "example": "The approval workflow selected for a portfolio item"
+            "example": "The approval workflow selected for a portfolio item",
+            "nullable": true
           },
           "owner": {
             "type": "string",
