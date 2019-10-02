@@ -29,6 +29,10 @@ describe Catalog::NotifyApprovalRequest do
           expect(approval_request.reason).to eq("because")
         end
 
+        it "updates the request completed at time" do
+          expect(approval_request.request_completed_at).to_not be_nil
+        end
+
         it "delegates to the approval transition" do
           expect(approval_transition).to have_received(:process)
         end
@@ -51,6 +55,10 @@ describe Catalog::NotifyApprovalRequest do
           expect(approval_request.reason).to eq("because")
         end
 
+        it "updates the request completed at time" do
+          expect(approval_request.request_completed_at).to_not be_nil
+        end
+
         it "delegates to the approval transition" do
           expect(approval_transition).to have_received(:process)
         end
@@ -71,6 +79,10 @@ describe Catalog::NotifyApprovalRequest do
 
         it "does not update the reason" do
           expect(approval_request.reason).to eq(nil)
+        end
+
+        it "does not update the request completed at time" do
+          expect(approval_request.request_completed_at).to eq(nil)
         end
 
         it "does not call the approval transition" do
