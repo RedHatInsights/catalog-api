@@ -2951,6 +2951,7 @@
               "type": "string",
 	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
             },
+	    "minItems": 1,
             "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
           },
           "group_uuids": {
@@ -2977,7 +2978,8 @@
             "items": {
               "type": "string",
 	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
-            }
+            },
+	    "minItems": 1
           },
           "group_uuids": {
             "type": "array",
