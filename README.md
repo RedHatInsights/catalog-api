@@ -92,13 +92,12 @@ _Includes the `RBAC_URL` and `APPROVAL_URL environment variables to be able to u
 _You can also remove the `RBAC_URL` environment variable and pass in the `BYPASS_RBAC` environment variable instead if you want to test without RBAC_
 
 ```
-   APP_NAME=catalog PATH_PREFIX=/api RBAC_URL=https://<rbac_url>/api/rbac/v1/ APPROVAL_URL=https://<approval_url>/api/approval/v1/ DEV_USERNAME=<username> DEV_PASSWORD=<password> bin/rails s -
-p 5000
+APP_NAME=catalog PATH_PREFIX=/api RBAC_URL=https://<url>/api/rbac/v1/ APPROVAL_URL=https://<url>/api/approval/v1/ TOPOLOGICAL_INVENTORY_URL=https://<url>/api/topological-inventory/v1/ SOURCES_URL=https://<url>/api/sources/v1/ DEV_USERNAME=<username> DEV_PASSWORD=<password> bin/rails s -p 5000
 ```
 
 2. **Run the insights proxy based on Linux or Mac**
 ```
-   SPANDX_CONFIG=/path/to/catalog-api/config/spandx.config.js bash /path/to/insights-proxy/scripts/run.sh
+SPANDX_CONFIG=/path/to/catalog-api/config/spandx.config.js bash /path/to/insights-proxy/scripts/run.sh
 ```
 
 3. **Login to the Dev cluster to access the UI**

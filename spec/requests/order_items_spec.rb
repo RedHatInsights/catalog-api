@@ -11,8 +11,8 @@ describe "OrderItemsRequests", :type => :request do
   let!(:order_item_1) { create(:order_item, :order => order_1) }
   let!(:order_item_2) { create(:order_item, :order => order_2) }
   let(:params) do
-    { 'order_id'                    => order_1.id,
-      'portfolio_item_id'           => order_item_1.portfolio_item.id,
+    { 'order_id'                    => order_1.id.to_s,
+      'portfolio_item_id'           => order_item_1.portfolio_item.id.to_s,
       'count'                       => 1,
       'service_parameters'          => {'name' => 'fred'},
       'provider_control_parameters' => {'age' => 50},
@@ -41,6 +41,19 @@ describe "OrderItemsRequests", :type => :request do
             expect(response).to have_http_status(:not_found)
           end
         end
+
+        context "after an order has an order item created under it" do
+          before do
+            ManageIQ::API::Common::Request.with_request(default_request) do
+              post "/api/v1.0/orders/#{order_3.id}/order_items", :headers => default_headers, :params => params
+            end
+          end
+
+          it "stores the x-rh-insights-id from the headers" do
+            get "/api/v1.0/orders/#{order_3.id}/order_items", :headers => default_headers
+            expect(json["data"].first["insights_request_id"]).to eq default_headers["x-rh-insights-request-id"]
+          end
+        end
       end
 
       it "list all order items by tenant" do
@@ -58,14 +71,14 @@ describe "OrderItemsRequests", :type => :request do
         end
       end
 
-      it "create an order item under an order" do
-        expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:ok)
+      it "creates an order item under an order" do
+        expect(json["order_id"]).to eq(order_3.id.to_s)
+        expect(json["service_parameters"]["name"]).to eq("fred")
       end
 
-      it "stores the x-rh-insights-id from the headers" do
-        get "/api/v1.0/orders/#{order_3.id}/order_items", :headers => default_headers
-        expect(json["data"].first["insights_request_id"]).to eq default_headers["x-rh-insights-request-id"]
+      it "returns a 200 with JSON content" do
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:ok)
       end
     end
 

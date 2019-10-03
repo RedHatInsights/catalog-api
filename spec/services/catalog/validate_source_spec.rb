@@ -24,7 +24,9 @@ describe Catalog::ValidateSource do
       let(:response) { {:data => [{:id => 1}, {:id => 17}]} }
 
       it "sets the valid instance var to true" do
-        expect(validate_source.valid).to eq true
+        with_modified_env(:APP_NAME => "catalog") do
+          expect(validate_source.valid).to eq true
+        end
       end
     end
 
@@ -32,7 +34,9 @@ describe Catalog::ValidateSource do
       let(:response) { {:data => [{:id => 1}]} }
 
       it "sets the valid instance var to false" do
-        expect(validate_source.valid).to eq false
+        with_modified_env(:APP_NAME => "catalog") do
+          expect(validate_source.valid).to eq false
+        end
       end
     end
   end

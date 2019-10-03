@@ -3,6 +3,9 @@ module Api
     class IconsController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
 
+      # Due to the fact form-data is getting uploaded and isn't supported by openapi_parser
+      skip_before_action :validate_request, :only => %i[create update]
+
       def show
         render :json => Icon.find(params.require(:id))
       end
@@ -42,7 +45,7 @@ module Api
       end
 
       def icon_patch_params
-        params.permit(:content, :source_ref, :source_id, :portfolio_item_id)
+        params.permit(:content, :source_ref, :source_id, :portfolio_item_id, :id)
       end
 
       def find_icon(ids)

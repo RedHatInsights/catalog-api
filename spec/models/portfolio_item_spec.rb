@@ -50,6 +50,15 @@ describe PortfolioItem do
 
     let(:ref) { portfolio_item.send(:item_workflow_ref) }
 
+    around do |example|
+      stub_request(:get, "http://localhost/api/approval/v1.0/workflows/portfolio_item_workflow_ref")
+        .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
+
+      with_modified_env(:APPROVAL_URL => "http://localhost") do
+        ManageIQ::API::Common::Request.with_request(default_request) { example.call }
+      end
+    end
+
     context "when the portfolio_item has a workflow_ref" do
       it "returns the portfolio_item's workflow ref" do
         expect(ref).to eq item_workflow_ref

@@ -28,11 +28,7 @@ module Api
         end
 
         def permission_array_check(permissions)
-          if !permissions.kind_of?(Array)
-            invalid_parameter('Permission should be an array')
-          elsif permissions.blank? || permissions.any?(&:blank?)
-            invalid_parameter('Permissions should not be empty')
-          end
+          invalid_parameter('Permission should be an array') unless permissions.kind_of?(Array)
         end
 
         def role_check(role)

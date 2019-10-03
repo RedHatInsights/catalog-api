@@ -9,9 +9,7 @@ class OrderItem < ApplicationRecord
   default_scope -> { kept }
 
   validates_presence_of :count
-  validates_presence_of :service_parameters
   validates_presence_of :order_id
-  validates_presence_of :service_plan_ref
   validates_presence_of :portfolio_item_id
 
   belongs_to :order

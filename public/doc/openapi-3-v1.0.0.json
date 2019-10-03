@@ -45,26 +45,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "query": {
-                    "type": "string",
-                    "description": "The GraphQL query",
-                    "default": "{}"
-                  },
-                  "operationName": {
-                    "type": "string",
-                    "description": "If the Query contains several named operations, the operationName controls which one should be executed",
-                    "default": ""
-                  },
-                  "variables": {
-                    "type": "object",
-                    "description": "Optional Query variables"
-                  }
-                },
-                "required": [
-                  "query"
-                ]
+                "$ref": "#/components/schemas/GraphQLRequest"
               }
             }
           },
@@ -77,20 +58,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "description": "Results from the GraphQL query"
-                    },
-                    "errors": {
-                      "type": "array",
-                      "description": "Errors resulting from the GraphQL query",
-                      "items": {
-                        "type": "object"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/GraphQLResponse"
                 }
               }
             }
@@ -1633,9 +1601,15 @@
         "description": "Creates an Icon from the specified parameters",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Icon"
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
@@ -2071,7 +2045,8 @@
         "description": "ID of the resource",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "PortfolioID": {
@@ -2080,7 +2055,8 @@
         "description": "The Portfolio ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "PortfolioItemID": {
@@ -2089,7 +2065,8 @@
         "description": "The Portfolio Item ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "OrderID": {
@@ -2098,7 +2075,8 @@
         "description": "The Order ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "OrderItemID": {
@@ -2107,7 +2085,8 @@
         "description": "The Order Item ID",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "DestinationPortfolioID": {
@@ -2116,7 +2095,8 @@
         "description": "The destination portfolio to compare names against",
         "required": false,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d+$"
         }
       },
       "SettingName": {
@@ -2232,7 +2212,8 @@
           "workflow_ref": {
             "type": "string",
             "title": "Approval Workflow ID",
-            "example": "The current approval workflow selected for a portfolio"
+            "example": "The current approval workflow selected for a portfolio",
+            "nullable": true
           },
           "owner": {
             "type": "string",
@@ -2424,7 +2405,8 @@
           "workflow_ref": {
             "type": "string",
             "title": "Approval Workflow ID",
-            "example": "The approval workflow selected for a portfolio item"
+            "example": "The approval workflow selected for a portfolio item",
+            "nullable": true
           },
           "owner": {
             "type": "string",
@@ -2739,6 +2721,12 @@
             "description": "The service plan description.",
             "readOnly": true
           },
+          "service_offering_id": {
+            "type": "string",
+            "title": "Service Offering ID",
+            "description": "The reference ID of the service offering",
+            "readOnly": true
+          },
           "id": {
             "type": "string",
             "title": "ID",
@@ -2927,7 +2915,8 @@
             "title": "Name",
             "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, write and order",
             "items": {
-              "type": "string"
+              "type": "string",
+	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
             },
             "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
           },
@@ -2937,7 +2926,8 @@
             "description": "An array of group UUID's retrieved from the RBAC Service with whom the resource has to be shared.",
             "items": {
               "type": "string"
-            }
+            },
+	    "minItems": 1
           }
         }
       },
@@ -2952,7 +2942,8 @@
             "title": "Name",
             "description": "The permissions to remove for this resource.",
             "items": {
-              "type": "string"
+              "type": "string",
+	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
             }
           },
           "group_uuids": {
@@ -2983,7 +2974,47 @@
             "title": "Permissions",
             "description": "One or more permissions currently applied to this group.",
             "items": {
-              "type": "string"
+              "type": "string",
+	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
+            }
+          }
+        }
+      },
+      "GraphQLRequest": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The GraphQL query",
+            "default": "{}"
+          },
+          "operationName": {
+            "type": "string",
+            "description": "If the Query contains several named operations, the operationName controls which one should be executed",
+            "default": ""
+          },
+          "variables": {
+            "type": "object",
+            "description": "Optional Query variables",
+            "nullable": true
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "GraphQLResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Results from the GraphQL query"
+          },
+          "errors": {
+            "type": "array",
+            "description": "Errors resulting from the GraphQL query",
+            "items": {
+              "type": "object"
             }
           }
         }

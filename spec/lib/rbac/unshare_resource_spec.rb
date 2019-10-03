@@ -8,7 +8,7 @@ describe RBAC::UnshareResource do
       :resource_name => "portfolios" }
   end
   let(:subject) { described_class.new(options) }
-  let(:pagination_options) { { :limit => 100, :name => "catalog-portfolios-" } }
+  let(:pagination_options) { { :limit => 500, :name => "catalog-portfolios-", :scope => "principal" } }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)

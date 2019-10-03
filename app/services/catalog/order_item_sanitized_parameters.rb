@@ -2,6 +2,7 @@ module Catalog
   class OrderItemSanitizedParameters
     MASKED_VALUE = "********".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
+    SERVICE_PLAN_DOES_NOT_EXIST = "DNE".freeze
 
     def initialize(params)
       @params = params
@@ -39,6 +40,8 @@ module Catalog
     end
 
     def sanitized_parameters
+      return {} if service_plan_does_not_exist?
+
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
       fields.each_with_object({}) do |field, result|
         value = mask_value?(field) ? MASKED_VALUE : svc_params[field[:name]]
@@ -54,6 +57,10 @@ module Catalog
 
     def fields
       service_plan_schema.dig(:schema, :fields) || []
+    end
+
+    def service_plan_does_not_exist?
+      service_plan_ref == SERVICE_PLAN_DOES_NOT_EXIST
     end
   end
 end

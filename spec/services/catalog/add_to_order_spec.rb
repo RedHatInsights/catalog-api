@@ -21,7 +21,7 @@ describe Catalog::AddToOrder, :type => :service do
                                      'count'             => 1)
   end
 
-  let(:order_item) { described_class.new(params).process.order.order_items.first }
+  let(:order_item) { described_class.new(params).process.order_item }
 
   let(:request) { default_request }
 

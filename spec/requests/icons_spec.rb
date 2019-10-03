@@ -40,10 +40,12 @@ describe "IconsRequests", :type => :request do
              :extension => "PNG")
     end
 
-    before { post "#{api}/icons", :params => params, :headers => default_headers }
+    before do
+      post "#{api}/icons", :params => params, :headers => default_headers, :as => :form
+    end
 
     context "when providing proper parameters" do
-      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
+      let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -56,7 +58,7 @@ describe "IconsRequests", :type => :request do
     end
 
     context "when uploading a duplicate svg icon" do
-      let(:params) { {:content => image.content, :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
+      let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
 
       it "uses the reference from the one that is already there" do
         expect(json["image_id"]).to eq image.id.to_s
@@ -66,7 +68,7 @@ describe "IconsRequests", :type => :request do
     context "when uploading a duplicate png icon" do
       let(:params) do
         {
-          :content           => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.png"))),
+          :content           => form_upload_test_image("ocp_logo_dupe.png"),
           :source_id         => "29",
           :source_ref        => "icon_ref",
           :portfolio_item_id => portfolio_item.id
@@ -81,7 +83,7 @@ describe "IconsRequests", :type => :request do
     context "when uploading a duplicate jpg icon" do
       let(:params) do
         {
-          :content           => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.jpg"))),
+          :content           => form_upload_test_image("ocp_logo_dupe.jpg"),
           :source_id         => "29",
           :source_ref        => "icon_ref",
           :portfolio_item_id => portfolio_item.id
@@ -134,7 +136,7 @@ describe "IconsRequests", :type => :request do
     let(:params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg"))) } }
 
     before do
-      patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers
+      patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers, :as => :form
       icon.reload
     end
 
@@ -178,7 +180,7 @@ describe "IconsRequests", :type => :request do
 
   describe "#override_icon" do
     let!(:new_icon) { create(:icon) }
-    before { post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id }, :headers => default_headers }
+    before { post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id.to_s }, :headers => default_headers }
 
     it "returns the new icon" do
       expect(json["id"]).to eq new_icon.id.to_s

@@ -28,4 +28,16 @@ module ServiceSpecHelper
   def default_request
     { :headers => default_headers, :original_url => original_url }
   end
+
+  def form_upload_test_image(filename)
+    filetype = case filename.split(".").last
+               when "svg"
+                 "image/svg+xml"
+               when "jpg"
+                 "image/jpg"
+               when "png"
+                 "image/png"
+               end
+    Rack::Test::UploadedFile.new(Rails.root.join("spec", "support", "images", filename), filetype)
+  end
 end

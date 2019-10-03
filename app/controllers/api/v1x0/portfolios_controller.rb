@@ -43,7 +43,6 @@ module Api
 
       def show
         portfolio = Portfolio.find(params.require(:id))
-        portfolio.update!(portfolio_params)
 
         render :json => portfolio
       end
@@ -102,7 +101,7 @@ module Api
       private
 
       def portfolio_params
-        params.permit(:name, :description, :image_url, :enabled, :workflow_ref)
+        params.permit(:name, :description, :image_url, :enabled, :workflow_ref, :id)
       end
 
       def portfolio_copy_params

@@ -72,7 +72,7 @@ module Api
       end
 
       def portfolio_item_patch_params
-        params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref)
+        params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref, :id, :service_offering_source_ref)
       end
 
       def portfolio_copy_params

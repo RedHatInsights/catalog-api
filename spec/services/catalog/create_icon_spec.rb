@@ -10,8 +10,8 @@ describe Catalog::CreateIcon, :type => :service do
     end
 
     it "points to the right image" do
-      expect(icon.image.extension).to eq Magick::Image.from_blob(Base64.decode64(image_params[:content])).first.format
-      expect(icon.image.content).to eq image_params[:content]
+      expect(icon.image.extension).to eq Magick::Image.from_blob(File.read(image_params[:content].tempfile)).first.format
+      expect(icon.image.content).to eq Base64.strict_encode64(File.read(image_params[:content].tempfile))
     end
 
     it "deletes the image related key from the params hash" do
@@ -25,7 +25,7 @@ describe Catalog::CreateIcon, :type => :service do
     let(:portfolio_item) { create(:portfolio_item) }
 
     context "when there is not an image record" do
-      let(:image_params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg")))} }
+      let(:image_params) { {:content => form_upload_test_image("miq_logo.svg")} }
       let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
 
       it "creates a new image record" do
@@ -36,7 +36,7 @@ describe Catalog::CreateIcon, :type => :service do
     end
 
     context "when there is an image record" do
-      let(:image_params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo_dupe.svg")))} }
+      let(:image_params) { {:content => form_upload_test_image("ocp_logo_dupe.svg")} }
       let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
 
       it "uses the existing record" do
