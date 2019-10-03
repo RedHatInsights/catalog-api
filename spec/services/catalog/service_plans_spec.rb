@@ -83,8 +83,12 @@ describe Catalog::ServicePlans, :type => :service do
         expect(items.first["service_offering_id"]).to eq("998")
       end
 
-      it "returns an array with one object with a relatively empty create_json_schema" do
-        expect(items.first["create_json_schema"]).to eq("type" => "object", "properties" => {})
+      it "returns an array with one object with a specific plain text create json schema" do
+        json_schema = items.first["create_json_schema"]
+        expect(json_schema["schemaType"]).to eq("default")
+        expect(json_schema["schema"]["fields"].first["component"]).to eq("plain-text")
+        expect(json_schema["schema"]["fields"].first["name"]).to eq("empty-service-plan")
+        expect(json_schema["schema"]["fields"].first["label"]).to match("requires no user input")
       end
 
       it "returns an array with one object without a name" do
