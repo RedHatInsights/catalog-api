@@ -261,16 +261,9 @@ describe "PortfolioItemRequests", :type => :request do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers
       end
 
-      xit 'returns a 200' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      xit 'updates the field that is allowed' do
-        expect(json["name"]).to eq invalid_attributes[:name]
-      end
-
-      xit "does not update the read-only field" do
-        expect(json["service_offering_ref"]).to_not eq invalid_attributes[:service_offering_ref]
+      it 'returns a 400' do
+        expect(response).to have_http_status(:bad_request)
+        expect(json['errors'][0]['detail']).to match(/required parameters display_name,service_offering_source_ref/)
       end
     end
 
