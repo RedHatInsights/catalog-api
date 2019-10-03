@@ -46,10 +46,16 @@ namespace :db do
     def encoded_user_hash
       user_hash = {
         "entitlements" => {
+          "ansible"          => {
+            "is_entitled" => true
+          },
           "hybrid_cloud"     => {
             "is_entitled" => true
           },
           "insights"         => {
+            "is_entitled" => true
+          },
+          "migrations"       => {
             "is_entitled" => true
           },
           "openshift"        => {

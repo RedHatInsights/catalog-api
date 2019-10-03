@@ -75,16 +75,16 @@ RSpec.describe ApplicationController, :type => :request do
 
     let(:false_hash) do
       false_hash = default_user_hash
-      false_hash["entitlements"]["hybrid_cloud"]["is_entitled"] = false
+      false_hash["entitlements"]["ansible"]["is_entitled"] = false
       false_hash
     end
     let(:missing_hash) do
       missing_hash = default_user_hash
-      missing_hash.delete("entitlements")
+      missing_hash.delete("ansible")
       missing_hash
     end
 
-    it "fails if the hybrid_cloud entitlement is false" do
+    it "fails if the ansible entitlement is false" do
       headers =  { 'x-rh-identity' => encoded_user_hash(false_hash), 'x-rh-insights-request-id' => 'gobbledygook' }
       get "#{api("1.0")}/portfolios", :headers => headers
 
