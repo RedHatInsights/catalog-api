@@ -45,7 +45,7 @@ describe 'Portfolios Read Access RBAC API' do
         end
       end
 
-      context "via graphql" do
+      context "via graphql fetch an inaccessible portfolio" do
         let(:graphql_query) { "{ portfolios(id: #{portfolio2.id}) { id name } }" }
         it 'gives an empty body' do
           post "#{api('1.0')}/graphql", :headers => default_headers, :params => graphql_body
