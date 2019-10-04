@@ -571,7 +571,7 @@
         "description": "Get a list of tenants.\n",
         "responses": {
           "200": {
-            "description": "Returns a lsit of tenants.",
+            "description": "Returns a list of tenants.",
             "content": {
               "application/json": {
                 "schema": {

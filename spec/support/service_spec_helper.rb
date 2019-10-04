@@ -21,9 +21,9 @@ module ServiceSpecHelper
       'x-rh-insights-request-id' => 'gobbledygook' }
   end
 
-  def modified_headers(user_hash, request_id=nil)
+  def modified_headers(user_hash, request_id = nil)
     hashed = user_hash.stringify_keys
-    { 'x-rh-identity' => Base64.strict_encode64(hashed.to_json),
+    { 'x-rh-identity'            => Base64.strict_encode64(hashed.to_json),
       'x-rh-insights-request-id' => request_id }
   end
 
@@ -35,7 +35,7 @@ module ServiceSpecHelper
     { :headers => default_headers, :original_url => original_url }
   end
 
-  def modified_request(user_hash, request_id='gobbledygook')
+  def modified_request(user_hash, request_id = 'gobbledygook')
     modified = modified_headers(user_hash, request_id)
     { :headers => modified, :original_url => original_url }
   end

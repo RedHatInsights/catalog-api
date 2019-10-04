@@ -3,7 +3,7 @@ module RBAC
   class Seed
     def initialize(seed_file, user_file = nil)
       @acl_data = YAML.load_file(seed_file)
-      @request = create_or_use_request(user_file)
+      @request = ManageIQ::API::Common::Request.current || make_request(user_file)
     end
 
     def process
@@ -123,15 +123,11 @@ module RBAC
       result.uuid
     end
 
-    def create_or_use_request(user_file = nil)
-      if user_file.nil?
-        return ManageIQ::API::Common::Request.current
-      else
-        raise "File #{user_file} not found" unless File.exist?(user_file)
+    def make_request(user_file = nil)
+      raise "File #{user_file} not found" unless File.exist?(user_file)
 
-        user = YAML.load_file(user_file)
-        {:headers => {'x-rh-identity' => Base64.strict_encode64(user.to_json)}, :original_url => '/'}
-      end
+      user = YAML.load_file(user_file)
+      {:headers => {'x-rh-identity' => Base64.strict_encode64(user.to_json)}, :original_url => '/'}
     end
   end
 end

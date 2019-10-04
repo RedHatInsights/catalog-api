@@ -1,6 +1,7 @@
 module Group
   class Seed
     attr_reader :status
+
     def initialize(tenant)
       @user = ManageIQ::API::Common::Request.current.user
       validate(tenant)
@@ -9,7 +10,8 @@ module Group
     def validate(tenant)
       account_number = ManageIQ::API::Common::Request.current.identity['identity']['account_number']
       raise Catalog::NotAuthorized if account_number != tenant.external_tenant
-      raise Catalog::NotAuthorized if !@user.org_admin?
+      raise Catalog::NotAuthorized unless @user.org_admin?
+
       true
     end
 

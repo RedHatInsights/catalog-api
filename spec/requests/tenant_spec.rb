@@ -10,14 +10,12 @@ describe 'Group Seed API' do
   end
   let(:response_headers) { {"Content-Type" => 'application/json'} }
   let(:data) do
-    [{
-      :name        => "Catalog Administrators",
-      :description => "Catalog Administrators have complete access to all objects in the Catalog Service."
-    },
-    {
-      :name        => "Catalog Users",
-      :description => "Catalog Users have limited access and can only order portfolios."
-    }]
+    [
+      { :name        => "Catalog Administrators",
+        :description => "Catalog Administrators have complete access to all objects in the Catalog Service." },
+      { :name        => "Catalog Users",
+        :description => "Catalog Users have limited access and can only order portfolios." }
+    ]
   end
   let(:count) { 1 }
   let(:catalog_admin) do
@@ -72,11 +70,11 @@ describe 'Group Seed API' do
       end
 
       it 'account number is in RbacSeed table' do
-        expect(RbacSeed.find_by(:external_tenant => org_admin['identity']['account_number'])).to be_truthy
+        expect(RbacSeed.seeded(ManageIQ::API::Common::Request.current.user)).to be_truthy
       end
     end
 
-    context "when the user is not an org admin" do
+    context 'when the user is not an org admin' do
       let(:catalog_admin) do
         { :data => [], :meta => { :count => 0 } }
       end
