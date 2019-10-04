@@ -575,7 +575,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TenantCollection"
+                  "$ref": "#/components/schemas/TenantsCollection"
                 }
               }
             }
@@ -589,7 +589,7 @@
         }
       }
     },
-    "/tenants/:id": {
+    "/tenants/{tenant_id}": {
       "get": {
         "tags": [
           "Tenant"
@@ -599,7 +599,7 @@
         "description": "Gets the tenant specified by the tenant id.\n",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/TenantID"
           }
         ],
         "responses": {
@@ -628,7 +628,7 @@
         }
       }
     },
-    "/tenants/:id/seed": {
+    "/tenants/{tenant_id}/seed": {
       "post": {
         "tags": [
           "Tenant"
@@ -636,23 +636,30 @@
         "summary": "Seed Tenant Groups",
         "operationId": "tenantSeed",
         "description": "Run a task to seed the Tenant Groups required for an org admin to onboard additional users\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantID"
+          },
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          }
+        ],
         "responses": {
-          "201": {
+          "200": {
             "description": "The tenant was seeded"
+          },
+          "204": {
+            "description": "No content"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePortfolioItem"
-              }
-            }
-          },
-          "required": false
         }
       }
     },
@@ -2144,6 +2151,16 @@
           "pattern": "^\\d+$"
         }
       },
+      "TenantID": {
+        "name": "tenant_id",
+        "in": "path",
+        "description": "ID of the resource",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        }
+      },
       "PortfolioID": {
         "name": "portfolio_id",
         "in": "path",
@@ -2944,6 +2961,23 @@
           }
         }
       },
+      "TenantsCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tenant"
+            }
+          }
+        }
+      },
       "CollectionLinks": {
         "type": "object",
         "properties": {
@@ -3056,6 +3090,16 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "Tenant": {
+        "type": "object",
+        "properties": {
+          "external_tenant": {
+            "type": "string",
+            "title": "Request account number",
+            "description": "The Request account number"
           }
         }
       },

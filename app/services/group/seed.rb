@@ -1,21 +1,30 @@
-module Tenant
+module Group
   class Seed
+    attr_reader :status
     def initialize(tenant)
       @user = ManageIQ::API::Common::Request.current.user
       validate(tenant)
     end
 
-    def self.validate
+    def validate(tenant)
       account_number = ManageIQ::API::Common::Request.current.identity['identity']['account_number']
       raise Catalog::NotAuthorized if account_number != tenant.external_tenant
-      raise Catalog::NotAuthorized if !@user.is_org_admin
+      raise Catalog::NotAuthorized if !@user.org_admin?
       true
+    end
+
+    def tenant
+      @user.tenant
+    end
+
+    def code(status)
+      @status = status
     end
 
     def process
       lookup_groups
       cache_tenant
-      @seeded.data.present? ? nil : run_seeding
+      @seeded.data.present? ? code(204) : run_seeding
       self
     end
 
@@ -23,7 +32,10 @@ module Tenant
 
     def run_seeding
       seeded = RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
-      RbacSeed.create!(:external_tenant => @user.tenant) if seeded
+      if seeded
+        RbacSeed.create!(:external_tenant => @user.tenant)
+        code(200)
+      end
     end
 
     def cache_tenant
