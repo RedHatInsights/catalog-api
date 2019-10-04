@@ -81,13 +81,12 @@ describe 'Portfolios RBAC API' do
   end
 
   context "when the permissions array is malformed" do
-    # TODO: enable this once we get the openapi parser fixed
-    xit "errors on a blank array" do
+    it "errors on a blank array" do
       params = {:permissions => [], :group_uuids => ['1'] }
       post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => params
 
       expect(response).to have_http_status(:bad_request)
-      expect(response.body).to match(/the value is empty/)
+      expect(json['errors'][0]['detail']).to match(/cannot be less than min items/)
     end
 
     it "errors when the object is not an array" do
