@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_10_203425) do
+ActiveRecord::Schema.define(version: 2019_10_02_180129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 2019_09_10_203425) do
     t.string "reason"
     t.integer "state", default: 0
     t.bigint "tenant_id"
+    t.datetime "request_completed_at"
     t.index ["tenant_id"], name: "index_approval_requests_on_tenant_id"
   end
 
