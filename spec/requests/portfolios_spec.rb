@@ -253,14 +253,9 @@ describe 'Portfolios API' do
         patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => invalid_attributes
       end
 
-      xit 'returns status code 200' do
-        expect(response).to have_http_status(200)
-      end
-
-      xit 'returns an updated portfolio object' do
-        expect(json).not_to be_empty
-        expect(json).to be_a Hash
-        expect(json['name']).to_not eq invalid_attributes[:name]
+      it 'returns status code 400' do
+        expect(response).to have_http_status(400)
+        expect(json['errors'][0]['detail']).to match(/required parameters name not exist/)
       end
     end
   end
