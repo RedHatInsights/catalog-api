@@ -2613,6 +2613,12 @@
             "description": "The reason for the current state.",
             "readOnly": true
           },
+          "request_completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Approval Request Completed At",
+            "readOnly": true
+          },
           "state": {
             "type": "string",
             "title": "State",
