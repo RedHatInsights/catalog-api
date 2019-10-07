@@ -1,7 +1,7 @@
 module Api
-  module V1x0
+  module V1
     class PortfolioItemsController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Api::V1::Mixins::IndexMixin
 
       before_action :write_access_check, :only => %i[create update destroy]
 

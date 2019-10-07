@@ -1,5 +1,5 @@
 module Api
-  module V1x0
+  module V1
     module Mixins
       module IndexMixin
         def scoped(relation)
