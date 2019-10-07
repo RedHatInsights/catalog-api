@@ -30,6 +30,9 @@ module Api
         send_data(image,
                   :type        => MimeMagic.by_magic(image).type,
                   :disposition => 'inline')
+      rescue ActiveRecord::RecordNotFound
+        Rails.logger.debug("Icon not found for params: #{params.keys.select { |key| key.end_with?("_id") }}")
+        head :no_content
       end
 
       def override_icon
