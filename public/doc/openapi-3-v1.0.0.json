@@ -125,7 +125,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Portfolio"
+                "$ref": "#/components/schemas/Portfolio",
+                "required": [
+                  "name"
+                ]
               }
             }
           },
@@ -612,7 +615,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PortfolioItem"
+                  "$ref": "#/components/schemas/PortfolioItem",
+                  "required": [
+                    "name",
+                    "display_name",
+                    "service_offering_source_ref"
+                  ]
                 }
               }
             }
@@ -2176,9 +2184,6 @@
     "schemas": {
       "Portfolio": {
         "type": "object",
-        "required": [
-          "name"
-        ],
         "properties": {
           "id": {
             "type": "string",
@@ -2332,11 +2337,6 @@
       },
       "PortfolioItem": {
         "type": "object",
-        "required": [
-          "name",
-          "display_name",
-          "service_offering_source_ref"
-        ],
         "properties": {
           "id": {
             "type": "string",

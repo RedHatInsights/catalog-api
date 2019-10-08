@@ -215,6 +215,7 @@ describe 'Portfolios API' do
   describe 'PATCH /portfolios/:portfolio_id' do
     let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => "123456" } }
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
+    let(:partial_attributes) { { :name => 'Chef Pisghetti' } }
     context 'when patched portfolio is valid' do
       before do
         patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
@@ -255,9 +256,21 @@ describe 'Portfolios API' do
 
       it 'returns status code 400' do
         expect(response).to have_http_status(400)
-        expect(json['errors'][0]['detail']).to match(/required parameters name not exist/)
+        expect(json['errors'][0]['detail']).to match(/found unpermitted parameters: :fred, :bob/)
       end
     end
+
+    context 'when patched portfolio params are partial' do
+      before do
+        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => partial_attributes
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+        expect(json['name']).to eq(partial_attributes[:name])
+      end
+    end
+
   end
 
   describe 'POST /portfolios' do
