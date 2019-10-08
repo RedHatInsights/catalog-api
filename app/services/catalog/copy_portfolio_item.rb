@@ -4,7 +4,7 @@ module Catalog
 
     def initialize(params)
       @portfolio_item = PortfolioItem.find(params[:portfolio_item_id])
-      @name = params[:portfolio_item_name] || @portfolio_item.display_name
+      @params = params
 
       begin
         @to_portfolio = Portfolio.find(params[:portfolio_id] || @portfolio_item.portfolio_id)
@@ -24,8 +24,8 @@ module Catalog
 
     def make_copy
       @portfolio_item.dup.tap do |new_portfolio_item|
-        new_portfolio_item.name = new_name(@portfolio_item.name, :name)
-        new_portfolio_item.display_name = new_name(@name, :display_name)
+        new_portfolio_item.name = @params[:portfolio_item_name] || new_name(@portfolio_item.name, :name)
+        new_portfolio_item.display_name = @params[:portfolio_item_name] || new_name(@portfolio_item.display_name, :display_name)
         new_portfolio_item.save
       end
     end

@@ -330,6 +330,7 @@ describe "PortfolioItemRequests", :type => :request do
       it "returns the name specified" do
         copy_portfolio_item
         expect(json["display_name"]).to eq params[:portfolio_item_name]
+        expect(json["name"]).to eq params[:portfolio_item_name]
       end
     end
 
