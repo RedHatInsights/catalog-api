@@ -170,10 +170,16 @@ describe "IconsRequests", :type => :request do
     end
 
     context "when the icon does not exist" do
-      it "returns not found" do
+      it "/portfolio_items/{id}/icon returns no content" do
         get "#{api}/portfolio_items/0/icon", :headers => default_headers
 
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it "/icons/{id}/icon_data returns no content" do
+        get "#{api}/icons/0/icon_data", :headers => default_headers
+
+        expect(response).to have_http_status(:no_content)
       end
     end
   end
