@@ -140,6 +140,13 @@ ActiveRecord::Schema.define(version: 2019_10_02_180129) do
     t.index ["tenant_id"], name: "index_progress_messages_on_tenant_id"
   end
 
+  create_table "rbac_seeds", force: :cascade do |t|
+    t.string "external_tenant"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_tenant"], name: "index_rbac_seeds_on_external_tenant"
+  end
+
   create_table "tenants", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

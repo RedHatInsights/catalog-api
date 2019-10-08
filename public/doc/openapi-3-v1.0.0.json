@@ -561,6 +561,108 @@
         }
       }
     },
+    "/tenants": {
+      "get": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "List Tenants",
+        "operationId": "listTenants",
+        "description": "Get a list of tenants.",
+        "responses": {
+          "200": {
+            "description": "Returns a list of tenants.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/tenants/{tenant_id}": {
+      "get": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Get a specific Tenant",
+        "operationId": "showTenant",
+        "description": "Gets the tenant specified by the tenant id.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tenant matching the tenant ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tenant not found."
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        }
+      }
+    },
+    "/tenants/{tenant_id}/seed": {
+      "post": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Seed Tenant Groups",
+        "operationId": "tenantSeed",
+        "description": "Run a task to seed the Tenant Groups required for an org admin to onboard additional users.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantID"
+          },
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tenant was seeded"
+          },
+          "204": {
+            "description": "No content"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
     "/portfolio_items": {
       "get": {
         "tags": [
@@ -2046,6 +2148,16 @@
           "pattern": "^\\d+$"
         }
       },
+      "TenantID": {
+        "name": "tenant_id",
+        "in": "path",
+        "description": "ID of the resource",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        }
+      },
       "PortfolioID": {
         "name": "portfolio_id",
         "in": "path",
@@ -2846,6 +2958,23 @@
           }
         }
       },
+      "TenantsCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tenant"
+            }
+          }
+        }
+      },
       "CollectionLinks": {
         "type": "object",
         "properties": {
@@ -2958,6 +3087,16 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "Tenant": {
+        "type": "object",
+        "properties": {
+          "external_tenant": {
+            "type": "string",
+            "title": "Request account number",
+            "description": "The Request account number"
           }
         }
       },
