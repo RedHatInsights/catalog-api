@@ -1,5 +1,5 @@
 module Api
-  module V1x0
+  module V1
     class SettingsController < ApplicationController
       skip_before_action :validate_primary_collection_id
 

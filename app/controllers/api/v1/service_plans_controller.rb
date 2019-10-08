@@ -1,7 +1,7 @@
 module Api
-  module V1x0
+  module V1
     class ServicePlansController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Api::V1::Mixins::IndexMixin
 
       def index
         so = Catalog::ServicePlans.new(params.require(:portfolio_item_id))

@@ -3,7 +3,7 @@ require "manageiq/api/common/graphql"
 module Api
   module V1
     class GraphqlController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Api::V1::Mixins::IndexMixin
 
       def overlay
         {

@@ -1,5 +1,5 @@
 module Api
-  module V1x0
+  module V1
     class ProviderControlParametersController < ApplicationController
       def index
         so = Catalog::ProviderControlParameters.new(params.require(:portfolio_item_id))
