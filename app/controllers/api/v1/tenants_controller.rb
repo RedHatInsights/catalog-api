@@ -1,5 +1,5 @@
 module Api
-  module V1x0
+  module V1
     class TenantsController < ApplicationController
       def index
         render :json => Tenant.all
@@ -11,7 +11,7 @@ module Api
 
       def seed
         seeded = Group::Seed.new(Tenant.find(params.require(:tenant_id))).process
-        json_response({:message => "Tenant #{seeded.tenant} seeded" }, seeded.status)
+        json_response(nil, seeded.status)
       rescue Catalog::NotAuthorized => e
         json_response({:errors => e.message }, :forbidden)
       end

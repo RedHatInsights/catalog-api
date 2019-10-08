@@ -25,7 +25,7 @@ module Group
 
     def process
       lookup_groups
-      cache_tenant
+      mark_as_seeded
       @seeded.data.present? ? code(204) : run_seeding
       self
     end
@@ -40,7 +40,7 @@ module Group
       end
     end
 
-    def cache_tenant
+    def mark_as_seeded
       RbacSeed.find_or_create_by(:external_tenant => @user.tenant) if @seeded.data.present?
     end
 

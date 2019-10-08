@@ -18,5 +18,6 @@ module Api
     class ProviderControlParametersController < Api::V1::ProviderControlParametersController; end
     class ServicePlansController              < Api::V1::ServicePlansController; end
     class SettingsController                  < Api::V1::SettingsController; end
+    class TenantsController                   < Api::V1::TenantsController; end
   end
 end

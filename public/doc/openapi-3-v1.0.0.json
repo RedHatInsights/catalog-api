@@ -568,7 +568,7 @@
         ],
         "summary": "List Tenants",
         "operationId": "listTenants",
-        "description": "Get a list of tenants.\n",
+        "description": "Get a list of tenants.",
         "responses": {
           "200": {
             "description": "Returns a list of tenants.",
@@ -596,7 +596,7 @@
         ],
         "summary": "Get a specific Tenant",
         "operationId": "showTenant",
-        "description": "Gets the tenant specified by the tenant id.\n",
+        "description": "Gets the tenant specified by the tenant id.",
         "parameters": [
           {
             "$ref": "#/components/parameters/TenantID"
@@ -635,7 +635,7 @@
         ],
         "summary": "Seed Tenant Groups",
         "operationId": "tenantSeed",
-        "description": "Run a task to seed the Tenant Groups required for an org admin to onboard additional users\n",
+        "description": "Run a task to seed the Tenant Groups required for an org admin to onboard additional users.",
         "parameters": [
           {
             "$ref": "#/components/parameters/TenantID"

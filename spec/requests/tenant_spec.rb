@@ -45,7 +45,6 @@ describe 'Group Seed API' do
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
-        expect(JSON.parse(response.body)['message']).to eq "Tenant #{org_admin['identity']['account_number']} seeded"
       end
 
       it 'account number is populated in the RbacSeed table' do
@@ -88,7 +87,7 @@ describe 'Group Seed API' do
       end
       before { post "#{api}/tenants/#{tenant_id}/seed", :headers => default_headers }
 
-      it 'returns status code 200' do
+      it 'returns status code 403' do
         expect(response).to have_http_status(403)
       end
     end
