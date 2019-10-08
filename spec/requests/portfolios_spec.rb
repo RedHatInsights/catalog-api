@@ -270,7 +270,6 @@ describe 'Portfolios API' do
         expect(json['name']).to eq(partial_attributes[:name])
       end
     end
-
   end
 
   describe 'POST /portfolios' do
