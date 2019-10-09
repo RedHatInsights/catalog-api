@@ -2443,7 +2443,7 @@
             "type": "string",
             "title": "Portfolio Item ID",
             "example": "100",
-            "description": "Tthe ID of the portfolio which the icon will override"
+            "description": "The ID of the portfolio which the icon will override"
           }
         }
       },
