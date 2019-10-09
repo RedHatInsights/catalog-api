@@ -31,7 +31,7 @@ class ApplicationController < ActionController::API
   end
 
   def check_entitled(entitlement)
-    required_entitlements = %i[hybrid_cloud?]
+    required_entitlements = %i[ansible?]
 
     required_entitlements.map { |e| entitlement.send(e) }.all?
   end
