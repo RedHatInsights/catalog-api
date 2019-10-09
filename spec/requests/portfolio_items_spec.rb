@@ -236,7 +236,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe "patching portfolio items" do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef', :display_name => 'Test', 'service_offering_source_ref' => "27"} }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef'} }
     let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
     let(:partial_attributes) { { :name => 'Curious George' } }
 
@@ -279,7 +279,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     context "when passing in nullable attributes" do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil, :display_name => 'Test', :service_offering_source_ref => "27"} }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil} }
       before do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end

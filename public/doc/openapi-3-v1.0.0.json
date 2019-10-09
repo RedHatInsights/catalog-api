@@ -2699,16 +2699,17 @@
             "title": "Source ID",
             "description": "The source ID for this icon",
             "readOnly": true
-          }
-        }
-      },
-      "Image": {
-        "type": "object",
-        "properties": {
-          "id": {
+          },
+          "portfolio_id": {
             "type": "string",
-            "title": "ID",
-            "description": "The unique identifier for this Service Offering Icon",
+            "title": "Portfolio ID",
+            "description": "The portfolio this icon belongs to.",
+            "readOnly": true
+          },
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "description": "The portfolio_item this icon belongs to.",
             "readOnly": true
           }
         }
