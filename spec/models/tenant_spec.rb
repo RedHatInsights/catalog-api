@@ -2,6 +2,26 @@ describe Tenant, :type => :model do
   let!(:tenant) { create(:tenant) }
   let(:retreived_tenant) { Tenant.find(tenant.id) }
 
+  let(:other_account) do
+    false_hash = default_user_hash
+    false_hash["identity"]["account_number"] = tenant.external_tenant
+    false_hash
+  end
+
+  context "Tenant scopes" do
+    describe "#scoped_tenants" do
+      it "returns [] when ManageIQ::API::Common::Request.current is NOT set" do
+        expect(Tenant.scoped_tenants).to eq []
+      end
+
+      it "returns a scoped result when ManageIQ::API::Common::Request.current is set" do
+        ManageIQ::API::Common::Request.with_request(modified_request(other_account)) do
+          expect(Tenant.scoped_tenants).to eq [tenant]
+        end
+      end
+    end
+  end
+
   describe "#setup_settings" do
     context "when retreiving from the db" do
       it "populates the keys as methods" do
