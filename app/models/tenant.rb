@@ -1,8 +1,16 @@
 class Tenant < ApplicationRecord
+  scope :current, ->(user) { where(:external_tenant => user.tenant) }
+
   validates :external_tenant, :uniqueness => true, :presence => true
 
   before_validation :setup_settings, :unless => proc { settings.nil? }
   after_initialize :setup_settings, :unless => proc { settings.nil? }
+
+  def self.scoped_tenants
+    current(ManageIQ::API::Common::Request.current.user)
+  rescue NoMethodError
+    []
+  end
 
   def add_setting(name, value)
     raise Catalog::InvalidParameter if settings[name.to_s].present?
