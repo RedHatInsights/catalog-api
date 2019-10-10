@@ -3,9 +3,9 @@ describe Tenant, :type => :model do
   let(:retreived_tenant) { Tenant.find(tenant.id) }
 
   let(:other_account) do
-    false_hash = default_user_hash
-    false_hash["identity"]["account_number"] = tenant.external_tenant
-    false_hash
+    default_user_hash.dup.tap do |user|
+      user["identity"]["account_number"] = tenant.external_tenant
+    end
   end
 
   context "Tenant scopes" do
