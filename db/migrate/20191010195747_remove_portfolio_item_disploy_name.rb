@@ -1,5 +1,5 @@
 class RemovePortfolioItemDisployName < ActiveRecord::Migration[5.2]
   def change
-    remove_column :portfolio_items, :display_name
+    remove_column :portfolio_items, :display_name, :string
   end
 end
