@@ -5,6 +5,7 @@ class Portfolio < ApplicationRecord
   destroy_dependencies :portfolio_items
 
   acts_as_tenant(:tenant)
+  acts_as_taggable_on
   default_scope -> { kept }
   has_many :icons, :as => :iconable, :inverse_of => :iconable, :dependent => :destroy
 

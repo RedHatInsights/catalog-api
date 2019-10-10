@@ -49,6 +49,7 @@ Rails.application.routes.draw do
         post :copy, :to => "portfolios#copy"
         post :undelete, :to => "portfolios#restore"
         get :icon, :to => 'icons#raw_icon'
+        resources :tags, :only => [:index]
       end
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
@@ -57,11 +58,16 @@ Rails.application.routes.draw do
         get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
+        resources :tags, :only => [:index]
       end
       resources :icons, :only => [:create, :destroy, :show, :update] do
         get :icon_data, :to => 'icons#raw_icon'
       end
       resources :settings
+      resources :tags, :only => [:index, :show] do
+        resources :portfolios, :only => [:index]
+        resources :portfolio_items, :only => [:index]
+      end
       resources :tenants, :only => [:index, :show] do
         post 'seed', :to => 'tenants#seed'
       end

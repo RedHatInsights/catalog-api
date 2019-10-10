@@ -2,6 +2,7 @@ class PortfolioItem < ApplicationRecord
   include OwnerField
   include Discard::Model
   acts_as_tenant(:tenant)
+  acts_as_taggable_on
 
   default_scope -> { kept }
 
