@@ -801,7 +801,6 @@
                   "$ref": "#/components/schemas/PortfolioItem",
                   "required": [
                     "name",
-                    "display_name",
                     "service_offering_source_ref"
                   ]
                 }
@@ -2649,12 +2648,6 @@
             "readOnly": true,
             "title": "State",
             "example": "The current state of a portfolio item"
-          },
-          "display_name": {
-            "type": "string",
-            "readOnly": true,
-            "title": "Display Name",
-            "example": "The name of the portfolio item to be displayed in the UI"
           },
           "long_description": {
             "type": "string",

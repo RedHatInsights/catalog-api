@@ -8,8 +8,8 @@ module Catalog
     end
 
     def process
-      names = @portfolio.portfolio_items.pluck(:display_name)
-      @next_name = Catalog::NameAdjust.create_copy_name(@item.display_name, names)
+      names = @portfolio.portfolio_items.pluck(:name)
+      @next_name = Catalog::NameAdjust.create_copy_name(@item.name, names)
 
       self
     end

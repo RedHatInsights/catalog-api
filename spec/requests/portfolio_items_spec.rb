@@ -283,7 +283,11 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     context "when passing in nullable attributes" do
+<<<<<<< HEAD
       let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil} }
+=======
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil, :service_offering_source_ref => "27"} }
+>>>>>>> remove display_name from PortfolioItem
       before do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end
@@ -339,15 +343,6 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
 
-    context "when copying with a specified name" do
-      let(:params) { { :portfolio_item_name => "NewPortfolioItem" } }
-
-      it "returns the name specified" do
-        copy_portfolio_item
-        expect(json["display_name"]).to eq params[:portfolio_item_name]
-      end
-    end
-
     context "when copying into a different portfolio" do
       let(:params) { { :portfolio_id => new_portfolio.id.to_s } }
       let(:new_portfolio) { create(:portfolio) }
@@ -391,7 +386,7 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it "returns a json object with the next name" do
-        expect(json["next_name"]).to eq 'Copy of ' + portfolio_item.display_name
+        expect(json["next_name"]).to eq 'Copy of ' + portfolio_item.name
       end
     end
   end
