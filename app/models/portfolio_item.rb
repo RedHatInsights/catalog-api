@@ -25,7 +25,7 @@ class PortfolioItem < ApplicationRecord
   end
 
   def validate_workflow
-    Approval.call_workflow_api { |api| api.show_workflow(workflow_ref) }
+    Approval::Service.call(ApprovalApiClient::WorkflowApi) { |api| api.show_workflow(workflow_ref) }
   rescue Catalog::ApprovalError
     errors.add(:workflow, "invalid")
     throw :abort
