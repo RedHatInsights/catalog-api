@@ -14,7 +14,9 @@
   },
   "security": [
     {
-      "BasicAuth": []
+      "BasicAuth": [
+
+      ]
     }
   ],
   "tags": [
@@ -84,7 +86,7 @@
         ],
         "summary": "List portfolios",
         "operationId": "listPortfolios",
-        "description": "Gets a list of portfolios.\n",
+        "description": "Gets a list of portfolios.",
         "parameters": [
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -125,14 +127,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Portfolio"
+                "$ref": "#/components/schemas/Portfolio",
+                "required": [
+                  "name"
+                ]
               }
             }
           },
           "description": "Parameters needed to add a Portfolio",
           "required": true
         },
-        "description": "Adds a portfolio.\n",
+        "description": "Adds a portfolio.",
         "responses": {
           "200": {
             "description": "Succesfully added the new portfolio.",
@@ -163,7 +168,7 @@
         ],
         "summary": "Get a specific portfolio",
         "operationId": "showPortfolio",
-        "description": "Gets the portfolio specified by the portfolio ID.\n",
+        "description": "Gets the portfolio specified by the portfolio ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -200,7 +205,7 @@
         ],
         "summary": "Edit an existing portfolio",
         "operationId": "updatePortfolio",
-        "description": "Returns the edited portfolio.\n",
+        "description": "Returns the edited portfolio.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -245,7 +250,7 @@
         ],
         "summary": "Delete an existing portfolio",
         "operationId": "destroyPortfolio",
-        "description": "Deletes the portfolio specified by the ID.\n",
+        "description": "Deletes the portfolio specified by the ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -278,7 +283,7 @@
         ],
         "summary": "Get all portfolio items from a specific portfolio",
         "operationId": "fetchPortfolioItemsWithPortfolio",
-        "description": "Gets all portfilio items in the portfolio specified by the given ID.\n",
+        "description": "Gets all portfilio items in the portfolio specified by the given ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
@@ -321,7 +326,7 @@
         ],
         "summary": "Add a portfolio item to a portfolio",
         "operationId": "addPortfolioItemToPortfolio",
-        "description": "Adds a new portfolio item to an existing portfolio.\n",
+        "description": "Adds a new portfolio item to an existing portfolio.",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
@@ -360,7 +365,7 @@
         ],
         "summary": "Share a portfolio with one or more groups with specific permission",
         "operationId": "sharePortfolio",
-        "description": "Share a Portfolio with one or more groups with specific permissions\n",
+        "description": "Share a Portfolio with one or more groups with specific permissions",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
@@ -402,7 +407,7 @@
         ],
         "summary": "Unshare a portfolio from one or more groups with specific permission",
         "operationId": "unsharePortfolio",
-        "description": "Unshare a Portfolio with one or more groups with specific permissions\n",
+        "description": "Unshare a Portfolio with one or more groups with specific permissions",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
@@ -441,7 +446,7 @@
         ],
         "summary": "Fetch share information about this portfolio, the response would include a collection of groups and permissions with each group",
         "operationId": "share_info",
-        "description": "Fetch share information about a portfolio\n",
+        "description": "Fetch share information about a portfolio",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
@@ -519,7 +524,7 @@
         ],
         "summary": "Undelete specific portfolio",
         "operationId": "unDeletePortfolio",
-        "description": "Undeletes the portfolio specified by the portfolio ID.\n",
+        "description": "Undeletes the portfolio specified by the portfolio ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -561,6 +566,108 @@
         }
       }
     },
+    "/tenants": {
+      "get": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "List Tenants",
+        "operationId": "listTenants",
+        "description": "Get a list of tenants.",
+        "responses": {
+          "200": {
+            "description": "Returns a list of tenants.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/tenants/{tenant_id}": {
+      "get": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Get a specific Tenant",
+        "operationId": "showTenant",
+        "description": "Gets the tenant specified by the tenant id.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tenant matching the tenant ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tenant not found."
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidEntity"
+          }
+        }
+      }
+    },
+    "/tenants/{tenant_id}/seed": {
+      "post": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Seed Tenant Groups",
+        "operationId": "tenantSeed",
+        "description": "Run a task to seed the Tenant Groups required for an org admin to onboard additional users.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantID"
+          },
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tenant was seeded"
+          },
+          "204": {
+            "description": "No content"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
     "/portfolio_items": {
       "get": {
         "tags": [
@@ -568,7 +675,7 @@
         ],
         "summary": "List all portfolio items",
         "operationId": "listPortfolioItems",
-        "description": "Gets a list of portfolio items.\n",
+        "description": "Gets a list of portfolio items.",
         "parameters": [
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -605,14 +712,19 @@
         ],
         "summary": "Add a new portfolio item",
         "operationId": "createPortfolioItem",
-        "description": "Adds a name and description for a portfolio item and returns the newly created portfolio item.\n",
+        "description": "Adds a name and description for a portfolio item and returns the newly created portfolio item.",
         "responses": {
           "200": {
             "description": "The newly created portfolio item.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PortfolioItem"
+                  "$ref": "#/components/schemas/PortfolioItem",
+                  "required": [
+                    "name",
+                    "display_name",
+                    "service_offering_source_ref"
+                  ]
                 }
               }
             }
@@ -649,7 +761,7 @@
         ],
         "summary": "Gets a specific portfolio item",
         "operationId": "showPortfolioItem",
-        "description": "Gets a specific portfolio item based on the portfolio item ID passed\n",
+        "description": "Gets a specific portfolio item based on the portfolio item ID passed",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -683,7 +795,7 @@
         ],
         "summary": "Delete an existing portfolio item",
         "operationId": "destroyPortfolioItem",
-        "description": "Deletes the portfolio item based on portfolio item ID passed\n",
+        "description": "Deletes the portfolio item based on portfolio item ID passed",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -758,7 +870,7 @@
         ],
         "summary": "Gets all service plans for a specific portfolio item; requires a connection to the topology service.",
         "operationId": "listServicePlans",
-        "description": "Gets all service plans for a portfolio item.\n",
+        "description": "Gets all service plans for a portfolio item.",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioItemID"
@@ -800,7 +912,7 @@
         ],
         "summary": "Gets the provider control parameters for this portfolio item; requires control paramaters provided when provisioning the portfolio item.",
         "operationId": "listProviderControlParameters",
-        "description": "Gets the provider control parameters for a portfolio item.\n",
+        "description": "Gets the provider control parameters for a portfolio item.",
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioItemID"
@@ -887,7 +999,7 @@
         ],
         "summary": "Get a list of orders",
         "operationId": "listOrders",
-        "description": "Gets a list of orders associated with the logged in user.\n",
+        "description": "Gets a list of orders associated with the logged in user.",
         "parameters": [
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -924,7 +1036,7 @@
         ],
         "summary": "Create a new order",
         "operationId": "createOrder",
-        "description": "Creates a new order.\n",
+        "description": "Creates a new order.",
         "responses": {
           "200": {
             "description": "Returns a newly created order.",
@@ -952,7 +1064,7 @@
         ],
         "summary": "Delete an existing Order",
         "operationId": "destroyOrder",
-        "description": "Deletes the Order based on order ID passed\n",
+        "description": "Deletes the Order based on order ID passed",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -982,7 +1094,7 @@
         ],
         "summary": "Gets a list of items in a given order",
         "operationId": "listOrderItemsFromOrder",
-        "description": "Gets a list of items associated with an order.\n",
+        "description": "Gets a list of items associated with an order.",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -1022,7 +1134,7 @@
         ],
         "summary": "Add an order item to an order in pending state",
         "operationId": "addToOrder",
-        "description": "Adds an order item to an order in pending state\n",
+        "description": "Adds an order item to an order in pending state",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -1061,7 +1173,7 @@
         ],
         "summary": "Gets an individual order item from a given order",
         "operationId": "showOrderItemFromOrder",
-        "description": "Gets an order item associated with an order.\n",
+        "description": "Gets an order item associated with an order.",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -1100,7 +1212,7 @@
         ],
         "summary": "Submit a given order",
         "operationId": "submitOrder",
-        "description": "Returns an updated order.\n",
+        "description": "Returns an updated order.",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -1136,7 +1248,7 @@
         ],
         "summary": "Cancels a given order",
         "operationId": "cancelOrder",
-        "description": "Returns an updated order.\n",
+        "description": "Returns an updated order.",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
@@ -1175,7 +1287,7 @@
         ],
         "summary": "Restore specific Order",
         "operationId": "restoreOrder",
-        "description": "Restores the order specified by the order ID.\n",
+        "description": "Restores the order specified by the order ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -1224,7 +1336,7 @@
         ],
         "summary": "List Order Items",
         "operationId": "listOrderItems",
-        "description": "Gets a list of order items.\n",
+        "description": "Gets a list of order items.",
         "parameters": [
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -1263,7 +1375,7 @@
         ],
         "summary": "Gets a specific order item",
         "operationId": "showOrderItem",
-        "description": "Gets a specific order item based on the order item ID passed\n",
+        "description": "Gets a specific order item based on the order item ID passed",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -1297,7 +1409,7 @@
         ],
         "summary": "Delete an existing OrderItem",
         "operationId": "destroyOrderItem",
-        "description": "Deletes the order item  based on order item ID passed\n",
+        "description": "Deletes the order item  based on order item ID passed",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -1327,7 +1439,7 @@
         ],
         "summary": "Restore specific Order item",
         "operationId": "restoreOrderItem",
-        "description": "Restores the order item specified by the order item ID.\n",
+        "description": "Restores the order item specified by the order item ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -1376,7 +1488,7 @@
         ],
         "summary": "Gets a list of progress messages in an item",
         "operationId": "listProgressMessages",
-        "description": "Gets a list of progress messages associated with an order item. As the item is being processed the provider can update the progress messages.\n",
+        "description": "Gets a list of progress messages associated with an order item. As the item is being processed the provider can update the progress messages.",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderItemID"
@@ -1421,7 +1533,7 @@
         ],
         "summary": "Gets a list of approval requests for an item",
         "operationId": "listApprovalRequests",
-        "description": "Gets a list of approval request associated with an order item. As the item is being approved one can check the status of the approvals.\n",
+        "description": "Gets a list of approval request associated with an order item. As the item is being approved one can check the status of the approvals.",
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderItemID"
@@ -1481,17 +1593,14 @@
               }
             }
           },
+          "204": {
+            "description": "No icon present on Portfolio Item"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon Not Found/Not Present on Portfolio Item"
-          },
-          "500": {
-            "description": "Could not access the Topology Service"
           }
         }
       },
@@ -1719,7 +1828,7 @@
         ],
         "summary": "Delete an existing Icon",
         "operationId": "destroyIcon",
-        "description": "Deletes the icon based on the icon ID passed\n",
+        "description": "Deletes the icon based on the icon ID passed",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -1757,14 +1866,14 @@
               }
             }
           },
+          "204": {
+            "description": "No icon data present."
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon Not Found."
           }
         }
       }
@@ -2049,6 +2158,16 @@
           "pattern": "^\\d+$"
         }
       },
+      "TenantID": {
+        "name": "tenant_id",
+        "in": "path",
+        "description": "ID of the resource",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        }
+      },
       "PortfolioID": {
         "name": "portfolio_id",
         "in": "path",
@@ -2179,9 +2298,6 @@
     "schemas": {
       "Portfolio": {
         "type": "object",
-        "required": [
-          "name"
-        ],
         "properties": {
           "id": {
             "type": "string",
@@ -2329,17 +2445,12 @@
             "type": "string",
             "title": "Portfolio Item ID",
             "example": "100",
-            "description": "Tthe ID of the portfolio which the icon will override"
+            "description": "The ID of the portfolio which the icon will override"
           }
         }
       },
       "PortfolioItem": {
         "type": "object",
-        "required": [
-          "name",
-          "display_name",
-          "service_offering_source_ref"
-        ],
         "properties": {
           "id": {
             "type": "string",
@@ -2613,6 +2724,12 @@
             "description": "The reason for the current state.",
             "readOnly": true
           },
+          "request_completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Approval Request Completed At",
+            "readOnly": true
+          },
           "state": {
             "type": "string",
             "title": "State",
@@ -2843,6 +2960,23 @@
           }
         }
       },
+      "TenantsCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tenant"
+            }
+          }
+        }
+      },
       "CollectionLinks": {
         "type": "object",
         "properties": {
@@ -2916,9 +3050,18 @@
             "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, write and order",
             "items": {
               "type": "string",
-	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
+              "enum": [
+                "catalog:portfolios:read",
+                "catalog:portfolios:write",
+                "catalog:portfolios:order"
+              ]
             },
-            "example": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
+            "minItems": 1,
+            "example": [
+              "catalog:portfolios:read",
+              "catalog:portfolios:write",
+              "catalog:portfolios:order"
+            ]
           },
           "group_uuids": {
             "type": "array",
@@ -2927,7 +3070,7 @@
             "items": {
               "type": "string"
             },
-	    "minItems": 1
+            "minItems": 1
           }
         }
       },
@@ -2943,8 +3086,13 @@
             "description": "The permissions to remove for this resource.",
             "items": {
               "type": "string",
-	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
-            }
+              "enum": [
+                "catalog:portfolios:read",
+                "catalog:portfolios:write",
+                "catalog:portfolios:order"
+              ]
+            },
+            "minItems": 1
           },
           "group_uuids": {
             "type": "array",
@@ -2953,6 +3101,16 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "Tenant": {
+        "type": "object",
+        "properties": {
+          "external_tenant": {
+            "type": "string",
+            "title": "Request account number",
+            "description": "The Request account number"
           }
         }
       },
@@ -2975,7 +3133,11 @@
             "description": "One or more permissions currently applied to this group.",
             "items": {
               "type": "string",
-	      "enum": ["catalog:portfolios:read", "catalog:portfolios:write", "catalog:portfolios:order"]
+              "enum": [
+                "catalog:portfolios:read",
+                "catalog:portfolios:write",
+                "catalog:portfolios:order"
+              ]
             }
           }
         }

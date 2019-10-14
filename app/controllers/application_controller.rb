@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   include Response
-  include Api::V1x0::Mixins::RBACMixin
+  include Api::V1::Mixins::RBACMixin
   include ManageIQ::API::Common::ApplicationControllerMixins::ApiDoc
   include ManageIQ::API::Common::ApplicationControllerMixins::Common
   include ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation
@@ -31,7 +31,7 @@ class ApplicationController < ActionController::API
   end
 
   def check_entitled(entitlement)
-    required_entitlements = %i[hybrid_cloud?]
+    required_entitlements = %i[ansible?]
 
     required_entitlements.map { |e| entitlement.send(e) }.all?
   end

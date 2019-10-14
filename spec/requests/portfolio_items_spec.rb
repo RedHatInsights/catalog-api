@@ -238,6 +238,7 @@ describe "PortfolioItemRequests", :type => :request do
   describe "patching portfolio items" do
     let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef', :display_name => 'Test', 'service_offering_source_ref' => "27"} }
     let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
+    let(:partial_attributes) { { :name => 'Curious George' } }
 
     context "when passing in valid attributes" do
       before do
@@ -261,16 +262,19 @@ describe "PortfolioItemRequests", :type => :request do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers
       end
 
-      xit 'returns a 200' do
+      it 'returns a 400' do
+        expect(response).to have_http_status(:bad_request)
+        expect(json['errors'][0]['detail']).to match(/found unpermitted parameter: :service_offering_ref/)
+      end
+    end
+
+    context "when passing partial attributes" do
+      before do
+        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => partial_attributes, :headers => default_headers
+      end
+
+      it 'returns a 200' do
         expect(response).to have_http_status(:ok)
-      end
-
-      xit 'updates the field that is allowed' do
-        expect(json["name"]).to eq invalid_attributes[:name]
-      end
-
-      xit "does not update the read-only field" do
-        expect(json["service_offering_ref"]).to_not eq invalid_attributes[:service_offering_ref]
       end
     end
 

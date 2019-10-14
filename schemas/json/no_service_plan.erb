@@ -1,8 +1,14 @@
 {
   "service_offering_id": "<%= @reference %>",
   "id": "DNE",
-  "create_json_schema": {
-    "type": "object",
-    "properties": {}
-  }
+  "create_json_schema": <%= {
+    "schemaType": "default",
+    "schema": {
+      "fields": [{
+        "component": "plain-text",
+        "name": "empty-service-plan",
+        "label": "This product requires no user input and is fully configured by the system.\nClick submit to order this item."
+      }]
+    }
+  }.to_json %>
 }

@@ -1,7 +1,7 @@
 module Api
-  module V1x0
+  module V1
     class OrdersController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Api::V1::Mixins::IndexMixin
 
       def index
         collection(Order.all)

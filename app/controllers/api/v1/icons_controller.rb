@@ -1,7 +1,7 @@
 module Api
-  module V1x0
+  module V1
     class IconsController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Api::V1::Mixins::IndexMixin
 
       # Due to the fact form-data is getting uploaded and isn't supported by openapi_parser
       skip_before_action :validate_request, :only => %i[create update]
@@ -30,6 +30,9 @@ module Api
         send_data(image,
                   :type        => MimeMagic.by_magic(image).type,
                   :disposition => 'inline')
+      rescue ActiveRecord::RecordNotFound
+        Rails.logger.debug("Icon not found for params: #{params.keys.select { |key| key.end_with?("_id") }}")
+        head :no_content
       end
 
       def override_icon

@@ -1,9 +1,9 @@
 require 'rbac-api-client'
 module RBAC
   class Seed
-    def initialize(seed_file, user_file)
+    def initialize(seed_file, user_file = nil)
       @acl_data = YAML.load_file(seed_file)
-      @request = create_request(user_file)
+      @request = ManageIQ::API::Common::Request.current || create_request(user_file)
     end
 
     def process

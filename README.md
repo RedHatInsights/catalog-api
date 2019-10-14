@@ -103,7 +103,7 @@ SPANDX_CONFIG=/path/to/catalog-api/config/spandx.config.js bash /path/to/insight
 3. **Login to the Dev cluster to access the UI**
 
    Using this URL which connects to the insights proxy running in the docker container
-   https://ci.foo.redhat.com:1337/hybrid/catalog
+   https://ci.foo.redhat.com:1337/ansible/catalog
 
 
 ## Order Debugging
