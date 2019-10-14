@@ -236,7 +236,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe "patching portfolio items" do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef', :display_name => 'Test', 'service_offering_source_ref' => "27"} }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef'} }
     let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
     let(:partial_attributes) { { :name => 'Curious George' } }
 
@@ -279,7 +279,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     context "when passing in nullable attributes" do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil, :display_name => 'Test', :service_offering_source_ref => "27"} }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil} }
       before do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end
@@ -388,25 +388,6 @@ describe "PortfolioItemRequests", :type => :request do
 
       it "returns a json object with the next name" do
         expect(json["next_name"]).to eq 'Copy of ' + portfolio_item.display_name
-      end
-    end
-  end
-
-  describe '#add_icon_to_portfolio_item' do
-    let!(:icon) { create(:icon) }
-
-    context "when adding an icon to a portfolio_item" do
-      before do
-        post "#{api}/portfolio_items/#{portfolio_item.id}/icon", :params => { :icon_id => icon.id.to_s }, :headers => default_headers
-      end
-
-      it "returns a 200" do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "adds the icon to the portfolio_item" do
-        portfolio_item.reload
-        expect(portfolio_item.icons.first.id).to eq icon.id
       end
     end
   end

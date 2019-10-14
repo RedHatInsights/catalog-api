@@ -5,7 +5,7 @@ class PortfolioItem < ApplicationRecord
 
   default_scope -> { kept }
 
-  has_many :icons, :dependent => :destroy
+  has_many :icons, :as => :iconable, :inverse_of => :iconable, :dependent => :destroy
   belongs_to :portfolio, :optional => true
   validates :service_offering_ref, :name, :presence => true
   validates :favorite_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true

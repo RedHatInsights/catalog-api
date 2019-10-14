@@ -48,8 +48,8 @@ Rails.application.routes.draw do
         resources :portfolio_items,       :only => [:index]
         post :copy, :to => "portfolios#copy"
         post :undelete, :to => "portfolios#restore"
+        get :icon, :to => 'icons#raw_icon'
       end
-      post '/portfolio_items/:portfolio_item_id/icon', :to => 'portfolio_items#add_icon_to_portfolio_item'
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
@@ -59,7 +59,6 @@ Rails.application.routes.draw do
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
       end
       resources :icons, :only => [:create, :destroy, :show, :update] do
-        post :override, :to => 'icons#override_icon'
         get :icon_data, :to => 'icons#raw_icon'
       end
       resources :settings

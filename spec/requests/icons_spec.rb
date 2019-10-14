@@ -1,6 +1,8 @@
 describe "IconsRequests", :type => :request do
   let!(:portfolio_item) { create(:portfolio_item) }
-  let!(:icon) { create(:icon, :image => image, :portfolio_item => portfolio_item) }
+  let!(:icon) { create(:icon, :image => image, :iconable => portfolio_item) }
+  let!(:portfolio) { create(:portfolio) }
+  let!(:portfolio_icon) { create(:icon, :image => image, :iconable => portfolio) }
 
   let(:image) { create(:image) }
 
@@ -133,7 +135,7 @@ describe "IconsRequests", :type => :request do
   end
 
   describe "#update" do
-    let(:params) { {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg"))) } }
+    let(:params) { {:content => form_upload_test_image("miq_logo.svg") } }
 
     before do
       patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers, :as => :form
@@ -145,7 +147,7 @@ describe "IconsRequests", :type => :request do
     end
 
     it "updates the fields passed in" do
-      expect(icon.image.content).to eq params[:content]
+      expect(icon.image.content).to eq Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg")))
     end
 
     it "updated to a new image record" do
@@ -157,6 +159,13 @@ describe "IconsRequests", :type => :request do
     context "when the icon exists" do
       it "/portfolio_items/{portfolio_item_id}/icon returns the icon" do
         get "#{api}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq "image/svg+xml"
+      end
+
+      it "/portfolios/{portfolio_id}/icon returns the icon" do
+        get "#{api}/portfolios/#{portfolio.id}/icon", :headers => default_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq "image/svg+xml"
@@ -181,24 +190,6 @@ describe "IconsRequests", :type => :request do
 
         expect(response).to have_http_status(:no_content)
       end
-    end
-  end
-
-  describe "#override_icon" do
-    let!(:new_icon) { create(:icon) }
-    before { post "#{api}/icons/#{new_icon.id}/override", :params => { :portfolio_item_id => portfolio_item.id.to_s }, :headers => default_headers }
-
-    it "returns the new icon" do
-      expect(json["id"]).to eq new_icon.id.to_s
-    end
-
-    it "overrides the icon" do
-      expect(portfolio_item.icons.first.id).to eq new_icon.id
-    end
-
-    it "soft-deletes the old one" do
-      expect { Icon.find(icon.id) }.to raise_exception(ActiveRecord::RecordNotFound)
-      expect(Icon.with_discarded.find(icon.id)).to be_truthy
     end
   end
 end

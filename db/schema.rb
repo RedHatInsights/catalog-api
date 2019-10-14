@@ -31,13 +31,15 @@ ActiveRecord::Schema.define(version: 2019_10_02_180129) do
   create_table "icons", force: :cascade do |t|
     t.string "source_ref"
     t.string "source_id"
-    t.bigint "portfolio_item_id"
     t.bigint "tenant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
     t.bigint "image_id"
+    t.string "iconable_type"
+    t.bigint "iconable_id"
     t.index ["discarded_at"], name: "index_icons_on_discarded_at"
+    t.index ["iconable_type", "iconable_id"], name: "index_icons_on_iconable_type_and_iconable_id"
     t.index ["tenant_id"], name: "index_icons_on_tenant_id"
   end
 

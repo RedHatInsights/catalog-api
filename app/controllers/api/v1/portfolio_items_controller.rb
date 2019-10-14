@@ -19,13 +19,13 @@ module Api
       end
 
       def create
-        so = ServiceOffering::AddToPortfolioItem.new(portfolio_item_params)
+        so = ServiceOffering::AddToPortfolioItem.new(params_for_create)
         render :json => so.process.item
       end
 
       def update
         portfolio_item = PortfolioItem.find(params.require(:id))
-        portfolio_item.update!(portfolio_item_patch_params)
+        portfolio_item.update!(params_for_update)
 
         render :json => portfolio_item
       end
@@ -58,22 +58,7 @@ module Api
         render :json => { :next_name => svc.process.next_name }
       end
 
-      def add_icon_to_portfolio_item
-        icon = Icon.find(params.require(:icon_id))
-        portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        render :json => portfolio_item.icons << icon
-      end
-
       private
-
-      def portfolio_item_params
-        params.require(:service_offering_ref)
-        params.permit(:service_offering_ref, :workflow_ref)
-      end
-
-      def portfolio_item_patch_params
-        params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref, :id, :service_offering_source_ref)
-      end
 
       def portfolio_copy_params
         params.permit(:portfolio_item_id, :portfolio_id, :portfolio_item_name)

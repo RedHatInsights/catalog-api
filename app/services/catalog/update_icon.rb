@@ -17,7 +17,8 @@ module Catalog
     private
 
     def update_image
-      new_image = Image.new(:content => @params.delete(:content))
+      content = Base64.strict_encode64(File.read(@params.delete(:content).tempfile))
+      new_image = Image.new(:content => content)
       image_id = Catalog::DuplicateImage.new(new_image).process.image_id
       @icon.image.destroy unless @icon.image.icons.count > 1
 

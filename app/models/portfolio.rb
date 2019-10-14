@@ -6,6 +6,7 @@ class Portfolio < ApplicationRecord
 
   acts_as_tenant(:tenant)
   default_scope -> { kept }
+  has_many :icons, :as => :iconable, :inverse_of => :iconable, :dependent => :destroy
 
   validates :name, :presence => true, :uniqueness => { :scope => %i(tenant_id discarded_at) }
   validates :image_url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :allow_blank => true
