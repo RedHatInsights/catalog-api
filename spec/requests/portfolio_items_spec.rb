@@ -32,6 +32,10 @@ describe "PortfolioItemRequests", :type => :request do
       it 'returns the portfolio_item we asked for' do
         expect(json["id"]).to eq portfolio_item_id
       end
+
+      it 'portfolio item references parent portfolio' do
+        expect(json["portfolio_id"]).to eq portfolio_id
+      end
     end
 
     context 'the portfolio_item does not exist' do

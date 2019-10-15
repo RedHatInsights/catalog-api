@@ -2455,6 +2455,13 @@
             "readOnly": true,
             "example": "20"
           },
+          "portfolio_id": {
+            "type": "string",
+            "title": "Portfolio ID",
+            "description": "ID of a parent portfolio",
+            "readOnly": true,
+            "example": "1"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
