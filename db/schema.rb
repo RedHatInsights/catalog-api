@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_02_180129) do
+ActiveRecord::Schema.define(version: 2019_10_10_162248) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,6 +90,16 @@ ActiveRecord::Schema.define(version: 2019_10_02_180129) do
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
+  create_table "portfolio_item_tags", id: :serial, force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.bigint "portfolio_item_id", null: false
+    t.datetime "last_seen_at"
+    t.index ["last_seen_at"], name: "index_portfolio_item_tags_on_last_seen_at"
+    t.index ["portfolio_item_id", "tag_id"], name: "uniq_index_on_portfolio_item_id_tag_id", unique: true
+    t.index ["portfolio_item_id"], name: "index_cluster_tags_on_portfolio_item_id"
+    t.index ["tag_id"], name: "index_portfolio_item_tags_on_tag_id"
+  end
+
   create_table "portfolio_items", force: :cascade do |t|
     t.boolean "favorite"
     t.string "name"
@@ -112,6 +122,16 @@ ActiveRecord::Schema.define(version: 2019_10_02_180129) do
     t.string "owner"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
+  end
+
+  create_table "portfolio_tags", id: :serial, force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.bigint "portfolio_id", null: false
+    t.datetime "last_seen_at"
+    t.index ["last_seen_at"], name: "index_portfolio_tags_on_last_seen_at"
+    t.index ["portfolio_id", "tag_id"], name: "uniq_index_on_portfolio_id_tag_id", unique: true
+    t.index ["portfolio_id"], name: "index_cluster_tags_on_portfolio_id"
+    t.index ["tag_id"], name: "index_portfolio_tags_on_tag_id"
   end
 
   create_table "portfolios", force: :cascade do |t|
@@ -149,6 +169,16 @@ ActiveRecord::Schema.define(version: 2019_10_02_180129) do
     t.index ["external_tenant"], name: "index_rbac_seeds_on_external_tenant"
   end
 
+  create_table "tags", id: :serial, force: :cascade do |t|
+    t.bigint "tenant_id", null: false
+    t.string "name", null: false
+    t.string "value", default: "", null: false
+    t.string "namespace", default: "", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.index ["tenant_id", "namespace", "name"], name: "index_tags_on_tenant_id_and_namespace_and_name", unique: true
+  end
+
   create_table "tenants", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -159,4 +189,9 @@ ActiveRecord::Schema.define(version: 2019_10_02_180129) do
     t.index ["external_tenant"], name: "index_tenants_on_external_tenant"
   end
 
+  add_foreign_key "portfolio_item_tags", "portfolio_items", on_delete: :cascade
+  add_foreign_key "portfolio_item_tags", "tags", on_delete: :cascade
+  add_foreign_key "portfolio_tags", "portfolios", on_delete: :cascade
+  add_foreign_key "portfolio_tags", "tags", on_delete: :cascade
+  add_foreign_key "tags", "tenants", on_delete: :cascade
 end

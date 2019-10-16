@@ -13,7 +13,11 @@ module Api
       end
 
       def index
-        collection(Portfolio.all)
+        if params[:tag_id]
+          collection(Tag.find(params.require(:tag_id)).portfolios)
+        else
+          collection(Portfolio.all)
+        end
       end
 
       def add_portfolio_item_to_portfolio

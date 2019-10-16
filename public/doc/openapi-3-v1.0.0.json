@@ -600,6 +600,51 @@
         }
       }
     },
+    "/portfolios/{id}/tags": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "List Tags for Portfolio",
+        "operationId": "listPortfolioTags",
+        "description": "Returns an array of Tag objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tags collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Not Found."
+          }
+        }
+      }
+    },
     "/tenants": {
       "get": {
         "tags": [
@@ -1023,6 +1068,51 @@
             }
           },
           "required": true
+        }
+      }
+    },
+    "/portfolio_items/{id}/tags": {
+      "get": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "List Tags for Portfolio Items",
+        "operationId": "listPortfolioItemTags",
+        "description": "Returns an array of Tag objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tags collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Item Not Found."
+          }
         }
       }
     },
@@ -2066,6 +2156,160 @@
           }
         }
       }
+    },
+    "/tags": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "List Tags",
+        "description": "List Tags",
+        "operationId": "listTags",
+        "responses": {
+          "200": {
+            "description": "Index of Tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/tags/{id}": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Show Tag",
+        "operationId": "showTag",
+        "description": "Show a specific Tag",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requestesd Tag",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tag Not Found."
+          }
+        }
+      }
+    },
+    "/tags/{id}/portfolios": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "List Portfolios for Tag",
+        "operationId": "listTagPortfolios",
+        "description": "Returns an array of Portfolio objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfoliosCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tag Not Found."
+          }
+        }
+      }
+    },
+    "/tags/{id}/portfolio_items": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "List Portfolio Items for Tag",
+        "operationId": "listTagPortfolioItems",
+        "description": "Returns an array of Portfolio Item objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio Item collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioItemsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tag Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -3042,6 +3286,57 @@
             "type": "string",
             "title": "Request account number",
             "description": "The Request account number"
+          }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "description": {
+            "example": "Instruction set architecture",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "example": "architecture",
+            "readOnly": true,
+            "type": "string"
+          },
+          "namespace": {
+            "example": "openshift",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TagsCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
           }
         }
       },

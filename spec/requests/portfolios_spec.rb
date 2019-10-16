@@ -436,4 +436,17 @@ describe 'Portfolios API' do
       end
     end
   end
+
+  context "GET /portfolios/{id}/tags" do
+    before do
+      portfolio.tag_add("test_tag")
+    end
+
+    it "returns the tags for the portfolio" do
+      get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
+
+      expect(json["meta"]["count"]).to eq 1
+      expect(json["data"].first["name"]).to eq "test_tag"
+    end
+  end
 end
