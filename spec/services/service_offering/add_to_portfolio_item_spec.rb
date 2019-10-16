@@ -21,7 +21,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
   describe "#process" do
     let(:topology_service_offering) { fully_populated_service_offering }
     let(:service_offering_icon) { fully_populated_service_offering_icon }
-    let(:validater) { instance_double(Catalog::ValidateSource) }
+    let(:catalog_application_type) { {:data => [{:id => 1, :name => "/insights/platform/catalog"}]} }
 
     before do
       stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/1")
@@ -29,13 +29,14 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
       stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offering_icons/998")
         .to_return(:status => 200, :body => service_offering_icon.to_json, :headers => default_headers)
 
-      allow(Catalog::ValidateSource).to receive(:new).with(topology_service_offering.source_id).and_return(validater)
-      allow(validater).to receive(:process).and_return(validater)
-      allow(validater).to receive(:valid).and_return(valid_source)
+      stub_request(:get, "http://localhost/api/sources/v1.0/application_types")
+        .to_return(:status => 200, :body => catalog_application_type.to_json, :headers => default_headers)
+      stub_request(:get, "http://localhost/api/sources/v1.0/application_types/1/sources")
+        .to_return(:status => 200, :body => sources_response.to_json, :headers => default_headers)
     end
 
     context "when the source is valid" do
-      let(:valid_source) { true }
+      let(:sources_response) { {:data => [{:id => 1}, {:id => 45}]} }
 
       context "when a user provides params" do
         it "sets the name and description" do
@@ -113,7 +114,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
     end
 
     context "when the source is invalid" do
-      let(:valid_source) { false }
+      let(:sources_response) { {:data => [{:id => 1}]} }
 
       it "raises an unauthorized error" do
         expect { subject.process }.to raise_exception(Catalog::NotAuthorized)
