@@ -10,7 +10,11 @@ module ServiceOfferingHelper
       :documentation_url        => "http://test.docs.io",
       :support_url              => "800-555-TEST",
       :distributor              => "Red Hat Inc.",
-      :service_offering_icon_id => "998"
+      :service_offering_icon_id => "998",
+      :extra                    => {
+        :type           => "Job Template",
+        :survey_enabled => true
+      }.to_json
     )
   end
 
