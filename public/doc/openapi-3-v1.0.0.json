@@ -2692,6 +2692,13 @@
             "readOnly": true,
             "example": "20"
           },
+          "service_offering_type": {
+            "type": "string",
+            "title": "Service Offering Type",
+            "description": "The service offering type stored by the Topology Service",
+            "readOnly": true,
+            "example": "Job Template"
+          },
           "portfolio_id": {
             "type": "string",
             "title": "Portfolio ID",
