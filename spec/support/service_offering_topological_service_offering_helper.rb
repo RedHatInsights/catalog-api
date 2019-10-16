@@ -14,7 +14,7 @@ module ServiceOfferingHelper
       :extra                    => {
         :type           => "Job Template",
         :survey_enabled => true
-      }.to_json
+      }
     )
   end
 
