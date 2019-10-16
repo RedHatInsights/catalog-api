@@ -12,7 +12,7 @@ module ServiceOfferingHelper
       :distributor              => "Red Hat Inc.",
       :service_offering_icon_id => "998",
       :extra                    => {
-        :type           => "Job Template",
+        :type           => "job_template",
         :survey_enabled => true
       }
     )

@@ -49,7 +49,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
         end
 
         it "sets the service offering type" do
-          expect(subject.process.item.service_offering_type).to eq("Job Template")
+          expect(subject.process.item.service_offering_type).to eq("job_template")
         end
 
         context "when service_offering does not have a long_description" do
@@ -78,7 +78,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
         end
 
         it "sets the service offering type" do
-          expect(subject.process.item.service_offering_type).to eq("Job Template")
+          expect(subject.process.item.service_offering_type).to eq("job_template")
         end
       end
 

@@ -2697,7 +2697,7 @@
             "title": "Service Offering Type",
             "description": "The service offering type stored by the Topology Service",
             "readOnly": true,
-            "example": "Job Template"
+            "example": "job_template"
           },
           "portfolio_id": {
             "type": "string",
