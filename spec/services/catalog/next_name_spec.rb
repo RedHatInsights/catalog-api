@@ -13,7 +13,7 @@ describe Catalog::NextName, :type => :service do
     end
 
     context "copy when there is a copy already" do
-      before { portfolio_item2.update(:display_name => "Copy of " + portfolio_item.display_name) }
+      before { portfolio_item2.update(:name => "Copy of " + portfolio_item.name) }
       it "returns the name with a counter" do
         expect(next_name).to match(/^Copy \(1\) of.*/)
       end
