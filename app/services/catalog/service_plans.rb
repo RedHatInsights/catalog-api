@@ -14,7 +14,7 @@ module Catalog
       TopologicalInventory.call do |api_instance|
         service_offering = api_instance.show_service_offering(@reference)
 
-        if JSON.parse(service_offering.extra)["survey_enabled"]
+        if service_offering.extra[:survey_enabled]
           result = api_instance.list_service_offering_service_plans(@reference)
           @items = filter_data(result.data)
         else
