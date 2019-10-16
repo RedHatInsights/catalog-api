@@ -17,7 +17,7 @@ describe Catalog::ServicePlans, :type => :service do
   describe "#process" do
     let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => data) }
     let(:service_offering_response) do
-      TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => survey_enabled}.to_json)
+      TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => survey_enabled})
     end
 
     before do
