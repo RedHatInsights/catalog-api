@@ -25,9 +25,9 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
 
     before do
       stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/1")
-      .to_return(:status => 200, :body => topology_service_offering.to_json, :headers => default_headers)
+        .to_return(:status => 200, :body => topology_service_offering.to_json, :headers => default_headers)
       stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offering_icons/998")
-      .to_return(:status => 200, :body => service_offering_icon.to_json, :headers => default_headers)
+        .to_return(:status => 200, :body => service_offering_icon.to_json, :headers => default_headers)
 
       allow(Catalog::ValidateSource).to receive(:new).with(topology_service_offering.source_id).and_return(validater)
       allow(validater).to receive(:process).and_return(validater)
