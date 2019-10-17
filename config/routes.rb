@@ -43,6 +43,7 @@ Rails.application.routes.draw do
       post '/portfolios/:portfolio_id/portfolio_items', :to => "portfolios#add_portfolio_item_to_portfolio", :as => 'add_portfolio_item_to_portfolio'
       post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'
       post '/portfolios/:portfolio_id/unshare', :to => "portfolios#unshare", :as => 'unshare'
+      post '/portfolios/:portfolio_id/tags', :to => "portfolios#add_tags", :as => 'add_tags'
       get '/portfolios/:portfolio_id/share_info', :to => "portfolios#share_info", :as => 'share_info'
       resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
         resources :portfolio_items,       :only => [:index]
@@ -57,6 +58,7 @@ Rails.application.routes.draw do
         get :icon, :to => 'icons#raw_icon'
         get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
+        post :tags, :action => 'add_tags', :controller => 'portfolio_items'
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
         resources :tags, :only => [:index]
       end

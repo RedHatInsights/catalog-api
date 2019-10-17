@@ -4,7 +4,7 @@ module Api
       include Api::V1::Mixins::IndexMixin
       include Api::V1::Mixins::ValidationMixin
 
-      before_action :write_access_check, :only => %i(add_portfolio_item_to_portfolio create update destroy)
+      before_action :write_access_check, :only => %i(add_portfolio_item_to_portfolio create update destroy add_tags)
       before_action :read_access_check, :only => %i(show)
 
       before_action :only => %i[copy] do
@@ -95,6 +95,12 @@ module Api
       def copy
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio
+      end
+
+      def add_tags
+        portfolio = Portfolio.find(params.require(:portfolio_id))
+        portfolio.tag_add(params[:name])
+        head :no_content
       end
 
       private

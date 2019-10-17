@@ -386,4 +386,17 @@ describe "PortfolioItemRequests", :type => :request do
       end
     end
   end
+
+  context "POST /portfolio_items/{id}/tag" do
+    let(:name) { 'Gnocchi' }
+    let(:params) do
+      {:name => name}
+    end
+
+    it "add tags for the portfolio item" do
+      post "#{api}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers, :params => params
+
+      expect(response).to have_http_status(204)
+    end
+  end
 end
