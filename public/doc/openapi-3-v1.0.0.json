@@ -643,6 +643,43 @@
             "description": "Portfolio Not Found."
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Add Tag for Portfolio",
+        "operationId": "addPortfolioTag",
+        "description": "Adds a single tag to Portfolio object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully tagged Portfolio object"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagItem"
+              }
+            }
+          },
+          "required": true
+        }
       }
     },
     "/tenants": {
@@ -1112,6 +1149,43 @@
           "404": {
             "description": "Portfolio Item Not Found."
           }
+        }
+      },
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Add Tag for Portfolio",
+        "operationId": "addPortfolioItemTag",
+        "description": "Adds a single tag to Portfolio object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully tagged Portfolio object"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagItem"
+              }
+            }
+          },
+          "required": true
         }
       }
     },
@@ -3318,6 +3392,25 @@
           }
         },
         "additionalProperties": false
+      },
+      "TagItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "example": "architecture",
+            "readOnly": true,
+            "type": "string"
+          },
+          "namespace": {
+            "example": "openshift",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "readOnly": true,
+            "type": "string"
+          }
+        }
       },
       "TagsCollection": {
         "type": "object",
