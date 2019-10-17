@@ -2651,25 +2651,21 @@
           },
           "long_description": {
             "type": "string",
-            "readOnly": true,
             "title": "Long Description",
             "example": "The longer description of a portfolio item"
           },
           "distributor": {
             "type": "string",
-            "readOnly": true,
             "title": "Distributor",
             "example": "The name of the provider for this Item"
           },
           "documentation_url": {
             "type": "string",
-            "readOnly": true,
             "title": "Documentation URL",
             "example": "The URL for documentation of the portfolio item"
           },
           "support_url": {
             "type": "string",
-            "readOnly": true,
             "title": "Support URL",
             "example": "The URL for finding support for the portfolio item"
           },
