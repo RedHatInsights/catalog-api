@@ -657,8 +657,15 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Successfully tagged Portfolio object"
+          "200": {
+            "description": "Tag successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -1164,8 +1171,15 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Successfully tagged Portfolio object"
+          "200": {
+            "description": "Tag successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"

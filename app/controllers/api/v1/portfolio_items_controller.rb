@@ -3,7 +3,7 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1::Mixins::IndexMixin
 
-      before_action :write_access_check, :only => %i[create update destroy add_tags]
+      before_action :write_access_check, :only => %i[create update destroy create_tags]
 
       before_action :only => [:copy] do
         resource_check('read', params.require(:portfolio_item_id))
@@ -60,10 +60,10 @@ module Api
         render :json => { :next_name => svc.process.next_name }
       end
 
-      def add_tags
+      def create_tags
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
         portfolio_item.tag_add(params[:name])
-        head :no_content
+        render :json => portfolio_item.tags.where(:name => params[:name]).first
       end
 
       private

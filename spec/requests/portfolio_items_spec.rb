@@ -396,7 +396,8 @@ describe "PortfolioItemRequests", :type => :request do
     it "add tags for the portfolio item" do
       post "#{api}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers, :params => params
 
-      expect(response).to have_http_status(204)
+      expect(response).to have_http_status(200)
+      expect(json['name']).to eq(name)
     end
   end
 end
