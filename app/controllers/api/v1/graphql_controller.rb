@@ -9,7 +9,7 @@ module Api
         {
           "^.*$" => {
             "base_query" => lambda do |model_class, _ctx|
-              RBAC::Access.enabled? ? rbac_scope(model_class.all) : model_class
+              ManageIQ::API::Common::RBAC::Access.enabled? ? rbac_scope(model_class.all) : model_class
             end
           }
         }

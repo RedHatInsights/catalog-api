@@ -65,7 +65,7 @@ describe "PortfolioItemRequests", :type => :request do
       let(:portfolio_id) { portfolio.id + 100 }
 
       it 'returns a 404' do
-        expect(json["message"]).to eq("Not Found")
+        expect(first_error_detail).to match(/Couldn't find Portfolio/)
         expect(response.status).to eq(404)
       end
     end
@@ -268,7 +268,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       it 'returns a 400' do
         expect(response).to have_http_status(:bad_request)
-        expect(json['errors'][0]['detail']).to match(/found unpermitted parameter: :service_offering_ref/)
+        expect(first_error_detail).to match(/found unpermitted parameter: :service_offering_ref/)
       end
     end
 

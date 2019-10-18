@@ -1,7 +1,7 @@
 describe 'Group Seed API' do
   let(:tenant_id) { create(:tenant).id }
   let(:api_instance) { double }
-  let(:rbac_seed) { instance_double(RBAC::Seed, :process => true) }
+  let(:rbac_seed) { instance_double(ManageIQ::API::Common::RBAC::Seed, :process => true) }
   let(:group1) { instance_double(RBACApiClient::GroupOut, :uuid => "123") }
   let(:org_admin) do
     false_hash = default_user_hash
@@ -35,7 +35,7 @@ describe 'Group Seed API' do
       end
       before do
         allow(api_instance).to receive(:list_group).with(group1.uuid).and_return(catalog_admin.to_json)
-        allow(RBAC::Seed).to receive(:new).and_return(rbac_seed)
+        allow(ManageIQ::API::Common::RBAC::Seed).to receive(:new).and_return(rbac_seed)
         stub_request(:get, "http://localhost/api/rbac/v1/groups/")
           .to_return(:status  => 200,
                      :body    => catalog_admin.to_json,
@@ -79,7 +79,7 @@ describe 'Group Seed API' do
       end
       before do
         allow(api_instance).to receive(:list_group).with(group1.uuid).and_return(catalog_admin.to_json)
-        allow(RBAC::Seed).to receive(:new).and_return(rbac_seed)
+        allow(ManageIQ::API::Common::RBAC::Seed).to receive(:new).and_return(rbac_seed)
         stub_request(:get, "http://localhost/api/rbac/v1/groups/")
           .to_return(:status  => 200,
                      :body    => catalog_admin.to_json,
