@@ -449,4 +449,17 @@ describe 'Portfolios API' do
       expect(json["data"].first["name"]).to eq "test_tag"
     end
   end
+
+  context "POST /portfolios/{id}/tag" do
+    let(:name) { 'Gnocchi' }
+    let(:params) do
+      {:name => name}
+    end
+
+    it "add tags for the portfolio" do
+      post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => params
+      expect(json['name']).to eq(name)
+      expect(response).to have_http_status(200)
+    end
+  end
 end

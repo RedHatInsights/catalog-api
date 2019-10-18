@@ -48,6 +48,7 @@ Rails.application.routes.draw do
         resources :portfolio_items,       :only => [:index]
         post :copy, :to => "portfolios#copy"
         post :undelete, :to => "portfolios#restore"
+        post :tags, :to => "portfolios#create_tags"
         get :icon, :to => 'icons#raw_icon'
         resources :tags, :only => [:index]
       end
@@ -57,6 +58,7 @@ Rails.application.routes.draw do
         get :icon, :to => 'icons#raw_icon'
         get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
+        post :tags, :to => "portfolio_items#create_tags"
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
         resources :tags, :only => [:index]
       end
