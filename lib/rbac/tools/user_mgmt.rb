@@ -24,7 +24,7 @@ module RBAC
 
       def get_group_uuid
         match = ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-          ManageIQ::API::Common::RBAC::Service.paginate(api, :list_groups,  {}).detect do |grp|
+          ManageIQ::API::Common::RBAC::Service.paginate(api, :list_groups, {}).detect do |grp|
             @options[:group].casecmp?(grp.name)
           end
         end

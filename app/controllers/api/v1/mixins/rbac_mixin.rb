@@ -14,6 +14,7 @@ module Api
 
         def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)
           return unless ManageIQ::API::Common::RBAC::Access.enabled?
+
           access_obj = ManageIQ::API::Common::RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
           ids = access_obj.id_list
