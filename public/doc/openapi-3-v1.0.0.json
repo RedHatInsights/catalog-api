@@ -2713,7 +2713,8 @@
           "favorite": {
             "type": "boolean",
             "title": "Favorite",
-            "example": "Definition of a favorite portfolio item"
+            "example": "Definition of a favorite portfolio item",
+            "nullable": true
           },
           "name": {
             "type": "string",
@@ -2723,7 +2724,8 @@
           "description": {
             "type": "string",
             "title": "Description",
-            "example": "Description of a portfolio item"
+            "example": "Description of a portfolio item",
+            "nullable": true
           },
           "orphan": {
             "type": "boolean",
@@ -2740,22 +2742,26 @@
           "long_description": {
             "type": "string",
             "title": "Long Description",
-            "example": "The longer description of a portfolio item"
+            "example": "The longer description of a portfolio item",
+            "nullable": true
           },
           "distributor": {
             "type": "string",
             "title": "Distributor",
-            "example": "The name of the provider for this Item"
+            "example": "The name of the provider for this Item",
+            "nullable": true
           },
           "documentation_url": {
             "type": "string",
             "title": "Documentation URL",
-            "example": "The URL for documentation of the portfolio item"
+            "example": "The URL for documentation of the portfolio item",
+            "nullable": true
           },
           "support_url": {
             "type": "string",
             "title": "Support URL",
-            "example": "The URL for finding support for the portfolio item"
+            "example": "The URL for finding support for the portfolio item",
+            "nullable": true
           },
           "workflow_ref": {
             "type": "string",
