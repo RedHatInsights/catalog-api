@@ -33,7 +33,7 @@ module Group
     private
 
     def run_seeding
-      seeded = RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
+      seeded = ManageIQ::API::Common::RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
       if seeded
         RbacSeed.create!(:external_tenant => @user.tenant)
         code(200)
@@ -45,7 +45,7 @@ module Group
     end
 
     def lookup_groups
-      RBAC::Service.call(RBACApiClient::GroupApi) do |api_instance|
+      ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api_instance|
         @seeded = api_instance.list_groups
       end
     end

@@ -59,7 +59,7 @@ describe "OrderRequests", :type => :request do
 
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to eq({"error" => "Order not cancelable"}.to_json)
+        expect(first_error_detail).to match(/Order not cancelable/)
       end
     end
   end

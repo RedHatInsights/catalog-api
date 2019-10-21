@@ -2,12 +2,12 @@ describe "OrderRequests", :type => :request do
   let!(:order1) { create(:order) }
   let!(:order2) { create(:order) }
   let!(:order3) { create(:order, :owner => 'barney') }
-  let(:user_access_obj) { instance_double(RBAC::Access, :owner_scoped? => true, :accessible? => true) }
-  let(:admin_access_obj) { instance_double(RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => []) }
+  let(:user_access_obj) { instance_double(ManageIQ::API::Common::RBAC::Access, :owner_scoped? => true, :accessible? => true) }
+  let(:admin_access_obj) { instance_double(ManageIQ::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => []) }
 
   shared_examples_for "#index" do
     it "fetch all allowed orders" do
-      allow(RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
       get "/api/v1.0/orders", :headers => default_headers
 

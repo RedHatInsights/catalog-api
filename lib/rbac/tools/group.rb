@@ -5,8 +5,8 @@ module RBAC
 
       def list
         user_output
-        RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-          RBAC::Service.paginate(api, :list_groups, {}).each do |group|
+        ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+          ManageIQ::API::Common::RBAC::Service.paginate(api, :list_groups, {}).each do |group|
             list_output(group)
           end
         end
