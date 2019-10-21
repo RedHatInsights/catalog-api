@@ -12,8 +12,6 @@ module Api
       def seed
         seeded = Group::Seed.new(Tenant.scoped_tenants.find(params.require(:tenant_id))).process
         json_response(nil, seeded.status)
-      rescue Catalog::NotAuthorized => e
-        json_response({:errors => e.message }, :forbidden)
       end
     end
   end
