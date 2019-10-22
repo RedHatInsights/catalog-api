@@ -22,13 +22,17 @@ module Api
         end
 
         def rbac_scope(relation)
-          access_obj = ManageIQ::API::Common::RBAC::Access.new(relation.model.table_name, 'read').process
-          raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}" unless access_obj.accessible?
-          if access_obj.owner_scoped?
-            relation.by_owner
+          if ManageIQ::API::Common::RBAC::Roles.assigned_role?('Catalog Administrator')
+            relation
           else
-            ids = access_obj.id_list
-            ids.any? ? relation.where(:id => ids) : relation
+            access_obj = ManageIQ::API::Common::RBAC::Access.new(relation.model.table_name, 'read').process
+            raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}" unless access_obj.accessible?
+            if access_obj.owner_scoped?
+              relation.by_owner
+            else
+              ids = access_obj.id_list
+              ids.any? ? relation.where(:id => ids) : relation
+            end
           end
         end
 

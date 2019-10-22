@@ -3,11 +3,14 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1::Mixins::IndexMixin
 
-      before_action :write_access_check, :only => %i[create update destroy create_tags]
+      before_action :create_access_check, :only => %i[create]
+      before_action :update_access_check, :only => %i[update create_tags]
+      before_action :delete_access_check, :only => %i[destroy]
 
       before_action :only => [:copy] do
         resource_check('read', params.require(:portfolio_item_id))
-        permission_check('write', Portfolio)
+        permission_check('create', Portfolio)
+        permission_check('update', Portfolio)
       end
 
       def index
