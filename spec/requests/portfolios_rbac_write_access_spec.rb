@@ -15,7 +15,6 @@ describe 'Portfolios Write Access RBAC API' do
       allow(access_obj).to receive(:process).and_return(access_obj)
       post "#{api('1.0')}/portfolios", :headers => default_headers, :params => valid_attributes
 
-
       expect(response).to have_http_status(:ok)
     end
 

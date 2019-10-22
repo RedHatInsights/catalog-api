@@ -32,7 +32,7 @@ describe 'Portfolios Read Access RBAC API' do
       it 'all portfolios' do
         get "#{api('1.0')}/portfolios", :headers => default_headers
         expect(response).to have_http_status(:ok)
-        expect(json['data'].collect{|x| x['id'] }).to match_array([portfolio1.id.to_s, portfolio2.id.to_s])
+        expect(json['data'].collect { |x| x['id'] }).to match_array([portfolio1.id.to_s, portfolio2.id.to_s])
       end
     end
 

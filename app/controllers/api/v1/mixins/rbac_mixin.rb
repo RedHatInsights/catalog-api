@@ -44,6 +44,7 @@ module Api
         def access_id_list(verb, klass)
           access_obj = ManageIQ::API::Common::RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
+
           access_obj.id_list
         end
       end
