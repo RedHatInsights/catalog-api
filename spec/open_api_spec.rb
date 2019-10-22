@@ -99,7 +99,7 @@ describe "OpenAPI stuff" do
   describe "Model serialization" do
     context "v1.0" do
       ActiveRecord::Base.connection.tables.each do |table|
-        next if %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags images icons].include?(table)
+        next if %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags images icons service_plans].include?(table)
 
         model_name = table.singularize.camelize
         model = model_name.constantize
