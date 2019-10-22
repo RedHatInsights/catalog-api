@@ -10,7 +10,7 @@ describe 'Portfolios RBAC API' do
 
   describe "GET /portfolios" do
     before do
-      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with('Catalog Administrator').and_return(false)
+      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
     end
     it 'returns status code 200' do
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)

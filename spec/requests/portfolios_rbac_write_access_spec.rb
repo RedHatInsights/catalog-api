@@ -9,7 +9,7 @@ describe 'Portfolios Write Access RBAC API' do
 
   describe "POST /portfolios" do
     it 'creates a portfolio' do
-      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with('Catalog Administrator').and_return(false)
+      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
@@ -20,7 +20,7 @@ describe 'Portfolios Write Access RBAC API' do
 
     it 'returns status code 403' do
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(block_access_obj)
-      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with('Catalog Administrator').and_return(false)
+      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(block_access_obj)
       allow(block_access_obj).to receive(:process).and_return(block_access_obj)
       post "#{api('1.0')}/portfolios", :headers => default_headers, :params => valid_attributes
@@ -35,7 +35,7 @@ describe 'Portfolios Write Access RBAC API' do
     before do
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
-      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with('Catalog Administrator').and_return(false)
+      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(access_obj).to receive(:process).and_return(access_obj)
     end
 

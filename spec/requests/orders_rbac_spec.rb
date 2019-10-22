@@ -8,7 +8,7 @@ describe "OrderRequests", :type => :request do
 
   shared_examples_for "#index" do
     it "fetch all allowed orders" do
-      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with('Catalog Administrator').and_return(is_admin)
+      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(is_admin)
       if access_obj
         allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)

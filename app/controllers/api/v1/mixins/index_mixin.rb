@@ -22,7 +22,7 @@ module Api
         end
 
         def rbac_scope(relation)
-          if ManageIQ::API::Common::RBAC::Roles.assigned_role?('Catalog Administrator')
+          if catalog_administrator?
             relation
           else
             access_relation(relation)

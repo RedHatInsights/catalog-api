@@ -3,6 +3,7 @@ module Api
     module Mixins
       module RBACMixin
         VALID_RESOURCE_VERBS = %w[create read update delete order].freeze
+        ADMINISTRATOR_ROLE_NAME = 'Catalog Administrator'.freeze
 
         def update_access_check
           resource_check('update')
@@ -22,7 +23,7 @@ module Api
 
         def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)
           return unless ManageIQ::API::Common::RBAC::Access.enabled?
-          return if ManageIQ::API::Common::RBAC::Roles.assigned_role?('Catalog Administrator')
+          return if catalog_administrator?
 
           ids = access_id_list(verb, klass)
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.any? && ids.exclude?(id)
@@ -39,6 +40,10 @@ module Api
           return unless ManageIQ::API::Common::RBAC::Access.enabled?
 
           raise Catalog::NotAuthorized unless ManageIQ::API::Common::RBAC::Roles.assigned_role?(role)
+        end
+
+        def catalog_administrator?
+          ManageIQ::API::Common::RBAC::Roles.assigned_role?(ADMINISTRATOR_ROLE_NAME)
         end
 
         def access_id_list(verb, klass)
