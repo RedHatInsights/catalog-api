@@ -11,7 +11,8 @@ describe 'Group Seed API' do
   let(:response_headers) { {"Content-Type" => 'application/json'} }
   let(:data) do
     [
-      { :name        => "Catalog Administrators",
+      { :uuid        => "some-random-uuid",
+        :name        => "Catalog Administrators",
         :description => "Catalog Administrators have complete access to all objects in the Catalog Service." },
       { :name        => "Catalog Users",
         :description => "Catalog Users have limited access and can only order portfolios." }
@@ -30,16 +31,28 @@ describe 'Group Seed API' do
 
   describe 'POST /tenants/:id/seed' do
     context "when the group was previously not seeded" do
-      let(:catalog_admin) do
+      let(:no_groups) do
         { :data => [], :meta => { :count => 0 } }
       end
+      let(:principals) { {:principals => [{:username => default_username}]} }
+
       before do
         allow(api_instance).to receive(:list_group).with(group1.uuid).and_return(catalog_admin.to_json)
         allow(ManageIQ::API::Common::RBAC::Seed).to receive(:new).and_return(rbac_seed)
+
         stub_request(:get, "http://localhost/api/rbac/v1/groups/")
+          .to_return(:status  => 200,
+                     :body    => no_groups.to_json,
+                     :headers => response_headers)
+
+        stub_request(:get, "http://localhost/api/rbac/v1/groups/?limit=10&name=Catalog%20Administrators&offset=0")
           .to_return(:status  => 200,
                      :body    => catalog_admin.to_json,
                      :headers => response_headers)
+
+        stub_request(:post, "http://localhost/api/rbac/v1/groups/some-random-uuid/principals/")
+          .with(:body => principals.to_json)
+          .to_return(:status => 200, :body => "", :headers => response_headers)
       end
       before { post "#{api}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
 
@@ -47,8 +60,16 @@ describe 'Group Seed API' do
         expect(response).to have_http_status(200)
       end
 
+      it 'calls out to the groups api twice' do
+        expect(a_request(:get, /rbac\/v1\/groups/)).to have_been_made.twice
+      end
+
       it 'account number is populated in the RbacSeed table' do
         expect(RbacSeed.find_by(:external_tenant => org_admin['identity']['account_number'])).to be_truthy
+      end
+
+      it 'adds the user to the catalog administrators group' do
+        expect(a_request(:post, "http://localhost/api/rbac/v1/groups/some-random-uuid/principals/")).to have_been_made.once
       end
     end
 
@@ -70,6 +91,14 @@ describe 'Group Seed API' do
 
       it 'account number is in RbacSeed table' do
         expect(RbacSeed.seeded(ManageIQ::API::Common::Request.current.user)).to be_truthy
+      end
+
+      it 'gets the current list of groups' do
+        expect(a_request(:get, "http://localhost/api/rbac/v1/groups/")).to have_been_made.once
+      end
+
+      it 'does not add the user to catalog administrators' do
+        expect(a_request(:post, "http://localhost/api/rbac/v1/groups/some-random-uuid/principals/")).not_to have_been_made
       end
     end
 
