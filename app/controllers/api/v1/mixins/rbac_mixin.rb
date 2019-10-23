@@ -18,7 +18,7 @@ module Api
         end
 
         def delete_access_check
-          permission_check('create')
+          permission_check('delete')
         end
 
         def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)

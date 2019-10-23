@@ -7,6 +7,39 @@ describe 'Portfolios RBAC API' do
   let(:block_access_obj) { instance_double(ManageIQ::API::Common::RBAC::Access, :accessible? => false) }
   let(:share_resource) { instance_double(ManageIQ::API::Common::RBAC::ShareResource) }
   let(:unshare_resource) { instance_double(ManageIQ::API::Common::RBAC::UnshareResource) }
+  let(:params) { {:name => 'Demo', :description => 'Desc 1' } }
+
+  describe "POST /portfolios" do
+    it "success" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
+      allow(access_obj).to receive(:process).and_return(access_obj)
+      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => params
+      expect(response).to have_http_status(200)
+    end
+
+    it "unauthorized" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(block_access_obj)
+      allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => params
+      expect(response).to have_http_status(403)
+    end
+  end
+
+  describe "DELETE /portfolios/{id}" do
+    it "success" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(access_obj)
+      allow(access_obj).to receive(:process).and_return(access_obj)
+      delete "#{api("1.0")}/portfolios/#{portfolio1.id}", :headers => default_headers
+      expect(response).to have_http_status(200)
+    end
+
+    it "unauthorized" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(block_access_obj)
+      allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+      delete "#{api("1.0")}/portfolios/#{portfolio1.id}", :headers => default_headers
+      expect(response).to have_http_status(403)
+    end
+  end
 
   describe "GET /portfolios" do
     before do
