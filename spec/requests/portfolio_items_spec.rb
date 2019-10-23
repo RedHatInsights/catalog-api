@@ -14,6 +14,9 @@ describe "PortfolioItemRequests", :type => :request do
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
                             :service_offering_source_ref => service_offering_source_ref,
+                            :description                 => "default description",
+                            :long_description            => "longer than description",
+                            :distributor                 => "Distributor CO",
                             :portfolio_id                => portfolio_id)
   end
   let(:portfolio_item_id)    { portfolio_item.id.to_s }
@@ -289,10 +292,10 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it 'updates the field that is null' do
-        expect(json["workflow_ref"]).to eq nullable_attributes[:workflow_ref]
-        expect(json["description"]).to eq nullable_attributes[:description]
-        expect(json["distributor"]).to eq nullable_attributes[:distributor]
-        expect(json["long_description"]).to eq nullable_attributes[:long_description]
+        expect(json["workflow_ref"]).to be_nil
+        expect(json["description"]).to be_nil
+        expect(json["distributor"]).to be_nil
+        expect(json["long_description"]).to be_nil
       end
     end
 

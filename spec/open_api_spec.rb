@@ -1,5 +1,5 @@
 describe "OpenAPI stuff" do
-  SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags images icons].freeze
+  SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags images icons service_plans].freeze
   let(:rails_routes) do
     Rails.application.routes.routes.each_with_object([]) do |route, array|
       r = ActionDispatch::Routing::RouteWrapper.new(route)
@@ -90,27 +90,31 @@ describe "OpenAPI stuff" do
     end
   end
 
-  describe "Parser Validatable attributes" do
+  describe "Openapi schema attributes" do
     PARSER_ATTRS = %w[readOnly nullable enum].freeze
     context "correctly configured" do
       ActiveRecord::Base.connection.tables.each do |table|
         next if SKIP_TABLES.include?(table)
 
         model_name = table.singularize.camelize
-        model = model_name.constantize
         doc = Api::Docs["1.0"].definitions
         doc[model_name].properties.keys.each do |attr|
           it "The JSON Schema #{model_name} #{attr} includes valid #{PARSER_ATTRS} types for #{doc[model_name].properties[attr]}" do
-            if model.validators_on(attr.to_sym).present? && !doc[model_name].key?("required")
+            # If there is a validator on the Activerecord model and the schema does not include the
+            #   'required' key
+            if model_name.constantize.validators_on(attr.to_sym).present? && !doc[model_name].key?("required")
               expect(doc[model_name].properties[attr].keys & PARSER_ATTRS).not_to include(attr)
+            # If there is a 'required' key on the schema
             elsif doc[model_name].key?("required")
               if doc[model_name]["required"].include?(attr)
-                expect(attr && doc[model_name]["required"]).to include(attr)
+                expect([attr] & doc[model_name]["required"]).to include(attr)
               else
-                expect(attr && doc[model_name]["required"]).not_to include(attr)
+                expect([attr] & doc[model_name]["required"]).not_to include(attr)
               end
+            # If we find the 'boolean' type
             elsif doc[model_name].properties[attr]['type'] == 'boolean'
               expect(doc[model_name].properties[attr].keys).not_to include(PARSER_ATTRS)
+            # Checking all the rest for PARSER_ATTRS
             else
               expect(doc[model_name].properties[attr].keys & PARSER_ATTRS).not_to be_empty
             end
