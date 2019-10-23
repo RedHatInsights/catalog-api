@@ -279,7 +279,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     context "when passing in nullable attributes" do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil,  :workflow_ref => nil} }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil, :workflow_ref => nil} }
       before do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end
