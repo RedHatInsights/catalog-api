@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_15_143325) do
+ActiveRecord::Schema.define(version: 2019_10_22_164731) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -168,6 +168,18 @@ ActiveRecord::Schema.define(version: 2019_10_15_143325) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["external_tenant"], name: "index_rbac_seeds_on_external_tenant"
+  end
+
+  create_table "service_plans", force: :cascade do |t|
+    t.jsonb "base"
+    t.jsonb "modified"
+    t.bigint "portfolio_item_id"
+    t.bigint "tenant_id"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_service_plans_on_discarded_at"
+    t.index ["tenant_id"], name: "index_service_plans_on_tenant_id"
   end
 
   create_table "tags", id: :serial, force: :cascade do |t|
