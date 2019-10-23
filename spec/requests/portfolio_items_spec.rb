@@ -279,7 +279,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     context "when passing in nullable attributes" do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil} }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil,  :workflow_ref => nil} }
       before do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end
@@ -290,6 +290,9 @@ describe "PortfolioItemRequests", :type => :request do
 
       it 'updates the field that is null' do
         expect(json["workflow_ref"]).to eq nullable_attributes[:workflow_ref]
+        expect(json["description"]).to eq nullable_attributes[:description]
+        expect(json["distributor"]).to eq nullable_attributes[:distributor]
+        expect(json["long_description"]).to eq nullable_attributes[:long_description]
       end
     end
 
