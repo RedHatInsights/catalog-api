@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_22_164731) do
+ActiveRecord::Schema.define(version: 2019_10_24_175018) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -189,7 +189,7 @@ ActiveRecord::Schema.define(version: 2019_10_22_164731) do
     t.string "namespace", default: "", null: false
     t.text "description"
     t.datetime "created_at", null: false
-    t.index ["tenant_id", "namespace", "name"], name: "index_tags_on_tenant_id_and_namespace_and_name", unique: true
+    t.index ["tenant_id", "namespace", "name", "value"], name: "index_tags_on_tenant_id_and_namespace_and_name_and_value", unique: true
   end
 
   create_table "tenants", force: :cascade do |t|
