@@ -35,7 +35,7 @@ module ActAsTaggableOn
 
               tag_params = {:name => tag_name, :tenant_id => tenant.id}
               tag_params.merge!(options)
-              tag = Tag.create(tag_params)
+              tag = Tag.find_or_create_by(tag_params)
               tagging_params = {self.class.name.underscore.to_sym => self, :tag_id => tag.id}
               public_send(self.class.tagging_relation_name).create(tagging_params)
             end
