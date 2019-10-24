@@ -577,6 +577,9 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFormat"
           }
         ],
         "responses": {
@@ -1793,6 +1796,9 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioItemID"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFormat"
           }
         ],
         "responses": {
@@ -2501,6 +2507,19 @@
         "required": true,
         "schema": {
           "type": "string"
+        }
+      },
+      "QueryFormat": {
+        "in": "query",
+        "name": "format",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "raw",
+          "enum": [
+            "json",
+            "raw"
+          ]
         }
       },
       "QueryLimit": {

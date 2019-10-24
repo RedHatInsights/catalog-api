@@ -26,10 +26,17 @@ module Api
       end
 
       def raw_icon
-        image = find_icon(params.permit(:icon_id, :portfolio_item_id, :portfolio_id)).image.decoded_image
-        send_data(image,
-                  :type        => MimeMagic.by_magic(image).type,
-                  :disposition => 'inline')
+        icon = find_icon(params.permit(:icon_id, :portfolio_item_id, :portfolio_id, :format))
+
+        case params[:format]
+        when "json"
+          render :json => icon
+        when "raw", nil # default to the raw icon
+          image = icon.image.decoded_image
+          send_data(image,
+                    :type        => MimeMagic.by_magic(image).type,
+                    :disposition => 'inline')
+        end
       rescue ActiveRecord::RecordNotFound
         Rails.logger.debug("Icon not found for params: #{params.keys.select { |key| key.end_with?("_id") }}")
         head :no_content

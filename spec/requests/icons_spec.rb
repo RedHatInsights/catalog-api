@@ -191,5 +191,23 @@ describe "IconsRequests", :type => :request do
         expect(response).to have_http_status(:no_content)
       end
     end
+
+    context "when specifying a format" do
+      it "/portfolio_items/{id}/icon?format=json returns the icon json" do
+        get "#{api}/portfolio_items/#{portfolio_item.id}/icon?format=json", :headers => default_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq "application/json"
+        expect(json["id"]).to eq portfolio_item.icons.first.id.to_s
+      end
+
+      it "/portfolios/{id}/icon?format=json returns the icon json" do
+        get "#{api}/portfolios/#{portfolio.id}/icon?format=json", :headers => default_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq "application/json"
+        expect(json["id"]).to eq portfolio.icons.first.id.to_s
+      end
+    end
   end
 end
