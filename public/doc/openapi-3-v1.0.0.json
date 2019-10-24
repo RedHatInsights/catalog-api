@@ -2585,7 +2585,8 @@
           "description": {
             "type": "string",
             "title": "Description",
-            "example": "This is a sample description for a portfolio."
+            "example": "This is a sample description for a portfolio.",
+            "nullable": true
           },
           "enabled": {
             "type": "boolean",
@@ -2721,7 +2722,8 @@
           "description": {
             "type": "string",
             "title": "Description",
-            "example": "Description of a portfolio item"
+            "example": "Description of a portfolio item",
+            "nullable": true
           },
           "orphan": {
             "type": "boolean",
@@ -2738,22 +2740,26 @@
           "long_description": {
             "type": "string",
             "title": "Long Description",
-            "example": "The longer description of a portfolio item"
+            "example": "The longer description of a portfolio item",
+            "nullable": true
           },
           "distributor": {
             "type": "string",
             "title": "Distributor",
-            "example": "The name of the provider for this Item"
+            "example": "The name of the provider for this Item",
+            "nullable": true
           },
           "documentation_url": {
             "type": "string",
             "title": "Documentation URL",
-            "example": "The URL for documentation of the portfolio item"
+            "example": "The URL for documentation of the portfolio item",
+            "nullable": true
           },
           "support_url": {
             "type": "string",
             "title": "Support URL",
-            "example": "The URL for finding support for the portfolio item"
+            "example": "The URL for finding support for the portfolio item",
+            "nullable": true
           },
           "workflow_ref": {
             "type": "string",
@@ -2829,18 +2835,21 @@
           "created_at": {
             "type": "string",
             "format": "date-time",
-            "title": "Created at"
+            "title": "Created at",
+            "readOnly": true
           },
           "order_request_sent_at": {
             "type": "string",
             "format": "date-time",
             "title": "Order request sent at",
-            "description": "The time at which the order request was sent to the Topology Service"
+            "description": "The time at which the order request was sent to the Topology Service",
+            "nullable": true
           },
           "completed_at": {
             "type": "string",
             "format": "date-time",
-            "title": "Completed at"
+            "title": "Completed at",
+            "readOnly": true
           },
           "owner": {
             "type": "string",
