@@ -767,15 +767,6 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/TenantID"
-          },
-          {
-            "$ref": "#/components/parameters/QueryLimit"
-          },
-          {
-            "$ref": "#/components/parameters/QueryOffset"
-          },
-          {
-            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
