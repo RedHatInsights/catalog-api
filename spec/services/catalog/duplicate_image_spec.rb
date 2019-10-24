@@ -19,7 +19,7 @@ describe Catalog::DuplicateImage, :type => :service do
 
   describe "#process" do
     let!(:base_image) { Image.create(:content => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.#{extension}")))) }
-    let(:new_image) { Image.create(:content => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", filename)))) }
+    let(:new_image) { Image.new(:content => Base64.encode64(File.read(Rails.root.join("spec", "support", "images", filename)))) }
 
     context "PNG Images" do
       let(:extension) { "png" }
