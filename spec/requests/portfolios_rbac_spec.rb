@@ -7,8 +7,44 @@ describe 'Portfolios RBAC API' do
   let(:block_access_obj) { instance_double(ManageIQ::API::Common::RBAC::Access, :accessible? => false) }
   let(:share_resource) { instance_double(ManageIQ::API::Common::RBAC::ShareResource) }
   let(:unshare_resource) { instance_double(ManageIQ::API::Common::RBAC::UnshareResource) }
+  let(:params) { {:name => 'Demo', :description => 'Desc 1' } }
+
+  describe "POST /portfolios" do
+    it "success" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
+      allow(access_obj).to receive(:process).and_return(access_obj)
+      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => params
+      expect(response).to have_http_status(200)
+    end
+
+    it "unauthorized" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(block_access_obj)
+      allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => params
+      expect(response).to have_http_status(403)
+    end
+  end
+
+  describe "DELETE /portfolios/{id}" do
+    it "success" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(access_obj)
+      allow(access_obj).to receive(:process).and_return(access_obj)
+      delete "#{api("1.0")}/portfolios/#{portfolio1.id}", :headers => default_headers
+      expect(response).to have_http_status(200)
+    end
+
+    it "unauthorized" do
+      allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(block_access_obj)
+      allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+      delete "#{api("1.0")}/portfolios/#{portfolio1.id}", :headers => default_headers
+      expect(response).to have_http_status(403)
+    end
+  end
 
   describe "GET /portfolios" do
+    before do
+      allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
+    end
     it 'returns status code 200' do
       allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
@@ -46,35 +82,35 @@ describe 'Portfolios RBAC API' do
       end
     end
 
-    context "when user does not have RBAC write portfolios access" do
+    context "when user does not have RBAC update portfolios access" do
       before do
         allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
+        allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
 
-        allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'write').and_return(block_access_obj)
+        allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(block_access_obj)
         allow(block_access_obj).to receive(:process).and_return(block_access_obj)
       end
 
       it 'returns a 403' do
         post "#{api("1.0")}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
-
         expect(response).to have_http_status(403)
       end
     end
 
-    context "when user has RBAC write portfolios access" do
+    context "when user has RBAC update portfolios access" do
       let(:portfolio_access_obj) { instance_double(ManageIQ::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => true, :id_list => [portfolio1.id.to_s]) }
       before do
         allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
+        allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
 
-        allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'write').and_return(portfolio_access_obj)
+        allow(ManageIQ::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(portfolio_access_obj)
         allow(portfolio_access_obj).to receive(:process).and_return(portfolio_access_obj)
       end
 
       it 'returns a 200' do
         post "#{api("1.0")}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
-
         expect(response).to have_http_status(:ok)
       end
     end
@@ -108,7 +144,7 @@ describe 'Portfolios RBAC API' do
 
     describe "#share" do
       it "goes through validation" do
-        permissions = ["catalog:portfolios:write"]
+        permissions = ["catalog:portfolios:update"]
         post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => %w[1]
@@ -120,7 +156,7 @@ describe 'Portfolios RBAC API' do
 
     describe "#unshare" do
       it "goes through validation" do
-        permissions = ["catalog:portfolios:write"]
+        permissions = ["catalog:portfolios:update"]
         post "#{api}/portfolios/#{portfolio1.id}/unshare", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => %w[1]
