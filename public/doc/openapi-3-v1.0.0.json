@@ -1353,7 +1353,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully added an item to order"
+            "description": "Successfully added an item to order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderItem"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
