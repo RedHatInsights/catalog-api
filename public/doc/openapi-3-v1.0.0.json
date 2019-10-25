@@ -995,10 +995,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ServicePlan"
-                  }
+                  "$ref": "#/components/schemas/ServicePlansCollection"
                 }
               }
             }
@@ -2398,6 +2395,91 @@
           }
         }
       }
+    },
+    "/service_plans/{id}": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Show Service Plan",
+        "operationId": "showServicePlan",
+        "description": "Returns the specified Service Plan",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicePlan"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
+    },
+    "/service_plans/{id}/base": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Show Service Plan Base Schema",
+        "operationId": "showServicePlanBase",
+        "description": "Returns the specified Service Plan's base schema",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan Base Schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "schema": {
+                      "title": "example schema",
+                      "fields": [
+                        {
+                          "name": "example field"
+                        },
+                        {
+                          "label": "example field"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -3077,34 +3159,27 @@
       "ServicePlan": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "description": "The name of the service plan.",
+          "base": {
+            "type": "object",
+            "title": "base",
+            "description": "The base schema imported from Topology",
             "readOnly": true
           },
-          "description": {
-            "type": "string",
-            "title": "Description",
-            "description": "The service plan description.",
-            "readOnly": true
+          "modified": {
+            "type": "object",
+            "title": "modified",
+            "description": "The modified schema for Catalog"
           },
-          "service_offering_id": {
+          "portfolio_item_id": {
             "type": "string",
-            "title": "Service Offering ID",
-            "description": "The reference ID of the service offering",
+            "title": "Portfolio Item ID",
+            "description": "The reference ID of the Portfolio Item",
             "readOnly": true
           },
           "id": {
             "type": "string",
             "title": "ID",
             "description": "The unique identifier for this service plan.",
-            "readOnly": true
-          },
-          "create_json_schema": {
-            "type": "object",
-            "title": "JSON Schema",
-            "description": "JSON schema for the object.",
             "readOnly": true
           }
         }
@@ -3224,6 +3299,23 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Tenant"
+            }
+          }
+        }
+      },
+      "ServicePlansCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServicePlan"
             }
           }
         }
