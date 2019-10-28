@@ -437,29 +437,53 @@ describe 'Portfolios API' do
     end
   end
 
-  context "GET /portfolios/{id}/tags" do
-    before do
-      portfolio.tag_add("test_tag")
+  context "tags" do
+    let(:tag_name) { 'Gnocchi' }
+    let(:tag_ns) { 'Charkie' }
+    let(:tag_value) { 'Hundley' }
+    let(:tag_params) do
+      { :name      => tag_name,
+        :namespace => tag_ns,
+        :value     => tag_value
+      }
     end
 
-    it "returns the tags for the portfolio" do
-      get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
-
-      expect(json["meta"]["count"]).to eq 1
-      expect(json["data"].first["name"]).to eq "test_tag"
-    end
-  end
-
-  context "POST /portfolios/{id}/tag" do
-    let(:name) { 'Gnocchi' }
-    let(:params) do
-      {:name => name}
+    shared_examples_for "#tag_add_test" do
+      it "add tags for the portfolio" do
+        post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => tag_params
+        expect(json['name']).to eq(tag_params[:name])
+        expect(response).to have_http_status(200)
+      end
     end
 
-    it "add tags for the portfolio" do
-      post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => params
-      expect(json['name']).to eq(name)
-      expect(response).to have_http_status(200)
+    context "GET /portfolios/{id}/tags" do
+      before do
+        portfolio.tag_add("test_tag")
+      end
+
+      it "returns the tags for the portfolio" do
+        get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["name"]).to eq "test_tag"
+      end
+    end
+
+    context "POST /portfolios/{id}/tag" do
+      context 'no namespace and value' do
+        let(:tag_params) { { :name => tag_name } }
+        it_behaves_like "#tag_add_test"
+      end
+
+      context 'no value' do
+        let(:tag_params) { { :name => tag_name, :namespace => tag_ns } }
+        it_behaves_like "#tag_add_test"
+      end
+
+      context 'all in' do
+        let(:tag_params) { { :name => tag_name, :namespace => tag_ns, :value => tag_value } }
+        it_behaves_like "#tag_add_test"
+      end
     end
   end
 end
