@@ -32,14 +32,15 @@ module Catalog
 
     config.autoload_paths << Rails.root.join('lib').to_s
 
-    config.exceptions_app = routes
-
     ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
       "ActionController::ParameterMissing" => :unprocessable_entity,
       "Catalog::InvalidParameter"          => :unprocessable_entity,
       "Catalog::NotAuthorized"             => :forbidden,
       "Catalog::OrderUncancelable"         => :unprocessable_entity,
       "Catalog::TopologyError"             => :service_unavailable,
+      "Catalog::ApprovalError"             => :service_unavailable,
+      "Catalog::SourcesError"              => :service_unavailable,
+      "Catalog::RBACError"                 => :service_unavailable,
       "Discard::DiscardError"              => :unprocessable_entity
     )
 

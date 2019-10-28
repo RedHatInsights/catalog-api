@@ -6,12 +6,15 @@ module ServiceOfferingHelper
       :description              => "test description",
       :source_ref               => '123',
       :source_id                => '45',
-      :display_name             => "test display name",
       :long_description         => "test long description",
       :documentation_url        => "http://test.docs.io",
       :support_url              => "800-555-TEST",
       :distributor              => "Red Hat Inc.",
-      :service_offering_icon_id => "998"
+      :service_offering_icon_id => "998",
+      :extra                    => {
+        :type           => "job_template",
+        :survey_enabled => true
+      }
     )
   end
 

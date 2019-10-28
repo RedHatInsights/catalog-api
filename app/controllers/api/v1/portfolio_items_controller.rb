@@ -3,29 +3,34 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1::Mixins::IndexMixin
 
-      before_action :write_access_check, :only => %i[create update destroy]
+      before_action :create_access_check, :only => %i[create]
+      before_action :update_access_check, :only => %i[update create_tags]
+      before_action :delete_access_check, :only => %i[destroy]
 
       before_action :only => [:copy] do
         resource_check('read', params.require(:portfolio_item_id))
-        permission_check('write', Portfolio)
+        permission_check('create', Portfolio)
+        permission_check('update', Portfolio)
       end
 
       def index
         if params[:portfolio_id]
           collection(Portfolio.find(params.require(:portfolio_id)).portfolio_items)
+        elsif params[:tag_id]
+          collection(Tag.find(params.require(:tag_id)).portfolio_items)
         else
           collection(PortfolioItem.all)
         end
       end
 
       def create
-        so = ServiceOffering::AddToPortfolioItem.new(portfolio_item_params)
+        so = ServiceOffering::AddToPortfolioItem.new(params_for_create)
         render :json => so.process.item
       end
 
       def update
         portfolio_item = PortfolioItem.find(params.require(:id))
-        portfolio_item.update!(portfolio_item_patch_params)
+        portfolio_item.update!(params_for_update)
 
         render :json => portfolio_item
       end
@@ -58,22 +63,13 @@ module Api
         render :json => { :next_name => svc.process.next_name }
       end
 
-      def add_icon_to_portfolio_item
-        icon = Icon.find(params.require(:icon_id))
+      def create_tags
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        render :json => portfolio_item.icons << icon
+        portfolio_item.tag_add(params[:name])
+        render :json => portfolio_item.tags.where(:name => params[:name]).first
       end
 
       private
-
-      def portfolio_item_params
-        params.require(:service_offering_ref)
-        params.permit(:service_offering_ref, :workflow_ref)
-      end
-
-      def portfolio_item_patch_params
-        params.permit(:favorite, :name, :description, :orphan, :state, :display_name, :long_description, :distributor, :documentation_url, :support_url, :workflow_ref, :id, :service_offering_source_ref)
-      end
 
       def portfolio_copy_params
         params.permit(:portfolio_item_id, :portfolio_id, :portfolio_item_name)

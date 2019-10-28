@@ -28,7 +28,7 @@ describe "ProgressMessageRequests", :type => :request do
 
           expect(response.content_type).to eq("application/json")
           expect(response).to have_http_status(:not_found)
-          expect(JSON.parse(response.body)['message']).to eq("Not Found")
+          expect(first_error_detail).to match(/Couldn't find OrderItem/)
         end
       end
     end

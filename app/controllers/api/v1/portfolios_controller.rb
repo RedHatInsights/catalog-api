@@ -4,16 +4,23 @@ module Api
       include Api::V1::Mixins::IndexMixin
       include Api::V1::Mixins::ValidationMixin
 
-      before_action :write_access_check, :only => %i(add_portfolio_item_to_portfolio create update destroy)
-      before_action :read_access_check, :only => %i(show)
+      before_action :update_access_check, :only => %i[add_portfolio_item_to_portfolio update create_tags]
+      before_action :create_access_check, :only => %i[create]
+      before_action :delete_access_check, :only => %i[destroy]
+      before_action :read_access_check, :only => %i[show]
 
       before_action :only => %i[copy] do
         resource_check('read', params.require(:portfolio_id))
-        permission_check('write')
+        permission_check('create')
+        permission_check('update')
       end
 
       def index
-        collection(Portfolio.all)
+        if params[:tag_id]
+          collection(Tag.find(params.require(:tag_id)).portfolios)
+        else
+          collection(Portfolio.all)
+        end
       end
 
       def add_portfolio_item_to_portfolio
@@ -64,7 +71,7 @@ module Api
                    :resource_ids  => [portfolio.id.to_s],
                    :permissions   => params[:permissions],
                    :group_uuids   => params.require(:group_uuids)}
-        RBAC::ShareResource.new(options).process
+        ManageIQ::API::Common::RBAC::ShareResource.new(options).process
         head :no_content
       end
 
@@ -75,7 +82,7 @@ module Api
                    :resource_ids  => [portfolio.id.to_s],
                    :permissions   => params[:permissions],
                    :group_uuids   => params[:group_uuids] || []}
-        RBAC::UnshareResource.new(options).process
+        ManageIQ::API::Common::RBAC::UnshareResource.new(options).process
         head :no_content
       end
 
@@ -84,13 +91,19 @@ module Api
         options = {:app_name      => ENV['APP_NAME'],
                    :resource_name => 'portfolios',
                    :resource_id   => portfolio.id.to_s}
-        obj = RBAC::QuerySharedResource.new(options).process
+        obj = ManageIQ::API::Common::RBAC::QuerySharedResource.new(options).process
         render :json => obj.share_info
       end
 
       def copy
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio
+      end
+
+      def create_tags
+        portfolio = Portfolio.find(params.require(:portfolio_id))
+        portfolio.tag_add(params[:name])
+        render :json => portfolio.tags.where(:name => params[:name]).first
       end
 
       private

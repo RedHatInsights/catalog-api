@@ -566,6 +566,129 @@
         }
       }
     },
+    "/portfolios/{portfolio_id}/icon": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Fetches the specified portfolio's icon image",
+        "operationId": "showPortfolioIcon",
+        "description": "Fetch the specified portfolio's icon image.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PortfolioID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio Icon",
+            "content": {
+              "image/svg+xml": {
+                "example": "<svg rel=\"stylesheet\">thing</svg>"
+              }
+            }
+          },
+          "204": {
+            "description": "No icon present on Portfolio"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/portfolios/{id}/tags": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "List Tags for Portfolio",
+        "operationId": "listPortfolioTags",
+        "description": "Returns an array of Tag objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tags collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Not Found."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Add Tag for Portfolio",
+        "operationId": "addPortfolioTag",
+        "description": "Adds a single tag to Portfolio object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagItem"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/tenants": {
       "get": {
         "tags": [
@@ -644,15 +767,6 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/TenantID"
-          },
-          {
-            "$ref": "#/components/parameters/QueryLimit"
-          },
-          {
-            "$ref": "#/components/parameters/QueryOffset"
-          },
-          {
-            "$ref": "#/components/parameters/QueryFilter"
           }
         ],
         "responses": {
@@ -722,7 +836,6 @@
                   "$ref": "#/components/schemas/PortfolioItem",
                   "required": [
                     "name",
-                    "display_name",
                     "service_offering_source_ref"
                   ]
                 }
@@ -992,6 +1105,95 @@
         }
       }
     },
+    "/portfolio_items/{id}/tags": {
+      "get": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "List Tags for Portfolio Items",
+        "operationId": "listPortfolioItemTags",
+        "description": "Returns an array of Tag objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tags collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Item Not Found."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Add Tag for Portfolio",
+        "operationId": "addPortfolioItemTag",
+        "description": "Adds a single tag to Portfolio object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagItem"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/orders": {
       "get": {
         "tags": [
@@ -1142,7 +1344,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully added an item to order"
+            "description": "Successfully added an item to order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderItem"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -1603,50 +1812,6 @@
             "$ref": "#/components/responses/Forbidden"
           }
         }
-      },
-      "post": {
-        "tags": [
-          "PortfolioItem"
-        ],
-        "summary": "Add an Icon to a Portfolio Item",
-        "operationId": "addIconToPortfolioItem",
-        "description": "Add an Icon to a Portfolio Item",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/PortfolioItemID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The added Icon",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon not found"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddIcon"
-              }
-            }
-          },
-          "required": true
-        }
       }
     },
     "/portfolio_items/{portfolio_item_id}/copy": {
@@ -1878,51 +2043,6 @@
         }
       }
     },
-    "/icons/{id}/override": {
-      "post": {
-        "tags": [
-          "Icon"
-        ],
-        "summary": "Override the specified Portfolio Item's Icon",
-        "operationId": "overrideIcon",
-        "description": "Override the specified Portfolio Item's Icon",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The new Icon",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon Not Found."
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIcon"
-              }
-            }
-          }
-        }
-      }
-    },
     "/portfolio_items/{portfolio_item_id}/next_name": {
       "get": {
         "tags": [
@@ -2121,6 +2241,160 @@
           }
         }
       }
+    },
+    "/tags": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "List Tags",
+        "description": "List Tags",
+        "operationId": "listTags",
+        "responses": {
+          "200": {
+            "description": "Index of Tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/tags/{id}": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Show Tag",
+        "operationId": "showTag",
+        "description": "Show a specific Tag",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requestesd Tag",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tag Not Found."
+          }
+        }
+      }
+    },
+    "/tags/{id}/portfolios": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "List Portfolios for Tag",
+        "operationId": "listTagPortfolios",
+        "description": "Returns an array of Portfolio objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfoliosCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tag Not Found."
+          }
+        }
+      }
+    },
+    "/tags/{id}/portfolio_items": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "List Portfolio Items for Tag",
+        "operationId": "listTagPortfolioItems",
+        "description": "Returns an array of Portfolio Item objects",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryLimit"
+          },
+          {
+            "$ref": "#/components/parameters/QueryOffset"
+          },
+          {
+            "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio Item collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioItemsCollection"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Tag Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -2311,7 +2585,8 @@
           "description": {
             "type": "string",
             "title": "Description",
-            "example": "This is a sample description for a portfolio."
+            "example": "This is a sample description for a portfolio.",
+            "nullable": true
           },
           "enabled": {
             "type": "boolean",
@@ -2412,17 +2687,6 @@
           }
         }
       },
-      "AddIcon": {
-        "type": "object",
-        "properties": {
-          "icon_id": {
-            "type": "string",
-            "title": "Icon Id",
-            "example": "100",
-            "description": "This is the ID of the icon object."
-          }
-        }
-      },
       "Setting": {
         "type": "object",
         "properties": {
@@ -2435,17 +2699,6 @@
             "type": "string",
             "title": "Setting Value",
             "example": 2
-          }
-        }
-      },
-      "OverrideIcon": {
-        "type": "object",
-        "properties": {
-          "portfolio_item_id": {
-            "type": "string",
-            "title": "Portfolio Item ID",
-            "example": "100",
-            "description": "The ID of the portfolio which the icon will override"
           }
         }
       },
@@ -2469,7 +2722,8 @@
           "description": {
             "type": "string",
             "title": "Description",
-            "example": "Description of a portfolio item"
+            "example": "Description of a portfolio item",
+            "nullable": true
           },
           "orphan": {
             "type": "boolean",
@@ -2483,35 +2737,29 @@
             "title": "State",
             "example": "The current state of a portfolio item"
           },
-          "display_name": {
-            "type": "string",
-            "readOnly": true,
-            "title": "Display Name",
-            "example": "The name of the portfolio item to be displayed in the UI"
-          },
           "long_description": {
             "type": "string",
-            "readOnly": true,
             "title": "Long Description",
-            "example": "The longer description of a portfolio item"
+            "example": "The longer description of a portfolio item",
+            "nullable": true
           },
           "distributor": {
             "type": "string",
-            "readOnly": true,
             "title": "Distributor",
-            "example": "The name of the provider for this Item"
+            "example": "The name of the provider for this Item",
+            "nullable": true
           },
           "documentation_url": {
             "type": "string",
-            "readOnly": true,
             "title": "Documentation URL",
-            "example": "The URL for documentation of the portfolio item"
+            "example": "The URL for documentation of the portfolio item",
+            "nullable": true
           },
           "support_url": {
             "type": "string",
-            "readOnly": true,
             "title": "Support URL",
-            "example": "The URL for finding support for the portfolio item"
+            "example": "The URL for finding support for the portfolio item",
+            "nullable": true
           },
           "workflow_ref": {
             "type": "string",
@@ -2531,6 +2779,20 @@
             "description": "The source reference this product was created from",
             "readOnly": true,
             "example": "20"
+          },
+          "service_offering_type": {
+            "type": "string",
+            "title": "Service Offering Type",
+            "description": "The service offering type stored by the Topology Service",
+            "readOnly": true,
+            "example": "job_template"
+          },
+          "portfolio_id": {
+            "type": "string",
+            "title": "Portfolio ID",
+            "description": "ID of a parent portfolio",
+            "readOnly": true,
+            "example": "1"
           },
           "created_at": {
             "type": "string",
@@ -2573,18 +2835,21 @@
           "created_at": {
             "type": "string",
             "format": "date-time",
-            "title": "Created at"
+            "title": "Created at",
+            "readOnly": true
           },
           "order_request_sent_at": {
             "type": "string",
             "format": "date-time",
             "title": "Order request sent at",
-            "description": "The time at which the order request was sent to the Topology Service"
+            "description": "The time at which the order request was sent to the Topology Service",
+            "nullable": true
           },
           "completed_at": {
             "type": "string",
             "format": "date-time",
-            "title": "Completed at"
+            "title": "Completed at",
+            "readOnly": true
           },
           "owner": {
             "type": "string",
@@ -2776,16 +3041,17 @@
             "title": "Source ID",
             "description": "The source ID for this icon",
             "readOnly": true
-          }
-        }
-      },
-      "Image": {
-        "type": "object",
-        "properties": {
-          "id": {
+          },
+          "portfolio_id": {
             "type": "string",
-            "title": "ID",
-            "description": "The unique identifier for this Service Offering Icon",
+            "title": "Portfolio ID",
+            "description": "The portfolio this icon belongs to.",
+            "readOnly": true
+          },
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "description": "The portfolio_item this icon belongs to.",
             "readOnly": true
           }
         }
@@ -3047,19 +3313,21 @@
           "permissions": {
             "type": "array",
             "title": "Name",
-            "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, write and order",
+            "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, update, delete and order",
             "items": {
               "type": "string",
               "enum": [
                 "catalog:portfolios:read",
-                "catalog:portfolios:write",
+                "catalog:portfolios:update",
+                "catalog:portfolios:delete",
                 "catalog:portfolios:order"
               ]
             },
             "minItems": 1,
             "example": [
               "catalog:portfolios:read",
-              "catalog:portfolios:write",
+              "catalog:portfolios:update",
+              "catalog:portfolios:delete",
               "catalog:portfolios:order"
             ]
           },
@@ -3088,7 +3356,8 @@
               "type": "string",
               "enum": [
                 "catalog:portfolios:read",
-                "catalog:portfolios:write",
+                "catalog:portfolios:update",
+                "catalog:portfolios:delete",
                 "catalog:portfolios:order"
               ]
             },
@@ -3114,6 +3383,76 @@
           }
         }
       },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "description": {
+            "example": "Instruction set architecture",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "example": "architecture",
+            "readOnly": true,
+            "type": "string"
+          },
+          "namespace": {
+            "example": "openshift",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TagItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "example": "architecture",
+            "readOnly": true,
+            "type": "string"
+          },
+          "namespace": {
+            "example": "openshift",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "readOnly": true,
+            "type": "string"
+          }
+        }
+      },
+      "TagsCollection": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "links": {
+            "$ref": "#/components/schemas/CollectionLinks"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        }
+      },
       "ShareInfo": {
         "type": "object",
         "properties": {
@@ -3135,7 +3474,8 @@
               "type": "string",
               "enum": [
                 "catalog:portfolios:read",
-                "catalog:portfolios:write",
+                "catalog:portfolios:update",
+                "catalog:portfolios:delete",
                 "catalog:portfolios:order"
               ]
             }

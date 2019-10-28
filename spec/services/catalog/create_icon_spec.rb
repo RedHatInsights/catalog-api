@@ -20,13 +20,9 @@ describe Catalog::CreateIcon, :type => :service do
     end
   end
 
-  describe "#process" do
-    let!(:base_image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg")))) }
-    let(:portfolio_item) { create(:portfolio_item) }
-
+  shared_examples_for "#process handling generic object" do
     context "when there is not an image record" do
       let(:image_params) { {:content => form_upload_test_image("miq_logo.svg")} }
-      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
 
       it "creates a new image record" do
         expect(subject.process.icon.image_id).to_not eq base_image.id
@@ -37,13 +33,48 @@ describe Catalog::CreateIcon, :type => :service do
 
     context "when there is an image record" do
       let(:image_params) { {:content => form_upload_test_image("ocp_logo_dupe.svg")} }
-      let(:params) { {:source_ref => "icon_ref", :source_id => "source_id", :portfolio_item => portfolio_item}.merge(image_params) }
 
       it "uses the existing record" do
         expect(subject.process.icon.image_id).to eq base_image.id
       end
 
       it_behaves_like "#process icon after being created"
+    end
+
+    context "when there is already an icon" do
+      let(:image_params) { {:content => form_upload_test_image("ocp_logo.jpg")} }
+
+      before do
+        subject.process
+        subject.process
+      end
+
+      it "discards the old icon" do
+        expect(Icon.with_discarded.first.discarded?).to be_truthy
+      end
+
+      it "only has one icon" do
+        expect(destination.icons.count).to eql 1
+      end
+    end
+  end
+
+  describe "#process" do
+    let!(:base_image) { Image.create(:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg")))) }
+    let(:params) { {:source_ref => "icon_ref", :source_id => "source_id"}.merge(image_params).merge(destination_params) }
+
+    context "when adding an icon to a portfolio item" do
+      let(:destination) { create(:portfolio_item) }
+      let(:destination_params) { {:portfolio_item_id => destination.id} }
+
+      it_behaves_like "#process handling generic object"
+    end
+
+    context "when adding an icon to a portfolio" do
+      let(:destination) { create(:portfolio) }
+      let(:destination_params) { {:portfolio_id => destination.id} }
+
+      it_behaves_like "#process handling generic object"
     end
   end
 end

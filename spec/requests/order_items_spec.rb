@@ -37,7 +37,7 @@ describe "OrderItemsRequests", :type => :request do
             get "/api/v1.0/orders/#{order_id}/order_items", :headers => default_headers
 
             expect(response.content_type).to eq("application/json")
-            expect(JSON.parse(response.body)["message"]).to eq("Not Found")
+            expect(first_error_detail).to match(/Couldn't find Order/)
             expect(response).to have_http_status(:not_found)
           end
         end

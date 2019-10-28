@@ -12,8 +12,14 @@ module Catalog
       @reference = PortfolioItem.find(@portfolio_item_id).service_offering_ref
 
       TopologicalInventory.call do |api_instance|
-        result = api_instance.list_service_offering_service_plans(@reference)
-        @items = filter_data(result.data)
+        service_offering = api_instance.show_service_offering(@reference)
+
+        if service_offering.extra[:survey_enabled]
+          result = api_instance.list_service_offering_service_plans(@reference)
+          @items = filter_data(result.data)
+        else
+          @items = filter_data
+        end
       end
 
       self
@@ -24,7 +30,7 @@ module Catalog
 
     private
 
-    def filter_data(data)
+    def filter_data(data = [])
       if data.empty?
         [read_json_schema("no_service_plan.erb")]
       else

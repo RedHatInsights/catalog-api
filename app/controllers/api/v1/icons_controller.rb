@@ -26,7 +26,7 @@ module Api
       end
 
       def raw_icon
-        image = find_icon(params.permit(:icon_id, :portfolio_item_id)).image.decoded_image
+        image = find_icon(params.permit(:icon_id, :portfolio_item_id, :portfolio_id)).image.decoded_image
         send_data(image,
                   :type        => MimeMagic.by_magic(image).type,
                   :disposition => 'inline')
@@ -35,24 +35,25 @@ module Api
         head :no_content
       end
 
-      def override_icon
-        overriden_icon = Catalog::OverrideIcon.new(params.require(:icon_id), params.require(:portfolio_item_id))
-        render :json => overriden_icon.process.icon
-      end
-
       private
 
       def icon_params
-        params.require([:content, :portfolio_item_id])
+        params.require(:content)
         icon_patch_params
       end
 
       def icon_patch_params
-        params.permit(:content, :source_ref, :source_id, :portfolio_item_id, :id)
+        params.permit(:content, :source_ref, :source_id, :portfolio_item_id, :portfolio_id, :id)
       end
 
       def find_icon(ids)
-        ids[:icon_id].present? ? Icon.find(ids[:icon_id]) : Icon.find_by!(:portfolio_item_id => ids[:portfolio_item_id])
+        if ids[:icon_id].present?
+          Icon.find(ids[:icon_id])
+        elsif ids[:portfolio_item_id].present?
+          PortfolioItem.find(ids[:portfolio_item_id]).icons&.first
+        elsif ids[:portfolio_id].present?
+          Portfolio.find(ids[:portfolio_id]).icons&.first
+        end
       end
     end
   end

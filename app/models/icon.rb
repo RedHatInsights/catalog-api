@@ -3,7 +3,7 @@ class Icon < ApplicationRecord
   include Discard::Model
   default_scope -> { kept }
 
-  belongs_to :portfolio_item
+  belongs_to :iconable, :polymorphic => true
   belongs_to :image
   validates :image_id, :presence => true
 end

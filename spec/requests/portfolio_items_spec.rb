@@ -1,7 +1,7 @@
 describe "PortfolioItemRequests", :type => :request do
   around do |example|
     bypass_rbac do
-      with_modified_env(:APPROVAL_URL => "http://localhost") { example.call }
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :APPROVAL_URL => "http://localhost") { example.call }
     end
   end
 
@@ -14,6 +14,9 @@ describe "PortfolioItemRequests", :type => :request do
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref        => service_offering_ref,
                             :service_offering_source_ref => service_offering_source_ref,
+                            :description                 => "default description",
+                            :long_description            => "longer than description",
+                            :distributor                 => "Distributor CO",
                             :portfolio_id                => portfolio_id)
   end
   let(:portfolio_item_id)    { portfolio_item.id.to_s }
@@ -31,6 +34,10 @@ describe "PortfolioItemRequests", :type => :request do
 
       it 'returns the portfolio_item we asked for' do
         expect(json["id"]).to eq portfolio_item_id
+      end
+
+      it 'portfolio item references parent portfolio' do
+        expect(json["portfolio_id"]).to eq portfolio_id
       end
     end
 
@@ -61,7 +68,7 @@ describe "PortfolioItemRequests", :type => :request do
       let(:portfolio_id) { portfolio.id + 100 }
 
       it 'returns a 404' do
-        expect(json["message"]).to eq("Not Found")
+        expect(first_error_detail).to match(/Couldn't find Portfolio/)
         expect(response.status).to eq(404)
       end
     end
@@ -209,16 +216,11 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   context "v1.0 provider control parameters" do
-    let(:svc_object)  { instance_double("Catalog::ProviderControlParameters") }
-    let(:url)         { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
-
-    before do
-      allow(Catalog::ProviderControlParameters).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
-    end
+    let(:url) { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     it "fetches plans" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:data).and_return(:fred => 'bedrock')
+      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/568/container_projects")
+        .to_return(:status => 200, :body => {:data => [:name => 'fred']}.to_json, :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
 
@@ -227,7 +229,8 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     it "raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
+      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/568/container_projects")
+        .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
 
@@ -236,7 +239,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe "patching portfolio items" do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef', :display_name => 'Test', 'service_offering_source_ref' => "27"} }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef'} }
     let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
     let(:partial_attributes) { { :name => 'Curious George' } }
 
@@ -264,7 +267,7 @@ describe "PortfolioItemRequests", :type => :request do
 
       it 'returns a 400' do
         expect(response).to have_http_status(:bad_request)
-        expect(json['errors'][0]['detail']).to match(/found unpermitted parameter: :service_offering_ref/)
+        expect(first_error_detail).to match(/found unpermitted parameter: :service_offering_ref/)
       end
     end
 
@@ -279,7 +282,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     context "when passing in nullable attributes" do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => nil, :display_name => 'Test', :service_offering_source_ref => "27"} }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil, :workflow_ref => nil} }
       before do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end
@@ -289,7 +292,10 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it 'updates the field that is null' do
-        expect(json["workflow_ref"]).to eq nullable_attributes[:workflow_ref]
+        expect(json["workflow_ref"]).to be_nil
+        expect(json["description"]).to be_nil
+        expect(json["distributor"]).to be_nil
+        expect(json["long_description"]).to be_nil
       end
     end
 
@@ -332,15 +338,6 @@ describe "PortfolioItemRequests", :type => :request do
       it "modifies the name to not collide" do
         expect(json["name"]).to_not eq portfolio_item.name
         expect(json["name"]).to match(/^Copy of.*/)
-      end
-    end
-
-    context "when copying with a specified name" do
-      let(:params) { { :portfolio_item_name => "NewPortfolioItem" } }
-
-      it "returns the name specified" do
-        copy_portfolio_item
-        expect(json["display_name"]).to eq params[:portfolio_item_name]
       end
     end
 
@@ -387,27 +384,22 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it "returns a json object with the next name" do
-        expect(json["next_name"]).to eq 'Copy of ' + portfolio_item.display_name
+        expect(json["next_name"]).to eq 'Copy of ' + portfolio_item.name
       end
     end
   end
 
-  describe '#add_icon_to_portfolio_item' do
-    let!(:icon) { create(:icon) }
+  context "POST /portfolio_items/{id}/tag" do
+    let(:name) { 'Gnocchi' }
+    let(:params) do
+      {:name => name}
+    end
 
-    context "when adding an icon to a portfolio_item" do
-      before do
-        post "#{api}/portfolio_items/#{portfolio_item.id}/icon", :params => { :icon_id => icon.id.to_s }, :headers => default_headers
-      end
+    it "add tags for the portfolio item" do
+      post "#{api}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers, :params => params
 
-      it "returns a 200" do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "adds the icon to the portfolio_item" do
-        portfolio_item.reload
-        expect(portfolio_item.icons.first.id).to eq icon.id
-      end
+      expect(response).to have_http_status(200)
+      expect(json['name']).to eq(name)
     end
   end
 end

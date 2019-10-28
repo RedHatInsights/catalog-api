@@ -256,7 +256,7 @@ describe 'Portfolios API' do
 
       it 'returns status code 400' do
         expect(response).to have_http_status(400)
-        expect(json['errors'][0]['detail']).to match(/found unpermitted parameters: :fred, :bob/)
+        expect(first_error_detail).to match(/found unpermitted parameters: :fred, :bob/)
       end
     end
 
@@ -301,7 +301,7 @@ describe 'Portfolios API' do
       let(:permissions) { %w[catalog:portfolios:read] }
       let(:app_name) { "catalog" }
       let(:http_status) { '204' }
-      let(:dummy) { double("RBAC::ShareResource", :process => self) }
+      let(:dummy) { double("ManageIQ::API::Common::RBAC::ShareResource", :process => self) }
       let(:attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
     end
 
@@ -313,7 +313,7 @@ describe 'Portfolios API' do
                      :resource_name => 'portfolios',
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
-          allow(RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
+          allow(ManageIQ::API::Common::RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
           post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers
           expect(response).to have_http_status(http_status)
         end
@@ -364,7 +364,7 @@ describe 'Portfolios API' do
     context 'unshare' do
       include_context "sharing_objects"
       let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-      let(:dummy) { double("RBAC::UnshareResource", :process => self) }
+      let(:dummy) { double("ManageIQ::API::Common::RBAC::UnshareResource", :process => self) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           options = {:app_name      => app_name,
@@ -372,7 +372,7 @@ describe 'Portfolios API' do
                      :resource_name => 'portfolios',
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
-          expect(RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
+          expect(ManageIQ::API::Common::RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
           post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
           expect(response).to have_http_status(204)
         end
@@ -382,13 +382,13 @@ describe 'Portfolios API' do
     context 'share_info' do
       include_context "sharing_objects"
       let(:dummy_response) { double(:share_info => {'a' => 1}) }
-      let(:dummy) { double("RBAC::UnshareResource", :process => dummy_response) }
+      let(:dummy) { double("ManageIQ::API::Common::RBAC::UnshareResource", :process => dummy_response) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           options = {:app_name      => app_name,
                      :resource_id   => portfolio.id.to_s,
                      :resource_name => 'portfolios'}
-          expect(RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
+          expect(ManageIQ::API::Common::RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
           get "#{api}/portfolios/#{portfolio.id}/share_info", :headers => default_headers
 
           expect(response).to have_http_status(200)
@@ -434,6 +434,32 @@ describe 'Portfolios API' do
       it "sets the name properly" do
         expect(json["name"]).to eq params[:portfolio_name]
       end
+    end
+  end
+
+  context "GET /portfolios/{id}/tags" do
+    before do
+      portfolio.tag_add("test_tag")
+    end
+
+    it "returns the tags for the portfolio" do
+      get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
+
+      expect(json["meta"]["count"]).to eq 1
+      expect(json["data"].first["name"]).to eq "test_tag"
+    end
+  end
+
+  context "POST /portfolios/{id}/tag" do
+    let(:name) { 'Gnocchi' }
+    let(:params) do
+      {:name => name}
+    end
+
+    it "add tags for the portfolio" do
+      post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => params
+      expect(json['name']).to eq(name)
+      expect(response).to have_http_status(200)
     end
   end
 end

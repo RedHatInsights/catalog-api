@@ -4,9 +4,6 @@ Rails.application.routes.draw do
 
   routing_helper = ManageIQ::API::Common::Routing.new(self)
 
-  get '/404', :to => 'errors#not_found'
-  match '/:status', :to => 'errors#catch_all', :constraints => {:status => /\d{3}/}, :via => :all
-
   prefix = "api"
   if ENV["PATH_PREFIX"].present? && ENV["APP_NAME"].present?
     prefix = File.join(ENV["PATH_PREFIX"], ENV["APP_NAME"]).gsub(/^\/+|\/+$/, "")
@@ -48,21 +45,28 @@ Rails.application.routes.draw do
         resources :portfolio_items,       :only => [:index]
         post :copy, :to => "portfolios#copy"
         post :undelete, :to => "portfolios#restore"
+        post :tags, :to => "portfolios#create_tags"
+        get :icon, :to => 'icons#raw_icon'
+        resources :tags, :only => [:index]
       end
-      post '/portfolio_items/:portfolio_item_id/icon', :to => 'portfolio_items#add_icon_to_portfolio_item'
       resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
         get :icon, :to => 'icons#raw_icon'
         get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
+        post :tags, :to => "portfolio_items#create_tags"
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
+        resources :tags, :only => [:index]
       end
       resources :icons, :only => [:create, :destroy, :show, :update] do
-        post :override, :to => 'icons#override_icon'
         get :icon_data, :to => 'icons#raw_icon'
       end
       resources :settings
+      resources :tags, :only => [:index, :show] do
+        resources :portfolios, :only => [:index]
+        resources :portfolio_items, :only => [:index]
+      end
       resources :tenants, :only => [:index, :show] do
         post 'seed', :to => 'tenants#seed'
       end

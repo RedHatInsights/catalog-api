@@ -46,8 +46,8 @@ module ServiceOffering
 
     # If certain fields are empty populate them from the other fields that we do have.
     def populate_missing_fields
+      @params[:service_offering_type] = @service_offering.extra[:type] if @service_offering.extra
       @params[:service_offering_source_ref] = @service_offering.source_id
-      @params[:display_name] ||= @params[:name]
       @params
     end
 
@@ -61,10 +61,10 @@ module ServiceOffering
       end
 
       svc = Catalog::CreateIcon.new(
-        :content        => OpenStruct.new(:tempfile => file),
-        :source_ref     => service_offering_icon.source_ref,
-        :source_id      => service_offering_icon.source_id,
-        :portfolio_item => @item
+        :content           => OpenStruct.new(:tempfile => file),
+        :source_ref        => service_offering_icon.source_ref,
+        :source_id         => service_offering_icon.source_id,
+        :portfolio_item_id => @item.id
       )
 
       svc.process.icon
