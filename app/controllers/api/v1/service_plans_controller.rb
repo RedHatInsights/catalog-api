@@ -27,6 +27,13 @@ module Api
         plan = ServicePlan.find(params.require(:service_plan_id))
         render :json => plan.base
       end
+
+      def update_modified
+        plan = ServicePlan.find(params.require(:service_plan_id))
+        plan.update!(:modified => params.require(:modified))
+
+        render :json => plan.modified
+      end
     end
   end
 end

@@ -98,4 +98,24 @@ describe "ServicePlansRequests", :type => :request do
       expect(json["schema"]).to eq service_plan.base["schema"]
     end
   end
+
+  describe "#modified" do
+    context "when patching the modified schema" do
+      let(:params) do
+        {:modified => service_plan.base.tap { |base| base["schema"][:new_field] = "a new field" }}
+      end
+
+      before do
+        patch "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers, :params => params
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the newly modified schema from the service_plan" do
+        expect(json["schema"]["new_field"]).to eq params[:modified]["schema"][:new_field]
+      end
+    end
+  end
 end

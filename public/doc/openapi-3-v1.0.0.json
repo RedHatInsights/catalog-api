@@ -2526,6 +2526,55 @@
           }
         }
       }
+    },
+    "/service_plans/{id}/modified": {
+      "patch": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Patch Service Plan Modified Schema",
+        "operationId": "patchServicePlanModified",
+        "description": "Returns the specified Service Plan's modified schema",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan Modified Schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "schema": {
+                      "title": "example schema",
+                      "fields": [
+                        {
+                          "name": "example field"
+                        },
+                        {
+                          "label": "example field"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [

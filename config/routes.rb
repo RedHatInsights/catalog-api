@@ -72,6 +72,7 @@ Rails.application.routes.draw do
       end
       resources :service_plans, :only => [:create, :show] do
         get 'base', :to => 'service_plans#base'
+        patch 'modified', :to => 'service_plans#update_modified'
       end
     end
   end
