@@ -444,14 +444,15 @@ describe 'Portfolios API' do
     let(:tag_params) do
       { :name      => tag_name,
         :namespace => tag_ns,
-        :value     => tag_value
-      }
+        :value     => tag_value }
     end
 
     shared_examples_for "#tag_add_test" do
       it "add tags for the portfolio" do
         post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => tag_params
         expect(json['name']).to eq(tag_params[:name])
+        expect(json['namespace']).to eq(tag_params[:namespace]) if tag_params.key?(:namespace)
+        expect(json['value']).to eq(tag_params[:value]) if tag_params.key?(:value)
         expect(response).to have_http_status(200)
       end
     end
