@@ -8,6 +8,8 @@ module Api
           render :json => obj.tags.where(:name => params[:name], :namespace => params[:namespace] || "", :value => params[:value] || "").first
         end
 
+        private
+
         def id_attr
           "#{model_name.underscore}_id".to_sym
         end
