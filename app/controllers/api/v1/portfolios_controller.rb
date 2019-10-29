@@ -3,6 +3,7 @@ module Api
     class PortfoliosController < ApplicationController
       include Api::V1::Mixins::IndexMixin
       include Api::V1::Mixins::ValidationMixin
+      include Api::V1::Mixins::TagsMixin
 
       before_action :update_access_check, :only => %i[add_portfolio_item_to_portfolio update create_tags]
       before_action :create_access_check, :only => %i[create]
@@ -100,11 +101,6 @@ module Api
         render :json => svc.process.new_portfolio
       end
 
-      def create_tags
-        portfolio = Portfolio.find(params.require(:portfolio_id))
-        portfolio.tag_add(params[:name])
-        render :json => portfolio.tags.where(:name => params[:name]).first
-      end
 
       private
 
