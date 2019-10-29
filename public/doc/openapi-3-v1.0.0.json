@@ -2422,7 +2422,7 @@
             "content": {
               "application/json": {
                 "schema": {
-				  "type": "array",
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/ServicePlan"
                   }
@@ -2497,20 +2497,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "example": {
-                    "schema": {
-                      "title": "example schema",
-                      "fields": [
-                        {
-                          "name": "example field"
-                        },
-                        {
-                          "label": "example field"
-                        }
-                      ]
-                    }
-                  }
+                  "$ref": "#/components/schemas/DataDrivenFormSchema"
                 }
               }
             }
@@ -2528,12 +2515,12 @@
       }
     },
     "/service_plans/{id}/modified": {
-      "patch": {
+      "get": {
         "tags": [
           "Service Plans"
         ],
-        "summary": "Patch Service Plan Modified Schema",
-        "operationId": "patchServicePlanModified",
+        "summary": "Show Service Plan modified Schema",
+        "operationId": "showServicePlanModified",
         "description": "Returns the specified Service Plan's modified schema",
         "parameters": [
           {
@@ -2546,20 +2533,43 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "example": {
-                    "schema": {
-                      "title": "example schema",
-                      "fields": [
-                        {
-                          "name": "example field"
-                        },
-                        {
-                          "label": "example field"
-                        }
-                      ]
-                    }
-                  }
+                  "$ref": "#/components/schemas/DataDrivenFormSchema"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No modified schema present for service_plan."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Patch Service Plan Modified Schema",
+        "operationId": "patchServicePlanModified",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan Modified Schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataDrivenFormSchema"
                 }
               }
             }
@@ -3665,6 +3675,117 @@
           }
         }
       },
+      "DataDrivenFormSchema": {
+        "type": "object",
+        "properties": {
+          "schema": {
+            "type": "object",
+            "example": {
+              "schema": {
+                "title": "",
+                "fields": [
+                  {
+                    "name": "username",
+                    "label": "What is your name",
+                    "validate": [
+                      {
+                        "type": "required-validator"
+                      },
+                      {
+                        "type": "min-length-validator",
+                        "threshold": 0
+                      },
+                      {
+                        "type": "max-length-validator",
+                        "threshold": 255
+                      }
+                    ],
+                    "component": "text-field",
+                    "helperText": "",
+                    "isRequired": true,
+                    "initialValue": ""
+                  },
+                  {
+                    "name": "quest",
+                    "label": "What is your quest?",
+                    "options": [
+                      {
+                        "label": "Test Approval",
+                        "value": "Test Approval"
+                      },
+                      {
+                        "label": "Test Catalog",
+                        "value": "Test Catalog"
+                      },
+                      {
+                        "label": "Test Topology",
+                        "value": "Test Topology"
+                      },
+                      {
+                        "label": "Seek the Holy Grail",
+                        "value": "Seek the Holy Grail"
+                      }
+                    ],
+                    "validate": [
+                      {
+                        "type": "required-validator"
+                      }
+                    ],
+                    "component": "select-field",
+                    "helperText": "",
+                    "isRequired": true,
+                    "initialValue": ""
+                  },
+                  {
+                    "name": "airspeed",
+                    "type": "number",
+                    "label": "What is the airspeed velocity of an unladen swallow?",
+                    "dataType": "float",
+                    "validate": [
+                      {
+                        "type": "min-number-value",
+                        "value": 0
+                      },
+                      {
+                        "type": "max-number-value",
+                        "value": 10
+                      }
+                    ],
+                    "component": "text-field",
+                    "helperText": "Type: Float",
+                    "initialValue": ""
+                  },
+                  {
+                    "name": "int_value",
+                    "type": "number",
+                    "label": "Integer value",
+                    "dataType": "integer",
+                    "validate": [
+                      {
+                        "type": "required-validator"
+                      },
+                      {
+                        "type": "min-number-value",
+                        "value": 0
+                      },
+                      {
+                        "type": "max-number-value",
+                        "value": 10
+                      }
+                    ],
+                    "component": "text-field",
+                    "helperText": "",
+                    "isRequired": true,
+                    "initialValue": 5
+                  }
+                ],
+                "description": ""
+              },
+              "schemaType": "default"
+            }
+          }
+        }
+      },
       "GraphQLRequest": {
         "type": "object",
         "properties": {
@@ -3707,3 +3828,4 @@
     }
   }
 }
+

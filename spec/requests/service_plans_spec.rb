@@ -100,21 +100,30 @@ describe "ServicePlansRequests", :type => :request do
   end
 
   describe "#modified" do
-    context "when patching the modified schema" do
-      let(:params) do
-        {:modified => service_plan.base.tap { |base| base["schema"][:new_field] = "a new field" }}
-      end
-
+    context "when there is a modified schema" do
       before do
-        patch "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers, :params => params
+        get "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers
       end
 
       it "returns a 200" do
         expect(response).to have_http_status :ok
       end
 
-      it "returns the newly modified schema from the service_plan" do
-        expect(json["schema"]["new_field"]).to eq params[:modified]["schema"][:new_field]
+      it "returns the modified schema from the service_plan" do
+        expect(json["schema"]).to eq service_plan.modified["schema"]
+        expect(json["schema"]).not_to eq service_plan.base["schema"]
+      end
+    end
+
+    context "when there is not a modified schema" do
+      before do
+        service_plan.update!(:modified => nil)
+      end
+
+      it "returns a 204" do
+        get "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers
+
+        expect(response).to have_http_status :no_content
       end
     end
   end

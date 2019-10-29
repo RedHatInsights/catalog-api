@@ -9,7 +9,14 @@ FactoryBot.define do
       }
     end
 
-    modified { base }
+    sequence(:modified) do |n|
+      {
+        "schema" => {
+          :title       => "Factory Modified Schema #{n}",
+          :description => "A Modified Schema #{n}"
+        }
+      }
+    end
 
     portfolio_item
   end
