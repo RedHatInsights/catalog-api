@@ -21,6 +21,7 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+gem 'activerecord-virtual_attributes', :git => 'https://github.com/ManageIQ/activerecord-virtual_attributes', :branch => 'master'
 gem 'dhasher'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
 gem 'jbuilder', '~> 2.0'

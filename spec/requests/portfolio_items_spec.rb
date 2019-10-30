@@ -19,8 +19,10 @@ describe "PortfolioItemRequests", :type => :request do
                             :distributor                 => "Distributor CO",
                             :portfolio_id                => portfolio_id)
   end
-  let(:portfolio_item_id)    { portfolio_item.id.to_s }
-  let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
+  let!(:icon)             { create(:icon, :iconable_type => "PortfolioItem", :iconable_id => portfolio_item.id) }
+  let(:portfolio_item_id) { portfolio_item.id.to_s }
+  let(:icon_id)           { icon.id.to_s }
+  let(:topo_ex)           { Catalog::TopologyError.new("kaboom") }
 
   describe "GET /portfolio_items/:portfolio_item_id" do
     before do
@@ -34,6 +36,10 @@ describe "PortfolioItemRequests", :type => :request do
 
       it 'returns the portfolio_item we asked for' do
         expect(json["id"]).to eq portfolio_item_id
+      end
+
+      it 'returns the virtual attributes defined' do
+        expect(json["icon_id"]).to eq icon_id
       end
 
       it 'portfolio item references parent portfolio' do

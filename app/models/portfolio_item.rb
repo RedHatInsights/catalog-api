@@ -6,6 +6,7 @@ class PortfolioItem < ApplicationRecord
 
   acts_as_tenant(:tenant)
   acts_as_taggable_on
+  virtual_column :icon_id, :type => :string
 
   default_scope -> { kept }
 
@@ -21,6 +22,10 @@ class PortfolioItem < ApplicationRecord
     # TODO: Add lookup to platform workflow ref
     # https://github.com/ManageIQ/catalog-api/issues/164
     [item_workflow_ref].compact
+  end
+
+  def icon_id
+    icons&.first&.id&.to_s
   end
 
   private

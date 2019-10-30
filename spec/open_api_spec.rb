@@ -136,6 +136,12 @@ describe "OpenAPI stuff" do
             expect(model.new.attributes.include?(attr)).to be_truthy
           end
         end
+
+        next if model.virtual_attribute_names.blank?
+
+        it "The Json Schema #{model} includes the virtual attributes #{model.virtual_attribute_names}" do
+          expect(Api::Docs["1.0"].definitions[model_name].properties.keys).to include(*model.virtual_attribute_names)
+        end
       end
     end
   end

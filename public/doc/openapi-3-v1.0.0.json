@@ -2797,6 +2797,13 @@
             "readOnly": true,
             "example": "1"
           },
+          "icon_id": {
+            "type": "string",
+            "title": "Icon ID",
+            "description": "Portfolio Item's Icon",
+            "readOnly": true,
+            "example": "1"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
