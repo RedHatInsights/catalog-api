@@ -26,14 +26,14 @@ describe ServicePlan do
   before do
     stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/#{service_offering_ref}")
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-     stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/#{service_offering_ref}/service_plans")
+    stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/#{service_offering_ref}/service_plans")
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
   context "invalid" do
     describe "#update" do
       it "sets an error" do
-        expect { service_plan.update_attributes(:modified => 'this is it'.to_json) }.to raise_error(UncaughtThrowError)
+        expect { service_plan.update!(:modified => 'this is it'.to_json) }.to raise_error(Catalog::InvalidSurvey)
       end
 
       it "shows the modified column is unchanged" do
@@ -43,16 +43,17 @@ describe ServicePlan do
   end
 
   context "valid" do
-    let(:base) do {
-      :name               => "The Plan",
-      :id                 => "1",
-      :description        => "A Service Plan",
-      :create_json_schema => {"schema" => {}}
-    }
+    let(:base) do
+      {
+        :name               => "The Plan",
+        :id                 => "1",
+        :description        => "A Service Plan",
+        :create_json_schema => {"schema" => {}}
+      }
     end
     let(:service_plan) { create(:service_plan, :base => base) }
     before do
-      service_plan.update_attributes(:modified => topo_service_plan.to_json)
+      service_plan.update!(:modified => topo_service_plan.to_json)
     end
 
     describe "#update" do

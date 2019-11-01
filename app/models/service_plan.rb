@@ -10,8 +10,7 @@ class ServicePlan < ApplicationRecord
 
   def modified_survey
     if Catalog::SurveyCompare.changed?(self)
-      errors.add(:modified, "Base survey does not match Topology")
-      throw :bad_request
+      raise Catalog::InvalidSurvey.new("Base survey does not match Topology")
     end
   end
 end

@@ -1,6 +1,6 @@
 module Catalog
   class SurveyCompare
-    attr_reader :reference, :base
+    attr_reader :base
     class << self
       def changed?(plan)
         potential = new(plan)
