@@ -47,7 +47,6 @@ module Catalog
 
     def create_approval_request(req, order_item)
       ApprovalRequest.create!(
-        :workflow_ref         => req.workflow_id,
         :approval_request_ref => req.id,
         :state                => req.decision.to_sym,
         :order_item           => order_item

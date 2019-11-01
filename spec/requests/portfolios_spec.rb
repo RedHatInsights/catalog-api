@@ -213,7 +213,7 @@ describe 'Portfolios API' do
   end
 
   describe 'PATCH /portfolios/:portfolio_id' do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => "123456" } }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
     let(:partial_attributes) { { :name => 'Chef Pisghetti' } }
     context 'when patched portfolio is valid' do
@@ -233,7 +233,7 @@ describe 'Portfolios API' do
     end
 
     context 'when patched portfolio has openapi nullable values' do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => nil } }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
       before do
         patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => nullable_attributes
       end
@@ -245,7 +245,6 @@ describe 'Portfolios API' do
       it 'returns an updated portfolio object' do
         expect(json).not_to be_empty
         expect(json).to be_a Hash
-        expect(json['workflow_ref']).to eq nullable_attributes[:workflow_ref]
       end
     end
 
