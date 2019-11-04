@@ -5,9 +5,17 @@ module Api
 
       def index
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        Catalog::ImportServicePlans.new(portfolio_item.id).process if portfolio_item.service_plans.empty?
 
-        collection(portfolio_item.service_plans)
+        if portfolio_item.service_plans.empty?
+          render :json => Catalog::ServicePlans.new(portfolio_item.id).process.items
+        else
+          render :json => portfolio_item.service_plans
+        end
+      end
+
+      def create
+        svc = Catalog::ImportServicePlans.new(params.require(:portfolio_item_id))
+        render :json => svc.process.service_plans
       end
 
       def show

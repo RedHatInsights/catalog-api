@@ -995,7 +995,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServicePlansCollection"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicePlan"
+                  }
                 }
               }
             }
@@ -2396,6 +2399,49 @@
         }
       }
     },
+    "/service_plans": {
+      "post": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Create Service Plan",
+        "operationId": "createServicePlan",
+        "description": "Returns the new Service Plan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportServicePlan"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Service Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+				  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicePlan"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
+    },
     "/service_plans/{id}": {
       "get": {
         "tags": [
@@ -2712,6 +2758,17 @@
             "type": "string",
             "title": "Service Offering Ref",
             "description": "The service offering ref should be retrieved from a call to the Topology Service.",
+            "example": "177"
+          }
+        }
+      },
+      "ImportServicePlan": {
+        "type": "object",
+        "properties": {
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "description": "The Portfolio Item to import the service plans for.",
             "example": "177"
           }
         }
@@ -3159,6 +3216,18 @@
       "ServicePlan": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the service plan.",
+            "readOnly": true
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "The service plan description.",
+            "readOnly": true
+          },
           "base": {
             "type": "object",
             "title": "base",
@@ -3299,23 +3368,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Tenant"
-            }
-          }
-        }
-      },
-      "ServicePlansCollection": {
-        "type": "object",
-        "properties": {
-          "meta": {
-            "$ref": "#/components/schemas/CollectionMetadata"
-          },
-          "links": {
-            "$ref": "#/components/schemas/CollectionLinks"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ServicePlan"
             }
           }
         }

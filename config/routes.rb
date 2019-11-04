@@ -70,7 +70,7 @@ Rails.application.routes.draw do
       resources :tenants, :only => [:index, :show] do
         post 'seed', :to => 'tenants#seed'
       end
-      resources :service_plans, :only => [:show] do
+      resources :service_plans, :only => [:create, :show] do
         get 'base', :to => 'service_plans#base'
       end
     end

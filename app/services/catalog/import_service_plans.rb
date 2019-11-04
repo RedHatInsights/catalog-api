@@ -9,7 +9,8 @@ module Catalog
     def process
       service_plan_schemas.each do |schema|
         ServicePlan.create!(
-          :base              => schema,
+          :base              => schema["create_json_schema"],
+          :modified          => schema["create_json_schema"],
           :portfolio_item_id => @portfolio_item.id
         )
       end
@@ -20,8 +21,7 @@ module Catalog
     end
 
     def service_plan_schemas
-      service_plans = Catalog::ServicePlans.new(@portfolio_item.id).process.items
-      service_plans.collect { |plan| plan["create_json_schema"] }
+      Catalog::ServicePlans.new(@portfolio_item.id).process.items
     end
   end
 end
