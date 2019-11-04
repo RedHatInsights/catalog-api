@@ -31,7 +31,7 @@ module Catalog
 
     def request_body_from(order_item)
       svc_params_sanitized = Catalog::OrderItemSanitizedParameters.new(:order_item_id => order_item.id).process
-      local_tag_resources = Catalog::CollectLocalTagResources.new(:order_id => @order.id).process.tag_resources
+      local_tag_resources = Tags::CollectLocalOrderResources.new(:order_id => @order.id).process.tag_resources
 
       ApprovalApiClient::RequestIn.new.tap do |request|
         request.name      = order_item.portfolio_item.name

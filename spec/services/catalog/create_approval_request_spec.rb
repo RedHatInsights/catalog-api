@@ -15,7 +15,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
     class_double(Catalog::OrderItemSanitizedParameters).as_stubbed_const(:transfer_nested_constants => true)
   end
   let(:sanitize_service_instance) { instance_double(Catalog::OrderItemSanitizedParameters) }
-  let(:local_tag_service_instance) { instance_double(Catalog::CollectLocalTagResources, :tag_resources => []) }
+  let(:local_tag_service_instance) { instance_double(Tags::CollectLocalOrderResources, :tag_resources => []) }
   let(:hashy) { { :a => 1 } }
 
   before do
@@ -65,7 +65,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
     context "#submit_approval_requests" do
       it "calls out to Approval for every workflow on the order" do
-        allow(Catalog::CollectLocalTagResources).to receive(:new).with(:order_id => order.id).and_return(local_tag_service_instance)
+        allow(Tags::CollectLocalOrderResources).to receive(:new).with(:order_id => order.id).and_return(local_tag_service_instance)
         allow(local_tag_service_instance).to receive(:process).and_return(local_tag_service_instance)
         req = ApprovalApiClient::RequestIn.new.tap do |request|
           request.name = order_item.portfolio_item.name
