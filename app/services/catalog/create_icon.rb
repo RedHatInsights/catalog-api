@@ -17,9 +17,11 @@ module Catalog
       image = Image.new(:content => @content)
       image_id = Catalog::DuplicateImage.new(image).process.image_id
 
-      @destination.icons.first.discard if @destination.icons.count.positive?
-      @icon = @destination.icons.build(@params.merge(:image_id => image_id))
-      @icon.save!
+      @destination.icon&.discard
+      @icon = Icon.create!(@params.merge(:image_id => image_id, :restore_to => @destination))
+
+      @destination.icon = @icon
+      @destination.save!
 
       self
     end

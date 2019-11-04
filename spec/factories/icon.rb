@@ -5,6 +5,6 @@ FactoryBot.define do
 
     image
 
-    iconable { create(:portfolio_item) }
+    restore_to { create(:portfolio_item) }
   end
 end

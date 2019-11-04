@@ -2796,6 +2796,13 @@
             "example": "jdoe",
             "readOnly": true
           },
+          "icon_id": {
+            "type": "string",
+            "title": "Icon ID",
+            "description": "The Portfolio Icon ID",
+            "readOnly": true,
+            "example": "1"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -2980,6 +2987,13 @@
             "type": "string",
             "title": "Portfolio ID",
             "description": "ID of a parent portfolio",
+            "readOnly": true,
+            "example": "1"
+          },
+          "icon_id": {
+            "type": "string",
+            "title": "Icon ID",
+            "description": "The Portfolio Item Icon ID",
             "readOnly": true,
             "example": "1"
           },

@@ -47,14 +47,15 @@ describe Catalog::CreateIcon, :type => :service do
       before do
         subject.process
         subject.process
+        destination.reload
       end
 
       it "discards the old icon" do
-        expect(Icon.with_discarded.first.discarded?).to be_truthy
+        expect(Icon.with_discarded.discarded.where(:restore_to => destination).count).to eq 1
       end
 
-      it "only has one icon" do
-        expect(destination.icons.count).to eql 1
+      it "has an icon" do
+        expect(destination.icon).to be_truthy
       end
     end
   end
