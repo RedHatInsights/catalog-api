@@ -94,7 +94,6 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
       it "populates all of the fields from the Response from Approval" do
         resp = approval_request
-        expect(resp.workflow_ref).to eql request_out.workflow_id
         expect(resp.approval_request_ref).to eq request_out.id.to_s
         expect(resp.state).to eq request_out.decision
       end

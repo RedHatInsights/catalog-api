@@ -27,15 +27,6 @@ describe Portfolio do
     end
   end
 
-  context "when updating a portfolio" do
-    let(:workflow_ref) { Time.now.to_i }
-
-    it "will allow adding a workflow_ref" do
-      expect(portfolio.update(:workflow_ref => workflow_ref)).to be_truthy
-      expect(portfolio.workflow_ref).to eq workflow_ref.to_s
-    end
-  end
-
   context "when a tenant tries to create portfolios with the same name" do
     let(:portfolio_copy) { create(:portfolio, :tenant_id => tenant1.id) }
 

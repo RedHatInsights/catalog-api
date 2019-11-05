@@ -2603,12 +2603,6 @@
             "format": "url",
             "example": "The public facing image url for a portfolio."
           },
-          "workflow_ref": {
-            "type": "string",
-            "title": "Approval Workflow ID",
-            "example": "The current approval workflow selected for a portfolio",
-            "nullable": true
-          },
           "owner": {
             "type": "string",
             "title": "Owner",
@@ -2762,12 +2756,6 @@
             "type": "string",
             "title": "Support URL",
             "example": "The URL for finding support for the portfolio item",
-            "nullable": true
-          },
-          "workflow_ref": {
-            "type": "string",
-            "title": "Approval Workflow ID",
-            "example": "The approval workflow selected for a portfolio item",
             "nullable": true
           },
           "owner": {
@@ -3008,12 +2996,6 @@
               "canceled"
             ],
             "description": "The state of the approval request (approved, denied, undecided, canceled)",
-            "readOnly": true
-          },
-          "workflow_ref": {
-            "type": "string",
-            "title": "Workflow Ref",
-            "description": "The workflow that was requested",
             "readOnly": true
           }
         }
