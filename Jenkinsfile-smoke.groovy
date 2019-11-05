@@ -2,11 +2,11 @@
  * Requires: https://github.com/RedHatInsights/insights-pipeline-lib
  */
 
-@Library("github.com/RedHatInsights/insights-pipeline-lib") _
+@Library("github.com/RedHatInsights/insights-pipeline-lib@v3") _
 
 
 if (env.CHANGE_ID) {
-    runSmokeTest (
+    execSmokeTest (
         ocDeployerBuilderPath: "catalog/catalog-api",
         ocDeployerComponentPath: "catalog/catalog-api",
         ocDeployerServiceSets: "catalog,topological-inventory,sources,approval,platform-mq",
