@@ -45,10 +45,7 @@ describe ServicePlan do
   context "valid" do
     let(:base) do
       {
-        :name               => "The Plan",
-        :id                 => "1",
-        :description        => "A Service Plan",
-        :create_json_schema => {"schema" => {}}
+        "schema" => {}
       }
     end
     let(:service_plan) { create(:service_plan, :base => base) }

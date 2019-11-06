@@ -10,7 +10,7 @@ class ServicePlan < ApplicationRecord
 
   def modified_survey
     if Catalog::SurveyCompare.changed?(self)
-      raise Catalog::InvalidSurvey.new("Base survey does not match Topology")
+      raise Catalog::InvalidSurvey, "Base survey does not match Topology"
     end
   end
 end
