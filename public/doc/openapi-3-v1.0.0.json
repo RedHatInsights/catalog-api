@@ -3365,6 +3365,11 @@
             "type": "string",
             "title": "Request account number",
             "description": "The Request account number"
+          },
+          "id": {
+            "type": "string",
+            "title": "Internal tenant id",
+            "description": "The internal tenant id"
           }
         }
       },
