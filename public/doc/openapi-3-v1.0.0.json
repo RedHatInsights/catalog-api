@@ -2398,6 +2398,134 @@
           }
         }
       }
+    },
+    "/service_plans": {
+      "post": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Create Service Plan",
+        "operationId": "createServicePlan",
+        "description": "Returns the new Service Plan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportServicePlan"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Service Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+				  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicePlan"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
+    },
+    "/service_plans/{id}": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Show Service Plan",
+        "operationId": "showServicePlan",
+        "description": "Returns the specified Service Plan",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicePlan"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
+    },
+    "/service_plans/{id}/base": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Show Service Plan Base Schema",
+        "operationId": "showServicePlanBase",
+        "description": "Returns the specified Service Plan's base schema",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan Base Schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "schema": {
+                      "title": "example schema",
+                      "fields": [
+                        {
+                          "name": "example field"
+                        },
+                        {
+                          "label": "example field"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -2630,6 +2758,17 @@
             "type": "string",
             "title": "Service Offering Ref",
             "description": "The service offering ref should be retrieved from a call to the Topology Service.",
+            "example": "177"
+          }
+        }
+      },
+      "ImportServicePlan": {
+        "type": "object",
+        "properties": {
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "description": "The Portfolio Item to import the service plans for.",
             "example": "177"
           }
         }
@@ -3089,22 +3228,27 @@
             "description": "The service plan description.",
             "readOnly": true
           },
-          "service_offering_id": {
+          "base": {
+            "type": "object",
+            "title": "base",
+            "description": "The base schema imported from Topology",
+            "readOnly": true
+          },
+          "modified": {
+            "type": "object",
+            "title": "modified",
+            "description": "The modified schema for Catalog"
+          },
+          "portfolio_item_id": {
             "type": "string",
-            "title": "Service Offering ID",
-            "description": "The reference ID of the service offering",
+            "title": "Portfolio Item ID",
+            "description": "The reference ID of the Portfolio Item",
             "readOnly": true
           },
           "id": {
             "type": "string",
             "title": "ID",
             "description": "The unique identifier for this service plan.",
-            "readOnly": true
-          },
-          "create_json_schema": {
-            "type": "object",
-            "title": "JSON Schema",
-            "description": "JSON schema for the object.",
             "readOnly": true
           }
         }

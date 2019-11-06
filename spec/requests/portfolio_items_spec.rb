@@ -188,33 +188,6 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
-  context "service plans" do
-    let(:svc_object)           { instance_double("Catalog::ServicePlans") }
-    let(:plans)                { [{}, {}] }
-
-    before do
-      allow(Catalog::ServicePlans).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
-    end
-
-    it "fetches plans" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:items).and_return(plans)
-
-      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
-
-      expect(JSON.parse(response.body).count).to eq(2)
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
-
-      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
-      expect(response).to have_http_status(:service_unavailable)
-    end
-  end
-
   context "v1.0 provider control parameters" do
     let(:url) { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
