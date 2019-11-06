@@ -31,7 +31,7 @@ namespace :portfolios do
           role.name.start_with?(role_name_prefix)
         end
 
-        RBAC::Service.call(RBACApiClient::RoleApi) do |api|
+        ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
           matching_roles.each do |role|
             puts "Deleting role #{role.name}"
             api.delete_role(role.uuid)
@@ -43,8 +43,8 @@ namespace :portfolios do
 
   def fetch_roles
     opts = { :limit => 500, :name => "catalog-portfolios" }
-    RBAC::Service.call(RBACApiClient::RoleApi) do |api|
-      RBAC::Service.paginate(api, :list_roles, opts).to_a
+    ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
+      ManageIQ::API::Common::RBAC::Service.paginate(api, :list_roles, opts).to_a
     end
   end
 end
