@@ -1,0 +1,103 @@
+{
+  "schema": {
+    "title": "",
+    "fields": [
+      {
+        "name": "username",
+        "label": "What is your name",
+        "validate": [
+          {
+            "type": "required-validator"
+          },
+          {
+            "type": "min-length-validator",
+            "threshold": 0
+          },
+          {
+            "type": "max-length-validator",
+            "threshold": 255
+          }
+        ],
+        "component": "text-field",
+        "helperText": "",
+        "isRequired": true,
+        "initialValue": ""
+      },
+      {
+        "name": "quest",
+        "label": "What is your quest?",
+        "options": [
+          {
+            "label": "Test Approval",
+            "value": "Test Approval"
+          },
+          {
+            "label": "Test Catalog",
+            "value": "Test Catalog"
+          },
+          {
+            "label": "Test Topology",
+            "value": "Test Topology"
+          },
+          {
+            "label": "Seek the Holy Grail",
+            "value": "Seek the Holy Grail"
+          }
+        ],
+        "validate": [
+          {
+            "type": "required-validator"
+          }
+        ],
+        "component": "select-field",
+        "helperText": "",
+        "isRequired": true,
+        "initialValue": ""
+      },
+      {
+        "name": "airspeed",
+        "type": "number",
+        "label": "What is the airspeed velocity of an unladen swallow?",
+        "dataType": "float",
+        "validate": [
+          {
+            "type": "min-number-value",
+            "value": 0
+          },
+          {
+            "type": "max-number-value",
+            "value": 10
+          }
+        ],
+        "component": "text-field",
+        "helperText": "Type: Float",
+        "initialValue": ""
+      },
+      {
+        "name": "int_value",
+        "type": "number",
+        "label": "Integer value",
+        "dataType": "integer",
+        "validate": [
+          {
+            "type": "required-validator"
+          },
+          {
+            "type": "min-number-value",
+            "value": 0
+          },
+          {
+            "type": "max-number-value",
+            "value": 10
+          }
+        ],
+        "component": "text-field",
+        "helperText": "",
+        "isRequired": true,
+        "initialValue": 5
+      }
+    ],
+    "description": ""
+  },
+  "schemaType": "default"
+}
