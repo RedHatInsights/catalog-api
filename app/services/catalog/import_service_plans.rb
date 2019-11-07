@@ -9,6 +9,8 @@ module Catalog
     def process
       service_plan_schemas.each do |schema|
         ServicePlan.create!(
+          :name              => schema["name"],
+          :description       => schema["description"],
           :base              => schema["create_json_schema"],
           :modified          => schema["create_json_schema"],
           :portfolio_item_id => @portfolio_item.id
