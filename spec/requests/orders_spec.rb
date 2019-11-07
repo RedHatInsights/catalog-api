@@ -54,11 +54,11 @@ describe "OrderRequests", :type => :request do
         allow(cancel_order).to receive(:process).and_raise(Catalog::OrderUncancelable.new("Order not cancelable"))
       end
 
-      it "returns a 422" do
+      it "returns a 400" do
         patch "/api/v1.0/orders/#{order.id}/cancel", :headers => default_headers
 
         expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:bad_request)
         expect(first_error_detail).to match(/Order not cancelable/)
       end
     end
@@ -131,8 +131,8 @@ describe "OrderRequests", :type => :request do
         delete "/#{api}/orders/#{order.id}", :headers => default_headers
       end
 
-      it "returns a 422" do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "returns a 400" do
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "does not delete the order" do
@@ -153,8 +153,8 @@ describe "OrderRequests", :type => :request do
         delete "/#{api}/orders/#{order.id}", :headers => default_headers
       end
 
-      it "returns a 422" do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "returns a 400" do
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "does not delete the order" do
@@ -208,8 +208,8 @@ describe "OrderRequests", :type => :request do
         post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
       end
 
-      it "returns a 422" do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "returns a 400" do
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "does not restore the order" do
@@ -233,8 +233,8 @@ describe "OrderRequests", :type => :request do
         post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
       end
 
-      it "returns a 422" do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "returns a 400" do
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "does not restore the order" do

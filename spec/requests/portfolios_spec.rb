@@ -137,7 +137,7 @@ describe 'Portfolios API' do
       it 'reports errors when discarding child portfolio_items fails' do
         delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end
@@ -192,7 +192,7 @@ describe 'Portfolios API' do
       it 'reports errors when undiscarding the child portfolio_items fails' do
         post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:bad_request)
       end
     end
 
@@ -284,10 +284,10 @@ describe 'Portfolios API' do
         expect(json['name']).to eq valid_attributes[:name]
       end
 
-      it 'returns a status code 422 when trying to create with the same name' do
+      it 'returns a status code 400 when trying to create with the same name' do
         post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(400)
       end
 
       it 'stores the username in the owner column' do

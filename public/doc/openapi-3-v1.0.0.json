@@ -155,8 +155,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -194,8 +194,8 @@
           "404": {
             "description": "Portfolio not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -239,8 +239,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -270,7 +270,7 @@
           "404": {
             "description": "Portfolio Not Found."
           },
-          "422": {
+          "400": {
             "description": "Failed to discard child portfolio items."
           }
         }
@@ -394,7 +394,7 @@
           "404": {
             "description": "The Portfolio Object was not found."
           },
-          "422": {
+          "400": {
             "description": "One or more of the RBAC groups was not found"
           }
         }
@@ -550,8 +550,8 @@
           "404": {
             "description": "Portfolio not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -750,8 +750,8 @@
           "404": {
             "description": "Tenant not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -851,8 +851,8 @@
           "404": {
             "description": "Service Offering not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1484,8 +1484,8 @@
           "404": {
             "description": "Order not found"
           },
-          "422": {
-            "$ref": "#/components/responses/UnprocessableEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -1523,8 +1523,8 @@
           "404": {
             "description": "Order not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1675,8 +1675,8 @@
           "404": {
             "description": "Order item not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1848,7 +1848,7 @@
           "404": {
             "description": "Portfolio Item not found"
           },
-          "422": {
+          "400": {
             "description": "Portfolio not found"
           },
           "500": {
@@ -2146,8 +2146,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -2180,8 +2180,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -2212,8 +2212,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -2239,8 +2239,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -2727,7 +2727,7 @@
       }
     },
     "responses": {
-      "InvalidEntity": {
+      "BadRequest": {
         "description": "The entity being created does not have either all the required parameters specified or the parameter value is invalid."
       },
       "Forbidden": {
@@ -2735,9 +2735,6 @@
       },
       "Unauthorized": {
         "description": "The caller is not authorized to access this resource."
-      },
-      "UnprocessableEntity": {
-        "description": "The entity is currently in a state that does not allow the requested action"
       }
     },
     "requestBodies": {

@@ -326,8 +326,8 @@ describe "PortfolioItemRequests", :type => :request do
         copy_portfolio_item
       end
 
-      it 'returns a 422' do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it 'returns a 400' do
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end
