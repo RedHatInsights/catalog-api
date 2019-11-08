@@ -34,6 +34,8 @@ RSpec.configure do |config|
   # ------------------------ #
 
   config.include ServiceSpecHelper
+  config.include TopologySpecHelper, :type => :topology
+  config.include CurrentForwardableSpecHelper, :type => :current_forwardable
 
   config.use_transactional_fixtures = true
 
