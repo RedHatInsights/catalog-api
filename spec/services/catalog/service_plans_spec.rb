@@ -1,18 +1,8 @@
-describe Catalog::ServicePlans, :type => :service do
+describe Catalog::ServicePlans, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:params) { portfolio_item.id }
   let(:service_plans) { described_class.new(params) }
-
-  before do
-    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-  end
-
-  around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
-      example.call
-    end
-  end
 
   describe "#process" do
     let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => data) }

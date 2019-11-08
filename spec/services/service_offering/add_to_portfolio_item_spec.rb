@@ -1,4 +1,4 @@
-describe ServiceOffering::AddToPortfolioItem, :type => :service do
+describe ServiceOffering::AddToPortfolioItem, :type => [:service, :topology] do
   include ServiceOfferingHelper
   let(:service_offering_ref) { "1" }
   let(:subject) { described_class.new(params) }
@@ -12,7 +12,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
 
   around do |example|
     Insights::API::Common::Request.with_request(default_request) do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :SOURCES_URL => "http://localhost") do
+      with_modified_env(:SOURCES_URL => "http://localhost") do
         example.call
       end
     end
