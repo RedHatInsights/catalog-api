@@ -4,7 +4,7 @@ class ServicePlan < ApplicationRecord
 
   belongs_to :portfolio_item
   validates :base, :presence => true
-  validate :modified_survey, :on => :update
+  validate :modified_survey, :on => :update, :if => proc { modified.present? }
 
   private
 

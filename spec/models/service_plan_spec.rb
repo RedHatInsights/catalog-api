@@ -30,30 +30,25 @@ describe ServicePlan do
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
-  context "invalid" do
-    describe "#update" do
+  describe "#update" do
+    context "invalid" do
       it "sets an error" do
-        expect { service_plan.update!(:modified => 'this is it'.to_json) }.to raise_error(Catalog::InvalidSurvey)
-      end
-
-      it "shows the modified column is unchanged" do
-        expect(JSON.parse(service_plan.modified.to_json)["schema"]["title"]).to eq service_plan.base["schema"]["title"]
+        expect { service_plan.update!(:modified => { "schema"=> { "title" => "changed", "more" => "less" }}) }.to raise_error(Catalog::InvalidSurvey)
       end
     end
-  end
 
-  context "valid" do
-    let(:base) do
-      {
-        "schema" => {}
-      }
-    end
-    let(:service_plan) { create(:service_plan, :base => base) }
-    before do
-      service_plan.update!(:modified => topo_service_plan.to_json)
-    end
+    context "valid" do
+      let(:base) do
+        {
+          "schema" => {}
+        }
+      end
+      let(:service_plan) { create(:service_plan, :base => base) }
 
-    describe "#update" do
+      before do
+        service_plan.update!(:modified => topo_service_plan.to_json)
+      end
+
       it "does not set an error" do
         expect(service_plan.valid?).to be true
         expect(service_plan.errors.first).to be_nil
