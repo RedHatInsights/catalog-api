@@ -33,8 +33,6 @@ module Api
       def create
         portfolio = Portfolio.create!(portfolio_params)
         render :json => portfolio
-      rescue ActiveRecord::RecordInvalid => e
-        render :json => { :errors => e.message }, :status => :unprocessable_entity
       end
 
       def update

@@ -62,8 +62,8 @@ describe 'Settings API', :type => :request do
         let(:params) { { :name => "icon", :value => "17" } }
         before { post "#{api}/settings", :headers => default_headers, :params => params }
 
-        it "returns a 422" do
-          expect(response).to have_http_status(:unprocessable_entity)
+        it "returns a 400" do
+          expect(response).to have_http_status(:bad_request)
         end
       end
     end
