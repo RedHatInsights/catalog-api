@@ -31,13 +31,13 @@ module Api
       end
 
       def create
-        portfolio = Portfolio.create!(portfolio_params)
+        portfolio = Portfolio.create!(params_for_create)
         render :json => portfolio
       end
 
       def update
         portfolio = Portfolio.find(params.require(:id))
-        portfolio.update!(portfolio_params)
+        portfolio.update!(params_for_update)
 
         render :json => portfolio
       end
@@ -101,10 +101,6 @@ module Api
 
 
       private
-
-      def portfolio_params
-        params.permit(:name, :description, :image_url, :enabled, :id)
-      end
 
       def portfolio_copy_params
         params.permit(:portfolio_id, :portfolio_name)
