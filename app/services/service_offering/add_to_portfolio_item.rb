@@ -21,7 +21,7 @@ module ServiceOffering
       @item = PortfolioItem.create!(generate_attributes)
 
       icon = create_icon(@service_offering.service_offering_icon_id) if @service_offering.service_offering_icon_id.present?
-      @item.icons << icon unless icon.nil?
+      @item.icon = icon unless icon.nil?
 
       self
     rescue StandardError => e

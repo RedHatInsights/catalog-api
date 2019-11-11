@@ -1,8 +1,17 @@
 describe "IconsRequests", :type => :request do
   let!(:portfolio_item) { create(:portfolio_item) }
-  let!(:icon) { create(:icon, :image => image, :iconable => portfolio_item) }
   let!(:portfolio) { create(:portfolio) }
-  let!(:portfolio_icon) { create(:icon, :image => image, :iconable => portfolio) }
+
+  let!(:icon) do
+    create(:icon, :image => image, :restore_to => portfolio_item).tap do |icon|
+      icon.restore_to.update!(:icon_id => icon.id)
+    end
+  end
+  let!(:portfolio_icon) do
+    create(:icon, :image => image, :restore_to => portfolio).tap do |icon|
+      icon.restore_to.update!(:icon_id => icon.id)
+    end
+  end
 
   let(:image) { create(:image) }
 

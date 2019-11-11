@@ -70,8 +70,8 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
           expect(result.item.name).to eq("test name")
           expect(result.item.description).to eq("test description")
 
-          expect(result.item.icons.first.source_id).to eq service_offering_icon.source_id
-          expect(result.item.icons.first.source_ref).to eq service_offering_icon.source_ref
+          expect(result.item.icon.source_id).to eq service_offering_icon.source_id
+          expect(result.item.icon.source_ref).to eq service_offering_icon.source_ref
         end
 
         it "sets the service offering source ref" do
@@ -89,7 +89,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
         end
 
         it "does not copy over the icon" do
-          expect(subject.process.item.icons.count).to eq 0
+          expect(subject.process.item.icon).to be_falsey
         end
       end
 
@@ -97,7 +97,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
         let(:service_offering_icon) { fully_populated_service_offering_icon.tap { |icon| icon.data = nil } }
 
         it "does not copy over the icon" do
-          expect(subject.process.item.icons.count).to eq 0
+          expect(subject.process.item.icon).to be_falsey
         end
       end
 

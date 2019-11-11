@@ -35,10 +35,10 @@ ActiveRecord::Schema.define(version: 2019_11_04_192052) do
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
     t.bigint "image_id"
-    t.string "iconable_type"
-    t.bigint "iconable_id"
+    t.string "restore_to_type"
+    t.bigint "restore_to_id"
     t.index ["discarded_at"], name: "index_icons_on_discarded_at"
-    t.index ["iconable_type", "iconable_id"], name: "index_icons_on_iconable_type_and_iconable_id"
+    t.index ["restore_to_type", "restore_to_id"], name: "index_icons_on_restore_to_type_and_restore_to_id"
     t.index ["tenant_id"], name: "index_icons_on_tenant_id"
   end
 
@@ -118,6 +118,7 @@ ActiveRecord::Schema.define(version: 2019_11_04_192052) do
     t.datetime "discarded_at"
     t.string "owner"
     t.string "service_offering_type"
+    t.bigint "icon_id"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
@@ -142,6 +143,7 @@ ActiveRecord::Schema.define(version: 2019_11_04_192052) do
     t.bigint "tenant_id"
     t.datetime "discarded_at"
     t.string "owner"
+    t.bigint "icon_id"
     t.index ["discarded_at"], name: "index_portfolios_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end
