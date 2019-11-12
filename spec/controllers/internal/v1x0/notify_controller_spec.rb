@@ -25,10 +25,12 @@ describe Internal::V1x0::NotifyController, :type => :request do
 
     before do
       allow(Catalog::DetermineTaskRelevancy).to receive(:new)
-        .with(having_attributes(
-          :payload => hash_including("status" => "test", "task_id" => "321"),
-          :message => "message"
-        ))
+        .with(
+          having_attributes(
+            :payload => hash_including("status" => "test", "task_id" => "321"),
+            :message => "message"
+          )
+        )
         .and_return(determine_task_relevancy)
       allow(determine_task_relevancy).to receive(:process)
     end
