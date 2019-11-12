@@ -11,7 +11,9 @@ describe Catalog::UpdateOrderItem, :type => :service do
       end
     end
     let(:order) { item.order }
-    let(:subject) { described_class.new(topic) }
+    let(:subject) { described_class.new(topic, task) }
+    let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => service_instance_id}}) }
+    let(:service_instance_id) { "321" }
     let(:api_instance) { instance_double("TopologicalInventoryApiClient::DefaultApi") }
     let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
 
@@ -31,11 +33,9 @@ describe Catalog::UpdateOrderItem, :type => :service do
 
     context "when the order item is findable" do
       let(:topology_task_ref) { "123" }
-      let(:service_instance_id) { "321" }
 
       context "when the status of the task is ok" do
         let(:status) { "ok" }
-        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => service_instance_id}}) }
         let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
         let(:service_instance_no_external_url) { TopologicalInventoryApiClient::ServiceInstance.new }
 

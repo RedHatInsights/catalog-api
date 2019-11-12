@@ -2,8 +2,9 @@ module Catalog
   class CreateApprovalRequest
     attr_reader :order
 
-    def initialize(id)
-      @order = Order.find_by!(:id => id)
+    def initialize(task)
+      @task = task
+      @order = OrderItem.find_by!(:topology_task_ref => task.id).order
     end
 
     def process

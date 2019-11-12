@@ -17,8 +17,8 @@ module Api
       end
 
       def submit_order
-        approval = Catalog::CreateApprovalRequest.new(params.require(:order_id))
-        render :json => approval.process.order
+        order = Catalog::CreateRequestForAppliedInventories.new(params.require(:order_id)).process.order
+        render :json => order
       end
 
       def destroy
