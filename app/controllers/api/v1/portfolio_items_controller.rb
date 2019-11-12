@@ -2,6 +2,7 @@ module Api
   module V1
     class PortfolioItemsController < ApplicationController
       include Api::V1::Mixins::IndexMixin
+      include Api::V1::Mixins::TagsMixin
 
       before_action :create_access_check, :only => %i[create]
       before_action :update_access_check, :only => %i[update create_tags]
@@ -61,12 +62,6 @@ module Api
       def next_name
         svc = Catalog::NextName.new(params.require(:portfolio_item_id), params[:destination_portfolio_id])
         render :json => { :next_name => svc.process.next_name }
-      end
-
-      def create_tags
-        portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        portfolio_item.tag_add(params[:name])
-        render :json => portfolio_item.tags.where(:name => params[:name]).first
       end
 
       private

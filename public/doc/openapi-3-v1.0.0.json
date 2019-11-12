@@ -155,8 +155,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -194,8 +194,8 @@
           "404": {
             "description": "Portfolio not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -239,8 +239,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -270,7 +270,7 @@
           "404": {
             "description": "Portfolio Not Found."
           },
-          "422": {
+          "400": {
             "description": "Failed to discard child portfolio items."
           }
         }
@@ -394,7 +394,7 @@
           "404": {
             "description": "The Portfolio Object was not found."
           },
-          "422": {
+          "400": {
             "description": "One or more of the RBAC groups was not found"
           }
         }
@@ -550,8 +550,8 @@
           "404": {
             "description": "Portfolio not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -750,8 +750,8 @@
           "404": {
             "description": "Tenant not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -851,8 +851,8 @@
           "404": {
             "description": "Service Offering not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1063,6 +1063,7 @@
           "PortfolioItem"
         ],
         "summary": "Undelete a specified Portfolio Item",
+        "operationId": "unDeletePortfolioItem",
         "description": "If a record has been discarded, this operation will undelete it so it can be requested normally.",
         "parameters": [
           {
@@ -1483,8 +1484,8 @@
           "404": {
             "description": "Order not found"
           },
-          "422": {
-            "$ref": "#/components/responses/UnprocessableEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -1522,8 +1523,8 @@
           "404": {
             "description": "Order not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1674,8 +1675,8 @@
           "404": {
             "description": "Order item not found."
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1847,7 +1848,7 @@
           "404": {
             "description": "Portfolio Item not found"
           },
-          "422": {
+          "400": {
             "description": "Portfolio not found"
           },
           "500": {
@@ -1872,6 +1873,7 @@
           "Icon"
         ],
         "summary": "Create an Icon",
+        "operationId": "createIcon",
         "description": "Creates an Icon from the specified parameters",
         "requestBody": {
           "content": {
@@ -1914,6 +1916,7 @@
           "Icon"
         ],
         "summary": "Fetch an Icon by ID",
+        "operationId": "getIcon",
         "description": "Fetch an Icon by ID",
         "parameters": [
           {
@@ -2143,8 +2146,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -2177,8 +2180,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -2209,8 +2212,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -2236,8 +2239,8 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "422": {
-            "$ref": "#/components/responses/InvalidEntity"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -2395,6 +2398,193 @@
           }
         }
       }
+    },
+    "/service_plans": {
+      "post": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Create Service Plan",
+        "operationId": "createServicePlan",
+        "description": "Returns the new Service Plan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportServicePlan"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Service Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicePlan"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
+    },
+    "/service_plans/{id}": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Show Service Plan",
+        "operationId": "showServicePlan",
+        "description": "Returns the specified Service Plan",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicePlan"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
+    },
+    "/service_plans/{id}/base": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Show Service Plan Base Schema",
+        "operationId": "showServicePlanBase",
+        "description": "Returns the specified Service Plan's base schema",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan Base Schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataDrivenFormSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
+    },
+    "/service_plans/{id}/modified": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Show Service Plan modified Schema",
+        "operationId": "showServicePlanModified",
+        "description": "Returns the specified Service Plan's modified schema",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan Modified Schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataDrivenFormSchema"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No modified schema present for service_plan."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Patch Service Plan Modified Schema",
+        "operationId": "patchServicePlanModified",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan Modified Schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataDrivenFormSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -2537,7 +2727,7 @@
       }
     },
     "responses": {
-      "InvalidEntity": {
+      "BadRequest": {
         "description": "The entity being created does not have either all the required parameters specified or the parameter value is invalid."
       },
       "Forbidden": {
@@ -2545,9 +2735,6 @@
       },
       "Unauthorized": {
         "description": "The caller is not authorized to access this resource."
-      },
-      "UnprocessableEntity": {
-        "description": "The entity is currently in a state that does not allow the requested action"
       }
     },
     "requestBodies": {
@@ -2600,17 +2787,18 @@
             "format": "url",
             "example": "The public facing image url for a portfolio."
           },
-          "workflow_ref": {
-            "type": "string",
-            "title": "Approval Workflow ID",
-            "example": "The current approval workflow selected for a portfolio",
-            "nullable": true
-          },
           "owner": {
             "type": "string",
             "title": "Owner",
             "example": "jdoe",
             "readOnly": true
+          },
+          "icon_id": {
+            "type": "string",
+            "title": "Icon ID",
+            "description": "The Portfolio Icon ID",
+            "readOnly": true,
+            "example": "1"
           },
           "created_at": {
             "type": "string",
@@ -2633,6 +2821,17 @@
             "type": "string",
             "title": "Service Offering Ref",
             "description": "The service offering ref should be retrieved from a call to the Topology Service.",
+            "example": "177"
+          }
+        }
+      },
+      "ImportServicePlan": {
+        "type": "object",
+        "properties": {
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "description": "The Portfolio Item to import the service plans for.",
             "example": "177"
           }
         }
@@ -2761,12 +2960,6 @@
             "example": "The URL for finding support for the portfolio item",
             "nullable": true
           },
-          "workflow_ref": {
-            "type": "string",
-            "title": "Approval Workflow ID",
-            "example": "The approval workflow selected for a portfolio item",
-            "nullable": true
-          },
           "owner": {
             "type": "string",
             "title": "Owner",
@@ -2791,6 +2984,13 @@
             "type": "string",
             "title": "Portfolio ID",
             "description": "ID of a parent portfolio",
+            "readOnly": true,
+            "example": "1"
+          },
+          "icon_id": {
+            "type": "string",
+            "title": "Icon ID",
+            "description": "The Portfolio Item Icon ID",
             "readOnly": true,
             "example": "1"
           },
@@ -3006,12 +3206,6 @@
             ],
             "description": "The state of the approval request (approved, denied, undecided, canceled)",
             "readOnly": true
-          },
-          "workflow_ref": {
-            "type": "string",
-            "title": "Workflow Ref",
-            "description": "The workflow that was requested",
-            "readOnly": true
           }
         }
       },
@@ -3104,22 +3298,27 @@
             "description": "The service plan description.",
             "readOnly": true
           },
-          "service_offering_id": {
+          "base": {
+            "type": "object",
+            "title": "base",
+            "description": "The base schema imported from Topology",
+            "readOnly": true
+          },
+          "modified": {
+            "type": "object",
+            "title": "modified",
+            "description": "The modified schema for Catalog"
+          },
+          "portfolio_item_id": {
             "type": "string",
-            "title": "Service Offering ID",
-            "description": "The reference ID of the service offering",
+            "title": "Portfolio Item ID",
+            "description": "The reference ID of the Portfolio Item",
             "readOnly": true
           },
           "id": {
             "type": "string",
             "title": "ID",
             "description": "The unique identifier for this service plan.",
-            "readOnly": true
-          },
-          "create_json_schema": {
-            "type": "object",
-            "title": "JSON Schema",
-            "description": "JSON schema for the object.",
             "readOnly": true
           }
         }
@@ -3380,6 +3579,11 @@
             "type": "string",
             "title": "Request account number",
             "description": "The Request account number"
+          },
+          "id": {
+            "type": "string",
+            "title": "Internal tenant id",
+            "description": "The internal tenant id"
           }
         }
       },
@@ -3482,6 +3686,117 @@
           }
         }
       },
+      "DataDrivenFormSchema": {
+        "type": "object",
+        "properties": {
+          "schema": {
+            "type": "object",
+            "example": {
+              "schema": {
+                "title": "",
+                "fields": [
+                  {
+                    "name": "username",
+                    "label": "What is your name",
+                    "validate": [
+                      {
+                        "type": "required-validator"
+                      },
+                      {
+                        "type": "min-length-validator",
+                        "threshold": 0
+                      },
+                      {
+                        "type": "max-length-validator",
+                        "threshold": 255
+                      }
+                    ],
+                    "component": "text-field",
+                    "helperText": "",
+                    "isRequired": true,
+                    "initialValue": ""
+                  },
+                  {
+                    "name": "quest",
+                    "label": "What is your quest?",
+                    "options": [
+                      {
+                        "label": "Test Approval",
+                        "value": "Test Approval"
+                      },
+                      {
+                        "label": "Test Catalog",
+                        "value": "Test Catalog"
+                      },
+                      {
+                        "label": "Test Topology",
+                        "value": "Test Topology"
+                      },
+                      {
+                        "label": "Seek the Holy Grail",
+                        "value": "Seek the Holy Grail"
+                      }
+                    ],
+                    "validate": [
+                      {
+                        "type": "required-validator"
+                      }
+                    ],
+                    "component": "select-field",
+                    "helperText": "",
+                    "isRequired": true,
+                    "initialValue": ""
+                  },
+                  {
+                    "name": "airspeed",
+                    "type": "number",
+                    "label": "What is the airspeed velocity of an unladen swallow?",
+                    "dataType": "float",
+                    "validate": [
+                      {
+                        "type": "min-number-value",
+                        "value": 0
+                      },
+                      {
+                        "type": "max-number-value",
+                        "value": 10
+                      }
+                    ],
+                    "component": "text-field",
+                    "helperText": "Type: Float",
+                    "initialValue": ""
+                  },
+                  {
+                    "name": "int_value",
+                    "type": "number",
+                    "label": "Integer value",
+                    "dataType": "integer",
+                    "validate": [
+                      {
+                        "type": "required-validator"
+                      },
+                      {
+                        "type": "min-number-value",
+                        "value": 0
+                      },
+                      {
+                        "type": "max-number-value",
+                        "value": 10
+                      }
+                    ],
+                    "component": "text-field",
+                    "helperText": "",
+                    "isRequired": true,
+                    "initialValue": 5
+                  }
+                ],
+                "description": ""
+              },
+              "schemaType": "default"
+            }
+          }
+        }
+      },
       "GraphQLRequest": {
         "type": "object",
         "properties": {
@@ -3524,3 +3839,4 @@
     }
   }
 }
+

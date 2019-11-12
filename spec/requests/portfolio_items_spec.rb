@@ -188,33 +188,6 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
-  context "service plans" do
-    let(:svc_object)           { instance_double("Catalog::ServicePlans") }
-    let(:plans)                { [{}, {}] }
-
-    before do
-      allow(Catalog::ServicePlans).to receive(:new).with(portfolio_item.id.to_s).and_return(svc_object)
-    end
-
-    it "fetches plans" do
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:items).and_return(plans)
-
-      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
-
-      expect(JSON.parse(response.body).count).to eq(2)
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "raises error" do
-      allow(svc_object).to receive(:process).and_raise(topo_ex)
-
-      get "/#{api}/portfolio_items/#{portfolio_item.id}/service_plans", :headers => default_headers
-      expect(response).to have_http_status(:service_unavailable)
-    end
-  end
-
   context "v1.0 provider control parameters" do
     let(:url) { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
@@ -239,7 +212,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe "patching portfolio items" do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription', :workflow_ref => 'PatchWorkflowRef'} }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription' } }
     let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
     let(:partial_attributes) { { :name => 'Curious George' } }
 
@@ -282,7 +255,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     context "when passing in nullable attributes" do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil, :workflow_ref => nil} }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil } }
       before do
         patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end
@@ -292,23 +265,9 @@ describe "PortfolioItemRequests", :type => :request do
       end
 
       it 'updates the field that is null' do
-        expect(json["workflow_ref"]).to be_nil
         expect(json["description"]).to be_nil
         expect(json["distributor"]).to be_nil
         expect(json["long_description"]).to be_nil
-      end
-    end
-
-    context "when passing in an invalid workflow_ref" do
-      before do
-        stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
-          .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
-
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
-      end
-
-      it 'returns a 422' do
-        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
@@ -332,7 +291,6 @@ describe "PortfolioItemRequests", :type => :request do
       it "returns a copy of the portfolio_item" do
         expect(json["description"]).to eq portfolio_item.description
         expect(json["owner"]).to eq portfolio_item.owner
-        expect(json["workflow_ref"]).to eq portfolio_item.workflow_ref
       end
 
       it "modifies the name to not collide" do
@@ -356,7 +314,6 @@ describe "PortfolioItemRequests", :type => :request do
       it "returns a copy of the portfolio_item" do
         expect(json["description"]).to eq portfolio_item.description
         expect(json["owner"]).to eq portfolio_item.owner
-        expect(json["workflow_ref"]).to eq portfolio_item.workflow_ref
         expect(json["name"]).to eq portfolio_item.name
       end
     end
@@ -369,8 +326,8 @@ describe "PortfolioItemRequests", :type => :request do
         copy_portfolio_item
       end
 
-      it 'returns a 422' do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it 'returns a 400' do
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end

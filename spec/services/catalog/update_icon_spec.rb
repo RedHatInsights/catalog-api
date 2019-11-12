@@ -4,7 +4,7 @@ describe Catalog::UpdateIcon, :type => :service do
 
   describe "#process" do
     let(:image) { create(:image, :content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.svg")))) }
-    let(:icon) { create(:icon, :source_ref => "127", :image => image, :iconable => portfolio_item) }
+    let(:icon) { create(:icon, :source_ref => "127", :image => image, :restore_to => portfolio_item) }
 
     context "when updating an icon" do
       let(:params) do

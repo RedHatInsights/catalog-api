@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_24_175018) do
+ActiveRecord::Schema.define(version: 2019_11_04_192052) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "approval_requests", force: :cascade do |t|
     t.string "approval_request_ref"
-    t.string "workflow_ref"
     t.integer "order_item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -36,18 +35,18 @@ ActiveRecord::Schema.define(version: 2019_10_24_175018) do
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
     t.bigint "image_id"
-    t.string "iconable_type"
-    t.bigint "iconable_id"
+    t.string "restore_to_type"
+    t.bigint "restore_to_id"
     t.index ["discarded_at"], name: "index_icons_on_discarded_at"
-    t.index ["iconable_type", "iconable_id"], name: "index_icons_on_iconable_type_and_iconable_id"
+    t.index ["restore_to_type", "restore_to_id"], name: "index_icons_on_restore_to_type_and_restore_to_id"
     t.index ["tenant_id"], name: "index_icons_on_tenant_id"
   end
 
   create_table "images", force: :cascade do |t|
     t.binary "content"
     t.string "extension"
-    t.string "hashcode"
     t.bigint "tenant_id"
+    t.string "hashcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_images_on_tenant_id"
@@ -67,8 +66,8 @@ ActiveRecord::Schema.define(version: 2019_10_24_175018) do
     t.bigint "portfolio_item_id"
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
-    t.string "owner"
     t.jsonb "context"
+    t.string "owner"
     t.string "external_url"
     t.string "insights_request_id"
     t.datetime "discarded_at"
@@ -102,7 +101,6 @@ ActiveRecord::Schema.define(version: 2019_10_24_175018) do
 
   create_table "portfolio_items", force: :cascade do |t|
     t.boolean "favorite"
-    t.string "name"
     t.string "description"
     t.boolean "orphan"
     t.string "state"
@@ -112,15 +110,15 @@ ActiveRecord::Schema.define(version: 2019_10_24_175018) do
     t.string "service_offering_ref"
     t.bigint "portfolio_id"
     t.string "service_offering_source_ref"
+    t.string "name"
     t.string "long_description"
     t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
-    t.string "service_offering_icon_ref"
     t.datetime "discarded_at"
     t.string "owner"
-    t.string "workflow_ref"
     t.string "service_offering_type"
+    t.bigint "icon_id"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolio_items_on_tenant_id"
   end
@@ -145,7 +143,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_175018) do
     t.bigint "tenant_id"
     t.datetime "discarded_at"
     t.string "owner"
-    t.string "workflow_ref"
+    t.bigint "icon_id"
     t.index ["discarded_at"], name: "index_portfolios_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end
@@ -178,6 +176,8 @@ ActiveRecord::Schema.define(version: 2019_10_24_175018) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
+    t.string "description"
     t.index ["discarded_at"], name: "index_service_plans_on_discarded_at"
     t.index ["tenant_id"], name: "index_service_plans_on_tenant_id"
   end

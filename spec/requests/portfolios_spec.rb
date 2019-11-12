@@ -137,7 +137,7 @@ describe 'Portfolios API' do
       it 'reports errors when discarding child portfolio_items fails' do
         delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end
@@ -192,7 +192,7 @@ describe 'Portfolios API' do
       it 'reports errors when undiscarding the child portfolio_items fails' do
         post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:bad_request)
       end
     end
 
@@ -213,7 +213,7 @@ describe 'Portfolios API' do
   end
 
   describe 'PATCH /portfolios/:portfolio_id' do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => "123456" } }
+    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
     let(:invalid_attributes) { { :fred => 'nope', :bob => 'bob portfolio' } }
     let(:partial_attributes) { { :name => 'Chef Pisghetti' } }
     context 'when patched portfolio is valid' do
@@ -233,7 +233,7 @@ describe 'Portfolios API' do
     end
 
     context 'when patched portfolio has openapi nullable values' do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio', :workflow_ref => nil } }
+      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
       before do
         patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => nullable_attributes
       end
@@ -245,7 +245,6 @@ describe 'Portfolios API' do
       it 'returns an updated portfolio object' do
         expect(json).not_to be_empty
         expect(json).to be_a Hash
-        expect(json['workflow_ref']).to eq nullable_attributes[:workflow_ref]
       end
     end
 
@@ -285,10 +284,10 @@ describe 'Portfolios API' do
         expect(json['name']).to eq valid_attributes[:name]
       end
 
-      it 'returns a status code 422 when trying to create with the same name' do
+      it 'returns a status code 400 when trying to create with the same name' do
         post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers
 
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(400)
       end
 
       it 'stores the username in the owner column' do
@@ -437,29 +436,54 @@ describe 'Portfolios API' do
     end
   end
 
-  context "GET /portfolios/{id}/tags" do
-    before do
-      portfolio.tag_add("test_tag")
+  context "tags" do
+    let(:tag_name) { 'Gnocchi' }
+    let(:tag_ns) { 'Charkie' }
+    let(:tag_value) { 'Hundley' }
+    let(:tag_params) do
+      { :name      => tag_name,
+        :namespace => tag_ns,
+        :value     => tag_value }
     end
 
-    it "returns the tags for the portfolio" do
-      get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
-
-      expect(json["meta"]["count"]).to eq 1
-      expect(json["data"].first["name"]).to eq "test_tag"
-    end
-  end
-
-  context "POST /portfolios/{id}/tag" do
-    let(:name) { 'Gnocchi' }
-    let(:params) do
-      {:name => name}
+    shared_examples_for "#tag_add_test" do
+      it "add tags for the portfolio" do
+        post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => tag_params
+        expect(json['name']).to eq(tag_params[:name])
+        expect(json['namespace']).to eq(tag_params[:namespace]) if tag_params.key?(:namespace)
+        expect(json['value']).to eq(tag_params[:value]) if tag_params.key?(:value)
+        expect(response).to have_http_status(200)
+      end
     end
 
-    it "add tags for the portfolio" do
-      post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => params
-      expect(json['name']).to eq(name)
-      expect(response).to have_http_status(200)
+    context "GET /portfolios/{id}/tags" do
+      before do
+        portfolio.tag_add("test_tag")
+      end
+
+      it "returns the tags for the portfolio" do
+        get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["name"]).to eq "test_tag"
+      end
+    end
+
+    context "POST /portfolios/{id}/tag" do
+      context 'no namespace and value' do
+        let(:tag_params) { { :name => tag_name } }
+        it_behaves_like "#tag_add_test"
+      end
+
+      context 'no value' do
+        let(:tag_params) { { :name => tag_name, :namespace => tag_ns } }
+        it_behaves_like "#tag_add_test"
+      end
+
+      context 'all in' do
+        let(:tag_params) { { :name => tag_name, :namespace => tag_ns, :value => tag_value } }
+        it_behaves_like "#tag_add_test"
+      end
     end
   end
 end

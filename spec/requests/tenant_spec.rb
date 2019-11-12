@@ -1,5 +1,6 @@
 describe 'Group Seed API' do
-  let(:tenant_id) { create(:tenant).id }
+  let!(:tenant) { create(:tenant) }
+  let!(:tenant_id) { tenant.id }
   let(:api_instance) { double }
   let(:rbac_seed) { instance_double(ManageIQ::API::Common::RBAC::Seed, :process => true) }
   let(:group1) { instance_double(RBACApiClient::GroupOut, :uuid => "123") }
@@ -26,6 +27,21 @@ describe 'Group Seed API' do
   around do |example|
     with_modified_env(:RBAC_URL => "http://localhost") do
       ManageIQ::API::Common::Request.with_request(modified_request(org_admin)) { example.call }
+    end
+  end
+
+  describe 'GET /tenants' do
+    before do
+      get "#{api}/tenants", :headers => default_headers
+    end
+
+    it 'returns status code 200' do
+      expect(response).to have_http_status(200)
+    end
+
+    it 'returns all scoped tenants' do
+      expect(json.first['external_tenant']).to eq tenant.external_tenant
+      expect(json.first['id']).to eq tenant.id.to_s
     end
   end
 
