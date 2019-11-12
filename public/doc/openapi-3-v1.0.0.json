@@ -1879,13 +1879,7 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "content": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
+                "$ref": "#/components/schemas/CreateIcon"
               }
             }
           }
@@ -2822,6 +2816,29 @@
             "title": "Service Offering Ref",
             "description": "The service offering ref should be retrieved from a call to the Topology Service.",
             "example": "177"
+          }
+        }
+      },
+      "CreateIcon": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "The binary image contents",
+            "format": "binary"
+          },
+          "portfolio_id": {
+            "type": "string",
+            "title": "Portfolio ID",
+            "description": "The Portfolio this Icon belongs to",
+            "example": "1"
+          },
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "description": "The Portfolio Item this Icon belongs to",
+            "example": "1"
           }
         }
       },
