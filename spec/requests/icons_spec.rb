@@ -56,7 +56,7 @@ describe "IconsRequests", :type => :request do
     end
 
     context "when providing proper parameters" do
-      let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
+      let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :portfolio_item_id => portfolio_item.id} }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -64,12 +64,11 @@ describe "IconsRequests", :type => :request do
 
       it "returns the created icon" do
         expect(json["image_id"]).to be_truthy
-        expect(json["source_id"]).to eq params[:source_id]
       end
     end
 
     context "when uploading a duplicate svg icon" do
-      let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :source_id => "27", :source_ref => "icon_ref", :portfolio_item_id => portfolio_item.id} }
+      let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :portfolio_item_id => portfolio_item.id} }
 
       it "uses the reference from the one that is already there" do
         expect(json["image_id"]).to eq image.id.to_s
@@ -80,8 +79,6 @@ describe "IconsRequests", :type => :request do
       let(:params) do
         {
           :content           => form_upload_test_image("ocp_logo_dupe.png"),
-          :source_id         => "29",
-          :source_ref        => "icon_ref",
           :portfolio_item_id => portfolio_item.id
         }
       end
@@ -95,8 +92,6 @@ describe "IconsRequests", :type => :request do
       let(:params) do
         {
           :content           => form_upload_test_image("ocp_logo_dupe.jpg"),
-          :source_id         => "29",
-          :source_ref        => "icon_ref",
           :portfolio_item_id => portfolio_item.id
         }
       end
@@ -114,13 +109,19 @@ describe "IconsRequests", :type => :request do
       end
     end
 
+    context "when not passing in a portfolio or portfolio_item id" do
+      let(:params) do
+        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png")))}
+      end
+
+      it "throws a 400" do
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
+
     context "when uploading a png" do
       let(:params) do
-        {
-          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png"))),
-          :source_id  => "29",
-          :source_ref => "icon_ref"
-        }
+        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png")))}
       end
 
       it "makes a new image and icon" do
@@ -130,11 +131,7 @@ describe "IconsRequests", :type => :request do
 
     context "when uploading a jpg" do
       let(:params) do
-        {
-          :content    => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg"))),
-          :source_id  => "29",
-          :source_ref => "icon_ref"
-        }
+        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg")))}
       end
 
       it "makes a new image and icon" do
