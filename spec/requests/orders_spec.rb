@@ -7,6 +7,7 @@ describe "OrderRequests", :type => :request do
 
   let!(:order) { create(:order) }
   let!(:order2) { create(:order) }
+  let(:order_id) { order.id }
 
   # TODO: Update this context with new logic. Will be fixed with
   # https://projects.engineering.redhat.com/browse/SSP-237
@@ -90,6 +91,21 @@ describe "OrderRequests", :type => :request do
         expect(json['data'].first['id']).to eq order.id.to_s
         expect(json['meta']['count']).to eq 1
       end
+    end
+  end
+
+  context "show orders" do
+    before do
+      get "/api/v1.0/orders/#{order_id}", :headers => default_headers
+    end
+
+    it "returns a 200" do
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "includes the correct payload" do
+      expect(json['id']).to eq order_id.to_s
     end
   end
 

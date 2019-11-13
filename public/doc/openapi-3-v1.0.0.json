@@ -14,9 +14,7 @@
   },
   "security": [
     {
-      "BasicAuth": [
-
-      ]
+      "BasicAuth": []
     }
   ],
   "tags": [
@@ -149,14 +147,14 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -185,6 +183,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -193,9 +194,6 @@
           },
           "404": {
             "description": "Portfolio not found."
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -233,14 +231,14 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -267,11 +265,11 @@
               }
             }
           },
-          "404": {
-            "description": "Portfolio Not Found."
-          },
           "400": {
             "description": "Failed to discard child portfolio items."
+          },
+          "404": {
+            "description": "Portfolio Not Found."
           }
         }
       }
@@ -385,6 +383,9 @@
           "200": {
             "description": "Successfully shared the portfolio"
           },
+          "400": {
+            "description": "One or more of the RBAC groups was not found"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -393,9 +394,6 @@
           },
           "404": {
             "description": "The Portfolio Object was not found."
-          },
-          "400": {
-            "description": "One or more of the RBAC groups was not found"
           }
         }
       }
@@ -541,6 +539,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -549,9 +550,6 @@
           },
           "404": {
             "description": "Portfolio not found."
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -741,6 +739,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -749,9 +750,6 @@
           },
           "404": {
             "description": "Tenant not found."
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -842,6 +840,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -850,9 +851,6 @@
           },
           "404": {
             "description": "Service Offering not found."
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1261,6 +1259,40 @@
       }
     },
     "/orders/{id}": {
+      "get": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Get a specific order",
+        "operationId": "showOrder",
+        "description": "Get a specific order based on the order ID",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order specified by the given ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "The Order ID was not found"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "Order"
@@ -1475,6 +1507,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -1483,9 +1518,6 @@
           },
           "404": {
             "description": "Order not found"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -1514,6 +1546,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -1522,9 +1557,6 @@
           },
           "404": {
             "description": "Order not found."
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1666,6 +1698,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -1674,9 +1709,6 @@
           },
           "404": {
             "description": "Order item not found."
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         },
         "requestBody": {
@@ -1839,6 +1871,9 @@
               }
             }
           },
+          "400": {
+            "description": "Portfolio not found"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -1847,9 +1882,6 @@
           },
           "404": {
             "description": "Portfolio Item not found"
-          },
-          "400": {
-            "description": "Portfolio not found"
           },
           "500": {
             "description": "Failed to copy Portfolio Item"
@@ -2134,14 +2166,14 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -2168,14 +2200,14 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -2200,14 +2232,14 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       },
@@ -2227,14 +2259,14 @@
           "204": {
             "description": "Tenant Setting successfully deleted."
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -3856,4 +3888,3 @@
     }
   }
 }
-

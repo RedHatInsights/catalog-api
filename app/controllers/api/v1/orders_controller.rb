@@ -7,6 +7,10 @@ module Api
         collection(Order.all)
       end
 
+      def show
+        render :json => Order.find(params.require(:id))
+      end
+
       def create
         render :json => Order.create
       end
