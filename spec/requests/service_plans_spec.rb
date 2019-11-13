@@ -6,7 +6,7 @@ describe "ServicePlansRequests", :type => :request do
 
   around do |example|
     with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :BYPASS_RBAC => 'true') do
-      example.call
+      ManageIQ::API::Common::Request.with_request(default_request) { example.call }
     end
   end
 

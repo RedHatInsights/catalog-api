@@ -6,4 +6,5 @@ module Catalog
   class InvalidParameter < StandardError; end
   class OrderUncancelable < StandardError; end
   class SourcesError < StandardError; end
+  class InvalidSurvey < StandardError; end
 end

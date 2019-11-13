@@ -4,4 +4,13 @@ class ServicePlan < ApplicationRecord
 
   belongs_to :portfolio_item
   validates :base, :presence => true
+  validate :modified_survey, :on => :update, :if => proc { modified.present? }
+
+  private
+
+  def modified_survey
+    if Catalog::SurveyCompare.changed?(self)
+      raise Catalog::InvalidSurvey, "Base survey does not match Topology"
+    end
+  end
 end
