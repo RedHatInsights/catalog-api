@@ -2,6 +2,7 @@ module Api
   module V1
     class OrdersController < ApplicationController
       include Api::V1::Mixins::IndexMixin
+      before_action :read_access_check, :only => %i[show]
 
       def index
         collection(Order.all)
