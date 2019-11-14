@@ -40,8 +40,12 @@ describe Catalog::CreateRequestForAppliedInventories, :type => :service do
       expect(order_item.topology_task_ref).to eq("321")
     end
 
-    it "updates the order state" do
-      expect(subject.process.order.state).to eq("Waiting for inventories")
+    it "creates a progress message on the order item" do
+      subject.process
+      progress_message = ProgressMessage.last
+      expect(progress_message.level).to eq("info")
+      expect(progress_message.message).to eq("Waiting for inventories")
+      expect(progress_message.order_item_id).to eq(order_item.id.to_s)
     end
   end
 end

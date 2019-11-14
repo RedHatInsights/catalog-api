@@ -2,15 +2,15 @@ module Catalog
   class CreateRequestForAppliedInventories
     attr_reader :order
 
-    def initialize(id)
-      @order = Order.find_by!(:id => id)
+    def initialize(order_id)
+      @order = Order.find_by!(:id => order_id)
       @item = @order.order_items.first
     end
 
     def process
       send_request_to_compute_applied_inventories
 
-      @order.update(:state => "Waiting for inventories")
+      @item.update_message(:info, "Waiting for inventories")
       self
     end
 
@@ -28,7 +28,7 @@ module Catalog
     end
 
     def service_offering_ref
-      @order.order_items.first.portfolio_item.service_offering_ref.to_s
+      @item.portfolio_item.service_offering_ref.to_s
     end
   end
 end
