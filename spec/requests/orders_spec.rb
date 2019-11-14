@@ -94,21 +94,6 @@ describe "OrderRequests", :type => :request do
     end
   end
 
-  context "show orders" do
-    before do
-      get "/api/v1.0/orders/#{order_id}", :headers => default_headers
-    end
-
-    it "returns a 200" do
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "includes the correct payload" do
-      expect(json['id']).to eq order_id.to_s
-    end
-  end
-
   context "create" do
     it "create a new order" do
       post "/api/v1.0/orders", :headers => default_headers, :params => {}
