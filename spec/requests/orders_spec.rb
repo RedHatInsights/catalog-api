@@ -7,7 +7,6 @@ describe "OrderRequests", :type => :request do
 
   let!(:order) { create(:order) }
   let!(:order2) { create(:order) }
-  let(:order_id) { order.id }
 
   # TODO: Update this context with new logic. Will be fixed with
   # https://projects.engineering.redhat.com/browse/SSP-237
