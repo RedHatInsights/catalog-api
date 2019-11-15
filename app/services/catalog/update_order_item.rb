@@ -2,9 +2,10 @@ module Catalog
   class UpdateOrderItem
     class ServiceInstanceWithoutExternalUrl < StandardError; end
 
-    def initialize(topic)
+    def initialize(topic, task)
       @payload = topic.payload
       @message = topic.message
+      @task    = task
     end
 
     def process
@@ -32,8 +33,7 @@ module Catalog
 
     def fetch_external_url
       TopologicalInventory.call do |api_instance|
-        task = api_instance.show_task(@payload["task_id"])
-        @service_instance_id = task.context[:service_instance][:id]
+        @service_instance_id = @task.context[:service_instance][:id]
         service_instance = api_instance.show_service_instance(@service_instance_id)
         raise ServiceInstanceWithoutExternalUrl if service_instance.external_url.nil?
         service_instance.external_url

@@ -15,14 +15,14 @@ module Internal
         json_response(nil)
       end
 
-      def notify_order_item
+      def notify_task
         task_id = params.require(:task_id)
         payload = params.require(:payload)
         message = params.require(:message)
 
-        topic = Struct.new(:payload, :message).new(payload.merge("task_id" => task_id), message)
+        topic = OpenStruct.new(:payload => payload.merge("task_id" => task_id), :message => message)
         ActsAsTenant.without_tenant do
-          Catalog::UpdateOrderItem.new(topic).process
+          Catalog::DetermineTaskRelevancy.new(topic).process
         end
 
         json_response(nil)

@@ -20,19 +20,28 @@ describe Internal::V1x0::NotifyController, :type => :request do
     end
   end
 
-  describe "POST /notify/order_item/:task_id" do
-    let!(:order_item) do
-      create(:order_item, :topology_task_ref => "321")
-    end
-    let(:update_order_item) { instance_double("Catalog::UpdateOrderItem") }
+  describe "POST /notify/task/:task_id" do
+    let(:determine_task_relevancy) { instance_double("Catalog::DetermineTaskRelevancy") }
 
     before do
-      allow(Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
-      allow(update_order_item).to receive(:process)
+      allow(Catalog::DetermineTaskRelevancy).to receive(:new)
+        .with(
+          having_attributes(
+            :payload => hash_including("status" => "test", "task_id" => "321"),
+            :message => "message"
+          )
+        )
+        .and_return(determine_task_relevancy)
+      allow(determine_task_relevancy).to receive(:process)
+    end
+
+    it "delegates to another service" do
+      expect(determine_task_relevancy).to receive(:process)
+      post "/internal/v1.0/notify/task/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
     end
 
     it "returns a 200" do
-      post "/internal/v1.0/notify/order_item/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
+      post "/internal/v1.0/notify/task/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
 
       expect(response.status).to eq(200)
     end

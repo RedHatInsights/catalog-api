@@ -1,5 +1,5 @@
 describe Catalog::CreateApprovalRequest, :type => :service do
-  let(:create_approval_request) { described_class.new(order.id) }
+  let(:create_approval_request) { described_class.new(task) }
 
   around do |example|
     with_modified_env(:APPROVAL_URL => "http://localhost") do
@@ -9,7 +9,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
   let!(:order) { order_item.order }
   let!(:portfolio_item) { create(:portfolio_item) }
-  let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item) }
+  let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item, :topology_task_ref => "321") }
+  let(:task) { TopologicalInventoryApiClient::Task.new(:id => "321") }
 
   let(:sanitize_service_class) do
     class_double(Catalog::OrderItemSanitizedParameters).as_stubbed_const(:transfer_nested_constants => true)

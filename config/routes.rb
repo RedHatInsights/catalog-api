@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
     namespace :v1x0, :controller => 'notify', :path => "v1.0" do
       post '/notify/approval_request/:request_id', :action => 'notify_approval_request'
-      post '/notify/order_item/:task_id', :action => 'notify_order_item'
+      post '/notify/task/:task_id', :action => 'notify_task'
     end
   end
 
