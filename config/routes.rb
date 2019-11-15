@@ -26,7 +26,7 @@ Rails.application.routes.draw do
       post "/graphql" => "graphql#query"
       post '/orders/:order_id/submit_order', :to => "orders#submit_order", :as => 'order_submit_order'
       patch '/orders/:order_id/cancel', :to => "orders#cancel_order", :as => 'order_cancel'
-      resources :orders,                :only => [:create, :index, :destroy] do
+      resources :orders,                :only => [:create, :index, :show, :destroy] do
         resources :order_items,           :only => [:create, :index, :show]
 
         post :restore, :to => "orders#restore"
