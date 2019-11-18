@@ -10,7 +10,6 @@ class Portfolio < ApplicationRecord
   belongs_to :icon, :optional => true
 
   validates :name, :presence => true, :uniqueness => { :scope => %i(tenant_id discarded_at) }
-  validates :image_url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :allow_blank => true
   validates :enabled_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
 
   has_many :portfolio_items, :dependent => :destroy
