@@ -46,5 +46,31 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         subject.process
       end
     end
+
+    context "when the task context does not have either key path" do
+      let(:task) do
+        TopologicalInventoryApiClient::Task.new(
+          :state   => "Completed",
+          :status  => "error",
+          :context => {:error => "Undefined method oh noes"}
+        )
+      end
+      let!(:order_item) { create(:order_item, :topology_task_ref => task.id) }
+
+      it "updates the item with a progress message" do
+        subject.process
+        progress_message = ProgressMessage.last
+        expect(progress_message.level).to eq("error")
+        expect(progress_message.message).to eq("Topology task error")
+        expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+      end
+
+      it "logs an error" do
+        expect(Rails.logger).to receive(:error).with(
+          "Topology error during task. State: #{task.state}. Status: #{task.status}. Context: #{task.context}"
+        )
+        subject.process
+      end
+    end
   end
 end
