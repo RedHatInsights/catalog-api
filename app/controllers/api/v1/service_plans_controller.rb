@@ -9,7 +9,7 @@ module Api
         if portfolio_item.service_plans.empty?
           render :json => Catalog::ServicePlans.new(portfolio_item.id).process.items
         else
-          render :json => portfolio_item.service_plans
+          render :json => Catalog::ServicePlanJson.new(:portfolio_item_id => portfolio_item.id, :collection => true).process.json
         end
       end
 
@@ -19,20 +19,20 @@ module Api
       end
 
       def show
-        plan = ServicePlan.find(params.require(:id))
-        render :json => plan
+        svc = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:id))
+        render :json => svc.process.json
       end
 
       def base
-        plan = ServicePlan.find(params.require(:service_plan_id))
-        render :json => plan.base
+        svc = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:service_plan_id), :schema => "base")
+        render :json => svc.process.json
       end
 
       def modified
-        plan = ServicePlan.find(params.require(:service_plan_id))
+        plan = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:service_plan_id)).process.json
 
-        if plan.modified.present?
-          render :json => plan.modified
+        if plan["create_json_schema"]
+          render :json => plan
         else
           head :no_content
         end
