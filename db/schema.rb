@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_04_192052) do
+ActiveRecord::Schema.define(version: 2019_11_18_220525) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -137,7 +137,6 @@ ActiveRecord::Schema.define(version: 2019_11_04_192052) do
     t.string "name"
     t.string "description"
     t.boolean "enabled"
-    t.string "image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"

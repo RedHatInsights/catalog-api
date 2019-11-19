@@ -2807,12 +2807,6 @@
             "default": false,
             "example": false
           },
-          "image_url": {
-            "type": "string",
-            "title": "Image URL",
-            "format": "url",
-            "example": "The public facing image url for a portfolio."
-          },
           "owner": {
             "type": "string",
             "title": "Owner",
