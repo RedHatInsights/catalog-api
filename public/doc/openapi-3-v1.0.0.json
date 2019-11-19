@@ -2558,6 +2558,15 @@
         ],
         "summary": "Patch Service Plan Modified Schema",
         "operationId": "patchServicePlanModified",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchModifiedServicePlan"
+              }
+            }
+          }
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -2822,6 +2831,42 @@
             "title": "Service Offering Ref",
             "description": "The service offering ref should be retrieved from a call to the Topology Service.",
             "example": "177"
+          }
+        }
+      },
+      "CreateIcon": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "The binary image contents",
+            "format": "binary"
+          },
+          "portfolio_id": {
+            "type": "string",
+            "title": "Portfolio ID",
+            "description": "The Portfolio this Icon belongs to",
+            "example": "1"
+          },
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item ID",
+            "description": "The Portfolio Item this Icon belongs to",
+            "example": "1"
+          }
+        }
+      },
+      "PatchModifiedServicePlan": {
+        "type": "object",
+        "properties": {
+          "modified": {
+            "type": "object",
+            "title": "Modified Schema",
+            "description": "the new modified schema for the service plan",
+            "example": {
+              "$ref": "#/components/schemas/DataDrivenFormSchema"
+            }
           }
         }
       },
@@ -3298,16 +3343,11 @@
             "description": "The service plan description.",
             "readOnly": true
           },
-          "base": {
+          "create_json_schema": {
             "type": "object",
-            "title": "base",
-            "description": "The base schema imported from Topology",
+            "title": "JSON Schema",
+            "description": "JSON schema for the object.",
             "readOnly": true
-          },
-          "modified": {
-            "type": "object",
-            "title": "modified",
-            "description": "The modified schema for Catalog"
           },
           "portfolio_item_id": {
             "type": "string",
