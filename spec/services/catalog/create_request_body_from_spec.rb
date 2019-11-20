@@ -6,15 +6,15 @@ describe Catalog::CreateRequestBodyFrom, :type => :service do
 
   describe "#process" do
     let(:sanitize_service_instance) { instance_double(Catalog::OrderItemSanitizedParameters, :sanitized_parameters => {:a => 1}) }
-    let(:local_tag_service_instance) { instance_double(Tags::CollectLocalOrderResources, :tag_resources => []) }
-    let(:remote_tag_service_instance) { instance_double(Tags::CollectRemoteInventoryResources, :tag_resources => []) }
+    let(:local_tag_service_instance) { instance_double(Tags::CollectLocalOrderResources, :tag_resources => ["a"]) }
+    let(:remote_tag_service_instance) { instance_double(Tags::Topology::RemoteInventory, :tag_resources => ["b"]) }
 
     before do
       allow(Catalog::OrderItemSanitizedParameters).to receive(:new).and_return(sanitize_service_instance)
       allow(sanitize_service_instance).to receive(:process).and_return(sanitize_service_instance)
       allow(Tags::CollectLocalOrderResources).to receive(:new).with(:order_id => order.id).and_return(local_tag_service_instance)
       allow(local_tag_service_instance).to receive(:process).and_return(local_tag_service_instance)
-      allow(Tags::CollectRemoteInventoryResources).to receive(:new).with(task).and_return(remote_tag_service_instance)
+      allow(Tags::Topology::RemoteInventory).to receive(:new).with(task).and_return(remote_tag_service_instance)
       allow(remote_tag_service_instance).to receive(:process).and_return(remote_tag_service_instance)
     end
 
@@ -27,7 +27,7 @@ describe Catalog::CreateRequestBodyFrom, :type => :service do
           :order_id  => order_item.order_id.to_s,
           :params    => {:a => 1}
         }
-        request.tag_resources = []
+        request.tag_resources = ["a", "b"]
       end
 
       expect(subject.process.result.to_json).to eq(req.to_json)

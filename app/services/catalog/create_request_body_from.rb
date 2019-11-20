@@ -10,8 +10,6 @@ module Catalog
 
     def process
       svc_params_sanitized = Catalog::OrderItemSanitizedParameters.new(:order_item_id => @order_item.id).process.sanitized_parameters
-      local_tag_resources = Tags::CollectLocalOrderResources.new(:order_id => @order.id).process.tag_resources
-      remote_tag_resources = Tags::CollectRemoteInventoryResources.new(@task).process.tag_resources
 
       @result = ApprovalApiClient::RequestIn.new.tap do |request|
         request.name      = @order_item.portfolio_item.name
@@ -21,10 +19,19 @@ module Catalog
           :order_id  => @order_item.order_id.to_s,
           :params    => svc_params_sanitized
         }
-        request.tag_resources = local_tag_resources + remote_tag_resources
+        request.tag_resources = all_tag_resources
       end
 
       self
+    end
+
+    private
+
+    def all_tag_resources
+      local_tag_resources = Tags::CollectLocalOrderResources.new(:order_id => @order.id).process.tag_resources
+      remote_tag_resources = Tags::Topology::RemoteInventory.new(@task).process.tag_resources
+
+      local_tag_resources + remote_tag_resources
     end
   end
 end
