@@ -31,7 +31,7 @@ describe Catalog::SubmitOrder do
     allow(validater).to receive(:process).and_return(validater)
     allow(validater).to receive(:valid).and_return(validity)
 
-    allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
   end
 
   context "when the order ID is valid" do
@@ -62,7 +62,7 @@ describe Catalog::SubmitOrder do
       let(:validity) { false }
 
       it "throws an unauthorized exception" do
-        ManageIQ::API::Common::Request.with_request(default_request) do
+        Insights::API::Common::Request.with_request(default_request) do
           expect { submit_order.process }.to raise_error(Catalog::NotAuthorized)
         end
       end

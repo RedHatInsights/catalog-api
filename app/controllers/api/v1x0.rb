@@ -1,4 +1,3 @@
-require 'manageiq-api-common'
 module Api
   module V1x0
     class RootController < ApplicationController

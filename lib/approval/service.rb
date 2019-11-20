@@ -19,7 +19,7 @@ module Approval
     end
 
     private_class_method def self.init(klass)
-      headers = ManageIQ::API::Common::Request.current_forwardable
+      headers = Insights::API::Common::Request.current_forwardable
       klass.new.tap do |api|
         api.api_client.default_headers.merge!(headers)
       end

@@ -24,7 +24,7 @@ end
 gem 'dhasher'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
 gem 'jbuilder', '~> 2.0'
-gem 'manageiq-api-common', '~> 2.1'
+gem 'insights-api-common', '~> 3.0'
 gem 'manageiq-loggers', '~> 0.2'
 gem 'manageiq-messaging', '~> 0.1.2', :require => false
 gem 'mimemagic', '~> 0.3.3'

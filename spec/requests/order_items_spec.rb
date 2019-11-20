@@ -44,7 +44,7 @@ describe "OrderItemsRequests", :type => :request do
 
         context "after an order has an order item created under it" do
           before do
-            ManageIQ::API::Common::Request.with_request(default_request) do
+            Insights::API::Common::Request.with_request(default_request) do
               post "/api/v1.0/orders/#{order_3.id}/order_items", :headers => default_headers, :params => params
             end
           end
@@ -66,7 +66,7 @@ describe "OrderItemsRequests", :type => :request do
 
     context "when creating order_items" do
       before do
-        ManageIQ::API::Common::Request.with_request(default_request) do
+        Insights::API::Common::Request.with_request(default_request) do
           post "/api/v1.0/orders/#{order_3.id}/order_items", :headers => default_headers, :params => params
         end
       end

@@ -1,30 +1,30 @@
 class ApplicationController < ActionController::API
   include Response
   include Api::V1::Mixins::RBACMixin
-  include ManageIQ::API::Common::ApplicationControllerMixins::ApiDoc
-  include ManageIQ::API::Common::ApplicationControllerMixins::Common
-  include ManageIQ::API::Common::ApplicationControllerMixins::ExceptionHandling
-  include ManageIQ::API::Common::ApplicationControllerMixins::RequestBodyValidation
-  include ManageIQ::API::Common::ApplicationControllerMixins::RequestPath
-  include ManageIQ::API::Common::ApplicationControllerMixins::Parameters
+  include Insights::API::Common::ApplicationControllerMixins::ApiDoc
+  include Insights::API::Common::ApplicationControllerMixins::Common
+  include Insights::API::Common::ApplicationControllerMixins::ExceptionHandling
+  include Insights::API::Common::ApplicationControllerMixins::RequestBodyValidation
+  include Insights::API::Common::ApplicationControllerMixins::RequestPath
+  include Insights::API::Common::ApplicationControllerMixins::Parameters
 
   around_action :with_current_request
 
   private
 
   def with_current_request
-    ManageIQ::API::Common::Request.with_request(request) do |current|
+    Insights::API::Common::Request.with_request(request) do |current|
       if current.required_auth?
-        raise ManageIQ::API::Common::EntitlementError, "User not Entitled" unless check_entitled(current.entitlement)
+        raise Insights::API::Common::EntitlementError, "User not Entitled" unless check_entitled(current.entitlement)
 
         ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
       else
         ActsAsTenant.without_tenant { yield }
       end
     end
-  rescue ManageIQ::API::Common::EntitlementError => e
+  rescue Insights::API::Common::EntitlementError => e
     json_response({:errors => e.message}, :forbidden)
-  rescue ManageIQ::API::Common::IdentityError => e
+  rescue Insights::API::Common::IdentityError => e
     json_response({:errors => e.message}, :unauthorized)
   end
 

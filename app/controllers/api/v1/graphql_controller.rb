@@ -1,4 +1,4 @@
-require "manageiq/api/common/graphql"
+require "insights/api/common/graphql"
 
 module Api
   module V1
@@ -9,15 +9,15 @@ module Api
         {
           "^.*$" => {
             "base_query" => lambda do |model_class, _ctx|
-              ManageIQ::API::Common::RBAC::Access.enabled? ? rbac_scope(model_class.all) : model_class
+              Insights::API::Common::RBAC::Access.enabled? ? rbac_scope(model_class.all) : model_class
             end
           }
         }
       end
 
       def query
-        graphql_api_schema = ::ManageIQ::API::Common::GraphQL::Generator.init_schema(request, overlay)
-        variables = ::ManageIQ::API::Common::GraphQL.ensure_hash(params[:variables])
+        graphql_api_schema = ::Insights::API::Common::GraphQL::Generator.init_schema(request, overlay)
+        variables = ::Insights::API::Common::GraphQL.ensure_hash(params[:variables])
         result = graphql_api_schema.execute(
           params[:query],
           :variables => variables

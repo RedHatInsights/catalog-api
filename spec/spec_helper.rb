@@ -11,7 +11,7 @@ require 'rspec/rails'
 require 'webmock/rspec'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
-Dir[ManageIQ::API::Common::Engine.root.join("spec/support/**/*.rb")].each { |f| require f }
+Dir[Insights::API::Common::Engine.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 begin
   ActiveRecord::Migration.maintain_test_schema!

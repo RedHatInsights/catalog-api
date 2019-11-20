@@ -3,7 +3,7 @@ describe 'Settings API', :type => :request do
   let(:retreived_tenant) { Tenant.find(tenant.id) }
 
   context "when the user is a catalog admin" do
-    before { allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true) }
+    before { allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true) }
 
     describe "#index" do
       before { get "#{api}/settings", :headers => default_headers }
@@ -89,7 +89,7 @@ describe 'Settings API', :type => :request do
   end
 
   context "when the user is not a catalog admin" do
-    before { allow(ManageIQ::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false) }
+    before { allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false) }
 
     it "does not allow any operations" do
       get "#{api}/settings", :headers => default_headers

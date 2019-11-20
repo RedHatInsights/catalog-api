@@ -21,9 +21,9 @@ class OrderItem < ApplicationRecord
   def set_defaults
     self.state = "Created"
 
-    if ManageIQ::API::Common::Request.current.present?
-      self.context = ManageIQ::API::Common::Request.current.to_h
-      self.insights_request_id = ManageIQ::API::Common::Request.current.request_id
+    if Insights::API::Common::Request.current.present?
+      self.context = Insights::API::Common::Request.current.to_h
+      self.insights_request_id = Insights::API::Common::Request.current.request_id
     end
   end
 

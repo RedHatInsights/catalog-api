@@ -22,7 +22,7 @@ module Api
         end
 
         def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)
-          return unless ManageIQ::API::Common::RBAC::Access.enabled?
+          return unless Insights::API::Common::RBAC::Access.enabled?
           return if catalog_administrator?
 
           ids = access_id_list(verb, klass)
@@ -30,24 +30,24 @@ module Api
         end
 
         def permission_check(verb, klass = controller_name.classify.constantize)
-          return unless ManageIQ::API::Common::RBAC::Access.enabled?
+          return unless Insights::API::Common::RBAC::Access.enabled?
 
-          access_obj = ManageIQ::API::Common::RBAC::Access.new(klass.table_name, verb).process
+          access_obj = Insights::API::Common::RBAC::Access.new(klass.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
         end
 
         def role_check(role)
-          return unless ManageIQ::API::Common::RBAC::Access.enabled?
+          return unless Insights::API::Common::RBAC::Access.enabled?
 
-          raise Catalog::NotAuthorized unless ManageIQ::API::Common::RBAC::Roles.assigned_role?(role)
+          raise Catalog::NotAuthorized unless Insights::API::Common::RBAC::Roles.assigned_role?(role)
         end
 
         def catalog_administrator?
-          ManageIQ::API::Common::RBAC::Roles.assigned_role?(ADMINISTRATOR_ROLE_NAME)
+          Insights::API::Common::RBAC::Roles.assigned_role?(ADMINISTRATOR_ROLE_NAME)
         end
 
         def access_id_list(verb, klass)
-          access_obj = ManageIQ::API::Common::RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
+          access_obj = Insights::API::Common::RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
 
           access_obj.id_list

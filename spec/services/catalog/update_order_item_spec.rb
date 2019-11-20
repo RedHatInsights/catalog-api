@@ -6,7 +6,7 @@ describe Catalog::UpdateOrderItem, :type => :service do
     let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client, nil) }
     let(:payload) { {"task_id" => "123", "status" => status, "state" => state, "context" => "payloadcontext"} }
     let!(:item) do
-      ManageIQ::API::Common::Request.with_request(default_request) do
+      Insights::API::Common::Request.with_request(default_request) do
         create(:order_item, :topology_task_ref => topology_task_ref)
       end
     end
