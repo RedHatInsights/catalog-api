@@ -1152,9 +1152,9 @@
         "tags": [
           "Portfolio"
         ],
-        "summary": "Add Tag for Portfolio",
+        "summary": "Add Tag for Portfolio Item",
         "operationId": "addPortfolioItemTag",
-        "description": "Adds a single tag to Portfolio object",
+        "description": "Adds a single tag to a Portfolio Item object",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
