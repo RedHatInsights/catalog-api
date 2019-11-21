@@ -1,83 +1,85 @@
 module Catalog
   class DataDrivenFormValidator
-    COMPONENTS = %i[text-field
-                    textarea-field
-                    field-array
-                    select-field
-                    checkbox
-                    sub-form
-                    radio
-                    tabs
-                    tab-item
+    COMPONENTS = %i[checkbox
                     date-picker
-                    time-picker
-                    wizard
+                    field-array
+                    plain-text
+                    radio
+                    select-field
+                    sub-form
                     switch-field
-                    plain-text].freeze
+                    tab-item
+                    tabs
+                    text-field
+                    textarea-field
+                    time-picker
+                    wizard].freeze
 
-    VALIDATORS = %i[required-validator
-                    min-length-validator
+    VALIDATORS = %i[exact-length-validator
                     max-length-validator
-                    exact-length-validator
-                    min-items-validator
-                    min-number-value
                     max-number-value
+                    min-items-validator
+                    min-length-validator
+                    min-number-value
                     pattern-validator
+                    required-validator
                     url-validator].freeze
 
-    DATA_TYPES = %i[integer
+    DATA_TYPES = %i[boolean
                     float
+                    integer
                     number
-                    boolean
                     string].freeze
 
     def self.valid?(ddf)
       ddf = ddf.class == Hash ? ddf.with_indifferent_access : JSON.parse(ddf).with_indifferent_access
-      fields?(ddf[:schema][:fields])
+      check_fields(ddf[:schema][:fields])
 
       true
     end
 
     class << self
-      def fields?(fields)
+      private
+
+      def check_fields(fields)
         fields.each do |field|
-          component?(field[:component].to_sym)
-          data_type?(field[:dataType].to_sym) if field.key?(:dataType)
-          validators?(field[:validate]) if field.key?(:validate)
-          options?(fields)
+          check_component(field[:component].to_sym)
+          check_data_type(field[:dataType].to_sym) if field.key?(:dataType)
+          check_validators(field[:validate]) if field.key?(:validate)
+          check_options(fields)
         end
       end
 
-      def component?(schema_component)
-        raise Catalog::InvalidSurvey unless COMPONENTS.include?(schema_component)
+      def check_component(schema_component)
+        raise Catalog::InvalidSurvey, "Invalid Component: #{schema_component}" unless COMPONENTS.include?(schema_component)
       end
 
-      def data_type?(schema_data_type)
-        raise Catalog::InvalidSurvey unless DATA_TYPES.include?(schema_data_type)
+      def check_data_type(schema_data_type)
+        raise Catalog::InvalidSurvey, "Invalid Data Type: #{schema_data_type}" unless DATA_TYPES.include?(schema_data_type)
       end
 
-      def validators?(schema_validators)
+      def check_validators(schema_validators)
         schema_validators.map do |validator|
           next if validator.nil?
-          raise Catalog::InvalidSurvey unless VALIDATORS.include?(validator[:type].to_sym)
+          raise Catalog::InvalidSurvey, "Invalid Validator: #{validator}" unless VALIDATORS.include?(validator[:type].to_sym)
 
           # validator types that require other fields in the validator
           case validator[:type]
           when "min-length-validator", "max-length-validator", "exact-length-validator"
-            raise Catalog::InvalidSurvey if validator[:threshold].nil?
+            raise Catalog::InvalidSurvey, "Validator type #{validator[:type]} requires a `threshold` key" if validator[:threshold].nil?
           when "min-number-value", "max-number-value"
-            raise Catalog::InvalidSurvey if validator[:value].nil?
+            raise Catalog::InvalidSurvey, "Validator type #{validator[:type]} requires a `value` key" if validator[:value].nil?
           end
         end
       end
 
-      def options?(schema_fields)
+      def check_options(schema_fields)
         schema_fields.map do |field|
           next unless field[:component] == "select-field"
 
           # the options must contain label and value keys
           field[:options].each do |option|
-            raise Catalog::InvalidSurvey unless option.key?(:label) && option.key?(:value)
+            raise Catalog::InvalidSurvey, "Option types require `label` and `value` keys" unless option.key?(:label) && option.key?(:value)
           end
         end
       end
