@@ -1,6 +1,7 @@
 module Catalog
   class SubmitOrder
     include SourceMixin
+    include SurveyMixin
 
     attr_reader :order
 
@@ -12,6 +13,7 @@ module Catalog
       @order = Order.find_by!(:id => @order_id)
       @order.order_items.each do |order_item|
         raise Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
+        raise Catalog::InvalidSurvey, "Base survey does not match Topology" if item_surveys_changed?(order_item.portfolio_item)
 
         submit_order_item(order_item)
       end
