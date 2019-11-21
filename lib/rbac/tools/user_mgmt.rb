@@ -8,7 +8,7 @@ module RBAC
       end
 
       def process
-        ManageIQ::API::Common::Request.with_request(@request) do
+        Insights::API::Common::Request.with_request(@request) do
           get_group_uuid
           if @options[:mode] == "add"
             add_to_group
@@ -23,8 +23,8 @@ module RBAC
       private
 
       def get_group_uuid
-        match = ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-          ManageIQ::API::Common::RBAC::Service.paginate(api, :list_groups, {}).detect do |grp|
+        match = Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+          Insights::API::Common::RBAC::Service.paginate(api, :list_groups, {}).detect do |grp|
             @options[:group].casecmp?(grp.name)
           end
         end
@@ -34,7 +34,7 @@ module RBAC
 
       def remove_from_group
         puts "Removing user #{@users} from group #{@options[:group]}"
-        ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+        Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
           @users.each do |user|
             api.delete_principal_from_group(@group_uuid, user)
           end
@@ -49,7 +49,7 @@ module RBAC
             principal.username = user
           end
         end
-        ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+        Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
           api.add_principal_to_group(@group_uuid, group_principal_in)
         end
       end

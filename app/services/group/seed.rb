@@ -4,12 +4,12 @@ module Group
     CATALOG_ADMINISTRATOR_GROUP = "Catalog Administrators".freeze
 
     def initialize(tenant)
-      @user = ManageIQ::API::Common::Request.current.user
+      @user = Insights::API::Common::Request.current.user
       validate(tenant)
     end
 
     def validate(tenant)
-      account_number = ManageIQ::API::Common::Request.current.identity['identity']['account_number']
+      account_number = Insights::API::Common::Request.current.identity['identity']['account_number']
       raise Catalog::NotAuthorized if account_number != tenant.external_tenant
       raise Catalog::NotAuthorized unless @user.org_admin?
 
@@ -41,7 +41,7 @@ module Group
     private
 
     def run_seeding
-      seeded = ManageIQ::API::Common::RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
+      seeded = Insights::API::Common::RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
       if seeded
         RbacSeed.create!(:external_tenant => @user.tenant)
         code(200)
@@ -57,14 +57,14 @@ module Group
         group.principals = [RBACApiClient::PrincipalIn.new(:username => @user.username)]
       end
 
-      ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+      Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
         api.add_principal_to_group(group_uuid(CATALOG_ADMINISTRATOR_GROUP), group_principal_in)
       end
     end
 
     def group_uuid(group)
-      match = ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-        ManageIQ::API::Common::RBAC::Service.paginate(api, :list_groups, :name => group).detect do |grp|
+      match = Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+        Insights::API::Common::RBAC::Service.paginate(api, :list_groups, :name => group).detect do |grp|
           group == grp.name
         end
       end
@@ -74,7 +74,7 @@ module Group
     end
 
     def lookup_groups
-      ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api_instance|
+      Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api_instance|
         @seeded = api_instance.list_groups
       end
     end

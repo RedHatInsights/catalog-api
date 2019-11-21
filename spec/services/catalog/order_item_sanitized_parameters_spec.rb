@@ -3,7 +3,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
   let(:params) { ActionController::Parameters.new('order_item_id' => order_item.id) }
 
   before do
-    allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
   end
 
   around do |example|

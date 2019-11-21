@@ -8,7 +8,7 @@ describe Catalog::ApprovalTransition do
   let(:order) { create(:order) }
 
   let!(:order_item) do
-    ManageIQ::API::Common::Request.with_request(req) do
+    Insights::API::Common::Request.with_request(req) do
       create(:order_item, :order => order)
     end
   end

@@ -13,7 +13,7 @@ namespace :db do
         next if item.service_offering_icon_ref.nil?
 
         @acct = item.tenant.external_tenant
-        ManageIQ::API::Common::Request.with_request(dummy_request) do
+        Insights::API::Common::Request.with_request(dummy_request) do
           icon = TopologicalInventory.call { |api| api.show_service_offering_icon(item.service_offering_icon_ref) }
 
           Icon.create!(

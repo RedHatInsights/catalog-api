@@ -16,7 +16,7 @@ module RBAC
       end
 
       def process
-        ManageIQ::API::Common::Request.with_request(@request) do
+        Insights::API::Common::Request.with_request(@request) do
           list
         end
       end

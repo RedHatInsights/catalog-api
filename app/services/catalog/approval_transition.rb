@@ -10,7 +10,7 @@ module Catalog
     end
 
     def process
-      ManageIQ::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
+      Insights::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
         state_transitions
       end
       self

@@ -10,12 +10,12 @@ describe Tenant, :type => :model do
 
   context "Tenant scopes" do
     describe "#scoped_tenants" do
-      it "returns [] when ManageIQ::API::Common::Request.current is NOT set" do
+      it "returns [] when Insights::API::Common::Request.current is NOT set" do
         expect(Tenant.scoped_tenants).to eq []
       end
 
-      it "returns a scoped result when ManageIQ::API::Common::Request.current is set" do
-        ManageIQ::API::Common::Request.with_request(modified_request(other_account)) do
+      it "returns a scoped result when Insights::API::Common::Request.current is set" do
+        Insights::API::Common::Request.with_request(modified_request(other_account)) do
           expect(Tenant.scoped_tenants).to eq [tenant]
         end
       end

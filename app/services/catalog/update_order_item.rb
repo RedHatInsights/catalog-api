@@ -15,7 +15,7 @@ module Catalog
       @order_item = find_order_item
       Rails.logger.info("Found OrderItem: #{@order_item.id}")
 
-      ManageIQ::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
+      Insights::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
         @order_item.update_message("info", "Task update message received with payload: #{@payload}")
 
         mark_item_based_on_status

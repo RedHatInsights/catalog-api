@@ -14,7 +14,7 @@ describe Catalog::CancelOrder do
 
     before do
       order.update(:state => state)
-      allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+      allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
     end
 
     describe "when the state of the order is Completed" do

@@ -70,7 +70,7 @@ module Api
                    :resource_ids  => [portfolio.id.to_s],
                    :permissions   => params[:permissions],
                    :group_uuids   => params.require(:group_uuids)}
-        ManageIQ::API::Common::RBAC::ShareResource.new(options).process
+        Insights::API::Common::RBAC::ShareResource.new(options).process
         head :no_content
       end
 
@@ -81,7 +81,7 @@ module Api
                    :resource_ids  => [portfolio.id.to_s],
                    :permissions   => params[:permissions],
                    :group_uuids   => params[:group_uuids] || []}
-        ManageIQ::API::Common::RBAC::UnshareResource.new(options).process
+        Insights::API::Common::RBAC::UnshareResource.new(options).process
         head :no_content
       end
 
@@ -90,7 +90,7 @@ module Api
         options = {:app_name      => ENV['APP_NAME'],
                    :resource_name => 'portfolios',
                    :resource_id   => portfolio.id.to_s}
-        obj = ManageIQ::API::Common::RBAC::QuerySharedResource.new(options).process
+        obj = Insights::API::Common::RBAC::QuerySharedResource.new(options).process
         render :json => obj.share_info
       end
 

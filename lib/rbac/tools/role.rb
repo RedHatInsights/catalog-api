@@ -5,8 +5,8 @@ module RBAC
 
       def list
         user_output
-        ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
-          ManageIQ::API::Common::RBAC::Service.paginate(api, :list_roles, {}).each do |role|
+        Insights::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
+          Insights::API::Common::RBAC::Service.paginate(api, :list_roles, {}).each do |role|
             list_output(role)
           end
         end

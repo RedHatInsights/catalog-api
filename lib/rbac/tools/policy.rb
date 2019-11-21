@@ -5,8 +5,8 @@ module RBAC
 
       def list
         user_output
-        ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::PolicyApi) do |api|
-          ManageIQ::API::Common::RBAC::Service.paginate(api, :list_policies, {}).each do |policy|
+        Insights::API::Common::RBAC::Service.call(RBACApiClient::PolicyApi) do |api|
+          Insights::API::Common::RBAC::Service.paginate(api, :list_policies, {}).each do |policy|
             list_output(policy)
           end
         end
