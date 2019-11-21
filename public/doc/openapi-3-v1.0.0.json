@@ -3844,10 +3844,64 @@
                         "value": 10
                       }
                     ],
-                    "component": "text-field",
+                    "component": "textarea-field",
                     "helperText": "",
                     "isRequired": true,
                     "initialValue": 5
+                  },
+                  {
+                    "name": "date picker",
+                    "label": "Date Picker",
+                    "component": "date-picker"
+                  },
+                  {
+                    "name": "checkbox",
+                    "label": "Checkbox",
+                    "component": "checkbox"
+                  },
+                  {
+                    "component": "checkbox",
+                    "name": "checkbox multiple",
+                    "label": "Checkbox Multiple",
+                    "options": [
+                      {
+                        "label": "first",
+                        "value": "1"
+                      },
+                      {
+                        "label": "second",
+                        "value": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "time picker",
+                    "label": "Time Picker",
+                    "component": "time-picker"
+                  },
+                  {
+                    "component": "radio",
+                    "label": "Radio",
+                    "name": "radio",
+                    "options": [
+                      {
+                        "label": "Dogs",
+                        "value": "1"
+                      },
+                      {
+                        "label": "Cats",
+                        "value": "2"
+                      },
+                      {
+                        "label": "Hamsters",
+                        "value": "3"
+                      }
+                    ]
+                  },
+                  {
+                    "component": "switch-field",
+                    "label": "Switch",
+                    "name": "switch"
                   }
                 ],
                 "description": ""
