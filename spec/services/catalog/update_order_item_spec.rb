@@ -1,9 +1,9 @@
-require "manageiq-messaging"
-
 describe Catalog::UpdateOrderItem, :type => :service do
+  let(:subject) { described_class.new(topic, task) }
+  let(:topic) { Struct.new(:payload, :message).new(payload, "message") }
+  let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => "321"}}) }
+
   describe "#process" do
-    let(:client) { double(:client) }
-    let(:topic) { ManageIQ::Messaging::ReceivedMessage.new(nil, nil, payload, nil, client, nil) }
     let(:payload) { {"task_id" => "123", "status" => status, "state" => state, "context" => "payloadcontext"} }
     let!(:item) do
       Insights::API::Common::Request.with_request(default_request) do
@@ -11,14 +11,15 @@ describe Catalog::UpdateOrderItem, :type => :service do
       end
     end
     let(:order) { item.order }
-    let(:subject) { described_class.new(topic, task) }
-    let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => service_instance_id}}) }
-    let(:service_instance_id) { "321" }
-    let(:api_instance) { instance_double("TopologicalInventoryApiClient::DefaultApi") }
-    let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
+
+    around do |example|
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost") do
+        example.call
+      end
+    end
 
     before do
-      allow(ti_class).to receive(:call).and_yield(api_instance)
+      allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
     end
 
     context "when the order item is not findable" do
@@ -32,26 +33,33 @@ describe Catalog::UpdateOrderItem, :type => :service do
     end
 
     context "when the order item is findable" do
+      let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => external_url) }
+      let(:external_url) { "external url" }
       let(:topology_task_ref) { "123" }
+
+      before do
+        stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_instances/321").to_return(
+          :status  => 200,
+          :body    => service_instance.to_json,
+          :headers => default_headers
+        )
+      end
 
       context "when the status of the task is ok" do
         let(:status) { "ok" }
-        let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => "external url") }
-        let(:service_instance_no_external_url) { TopologicalInventoryApiClient::ServiceInstance.new }
-
-        before do
-          allow(ti_class).to receive(:call).and_yield(api_instance)
-          allow(api_instance).to receive(:show_task).with(topology_task_ref).and_return(task)
-        end
 
         context "when the state is completed" do
           let(:state) { "completed" }
 
-          context "when the service instance can be found" do
-            before do
-              allow(api_instance).to receive(:show_service_instance).with(service_instance_id).and_return(service_instance)
-            end
+          before do
+            stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_instances/321").to_return(
+              :status  => 200,
+              :body    => service_instance.to_json,
+              :headers => default_headers
+            )
+          end
 
+          shared_examples_for "#process when it all goes well" do
             it "creates a progress message about the payload" do
               subject.process
               latest_progress_message = ProgressMessage.second_to_last
@@ -80,12 +88,6 @@ describe Catalog::UpdateOrderItem, :type => :service do
               expect(latest_progress_message.message).to eq("Order Item Complete")
             end
 
-            it "updates the order item with the external url" do
-              subject.process
-              item.reload
-              expect(item.external_url).to eq("external url")
-            end
-
             it "finalizes the order" do
               expect(order.state).to_not eq("Completed")
               subject.process
@@ -94,35 +96,25 @@ describe Catalog::UpdateOrderItem, :type => :service do
             end
           end
 
-          context "when the service instance does not have an external url" do
-            before do
-              allow(api_instance).to receive(:show_service_instance).with(service_instance_id).and_return(service_instance_no_external_url)
-            end
+          context "when the service instance has an external url" do
+            it_behaves_like "#process when it all goes well"
 
-            it "updates the order item to be completed" do
+            it "updates the order item with the external url" do
               subject.process
               item.reload
-              expect(item.state).to eq("Completed")
+              expect(item.external_url).to eq("external url")
             end
+          end
 
-            it "creates a progress message about the completion" do
-              subject.process
-              latest_progress_message = ProgressMessage.last
-              expect(latest_progress_message.level).to eq("info")
-              expect(latest_progress_message.message).to eq("Order Item Complete")
-            end
+          context "when the service instance does not have an external url" do
+            let(:external_url) { nil }
+
+            it_behaves_like "#process when it all goes well"
 
             it "sets the external_url to nil" do
               subject.process
               item.reload
               expect(item.external_url).to eq(nil)
-            end
-
-            it "finalizes the order" do
-              expect(order.state).to_not eq("Completed")
-              subject.process
-              order.reload
-              expect(order.state).to eq("Completed")
             end
           end
         end

@@ -58,7 +58,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
 
         context "when the api call is successful" do
           it "returns 3 masked values" do
-            result = subject.process
+            result = subject.process.sanitized_parameters
 
             expect(result.values.select { |v| v == described_class::MASKED_VALUE }.count).to eq(3)
           end
@@ -87,7 +87,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
       end
 
       it "returns an empty hash" do
-        expect(subject.process).to eq({})
+        expect(subject.process.sanitized_parameters).to eq({})
       end
     end
   end

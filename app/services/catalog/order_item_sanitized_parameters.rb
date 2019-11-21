@@ -1,5 +1,7 @@
 module Catalog
   class OrderItemSanitizedParameters
+    attr_reader :sanitized_parameters
+
     MASKED_VALUE = "********".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
     SERVICE_PLAN_DOES_NOT_EXIST = "DNE".freeze
@@ -9,7 +11,9 @@ module Catalog
     end
 
     def process
-      sanitized_parameters
+      @sanitized_parameters = compute_sanitized_parameters
+
+      self
     rescue StandardError => e
       Rails.logger.error("OrderItemSanitizedParameters #{e.message}")
       raise
@@ -39,7 +43,7 @@ module Catalog
       raise
     end
 
-    def sanitized_parameters
+    def compute_sanitized_parameters
       return {} if service_plan_does_not_exist?
 
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
