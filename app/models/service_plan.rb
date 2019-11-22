@@ -5,6 +5,7 @@ class ServicePlan < ApplicationRecord
   belongs_to :portfolio_item
   validates :base, :presence => true
   validate :modified_survey, :on => :update, :if => proc { modified.present? }
+  validate :data_driven_form, :on => :update, :if => proc { modified.present? }
 
   private
 
@@ -12,5 +13,9 @@ class ServicePlan < ApplicationRecord
     if Catalog::SurveyCompare.changed?(self)
       raise Catalog::InvalidSurvey, "Base survey does not match Topology"
     end
+  end
+
+  def data_driven_form
+    Catalog::DataDrivenFormValidator.valid?(modified)
   end
 end
