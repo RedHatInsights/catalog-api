@@ -67,7 +67,7 @@ describe "ServicePlansRequests", :type => :request do
 
     it "returns the specified service_plan" do
       expect(json["id"]).to eq service_plan.id.to_s
-      expect(json.keys).to match_array %w[base modified portfolio_item_id id]
+      expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name]
     end
   end
 
@@ -95,7 +95,7 @@ describe "ServicePlansRequests", :type => :request do
     end
 
     it "returns the base schema from the service_plan" do
-      expect(json["schema"]).to eq service_plan.base["schema"]
+      expect(json["create_json_schema"]["schema"]).to eq service_plan.base["schema"]
     end
   end
 
@@ -110,8 +110,8 @@ describe "ServicePlansRequests", :type => :request do
       end
 
       it "returns the modified schema from the service_plan" do
-        expect(json["schema"]).to eq service_plan.modified["schema"]
-        expect(json["schema"]).not_to eq service_plan.base["schema"]
+        expect(json["create_json_schema"]["schema"]).to eq service_plan.modified["schema"]
+        expect(json["create_json_schema"]["schema"]).not_to eq service_plan.base["schema"]
       end
     end
 
