@@ -32,6 +32,7 @@ describe 'Group Seed API' do
 
   describe 'GET /tenants' do
     before do
+      allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true)
       get "#{api}/tenants", :headers => default_headers
     end
 
@@ -40,8 +41,8 @@ describe 'Group Seed API' do
     end
 
     it 'returns all scoped tenants' do
-      expect(json.first['external_tenant']).to eq tenant.external_tenant
-      expect(json.first['id']).to eq tenant.id.to_s
+      expect(json["data"].first['external_tenant']).to eq tenant.external_tenant
+      expect(json["data"].first['id']).to eq tenant.id.to_s
     end
   end
 
