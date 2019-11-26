@@ -87,6 +87,24 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
 
+  create_table "order_templates", force: :cascade do |t|
+    t.string "description"
+    t.string "name"
+    t.jsonb "post_hash"
+    t.bigint "post_provision_id"
+    t.bigint "pre_provision_id"
+    t.jsonb "pre_hash"
+    t.string "prepostable_type"
+    t.bigint "prepostable_id"
+    t.jsonb "provision_hash"
+    t.bigint "tenant_id"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_order_templates_on_discarded_at"
+    t.index ["prepostable_type", "prepostable_id"], name: "index_order_templates_on_prepostable_type_and_prepostable_id"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.string "user_id"
     t.string "state"

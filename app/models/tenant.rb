@@ -1,6 +1,8 @@
 class Tenant < ApplicationRecord
   scope :current, ->(user) { where(:external_tenant => user.tenant) }
 
+  has_one :order_template
+
   validates :external_tenant, :uniqueness => true, :presence => true
 
   before_validation :setup_settings, :unless => proc { settings.nil? }
