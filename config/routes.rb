@@ -22,6 +22,12 @@ Rails.application.routes.draw do
     routing_helper.redirect_major_version("v1.0", prefix)
 
     namespace :v1x0, :path => "v1.0" do
+      concern :taggable do
+        post      :tag,   :to => "tags#tag"
+        post      :untag, :to => "tags#untag"
+        resources :tags,  :controller => :tags, :only => [:index]
+      end
+
       get "/openapi.json", :to => "root#openapi"
       post "/graphql" => "graphql#query"
       post '/orders/:order_id/submit_order', :to => "orders#submit_order", :as => 'order_submit_order'
@@ -41,23 +47,19 @@ Rails.application.routes.draw do
       post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'
       post '/portfolios/:portfolio_id/unshare', :to => "portfolios#unshare", :as => 'unshare'
       get '/portfolios/:portfolio_id/share_info', :to => "portfolios#share_info", :as => 'share_info'
-      resources :portfolios,            :only => [:create, :destroy, :index, :show, :update] do
+      resources :portfolios, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable] do
         resources :portfolio_items,       :only => [:index]
         post :copy, :to => "portfolios#copy"
         post :undelete, :to => "portfolios#restore"
-        post :tags, :to => "portfolios#create_tags"
         get :icon, :to => 'icons#raw_icon'
-        resources :tags, :only => [:index]
       end
-      resources :portfolio_items,       :only => [:create, :destroy, :index, :show, :update] do
+      resources :portfolio_items, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable] do
         resources :provider_control_parameters, :only => [:index]
         resources :service_plans,               :only => [:index]
         get :icon, :to => 'icons#raw_icon'
         get :next_name, :action => 'next_name', :controller => 'portfolio_items'
         post :copy, :action => 'copy', :controller => 'portfolio_items'
-        post :tags, :to => "portfolio_items#create_tags"
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
-        resources :tags, :only => [:index]
       end
       resources :icons, :only => [:create, :destroy, :show, :update] do
         get :icon_data, :to => 'icons#raw_icon'

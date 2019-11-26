@@ -3,9 +3,8 @@ module Api
     class PortfoliosController < ApplicationController
       include Api::V1::Mixins::IndexMixin
       include Api::V1::Mixins::ValidationMixin
-      include Api::V1::Mixins::TagsMixin
 
-      before_action :update_access_check, :only => %i[add_portfolio_item_to_portfolio update create_tags]
+      before_action :update_access_check, :only => %i[add_portfolio_item_to_portfolio update]
       before_action :create_access_check, :only => %i[create]
       before_action :delete_access_check, :only => %i[destroy]
       before_action :read_access_check, :only => %i[show]
@@ -98,7 +97,6 @@ module Api
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio
       end
-
 
       private
 
