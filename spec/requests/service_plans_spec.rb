@@ -165,4 +165,28 @@ describe "ServicePlansRequests", :type => :request do
       end
     end
   end
+
+  describe "#reset" do
+    context "when there is a modified schema" do
+      before do
+        post "#{api}/service_plans/#{service_plan.id}/reset", :headers => default_headers
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+    end
+
+    context "when there is not a modified schema" do
+      before do
+        service_plan.update!(:modified => nil)
+      end
+
+      it "returns a 204" do
+        post "#{api}/service_plans/#{service_plan.id}/reset", :headers => default_headers
+
+        expect(response).to have_http_status :no_content
+      end
+    end
+  end
 end

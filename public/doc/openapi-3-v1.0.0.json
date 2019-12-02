@@ -2620,6 +2620,38 @@
           }
         }
       }
+    },
+    "/service_plans/{id}/reset": {
+      "post": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Reset Service Plan Modified schema",
+        "operationId": "resetServicePlanModified",
+        "description": "Resets the Service Plan's Modified schema",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Modified schema for service_plan has been reset"
+          },
+          "204": {
+            "description": "No modified schema present for service_plan."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [

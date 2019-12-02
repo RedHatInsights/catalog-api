@@ -74,6 +74,7 @@ Rails.application.routes.draw do
         get 'base', :to => 'service_plans#base'
         get 'modified', :to => 'service_plans#modified'
         patch 'modified', :to => 'service_plans#update_modified'
+        post :reset, :to => 'service_plans#reset'
       end
     end
   end
