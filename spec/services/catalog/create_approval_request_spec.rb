@@ -1,5 +1,5 @@
 describe Catalog::CreateApprovalRequest, :type => :service do
-  let(:subject) { described_class.new(task: task, order_id: order_id) }
+  let(:subject) { described_class.new(:task => task, :order_id => order_id) }
   let(:task) { nil }
   let(:order_id) { nil }
 
@@ -53,8 +53,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
       context "when the approval fails" do
         before do
           stub_request(:post, "http://localhost/api/approval/v1.0/requests")
-          .with(:body => request_body_from)
-          .to_return(:status => 401, :body => {}.to_json, :headers => {"Content-type" => "application/json"})
+            .with(:body => request_body_from)
+            .to_return(:status => 401, :body => {}.to_json, :headers => {"Content-type" => "application/json"})
         end
 
         it "raises an error and does not create an approval request" do
@@ -71,8 +71,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
       context "when the approval succeeds" do
         before do
           stub_request(:post, "http://localhost/api/approval/v1.0/requests")
-          .with(:body => request_body_from)
-          .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
+            .with(:body => request_body_from)
+            .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
         end
 
         it "submits the approval request" do
@@ -94,8 +94,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
       context "when the approval fails" do
         before do
           stub_request(:post, "http://localhost/api/approval/v1.0/requests")
-          .with(:body => request_body_from)
-          .to_return(:status => 401, :body => {}.to_json, :headers => {"Content-type" => "application/json"})
+            .with(:body => request_body_from)
+            .to_return(:status => 401, :body => {}.to_json, :headers => {"Content-type" => "application/json"})
         end
 
         it "raises an error and does not create an approval request" do
@@ -103,6 +103,12 @@ describe Catalog::CreateApprovalRequest, :type => :service do
           expect { subject.process }.to raise_exception(Catalog::ApprovalError)
           expect(ApprovalRequest.count).to eq(0)
         end
+      end
+    end
+
+    context "when neither a task id or an order id are passed in" do
+      it "raises an error" do
+        expect { subject.process }.to raise_exception(Catalog::InvalidParameter)
       end
     end
   end

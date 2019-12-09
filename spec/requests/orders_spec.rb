@@ -20,7 +20,7 @@ describe "OrderRequests", :type => :request do
     before do
       # allow(Catalog::CreateRequestForAppliedInventories).to receive(:new).with(params).and_return(svc_object)
 
-      allow(Catalog::CreateApprovalRequest).to receive(:new).with(order_id: params).and_return(svc_object)
+      allow(Catalog::CreateApprovalRequest).to receive(:new).with(:order_id => params).and_return(svc_object)
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
 

@@ -24,7 +24,7 @@ module Api
       def submit_order
         # order = Catalog::CreateRequestForAppliedInventories.new(params.require(:order_id)).process.order
 
-        order = Catalog::CreateApprovalRequest.new(order_id: params.require(:order_id)).process.order
+        order = Catalog::CreateApprovalRequest.new(:order_id => params.require(:order_id)).process.order
         render :json => order
       end
 

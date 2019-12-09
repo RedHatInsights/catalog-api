@@ -38,7 +38,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       let(:create_approval_request) { instance_double("Catalog::CreateApprovalRequest") }
 
       before do
-        allow(Catalog::CreateApprovalRequest).to receive(:new).with(task: task).and_return(create_approval_request)
+        allow(Catalog::CreateApprovalRequest).to receive(:new).with(:task => task).and_return(create_approval_request)
       end
 
       it "delegates to creating the approval request" do
