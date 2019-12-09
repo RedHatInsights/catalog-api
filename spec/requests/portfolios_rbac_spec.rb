@@ -1,13 +1,26 @@
 describe 'Portfolios RBAC API' do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
-  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => [portfolio1.id.to_s]) }
-  let(:double_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => [portfolio1.id.to_s, portfolio2.id.to_s]) }
+  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true) }
 
   let(:block_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => false) }
-  let(:share_resource) { instance_double(Insights::API::Common::RBAC::ShareResource) }
-  let(:unshare_resource) { instance_double(Insights::API::Common::RBAC::UnshareResource) }
   let(:params) { {:name => 'Demo', :description => 'Desc 1' } }
+  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
+  let(:groups) { [group1] }
+  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:api_instance) { double }
+  let(:principal_options) { {:scope=>"principal"} }
+  around do |example|
+    with_modified_env(:APP_NAME => "catalog") do
+      example.call
+    end
+  end
+
+  before do
+    allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return(groups)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+  end
 
   describe "POST /portfolios" do
     it "success" do
@@ -27,6 +40,8 @@ describe 'Portfolios RBAC API' do
 
   describe "DELETE /portfolios/{id}" do
     it "success" do
+      permission = 'catalog:portfolios:delete'
+      create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
       delete "#{api("1.0")}/portfolios/#{portfolio1.id}", :headers => default_headers
@@ -45,7 +60,10 @@ describe 'Portfolios RBAC API' do
     before do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
     end
+
     it 'returns status code 200' do
+      permission = 'catalog:portfolios:read'
+      create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
       get "#{api('1.0')}/portfolios", :headers => default_headers
@@ -65,8 +83,11 @@ describe 'Portfolios RBAC API' do
 
     context "with filtering" do
       before do
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(double_access_obj)
-        allow(double_access_obj).to receive(:process).and_return(double_access_obj)
+        permission = 'catalog:portfolios:read'
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2)
+        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
+        allow(access_obj).to receive(:process).and_return(access_obj)
         get "#{api('1.0')}/portfolios?filter[name]=#{portfolio1.name}", :headers => default_headers
       end
 
@@ -99,8 +120,10 @@ describe 'Portfolios RBAC API' do
     end
 
     context "when user has RBAC update portfolios access" do
-      let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => true, :id_list => [portfolio1.id.to_s]) }
+      let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => true) }
       before do
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'catalog:portfolios:read', :aceable => portfolio1)
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'catalog:portfolios:update', :aceable => portfolio1)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
@@ -135,19 +158,12 @@ describe 'Portfolios RBAC API' do
   end
 
   context "when the permissions array is proper" do
-    before do
-      allow(Insights::API::Common::RBAC::ShareResource).to receive(:new).and_return(share_resource)
-      allow(Insights::API::Common::RBAC::UnshareResource).to receive(:new).and_return(unshare_resource)
-      allow(share_resource).to receive(:process).and_return(share_resource)
-      allow(unshare_resource).to receive(:process).and_return(unshare_resource)
-    end
-
     describe "#share" do
       it "goes through validation" do
         permissions = ["catalog:portfolios:update"]
         post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
           :permissions => permissions,
-          :group_uuids => %w[1]
+          :group_uuids => [group1.uuid]
         }
 
         expect(response).to have_http_status(:no_content)
@@ -157,9 +173,10 @@ describe 'Portfolios RBAC API' do
     describe "#unshare" do
       it "goes through validation" do
         permissions = ["catalog:portfolios:update"]
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'catalog:portfolios:update', :aceable => portfolio1)
         post "#{api}/portfolios/#{portfolio1.id}/unshare", :headers => default_headers, :params => {
           :permissions => permissions,
-          :group_uuids => %w[1]
+          :group_uuids => [group1.uuid]
         }
 
         expect(response).to have_http_status(:no_content)

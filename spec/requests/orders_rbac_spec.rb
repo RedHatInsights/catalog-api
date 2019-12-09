@@ -4,8 +4,24 @@ describe "OrderRequests", :type => :request do
   let!(:order3) { create(:order, :owner => 'barney') }
   let(:is_admin) { false }
   let(:access_obj) { nil }
-  let(:user_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => true, :accessible? => true, :id_list => [order1.id.to_s]) }
+  let(:user_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => true, :accessible? => true) }
 
+  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
+  let(:groups) { [group1] }
+  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:api_instance) { double }
+  let(:principal_options) { {:scope=>"principal"} }
+  around do |example|
+    with_modified_env(:APP_NAME => "catalog") do
+      example.call
+    end
+  end
+
+  before do
+    allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return(groups)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+  end
   shared_examples_for "#index" do
     it "fetch all allowed orders" do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(is_admin)

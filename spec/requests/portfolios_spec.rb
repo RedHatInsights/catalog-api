@@ -295,26 +295,22 @@ describe 'Portfolios API' do
       end
     end
 
-    RSpec.shared_context "sharing_objects" do
-      let(:group_uuids) { %w[1 2 3] }
-      let(:permissions) { %w[catalog:portfolios:read] }
-      let(:app_name) { "catalog" }
-      let(:http_status) { '204' }
-      let(:dummy) { double("Insights::API::Common::RBAC::ShareResource", :process => self) }
-      let(:attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-    end
 
     shared_examples_for "#shared_test" do
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:app_name      => app_name,
-                     :resource_ids  => [portfolio.id.to_s],
-                     :resource_name => 'portfolios',
+          options = {:resource_ids  => [shared_portfolio.id.to_s],
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
-          allow(Insights::API::Common::RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers
+
+          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+          post "#{api}/portfolios/#{shared_portfolio.id}/share", :params => attributes, :headers => default_headers
           expect(response).to have_http_status(http_status)
+          if http_status == 204
+            shared_portfolio.reload
+            expect(shared_portfolio.access_control_entries.count).to eq(groups.count)
+          end
         end
       end
     end
@@ -363,34 +359,38 @@ describe 'Portfolios API' do
     context 'unshare' do
       include_context "sharing_objects"
       let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-      let(:dummy) { double("Insights::API::Common::RBAC::UnshareResource", :process => self) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:app_name      => app_name,
-                     :resource_ids  => [portfolio.id.to_s],
-                     :resource_name => 'portfolios',
+          options = {:resource_ids  => [portfolio.id.to_s],
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
-          expect(Insights::API::Common::RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
+          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+          ace1
+          ace2
+          ace3
+          expect(shared_portfolio.access_control_entries.count).to eq(3)
+          post "#{api}/portfolios/#{shared_portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
+          shared_portfolio.reload
           expect(response).to have_http_status(204)
+          expect(shared_portfolio.access_control_entries.count).to eq(0)
         end
       end
     end
 
     context 'share_info' do
       include_context "sharing_objects"
-      let(:dummy_response) { double(:share_info => {'a' => 1}) }
-      let(:dummy) { double("Insights::API::Common::RBAC::UnshareResource", :process => dummy_response) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:app_name      => app_name,
-                     :resource_id   => portfolio.id.to_s,
-                     :resource_name => 'portfolios'}
-          expect(Insights::API::Common::RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
-          get "#{api}/portfolios/#{portfolio.id}/share_info", :headers => default_headers
-
+          options = {:resource_id   => portfolio.id.to_s}
+          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+          ace1
+          ace2
+          ace3
+          get "#{api}/portfolios/#{shared_portfolio.id}/share_info", :headers => default_headers
           expect(response).to have_http_status(200)
+          expect(json.pluck('group_uuid')).to match_array(group_uuids)
         end
       end
     end

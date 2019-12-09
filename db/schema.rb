@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_18_220525) do
+ActiveRecord::Schema.define(version: 2019_12_06_182459) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "access_control_entries", force: :cascade do |t|
+    t.string "group_uuid"
+    t.bigint "tenant_id"
+    t.string "permission"
+    t.string "aceable_type"
+    t.bigint "aceable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["aceable_type", "aceable_id"], name: "index_access_control_entries_on_aceable_type_and_aceable_id"
+  end
 
   create_table "approval_requests", force: :cascade do |t|
     t.string "approval_request_ref"
@@ -45,8 +56,8 @@ ActiveRecord::Schema.define(version: 2019_11_18_220525) do
   create_table "images", force: :cascade do |t|
     t.binary "content"
     t.string "extension"
-    t.bigint "tenant_id"
     t.string "hashcode"
+    t.bigint "tenant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_images_on_tenant_id"
@@ -66,8 +77,8 @@ ActiveRecord::Schema.define(version: 2019_11_18_220525) do
     t.bigint "portfolio_item_id"
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
-    t.jsonb "context"
     t.string "owner"
+    t.jsonb "context"
     t.string "external_url"
     t.string "insights_request_id"
     t.datetime "discarded_at"
@@ -115,6 +126,7 @@ ActiveRecord::Schema.define(version: 2019_11_18_220525) do
     t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
+    t.string "service_offering_icon_ref"
     t.datetime "discarded_at"
     t.string "owner"
     t.string "service_offering_type"

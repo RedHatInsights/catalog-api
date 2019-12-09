@@ -1,12 +1,29 @@
 describe 'Portfolios Read Access RBAC API' do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
-  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true, :id_list => id_list) }
+  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true ) }
   let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
-  let(:id_list) { [] }
   let(:block_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => false) }
   let(:graphql_query) { '{ portfolios { id name } }' }
   let(:graphql_body) { { 'query' => graphql_query } }
+  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
+  let(:permission) { 'catalog:portfolios:read' }
+  let(:ace1) { create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1) }
+  let(:ace2) { create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2) }
+  let(:groups) { [group1] }
+  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:api_instance) { double }
+  let(:list_group_options) { {:scope=>"principal"} }
+  around do |example|
+    with_modified_env(:APP_NAME => "catalog") do
+      example.call
+    end
+  end
+
+  before do
+    allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, list_group_options).and_return(groups)
+  end
 
   describe "GET /portfolios" do
     context "no permission to read portfolios" do
@@ -37,12 +54,13 @@ describe 'Portfolios Read Access RBAC API' do
     end
 
     context "permission to read specific portfolios" do
-      let(:id_list) { [portfolio1.id.to_s] }
-
       before do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
         allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
+        allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+        allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, list_group_options).and_return(groups)
         allow(access_obj).to receive(:process).and_return(access_obj)
+        ace1
       end
 
       it 'ok' do

@@ -1,3 +1,4 @@
+require "models/concerns/aceable_shared"
 describe Portfolio do
   let(:tenant1)           { create(:tenant, :external_tenant => "1") }
   let(:tenant2)           { create(:tenant, :external_tenant => "2") }
@@ -5,6 +6,8 @@ describe Portfolio do
   let(:portfolio_id)      { portfolio.id }
   let!(:portfolio_item)   { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant1.id) }
   let(:portfolio_item_id) { portfolio_item.id }
+
+  it_behaves_like "aceable"
 
   context "when setting portfolio fields" do
     it "fails validation with a non %w(true false) value" do
