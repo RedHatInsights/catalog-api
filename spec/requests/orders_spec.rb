@@ -10,21 +10,32 @@ describe "OrderRequests", :type => :request do
 
   # TODO: Update this context with new logic. Will be fixed with
   # https://projects.engineering.redhat.com/browse/SSP-237
-  context "submit order" do
-    let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
+  describe "#submit_order" do
+    # let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
+
+    let(:svc_object) { instance_double("Catalog::CreateApprovalRequest") }
     let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
     let(:params) { order.id.to_s }
 
     before do
-      allow(Catalog::CreateRequestForAppliedInventories).to receive(:new).with(params).and_return(svc_object)
+      # allow(Catalog::CreateRequestForAppliedInventories).to receive(:new).with(params).and_return(svc_object)
+
+      allow(Catalog::CreateApprovalRequest).to receive(:new).with(order_id: params).and_return(svc_object)
       allow(svc_object).to receive(:process).and_return(svc_object)
       allow(svc_object).to receive(:order).and_return(order)
+
+      post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
     end
 
-    it "v1.0 successfully creates requests for applied inventories" do
-      post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+    it "returns the order as json" do
+      expect(JSON.parse(response.body)["id"]).to eq(order.id.to_s)
+    end
 
+    it "returns json" do
       expect(response.content_type).to eq("application/json")
+    end
+
+    it "returns a 200" do
       expect(response).to have_http_status(:ok)
     end
   end

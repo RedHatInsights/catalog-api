@@ -12,7 +12,7 @@ module Catalog
       if @task.context.has_key_path?(:service_instance, :id)
         Catalog::UpdateOrderItem.new(@topic, @task).process
       elsif @task.context.has_key_path?(:applied_inventories)
-        Catalog::CreateApprovalRequest.new(@task).process
+        Catalog::CreateApprovalRequest.new(task: @task).process
       else
         item = OrderItem.find_by!(:topology_task_ref => @task.id)
         item.update_message(:error, "Topology task error")

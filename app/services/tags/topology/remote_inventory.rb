@@ -16,6 +16,11 @@ module Tags
       private
 
       def consolidate_inventory_tags
+        # This is meant to bypass the heavy logic but also assign an empty array
+        # It appears to return "true" but the #process method returns self so I
+        # only needed this for assignment and bypass purposes in one line
+        return @tag_resources = [] if @task.nil?
+
         @tag_resources = all_tag_collections.collect do |tag_collection|
           tags = tag_collection.collect do |tag|
             tag.to_hash.slice(:name, :namespace, :value)
