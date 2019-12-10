@@ -5,11 +5,7 @@ describe Catalog::UpdateOrderItem, :type => :service do
 
   describe "#process" do
     let(:payload) { {"task_id" => "123", "status" => status, "state" => state, "context" => "payloadcontext"} }
-    let!(:item) do
-      Insights::API::Common::Request.with_request(default_request) do
-        create(:order_item, :topology_task_ref => topology_task_ref)
-      end
-    end
+    let!(:item) { create(:order_item, :topology_task_ref => topology_task_ref) }
     let(:order) { item.order }
 
     around do |example|
