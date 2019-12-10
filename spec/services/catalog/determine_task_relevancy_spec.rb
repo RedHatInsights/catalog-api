@@ -8,6 +8,12 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
     end
   end
 
+  let!(:order_item) do
+    Insights::API::Common::Request.with_request(default_request) do
+      create(:order_item, :topology_task_ref => "123")
+    end
+  end
+
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
   end
@@ -55,7 +61,6 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           :context => {:error => "Undefined method oh noes"}
         )
       end
-      let!(:order_item) { create(:order_item, :topology_task_ref => task.id) }
 
       it "updates the item with a progress message" do
         subject.process
