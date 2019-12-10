@@ -7,7 +7,6 @@ module Catalog
     def process
       Rails.logger.info("Looking for task in topology with topic: #{@topic}")
 
-      sleep 5
       @task = TopologicalInventory.call do |api|
         api.show_task(@topic.payload["task_id"])
       end
