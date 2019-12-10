@@ -24,7 +24,8 @@ module Api
         def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)
           return unless Insights::API::Common::RBAC::Access.enabled?
           return if catalog_administrator?
-          ids = access_id_list(verb, klass)
+
+          ids = ace_ids(verb, klass)
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.any? && ids.exclude?(id)
         end
 
@@ -46,10 +47,10 @@ module Api
         end
 
         def access_id_list(verb, klass)
-          table_name = controller_name.classify.constantize.table_name
-          access_obj = Insights::API::Common::RBAC::Access.new(table_name, verb).process
+          access_obj = Insights::API::Common::RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
-          ace_ids(verb, klass)
+
+          access_obj.id_list
         end
       end
     end

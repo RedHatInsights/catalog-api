@@ -30,6 +30,7 @@ describe 'Portfolios Read Access RBAC API' do
       it "no access" do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(block_access_obj)
         allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
+        ace2
         allow(block_access_obj).to receive(:process).and_return(block_access_obj)
         get "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers
         expect(response).to have_http_status(:forbidden)
