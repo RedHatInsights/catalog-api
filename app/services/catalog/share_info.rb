@@ -12,8 +12,13 @@ module Catalog
       @object.access_control_entries.each do |ace|
         group_permissions[ace.group_uuid] = group_permissions.fetch(ace.group_uuid, []) << ace.permission
       end
-      @result = group_permissions.each_with_object([]) do |(k, v), memo|
-        memo << { :group_name => group_names[k], :group_uuid => k, :permissions => v }
+
+      @result = group_permissions.each_with_object([]) do |(uuid, permissions), memo|
+        if group_names.key?(uuid)
+          memo << { :group_name => group_names[uuid], :group_uuid => uuid, :permissions => permissions }
+        else
+          Rails.logger.warn("Skipping group UUID: #{uuid} since its missing from RBAC service")
+        end
       end
       self
     end

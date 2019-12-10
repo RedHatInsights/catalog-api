@@ -24,11 +24,25 @@ describe Catalog::ShareInfo, :type => :service do
 
   let(:subject) { described_class.new(params) }
 
-  it "#process" do
-    info = subject.process.result
-    expect(info.count).to eq(1)
-    expect(info[0][:group_name]).to eq(group1.name)
-    expect(info[0][:group_uuid]).to eq(group1.uuid)
-    expect(info[0][:permissions]).to match_array(permissions)
+  shared_examples_for "#process" do
+    it "#process" do
+      info = subject.process.result
+      expect(info.count).to eq(1)
+      expect(info[0][:group_name]).to eq(group1.name)
+      expect(info[0][:group_uuid]).to eq(group1.uuid)
+      expect(info[0][:permissions]).to match_array(permissions)
+    end
+  end
+
+  context "when all group uuids exist" do
+    it_behaves_like "#process"
+  end
+
+  context "when only some group uuids exist" do
+    before do
+      create(:access_control_entry, :group_uuid => "non-existent", :permission => permissions[1], :aceable => portfolio)
+    end
+
+    it_behaves_like "#process"
   end
 end
