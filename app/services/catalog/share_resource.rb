@@ -13,9 +13,9 @@ module Catalog
       validate_groups
       @group_uuids.each do |group_uuid|
         @permissions.each do |permission|
-          AccessControlEntry.find_or_create_by(:group_uuid  => group_uuid,
-                                               :permission  => permission,
-                                               :aceable     => @object)
+          AccessControlEntry.find_or_create_by(:group_uuid => group_uuid,
+                                               :permission => permission,
+                                               :aceable    => @object)
         end
       end
       self

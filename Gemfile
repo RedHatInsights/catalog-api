@@ -11,9 +11,9 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'rspec-mocks'
   gem 'rspec-rails'
+  gem 'shoulda-matchers'
   gem 'simplecov'
   gem 'webmock'
-  gem 'shoulda-matchers'
 end
 
 group :development do

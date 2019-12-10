@@ -1,7 +1,7 @@
 describe 'Portfolios Read Access RBAC API' do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
-  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true ) }
+  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true) }
   let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
   let(:block_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => false) }
   let(:graphql_query) { '{ portfolios { id name } }' }

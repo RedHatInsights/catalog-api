@@ -15,8 +15,7 @@ describe Catalog::ShareResource, :type => :service do
   let(:params) do
     { :group_uuids => [group1.uuid],
       :permissions => permissions,
-      :object      => portfolio
-    }
+      :object      => portfolio }
   end
 
   before do

@@ -13,9 +13,9 @@ module Catalog
       validate_groups
       @group_uuids.each do |group_uuid|
         @permissions.each do |permission|
-          AccessControlEntry.where(:group_uuid  => group_uuid,
-                                   :permission  => permission,
-                                   :aceable     => @object).destroy_all
+          AccessControlEntry.where(:group_uuid => group_uuid,
+                                   :permission => permission,
+                                   :aceable    => @object).destroy_all
         end
       end
       self

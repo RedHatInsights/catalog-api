@@ -10,9 +10,7 @@ module Api
 
         def my_group_uuids
           @my_group_uuids ||= Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-            Insights::API::Common::RBAC::Service.paginate(api, :list_groups, {:scope => 'principal'}).collect do |group| 
-              group.uuid
-            end
+            Insights::API::Common::RBAC::Service.paginate(api, :list_groups, :scope => 'principal').collect(&:uuid)
           end
         end
       end

@@ -299,10 +299,6 @@ describe 'Portfolios API' do
     shared_examples_for "#shared_test" do
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:resource_ids  => [shared_portfolio.id.to_s],
-                     :permissions   => permissions,
-                     :group_uuids   => group_uuids}
-
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
           allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
           post "#{api}/portfolios/#{shared_portfolio.id}/share", :params => attributes, :headers => default_headers
@@ -361,9 +357,6 @@ describe 'Portfolios API' do
       let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:resource_ids  => [portfolio.id.to_s],
-                     :permissions   => permissions,
-                     :group_uuids   => group_uuids}
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
           allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
           ace1
@@ -382,7 +375,6 @@ describe 'Portfolios API' do
       include_context "sharing_objects"
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:resource_id   => portfolio.id.to_s}
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
           allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
           ace1
