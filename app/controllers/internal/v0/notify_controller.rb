@@ -16,9 +16,12 @@ module Internal
       end
 
       def notify_task
+        Rails.logger.info("#notify_task incoming parameters: #{params}")
         task_id = params.require(:task_id)
         payload = params.require(:payload)
         message = params.require(:message)
+
+        Rails.logger.info("Notification about task id: #{task_id}, payload: #{payload}, message: #{message}")
 
         topic = OpenStruct.new(:payload => payload.merge("task_id" => task_id), :message => message)
         ActsAsTenant.without_tenant do
