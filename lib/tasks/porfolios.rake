@@ -6,7 +6,7 @@ namespace :portfolios do
     raise "Please provide a user yaml file" unless ENV['USER_FILE']
 
     request = create_request(ENV['USER_FILE'])
-    ManageIQ::API::Common::Request.with_request(request) do |current|
+    Insights::API::Common::Request.with_request(request) do |current|
       delete_roles(current.user)
     end
   end
@@ -31,7 +31,7 @@ namespace :portfolios do
           role.name.start_with?(role_name_prefix)
         end
 
-        ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
+        Insights::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
           matching_roles.each do |role|
             puts "Deleting role #{role.name}"
             api.delete_role(role.uuid)
@@ -43,8 +43,8 @@ namespace :portfolios do
 
   def fetch_roles
     opts = { :limit => 500, :name => "catalog-portfolios" }
-    ManageIQ::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
-      ManageIQ::API::Common::RBAC::Service.paginate(api, :list_roles, opts).to_a
+    Insights::API::Common::RBAC::Service.call(RBACApiClient::RoleApi) do |api|
+      Insights::API::Common::RBAC::Service.paginate(api, :list_roles, opts).to_a
     end
   end
 end

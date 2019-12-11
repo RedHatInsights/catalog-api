@@ -7,7 +7,7 @@ class Tenant < ApplicationRecord
   after_initialize :setup_settings, :unless => proc { settings.nil? }
 
   def self.scoped_tenants
-    current(ManageIQ::API::Common::Request.current.user)
+    current(Insights::API::Common::Request.current.user)
   rescue NoMethodError
     []
   end

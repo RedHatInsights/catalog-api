@@ -1,12 +1,14 @@
 describe "ServicePlansRequests", :type => :request do
-  let(:service_plan) { create(:service_plan) }
+  let(:service_plan) { create(:service_plan, :base => JSON.parse(modified_schema)) }
   let(:portfolio_item) { service_plan.portfolio_item }
   let(:service_offering_ref) { portfolio_item.service_offering_ref }
   let!(:portfolio_item_without_service_plan) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
 
+  let(:modified_schema) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")) }
+
   around do |example|
     with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :BYPASS_RBAC => 'true') do
-      example.call
+      Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end
 
@@ -15,7 +17,7 @@ describe "ServicePlansRequests", :type => :request do
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
-      :create_json_schema => {"schema" => {}}
+      :create_json_schema => JSON.parse(modified_schema)
     )
   end
   let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
@@ -122,6 +124,66 @@ describe "ServicePlansRequests", :type => :request do
 
       it "returns a 204" do
         get "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers
+
+        expect(response).to have_http_status :no_content
+      end
+    end
+  end
+
+  describe "#update_modified" do
+    before do
+      patch "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers, :params => params
+    end
+
+    context "when patching the modified schema with a valid schema" do
+      let(:params) { {:modified => JSON.parse(modified_schema)} }
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the newly modified schema from the service_plan" do
+        expect(json).to eq params[:modified]
+      end
+    end
+
+    context "when patching in a bad schema" do
+      let(:params) do
+        {
+          :modified => JSON.parse(modified_schema).tap do |schema|
+                         schema["schema"]["fields"].first["dataType"] = "not-a-real-dataType"
+                       end
+        }
+      end
+
+      it "returns a 400" do
+        expect(response).to have_http_status :bad_request
+      end
+
+      it "fails validation" do
+        expect(first_error_detail).to match(/Catalog::InvalidSurvey/)
+      end
+    end
+  end
+
+  describe "#reset" do
+    context "when there is a modified schema" do
+      before do
+        post "#{api}/service_plans/#{service_plan.id}/reset", :headers => default_headers
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+    end
+
+    context "when there is not a modified schema" do
+      before do
+        service_plan.update!(:modified => nil)
+      end
+
+      it "returns a 204" do
+        post "#{api}/service_plans/#{service_plan.id}/reset", :headers => default_headers
 
         expect(response).to have_http_status :no_content
       end

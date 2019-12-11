@@ -44,6 +44,11 @@ module Api
 
         render :json => plan.modified
       end
+
+      def reset
+        status = Catalog::ServicePlanReset.new(params.require(:service_plan_id)).process.status
+        head status
+      end
     end
   end
 end

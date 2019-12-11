@@ -1,8 +1,10 @@
 module Api
   module V1
     class TenantsController < ApplicationController
+      include Api::V1::Mixins::IndexMixin
+
       def index
-        render :json => Tenant.scoped_tenants
+        collection(Tenant.scoped_tenants)
       end
 
       def show

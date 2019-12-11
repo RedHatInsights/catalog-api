@@ -7,7 +7,7 @@ describe ApprovalRequest, :type => :model do
   let!(:approval_request2) { create(:approval_request, :order_item => order_item2) }
 
   around do |example|
-    ManageIQ::API::Common::Request.with_request(default_request) { example.call }
+    Insights::API::Common::Request.with_request(default_request) { example.call }
   end
 
   context "by_owner" do

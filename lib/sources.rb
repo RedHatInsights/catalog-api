@@ -21,7 +21,7 @@ class Sources
   end
 
   private_class_method def self.pass_thru_headers
-    headers = ManageIQ::API::Common::Request.current_forwardable
+    headers = Insights::API::Common::Request.current_forwardable
     sources_api.api_client.default_headers.merge!(headers)
   end
 end

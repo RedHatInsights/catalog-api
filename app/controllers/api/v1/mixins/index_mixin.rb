@@ -3,7 +3,7 @@ module Api
     module Mixins
       module IndexMixin
         def scoped(relation)
-          relation = rbac_scope(relation) if ManageIQ::API::Common::RBAC::Access.enabled?
+          relation = rbac_scope(relation) if Insights::API::Common::RBAC::Access.enabled?
           if relation.model.respond_to?(:taggable?) && relation.model.taggable?
             ref_schema = {relation.model.tagging_relation_name => :tag}
 
@@ -13,7 +13,7 @@ module Api
         end
 
         def collection(base_query)
-          render :json => ManageIQ::API::Common::PaginatedResponse.new(
+          render :json => Insights::API::Common::PaginatedResponse.new(
             :base_query => filtered(scoped(base_query)),
             :request    => request,
             :limit      => pagination_limit,
@@ -30,7 +30,7 @@ module Api
         end
 
         def access_relation(relation)
-          access_obj = ManageIQ::API::Common::RBAC::Access.new(relation.model.table_name, 'read').process
+          access_obj = Insights::API::Common::RBAC::Access.new(relation.model.table_name, 'read').process
           raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}" unless access_obj.accessible?
           if access_obj.owner_scoped?
             relation.by_owner
@@ -41,7 +41,7 @@ module Api
         end
 
         def filtered(base_query)
-          ManageIQ::API::Common::Filter.new(base_query, params[:filter], api_doc_definition).apply
+          Insights::API::Common::Filter.new(base_query, params[:filter], api_doc_definition).apply
         end
 
         private

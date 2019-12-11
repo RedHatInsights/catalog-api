@@ -8,7 +8,7 @@ class AddIconIdToPortfolioAndPortfolioItem < ActiveRecord::Migration[5.2]
     Icon.all.each do |icon|
       next if icon.iconable_type.nil?
 
-      iconable = icon.iconable_type.constantize.find(icon.iconable_id)
+      iconable = icon.iconable_type.constantize.with_discarded.find(icon.iconable_id)
 
       icon.update!(:restore_to =>  iconable)
       iconable.update!(:icon_id => icon.id)

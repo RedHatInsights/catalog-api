@@ -7,7 +7,7 @@ describe ProgressMessage, :type => :model do
   let!(:progress_message2) { create(:progress_message, :order_item_id => order_item2.id) }
 
   around do |example|
-    ManageIQ::API::Common::Request.with_request(default_request) { example.call }
+    Insights::API::Common::Request.with_request(default_request) { example.call }
   end
 
   context "by_owner" do

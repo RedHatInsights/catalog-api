@@ -20,8 +20,7 @@ module Catalog
       @destination.icon&.discard
       @icon = Icon.create!(@params.merge(:image_id => image_id, :restore_to => @destination))
 
-      @destination.icon = @icon
-      @destination.save!
+      @destination.update!(:icon_id => @icon.id)
 
       self
     end

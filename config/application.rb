@@ -32,17 +32,7 @@ module Catalog
 
     config.autoload_paths << Rails.root.join('lib').to_s
 
-    ActionDispatch::ExceptionWrapper.class_eval do
-      # Until we get an updated version of ActionDispatch with the linked fix below,
-      # this monkey patch is a temporary fix
-      #
-      # https://github.com/rails/rails/commit/ef40fb6fd88f2e3c3f989aef65e3ddddfadee814#diff-7a283d03093301fecfe4dca46dc37c2c
-      def original_exception(exception)
-        exception
-      end
-    end
-
-    ManageIQ::API::Common::Logging.activate(config)
-    ManageIQ::API::Common::Metrics.activate(config, "catalog_api")
+    Insights::API::Common::Logging.activate(config)
+    Insights::API::Common::Metrics.activate(config, "catalog_api")
   end
 end

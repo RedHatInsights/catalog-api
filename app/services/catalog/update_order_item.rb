@@ -2,9 +2,10 @@ module Catalog
   class UpdateOrderItem
     class ServiceInstanceWithoutExternalUrl < StandardError; end
 
-    def initialize(topic)
+    def initialize(topic, task)
       @payload = topic.payload
       @message = topic.message
+      @task    = task
     end
 
     def process
@@ -14,11 +15,9 @@ module Catalog
       @order_item = find_order_item
       Rails.logger.info("Found OrderItem: #{@order_item.id}")
 
-      ManageIQ::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
-        @order_item.update_message("info", "Task update message received with payload: #{@payload}")
+      @order_item.update_message("info", "Task update message received with payload: #{@payload}")
 
-        mark_item_based_on_status
-      end
+      mark_item_based_on_status
     end
 
     private
@@ -32,8 +31,7 @@ module Catalog
 
     def fetch_external_url
       TopologicalInventory.call do |api_instance|
-        task = api_instance.show_task(@payload["task_id"])
-        @service_instance_id = task.context[:service_instance][:id]
+        @service_instance_id = @task.context[:service_instance][:id]
         service_instance = api_instance.show_service_instance(@service_instance_id)
         raise ServiceInstanceWithoutExternalUrl if service_instance.external_url.nil?
         service_instance.external_url

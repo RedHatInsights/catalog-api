@@ -3,7 +3,7 @@ describe Sources do
 
   it "raises SourcesError" do
     with_modified_env :SOURCES_URL => 'http://localhost' do
-      allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(:x => 1)
+      allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(:x => 1)
       expect do
         described_class.call do |_klass|
           raise sources_ex

@@ -16,9 +16,23 @@ describe Catalog::SubmitOrder do
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref => service_offering_ref, :service_offering_source_ref => "17")
   end
+  let!(:service_plan) { create(:service_plan, :portfolio_item => portfolio_item, :base => valid_ddf) }
   let(:submit_order) { described_class.new(params) }
   let(:validater) { instance_double(Catalog::ValidateSource) }
   let(:validity) { true }
+  let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
+
+  let(:topo_service_plan) do
+    TopologicalInventoryApiClient::ServicePlan.new(
+      :name               => "The Plan",
+      :id                 => "1",
+      :description        => "A Service Plan",
+      :create_json_schema => valid_ddf
+    )
+  end
+
+  let(:topo_service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
+  let(:service_plan_response) { topo_service_plan_response }
 
   around do |example|
     with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :SOURCES_URL => "http://localhost") do
@@ -31,7 +45,10 @@ describe Catalog::SubmitOrder do
     allow(validater).to receive(:process).and_return(validater)
     allow(validater).to receive(:valid).and_return(validity)
 
-    allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+
+    stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/#{service_offering_ref}/service_plans")
+      .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
   context "when the order ID is valid" do
@@ -41,7 +58,7 @@ describe Catalog::SubmitOrder do
     context "when the source is valid" do
       before do
         request_stubs = {
-          :body => {
+          :body    => {
             :service_parameters          => service_parameters,
             :provider_control_parameters => provider_control_parameters,
             :service_plan_id             => service_plan_ref,
@@ -62,7 +79,7 @@ describe Catalog::SubmitOrder do
       let(:validity) { false }
 
       it "throws an unauthorized exception" do
-        ManageIQ::API::Common::Request.with_request(default_request) do
+        Insights::API::Common::Request.with_request(default_request) do
           expect { submit_order.process }.to raise_error(Catalog::NotAuthorized)
         end
       end
@@ -74,6 +91,19 @@ describe Catalog::SubmitOrder do
 
     it "raises an exception" do
       expect { submit_order.process }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  context "when the base service_plan has changed from topology" do
+    let(:params) { order.id.to_s }
+    let(:service_plan_response) do
+      topo_service_plan_response.tap do |plan|
+        plan.data.first.create_json_schema["schema"]["description"] += " changed service plan"
+      end
+    end
+
+    it "fails to order" do
+      expect { submit_order.process }.to raise_exception(Catalog::InvalidSurvey)
     end
   end
 end

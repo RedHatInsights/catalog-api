@@ -2,9 +2,14 @@ module Api
   module V1
     class OrdersController < ApplicationController
       include Api::V1::Mixins::IndexMixin
+      before_action :read_access_check, :only => %i[show]
 
       def index
         collection(Order.all)
+      end
+
+      def show
+        render :json => Order.find(params.require(:id))
       end
 
       def create
@@ -17,8 +22,8 @@ module Api
       end
 
       def submit_order
-        approval = Catalog::CreateApprovalRequest.new(params.require(:order_id))
-        render :json => approval.process.order
+        order = Catalog::CreateRequestForAppliedInventories.new(params.require(:order_id)).process.order
+        render :json => order
       end
 
       def destroy

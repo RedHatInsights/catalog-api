@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Disable PUT for now since rails sends these :update and they aren't really the same thing.
   def put(*_args); end
 
-  routing_helper = ManageIQ::API::Common::Routing.new(self)
+  routing_helper = Insights::API::Common::Routing.new(self)
 
   prefix = "api"
   if ENV["PATH_PREFIX"].present? && ENV["APP_NAME"].present?
@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
     namespace :v1x0, :controller => 'notify', :path => "v1.0" do
       post '/notify/approval_request/:request_id', :action => 'notify_approval_request'
-      post '/notify/order_item/:task_id', :action => 'notify_order_item'
+      post '/notify/task/:task_id', :action => 'notify_task'
     end
   end
 
@@ -26,7 +26,7 @@ Rails.application.routes.draw do
       post "/graphql" => "graphql#query"
       post '/orders/:order_id/submit_order', :to => "orders#submit_order", :as => 'order_submit_order'
       patch '/orders/:order_id/cancel', :to => "orders#cancel_order", :as => 'order_cancel'
-      resources :orders,                :only => [:create, :index, :destroy] do
+      resources :orders,                :only => [:create, :index, :show, :destroy] do
         resources :order_items,           :only => [:create, :index, :show]
 
         post :restore, :to => "orders#restore"
@@ -74,6 +74,7 @@ Rails.application.routes.draw do
         get 'base', :to => 'service_plans#base'
         get 'modified', :to => 'service_plans#modified'
         patch 'modified', :to => 'service_plans#update_modified'
+        post :reset, :to => 'service_plans#reset'
       end
     end
   end

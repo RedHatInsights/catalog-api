@@ -3,7 +3,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
   let(:params) { ActionController::Parameters.new('order_item_id' => order_item.id) }
 
   before do
-    allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
   end
 
   around do |example|
@@ -58,7 +58,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
 
         context "when the api call is successful" do
           it "returns 3 masked values" do
-            result = subject.process
+            result = subject.process.sanitized_parameters
 
             expect(result.values.select { |v| v == described_class::MASKED_VALUE }.count).to eq(3)
           end
@@ -87,7 +87,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
       end
 
       it "returns an empty hash" do
-        expect(subject.process).to eq({})
+        expect(subject.process.sanitized_parameters).to eq({})
       end
     end
   end

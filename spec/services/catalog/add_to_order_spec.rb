@@ -26,7 +26,7 @@ describe Catalog::AddToOrder, :type => :service do
   let(:request) { default_request }
 
   it "add order item" do
-    ManageIQ::API::Common::Request.with_request(request) do
+    Insights::API::Common::Request.with_request(request) do
       expect(order_item.portfolio_item_id).to eq(portfolio_item.id)
     end
   end
@@ -44,21 +44,21 @@ describe Catalog::AddToOrder, :type => :service do
 
   context "when passing in a x-rh-identity header" do
     it 'sets the context to the encoded_user_hash' do
-      ManageIQ::API::Common::Request.with_request(request) do
+      Insights::API::Common::Request.with_request(request) do
         expect(order_item.context["headers"]["x-rh-identity"]).to eq encoded_user_hash
       end
     end
 
     it 'can recreate the request from the context' do
       item = nil
-      ManageIQ::API::Common::Request.with_request(request) do
+      Insights::API::Common::Request.with_request(request) do
         item = order_item
       end
 
       new_request = item.context.transform_keys(&:to_sym)
-      ManageIQ::API::Common::Request.with_request(new_request) do
-        expect(ManageIQ::API::Common::Request.current.user.username).to eq "jdoe"
-        expect(ManageIQ::API::Common::Request.current.user.email).to eq "jdoe@acme.com"
+      Insights::API::Common::Request.with_request(new_request) do
+        expect(Insights::API::Common::Request.current.user.username).to eq "jdoe"
+        expect(Insights::API::Common::Request.current.user.email).to eq "jdoe@acme.com"
       end
     end
   end

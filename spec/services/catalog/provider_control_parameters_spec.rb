@@ -15,7 +15,7 @@ describe Catalog::ProviderControlParameters, :type => :service do
   end
 
   before do
-    allow(ManageIQ::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
+    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
   end
 
   around do |example|

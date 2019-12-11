@@ -11,7 +11,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
   end
 
   around do |example|
-    ManageIQ::API::Common::Request.with_request(default_request) do
+    Insights::API::Common::Request.with_request(default_request) do
       with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :SOURCES_URL => "http://localhost") do
         example.call
       end

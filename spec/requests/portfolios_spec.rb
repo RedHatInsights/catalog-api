@@ -300,7 +300,7 @@ describe 'Portfolios API' do
       let(:permissions) { %w[catalog:portfolios:read] }
       let(:app_name) { "catalog" }
       let(:http_status) { '204' }
-      let(:dummy) { double("ManageIQ::API::Common::RBAC::ShareResource", :process => self) }
+      let(:dummy) { double("Insights::API::Common::RBAC::ShareResource", :process => self) }
       let(:attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
     end
 
@@ -312,7 +312,7 @@ describe 'Portfolios API' do
                      :resource_name => 'portfolios',
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
-          allow(ManageIQ::API::Common::RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
+          allow(Insights::API::Common::RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
           post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers
           expect(response).to have_http_status(http_status)
         end
@@ -363,7 +363,7 @@ describe 'Portfolios API' do
     context 'unshare' do
       include_context "sharing_objects"
       let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-      let(:dummy) { double("ManageIQ::API::Common::RBAC::UnshareResource", :process => self) }
+      let(:dummy) { double("Insights::API::Common::RBAC::UnshareResource", :process => self) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           options = {:app_name      => app_name,
@@ -371,7 +371,7 @@ describe 'Portfolios API' do
                      :resource_name => 'portfolios',
                      :permissions   => permissions,
                      :group_uuids   => group_uuids}
-          expect(ManageIQ::API::Common::RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
+          expect(Insights::API::Common::RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
           post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
           expect(response).to have_http_status(204)
         end
@@ -381,13 +381,13 @@ describe 'Portfolios API' do
     context 'share_info' do
       include_context "sharing_objects"
       let(:dummy_response) { double(:share_info => {'a' => 1}) }
-      let(:dummy) { double("ManageIQ::API::Common::RBAC::UnshareResource", :process => dummy_response) }
+      let(:dummy) { double("Insights::API::Common::RBAC::UnshareResource", :process => dummy_response) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           options = {:app_name      => app_name,
                      :resource_id   => portfolio.id.to_s,
                      :resource_name => 'portfolios'}
-          expect(ManageIQ::API::Common::RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
+          expect(Insights::API::Common::RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
           get "#{api}/portfolios/#{portfolio.id}/share_info", :headers => default_headers
 
           expect(response).to have_http_status(200)
