@@ -44,6 +44,16 @@ describe Catalog::CreateApprovalRequest, :type => :service do
         subject.process
         expect(ApprovalRequest.count).to eq(1)
       end
+
+      it "sets up the approval request object to track approval" do
+        subject.process
+        approval_request = ApprovalRequest.last
+
+        expect(approval_request.state).to eq "approved"
+        expect(approval_request.approval_request_ref).to eq "7"
+        expect(approval_request.order_item).to eq order_item
+        expect(approval_request.tenant).to eq approval_request.order_item.tenant
+      end
     end
 
     context "when the approval fails" do
@@ -57,6 +67,20 @@ describe Catalog::CreateApprovalRequest, :type => :service do
         expect(ApprovalRequest.count).to eq(0)
         expect { subject.process }.to raise_exception(Catalog::ApprovalError)
         expect(ApprovalRequest.count).to eq(0)
+      end
+    end
+
+    context "when creating the approval request fails" do
+      before do
+        stub_request(:post, "http://localhost/api/approval/v1.0/requests")
+          .with(:body => request_body_from)
+          .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
+      end
+
+      it "raises an error" do
+        ActsAsTenant.without_tenant do
+          expect { subject.process }.to raise_exception(ActiveRecord::RecordInvalid)
+        end
       end
     end
   end
