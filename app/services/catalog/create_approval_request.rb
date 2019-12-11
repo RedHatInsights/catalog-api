@@ -31,7 +31,8 @@ module Catalog
 
       order_item.approval_requests.create!(
         :approval_request_ref => response.id,
-        :state                => response.decision.to_sym
+        :state                => response.decision.to_sym,
+        :tenant_id            => order_item.tenant_id
       )
 
       order_item.update_message("info", "Approval Request Submitted for ID: #{order_item.approval_requests.last.id}")

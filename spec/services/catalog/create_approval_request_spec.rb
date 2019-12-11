@@ -70,16 +70,16 @@ describe Catalog::CreateApprovalRequest, :type => :service do
       end
     end
 
-    context "when creating the approval request fails" do
+    context "without a tenant on the request" do
       before do
         stub_request(:post, "http://localhost/api/approval/v1.0/requests")
           .with(:body => request_body_from)
           .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
       end
 
-      it "raises an error" do
+      it "does not raise an error" do
         ActsAsTenant.without_tenant do
-          expect { subject.process }.to raise_exception(ActiveRecord::RecordInvalid)
+          expect { subject.process }.to_not raise_error
         end
       end
     end
