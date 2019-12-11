@@ -20,10 +20,7 @@ module Catalog
           Rails.logger.info("Creating approval request for task")
           Catalog::CreateApprovalRequest.new(@task).process
         else
-          order_item.update_message(:error, "Topology task error")
-          Rails.logger.error(
-            "Topology error during task. State: #{@task.state}. Status: #{@task.status}. Context: #{@task.context}"
-          )
+          add_task_update_message
         end
       end
 
@@ -38,6 +35,16 @@ module Catalog
 
     def order_item_context
       order_item.context.transform_keys(&:to_sym)
+    end
+
+    def add_task_update_message
+      @task.status == "error" ? add_update_message(:error) : add_update_message(:info)
+    end
+
+    def add_update_message(state)
+      message = "Topology task update. State: #{@task.state}. Status: #{@task.status}. Context: #{@task.context}"
+      order_item.update_message(state, message)
+      Rails.logger.send(state, message)
     end
   end
 end
