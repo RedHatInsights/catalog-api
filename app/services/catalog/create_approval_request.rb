@@ -17,6 +17,9 @@ module Catalog
     rescue Catalog::ApprovalError => e
       Rails.logger.error("Error putting in approval Request for #{order.id}: #{e.message}")
       raise
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error("Error creating ApprovalRequest object for #{order.id}: #{e.message}")
+      raise
     end
 
     private
@@ -25,17 +28,13 @@ module Catalog
       response = Approval::Service.call(ApprovalApiClient::RequestApi) do |api|
         api.create_request(Catalog::CreateRequestBodyFrom.new(@order, order_item, @task).process.result)
       end
-      order_item.approval_requests << create_approval_request(response, order_item)
+
+      order_item.approval_requests.create!(
+        :approval_request_ref => response.id,
+        :state                => response.decision.to_sym
+      )
 
       order_item.update_message("info", "Approval Request Submitted for ID: #{order_item.approval_requests.last.id}")
-    end
-
-    def create_approval_request(req, order_item)
-      ApprovalRequest.create!(
-        :approval_request_ref => req.id,
-        :state                => req.decision.to_sym,
-        :order_item           => order_item
-      )
     end
   end
 end
