@@ -57,24 +57,48 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       let(:task) do
         TopologicalInventoryApiClient::Task.new(
           :state   => "Completed",
-          :status  => "error",
+          :status  => status,
           :context => {:error => "Undefined method oh noes"}
         )
       end
 
-      it "updates the item with a progress message" do
-        subject.process
-        progress_message = ProgressMessage.last
-        expect(progress_message.level).to eq("error")
-        expect(progress_message.message).to eq("Topology task error")
-        expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+      context "when the status is 'error'" do
+        let(:status) { "error" }
+
+        it "updates the item with a progress message" do
+          subject.process
+          progress_message = ProgressMessage.last
+          expect(progress_message.level).to eq("error")
+          expect(progress_message.message).to match(/Topology task update/)
+          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+        end
+
+        it "logs an error" do
+          expect(Rails.logger).to receive(:error).with(
+            "Topology task update. State: #{task.state}. Status: #{task.status}. Context: #{task.context}"
+          )
+          subject.process
+        end
       end
 
-      it "logs an error" do
-        expect(Rails.logger).to receive(:error).with(
-          "Topology error during task. State: #{task.state}. Status: #{task.status}. Context: #{task.context}"
-        )
-        subject.process
+      context "when the status is not 'error'" do
+        let(:status) { "updated" }
+
+        it "updates the item with a progress message" do
+          subject.process
+          progress_message = ProgressMessage.last
+          expect(progress_message.level).to eq("info")
+          expect(progress_message.message).to match(/Topology task update/)
+          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+        end
+
+        it "logs an info message" do
+          allow(Rails.logger).to receive(:info).with(anything)
+          expect(Rails.logger).to receive(:info).with(
+            "Topology task update. State: #{task.state}. Status: #{task.status}. Context: #{task.context}"
+          )
+          subject.process
+        end
       end
     end
   end
