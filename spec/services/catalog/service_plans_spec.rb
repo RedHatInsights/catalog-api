@@ -32,8 +32,8 @@ describe Catalog::ServicePlans, :type => :service do
         expect(items.count).to eq(1)
       end
 
-      it "returns an array with one object with an ID of 'DNE'" do
-        expect(items.first["id"]).to eq("DNE")
+      it "returns an array with one object with an ID of 'null'" do
+        expect(items.first["id"]).to be_nil
       end
 
       it "returns an array with one object with a service_offering_id" do
