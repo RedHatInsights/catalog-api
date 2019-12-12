@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_18_220525) do
+ActiveRecord::Schema.define(version: 2019_12_12_225130) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,8 +20,8 @@ ActiveRecord::Schema.define(version: 2019_11_18_220525) do
     t.integer "order_item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "reason"
     t.integer "state", default: 0
+    t.string "reason"
     t.bigint "tenant_id"
     t.datetime "request_completed_at"
     t.index ["tenant_id"], name: "index_approval_requests_on_tenant_id"
@@ -45,8 +45,8 @@ ActiveRecord::Schema.define(version: 2019_11_18_220525) do
   create_table "images", force: :cascade do |t|
     t.binary "content"
     t.string "extension"
-    t.bigint "tenant_id"
     t.string "hashcode"
+    t.bigint "tenant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_images_on_tenant_id"
@@ -177,6 +177,7 @@ ActiveRecord::Schema.define(version: 2019_11_18_220525) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.string "description"
+    t.bigint "topology_plan_ref"
     t.index ["discarded_at"], name: "index_service_plans_on_discarded_at"
     t.index ["tenant_id"], name: "index_service_plans_on_tenant_id"
   end

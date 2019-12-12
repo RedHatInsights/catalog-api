@@ -13,6 +13,7 @@ module Catalog
           :description       => schema["description"],
           :base              => schema["create_json_schema"],
           :modified          => schema["create_json_schema"],
+          :topology_plan_ref => schema["id"],
           :portfolio_item_id => @portfolio_item.id
         )
       end

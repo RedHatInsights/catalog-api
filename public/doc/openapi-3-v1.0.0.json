@@ -3413,6 +3413,12 @@
             "description": "The reference ID of the Portfolio Item",
             "readOnly": true
           },
+          "topology_plan_ref": {
+            "type": "string",
+            "title": "Topology Plan Ref",
+            "description": "The plan reference ID for the ServicePlan",
+            "readOnly": true
+          },
           "id": {
             "type": "string",
             "title": "ID",

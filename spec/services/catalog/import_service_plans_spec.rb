@@ -46,6 +46,10 @@ describe Catalog::ImportServicePlans, :type => :service do
       it "adds the ServicePlan to the portfolio_item" do
         expect(portfolio_item.service_plans.count).to eq 1
       end
+
+      it "sets the topology_plan_ref to the id of the service_plan" do
+        expect(portfolio_item.service_plans.collect(&:topology_plan_ref)).to match_array [1]
+      end
     end
 
     context "when there are multiple plans" do
@@ -57,6 +61,10 @@ describe Catalog::ImportServicePlans, :type => :service do
 
       it "adds both the ServicePlans to the portfolio_item" do
         expect(portfolio_item.service_plans.count).to eq 2
+      end
+
+      it "sets the topology_plan_ref to the id of the service_plan" do
+        expect(portfolio_item.service_plans.collect(&:topology_plan_ref)).to match_array [1, 1]
       end
     end
   end
