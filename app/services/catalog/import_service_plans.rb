@@ -22,6 +22,9 @@ module Catalog
       @service_plans = @portfolio_item.service_plans
 
       self
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error("Error creating service plan with schemas: #{service_plan_schemas}, #{e.message}")
+      raise
     end
 
     def service_plan_schemas
