@@ -4,7 +4,6 @@ module Catalog
 
     MASKED_VALUE = "********".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
-    SERVICE_PLAN_DOES_NOT_EXIST = "DNE".freeze
 
     def initialize(params)
       @params = params
@@ -64,7 +63,7 @@ module Catalog
     end
 
     def service_plan_does_not_exist?
-      service_plan_ref == SERVICE_PLAN_DOES_NOT_EXIST
+      service_plan_ref.nil?
     end
   end
 end

@@ -77,8 +77,8 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
       end
     end
 
-    context "when the service plan ref is 'DNE'" do
-      let(:service_plan_ref) { "DNE" }
+    context "when the service plan ref is 'null'" do
+      let(:service_plan_ref) { nil }
       let(:fields) { [] }
 
       it "does not call the api" do
