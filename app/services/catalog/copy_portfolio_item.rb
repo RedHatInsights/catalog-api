@@ -1,5 +1,6 @@
 module Catalog
   class CopyPortfolioItem
+    include IconMixin
     attr_reader :new_portfolio_item
 
     def initialize(params)
@@ -25,6 +26,15 @@ module Catalog
     def make_copy
       @portfolio_item.dup.tap do |new_portfolio_item|
         new_portfolio_item.name = new_name(@portfolio_item.name)
+
+        duplicate_icon(@portfolio_item, new_portfolio_item) if @portfolio_item.icon_id.present?
+
+        @portfolio_item.service_plans.each do |plan|
+          new_plan = plan.dup
+          new_plan.save!
+          new_portfolio_item.service_plans << new_plan
+        end
+
         new_portfolio_item.save
       end
     end

@@ -1,5 +1,5 @@
 describe Catalog::CopyPortfolio, :type => :service do
-  let(:portfolio) { create(:portfolio) }
+  let(:portfolio) { create(:portfolio, :icon => create(:icon)) }
   let!(:portfolio_item1) { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio) }
 
@@ -16,6 +16,13 @@ describe Catalog::CopyPortfolio, :type => :service do
 
       it "modifies the name" do
         expect(new_portfolio.name).to match(/^Copy of.*/)
+      end
+
+      it "copies over the icon" do
+        new = copy_portfolio.new_portfolio
+
+        expect(new.icon_id).not_to eq portfolio.icon_id
+        expect(new.icon.image_id).to eq portfolio.icon.image_id
       end
 
       it "copies over all of the portfolio items" do

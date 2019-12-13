@@ -1,7 +1,7 @@
 describe Catalog::CopyPortfolioItem, :type => :service do
   let(:portfolio) { create(:portfolio) }
   let(:portfolio2) { create(:portfolio) }
-  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :icon => create(:icon)) }
 
   let(:copy_portfolio_item) { described_class.new(params).process }
 
@@ -52,6 +52,34 @@ describe Catalog::CopyPortfolioItem, :type => :service do
         another_portfolio_item.update(:name => "Copy (1) of #{portfolio_item.name}")
         new = copy_portfolio_item.new_portfolio_item
         expect(new.name).to eq "Copy (2) of #{portfolio_item.name}"
+      end
+    end
+
+    context "when the portfolio_item has an icon" do
+      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
+
+      it "copies over the icon" do
+        new = copy_portfolio_item.new_portfolio_item
+
+        expect(new.icon_id).not_to eq portfolio_item.icon_id
+        expect(new.icon.image_id).to eq portfolio_item.icon.image_id
+      end
+    end
+
+    context "when the portfolio_item has service_plans" do
+      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
+
+      before do
+        portfolio_item.service_plans.create(
+          :base => JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")))
+        )
+      end
+
+      it "copies over the service_plans" do
+        new = copy_portfolio_item.new_portfolio_item
+
+        expect(new.service_plans).not_to match_array portfolio_item.service_plans
+        expect(new.service_plans.first.base).to eq portfolio_item.service_plans.first.base
       end
     end
   end
