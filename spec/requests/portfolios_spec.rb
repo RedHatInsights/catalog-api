@@ -336,8 +336,6 @@ describe 'Portfolios API' do
     context 'unshare' do
       include_context "sharing_objects"
       let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-      before do
-      end
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
