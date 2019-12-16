@@ -16,5 +16,6 @@ ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
   "Catalog::ApprovalError"             => :service_unavailable,
   "Catalog::SourcesError"              => :service_unavailable,
   "Catalog::RBACError"                 => :service_unavailable,
-  "Discard::DiscardError"              => :bad_request
+  "Discard::DiscardError"              => :bad_request,
+  "Catalog::ConflictError"             => :conflict
 )

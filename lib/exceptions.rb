@@ -7,4 +7,5 @@ module Catalog
   class OrderUncancelable < StandardError; end
   class SourcesError < StandardError; end
   class InvalidSurvey < StandardError; end
+  class ConflictError < StandardError; end
 end
