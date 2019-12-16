@@ -2,7 +2,7 @@ describe ServicePlan do
   let(:service_plan) { create(:service_plan) }
   let!(:portfolio_item) { service_plan.portfolio_item }
   let!(:service_offering_ref) { portfolio_item.service_offering_ref }
-  let(:valid_ddf) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")) }
+  let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
 
   around do |example|
     with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :BYPASS_RBAC => 'true') do
@@ -15,7 +15,7 @@ describe ServicePlan do
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
-      :create_json_schema => JSON.parse(valid_ddf)
+      :create_json_schema => valid_ddf
     )
   end
 
@@ -39,11 +39,11 @@ describe ServicePlan do
     end
 
     context "valid" do
-      let(:base) { JSON.parse(valid_ddf) }
-      let(:service_plan) { create(:service_plan, :base => base) }
+      let(:service_plan) { create(:service_plan, :base => valid_ddf) }
 
       before do
-        service_plan.update!(:modified => JSON.parse(valid_ddf))
+        service_plan.update!(:modified => valid_ddf)
+        service_plan.reload
       end
 
       it "does not set an error" do
@@ -52,7 +52,28 @@ describe ServicePlan do
       end
 
       it "shows the modified column is unchanged" do
-        expect(service_plan.modified["schema"]).to eq JSON.parse(valid_ddf)["schema"]
+        expect(service_plan.modified["schema"]).to eq valid_ddf["schema"]
+      end
+    end
+
+    context "modified schema comparison" do
+      let(:service_plan) { create(:service_plan, :base => reordered_ddf) }
+      let(:reordered_ddf) { valid_ddf.tap { |ddf| ddf["schema"]["fields"].reverse! } }
+
+      context "when only the order has changed" do
+        it "passes validation" do
+          service_plan.update!(:modified => reordered_ddf)
+
+          expect(service_plan.valid?).to be_truthy
+        end
+      end
+
+      context "when the order has changed but base has also changed" do
+        let(:changed_ddf) { reordered_ddf.tap { |ddf| ddf["schema"]["fields"].first["name"] = "Not the same name" } }
+
+        it "fails validation" do
+          expect { service_plan.update!(:base => changed_ddf) }.to raise_error(Catalog::InvalidSurvey)
+        end
       end
     end
   end
