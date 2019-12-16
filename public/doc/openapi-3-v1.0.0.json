@@ -3572,22 +3572,22 @@
           "permissions": {
             "type": "array",
             "title": "Name",
-            "description": "The permissions to apply for this share. Each permission comprises of 3 parts catalog:portfolios:verb separated by :. The valid verbs are read, update, delete and order",
+            "description": "The permissions to apply for this share. The valid values are read, update, delete and order",
             "items": {
               "type": "string",
               "enum": [
-                "catalog:portfolios:read",
-                "catalog:portfolios:update",
-                "catalog:portfolios:delete",
-                "catalog:portfolios:order"
+                "read",
+                "update",
+                "delete",
+                "order"
               ]
             },
             "minItems": 1,
             "example": [
-              "catalog:portfolios:read",
-              "catalog:portfolios:update",
-              "catalog:portfolios:delete",
-              "catalog:portfolios:order"
+              "read",
+              "update",
+              "delete",
+              "order"
             ]
           },
           "group_uuids": {
@@ -3614,10 +3614,10 @@
             "items": {
               "type": "string",
               "enum": [
-                "catalog:portfolios:read",
-                "catalog:portfolios:update",
-                "catalog:portfolios:delete",
-                "catalog:portfolios:order"
+                "read",
+                "update",
+                "delete",
+                "order"
               ]
             },
             "minItems": 1
@@ -3737,10 +3737,10 @@
             "items": {
               "type": "string",
               "enum": [
-                "catalog:portfolios:read",
-                "catalog:portfolios:update",
-                "catalog:portfolios:delete",
-                "catalog:portfolios:order"
+                "read",
+                "update",
+                "delete",
+                "order"
               ]
             }
           }

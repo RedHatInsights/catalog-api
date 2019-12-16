@@ -3,8 +3,7 @@ module Api
     module Mixins
       module ACEMixin
         def ace_ids(verb, klass)
-          permission = "#{ENV['APP_NAME']}:#{klass.table_name}:#{verb}"
-          params = { :group_uuid => my_group_uuids, :permission => permission, :aceable_type => klass.to_s }
+          params = { :group_uuid => my_group_uuids, :permission => verb, :aceable_type => klass.to_s }
           AccessControlEntry.where(params).collect { |ace| ace.aceable_id.to_s }
         end
 

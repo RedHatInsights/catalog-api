@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["aceable_type", "aceable_id"], name: "index_access_control_entries_on_aceable_type_and_aceable_id"
+    t.index ["group_uuid", "aceable_type", "permission"], name: "index_on_group_uuid_aceable_type_permission"
   end
 
   create_table "approval_requests", force: :cascade do |t|

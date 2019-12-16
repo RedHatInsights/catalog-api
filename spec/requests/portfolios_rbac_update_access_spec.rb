@@ -6,7 +6,7 @@ describe 'Portfolios Write Access RBAC API' do
   let(:updated_attributes) { {:name => 'Barney', :description => "Barney's Portfolio" } }
   let(:block_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => false) }
   let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:permission) { 'catalog:portfolios:update' }
+  let(:permission) { 'update' }
   let(:ace1) { create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1) }
   let(:ace2) { create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2) }
   let(:groups) { [group1] }

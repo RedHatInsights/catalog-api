@@ -1,7 +1,7 @@
 RSpec.shared_context "sharing_objects" do
   let(:app_name) { 'catalog' }
   let!(:shared_portfolio) { create(:portfolio) }
-  let(:permissions) { %w[catalog:portfolios:read] }
+  let(:permissions) { %w[read] }
   let(:http_status) { '204' }
   let(:attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
   let(:ace1) { create(:access_control_entry, :group_uuid => group1.uuid, :permission => permissions[0], :aceable => shared_portfolio) }

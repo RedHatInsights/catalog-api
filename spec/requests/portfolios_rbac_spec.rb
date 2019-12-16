@@ -10,11 +10,6 @@ describe 'Portfolios RBAC API' do
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { double }
   let(:principal_options) { {:scope=>"principal"} }
-  around do |example|
-    with_modified_env(:APP_NAME => "catalog") do
-      example.call
-    end
-  end
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
@@ -40,7 +35,7 @@ describe 'Portfolios RBAC API' do
 
   describe "DELETE /portfolios/{id}" do
     it "success" do
-      permission = 'catalog:portfolios:delete'
+      permission = 'delete'
       create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
@@ -62,7 +57,7 @@ describe 'Portfolios RBAC API' do
     end
 
     it 'returns status code 200' do
-      permission = 'catalog:portfolios:read'
+      permission = 'read'
       create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
@@ -83,7 +78,7 @@ describe 'Portfolios RBAC API' do
 
     context "with filtering" do
       before do
-        permission = 'catalog:portfolios:read'
+        permission = 'read'
         create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
         create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
@@ -122,8 +117,8 @@ describe 'Portfolios RBAC API' do
     context "when user has RBAC update portfolios access" do
       let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => true) }
       before do
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'catalog:portfolios:read', :aceable => portfolio1)
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'catalog:portfolios:update', :aceable => portfolio1)
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio1)
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'update', :aceable => portfolio1)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
@@ -160,7 +155,7 @@ describe 'Portfolios RBAC API' do
   context "when the permissions array is proper" do
     describe "#share" do
       it "goes through validation" do
-        permissions = ["catalog:portfolios:update"]
+        permissions = ["update"]
         post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => [group1.uuid]
@@ -172,8 +167,8 @@ describe 'Portfolios RBAC API' do
 
     describe "#unshare" do
       it "goes through validation" do
-        permissions = ["catalog:portfolios:update"]
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'catalog:portfolios:update', :aceable => portfolio1)
+        permissions = ["update"]
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'update', :aceable => portfolio1)
         post "#{api}/portfolios/#{portfolio1.id}/unshare", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => [group1.uuid]

@@ -303,10 +303,6 @@ describe 'Portfolios API' do
           allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
           post "#{api}/portfolios/#{shared_portfolio.id}/share", :params => attributes, :headers => default_headers
           expect(response).to have_http_status(http_status)
-          if http_status == 204
-            shared_portfolio.reload
-            expect(shared_portfolio.access_control_entries.count).to eq(groups.count)
-          end
         end
       end
     end
@@ -321,22 +317,7 @@ describe 'Portfolios API' do
       let(:http_status) { '400' }
 
       context 'invalid verb in permissions' do
-        let(:permissions) { %w[catalog:portfolios:something] }
-        it_behaves_like "#shared_test"
-      end
-
-      context 'invalid appname in permissions' do
-        let(:permissions) { %w[bad:portfolios:something] }
-        it_behaves_like "#shared_test"
-      end
-
-      context 'invalid object in permissions' do
-        let(:permissions) { %w[catalog:bad:read] }
-        it_behaves_like "#shared_test"
-      end
-
-      context 'invalid object type in permissions' do
-        let(:permissions) { [123] }
+        let(:permissions) { %w[something] }
         it_behaves_like "#shared_test"
       end
 
@@ -355,6 +336,8 @@ describe 'Portfolios API' do
     context 'unshare' do
       include_context "sharing_objects"
       let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
+      before do
+      end
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)

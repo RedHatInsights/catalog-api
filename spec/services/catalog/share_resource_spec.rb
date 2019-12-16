@@ -1,16 +1,11 @@
 describe Catalog::ShareResource, :type => :service do
   let(:portfolio) { create(:portfolio) }
   let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:permissions) { ['catalog:portfolios:read', 'catalog:portfolios:update'] }
+  let(:permissions) { ['read', 'update'] }
   let(:groups) { [group1] }
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { double }
   let(:principal_options) { {:scope=>"principal"} }
-  around do |example|
-    with_modified_env(:APP_NAME => "catalog") do
-      example.call
-    end
-  end
 
   let(:params) do
     { :group_uuids => [group1.uuid],
