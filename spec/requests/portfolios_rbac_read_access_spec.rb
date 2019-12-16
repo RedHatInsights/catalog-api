@@ -21,7 +21,7 @@ describe 'Portfolios Read Access RBAC API' do
   describe "GET /portfolios" do
     context "no permission to read portfolios" do
       before do
-       create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2)
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2)
       end
 
       it "no access" do
