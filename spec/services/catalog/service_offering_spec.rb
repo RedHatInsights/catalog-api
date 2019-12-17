@@ -27,6 +27,10 @@ describe Catalog::ServiceOffering do
       it "sets archived to true" do
         expect(subject.process.archived).to be(true)
       end
+
+      it "exposes order" do
+        expect(subject.process.order).to eq(order_item.order)
+      end
     end
 
     context "when archived_at is not present" do
@@ -34,6 +38,10 @@ describe Catalog::ServiceOffering do
 
       it "sets archived to false" do
         expect(subject.process.archived).to be(false)
+      end
+
+      it "exposes order" do
+        expect(subject.process.order).to eq(order_item.order)
       end
     end
   end

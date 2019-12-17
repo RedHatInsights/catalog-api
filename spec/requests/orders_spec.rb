@@ -10,7 +10,6 @@ describe "OrderRequests", :type => :request do
 
   describe "#submit_order" do
     let(:service_offering_service) { instance_double("Catalog::ServiceOffering") }
-    let(:service_offering) { TopologicalInventoryApiClient::ServiceOffering.new(:archived_at => archived_at) }
 
     before do
       allow(Catalog::ServiceOffering).to receive(:new).with(order.id.to_s).and_return(service_offering_service)
