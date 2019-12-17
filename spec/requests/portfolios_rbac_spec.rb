@@ -6,15 +6,14 @@ describe 'Portfolios RBAC API' do
   let(:block_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => false) }
   let(:params) { {:name => 'Demo', :description => 'Desc 1' } }
   let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:groups) { [group1] }
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { double }
   let(:principal_options) { {:scope=>"principal"} }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return(groups)
-    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([group1])
   end
 
   describe "POST /portfolios" do
@@ -35,8 +34,7 @@ describe 'Portfolios RBAC API' do
 
   describe "DELETE /portfolios/{id}" do
     it "success" do
-      permission = 'delete'
-      create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
+      create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'delete', :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
       delete "#{api("1.0")}/portfolios/#{portfolio1.id}", :headers => default_headers
@@ -57,8 +55,7 @@ describe 'Portfolios RBAC API' do
     end
 
     it 'returns status code 200' do
-      permission = 'read'
-      create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
+      create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
       get "#{api('1.0')}/portfolios", :headers => default_headers
@@ -81,7 +78,7 @@ describe 'Portfolios RBAC API' do
         permission = 'read'
         create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
         create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2)
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
+        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', permission).and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
         get "#{api('1.0')}/portfolios?filter[name]=#{portfolio1.name}", :headers => default_headers
       end

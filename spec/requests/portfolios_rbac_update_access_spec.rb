@@ -7,7 +7,6 @@ describe 'Portfolios Write Access RBAC API' do
   let(:block_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => false) }
   let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
   let(:permission) { 'update' }
-  let(:groups) { [group1] }
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { double }
   let(:list_group_options) { {:scope=>"principal"} }
@@ -41,7 +40,7 @@ describe 'Portfolios Write Access RBAC API' do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(access_obj).to receive(:process).and_return(access_obj)
       allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, list_group_options).and_return(groups)
+      allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, list_group_options).and_return([group1])
       create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
     end
 
