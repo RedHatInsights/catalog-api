@@ -2467,6 +2467,9 @@
           },
           "404": {
             "description": "Service Plan Not Found."
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           }
         }
       }
@@ -2802,6 +2805,9 @@
     "responses": {
       "BadRequest": {
         "description": "The entity being created does not have either all the required parameters specified or the parameter value is invalid."
+      },
+      "Conflict": {
+        "description": "The request could not be completed due to a conflict with the current state of the resource."
       },
       "Forbidden": {
         "description": "The caller is forbidden to perform the action."

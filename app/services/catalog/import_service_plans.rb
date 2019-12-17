@@ -4,6 +4,8 @@ module Catalog
 
     def initialize(portfolio_item_id)
       @portfolio_item = PortfolioItem.find(portfolio_item_id)
+
+      raise Catalog::ConflictError, "Service Plan already exists for PortfolioItem: #{portfolio_item_id}" if @portfolio_item.service_plans.any?
     end
 
     def process
