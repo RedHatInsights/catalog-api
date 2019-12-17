@@ -8,24 +8,56 @@ describe "OrderRequests", :type => :request do
   let!(:order) { create(:order) }
   let!(:order2) { create(:order) }
 
-  # TODO: Update this context with new logic. Will be fixed with
-  # https://projects.engineering.redhat.com/browse/SSP-237
-  context "submit order" do
-    let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
-    let(:topo_ex) { Catalog::TopologyError.new("kaboom") }
-    let(:params) { order.id.to_s }
+  describe "#submit_order" do
+    let(:service_offering_service) { instance_double("Catalog::ServiceOffering") }
+    let(:service_offering) { TopologicalInventoryApiClient::ServiceOffering.new(:archived_at => archived_at) }
 
     before do
-      allow(Catalog::CreateRequestForAppliedInventories).to receive(:new).with(params).and_return(svc_object)
-      allow(svc_object).to receive(:process).and_return(svc_object)
-      allow(svc_object).to receive(:order).and_return(order)
+      allow(Catalog::ServiceOffering).to receive(:new).with(order.id.to_s).and_return(service_offering_service)
+      allow(service_offering_service).to receive(:process).and_return(service_offering_service)
+      allow(service_offering_service).to receive(:archived).and_return(archived)
+      allow(service_offering_service).to receive(:order).and_return(order)
     end
 
-    it "v1.0 successfully creates requests for applied inventories" do
-      post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+    context "when the service offering has not been archived" do
+      let(:archived) { false }
+      let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
 
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
+      before do
+        allow(Catalog::CreateRequestForAppliedInventories).to receive(:new).with(order).and_return(svc_object)
+        allow(svc_object).to receive(:process).and_return(svc_object)
+        allow(svc_object).to receive(:order).and_return(order)
+      end
+
+      it "creates a request for applied inventories" do
+        expect(svc_object).to receive(:process)
+        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+      end
+
+      it "returns a 200" do
+        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "returns the order in json format" do
+        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+
+        parsed_body = JSON.parse(response.body)
+        expect(parsed_body["state"]).to eq("Created")
+        expect(parsed_body["id"]).to eq(order.id.to_s)
+      end
+    end
+
+    context "when the service offering has been archived" do
+      let(:archived) { true }
+
+      it "raises an exception and gives a 400" do
+        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+
+        expect(response).to have_http_status(:bad_request)
+      end
     end
   end
 

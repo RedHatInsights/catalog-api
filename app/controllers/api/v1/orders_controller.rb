@@ -3,6 +3,7 @@ module Api
     class OrdersController < ApplicationController
       include Api::V1::Mixins::IndexMixin
       before_action :read_access_check, :only => %i[show]
+      before_action :service_offering_check, :only => %i[submit_order]
 
       def index
         collection(Order.all)
@@ -39,6 +40,17 @@ module Api
         Catalog::SoftDeleteRestore.new(order, params.require(:restore_key)).process
 
         render :json => order
+      end
+
+      private
+
+      def service_offering_check
+        service_offering_service = Catalog::ServiceOffering.new(params.require(:order_id)).process
+        if service_offering_service.archived
+          raise Catalog::ServiceOfferingArchived.new("This service offering has been archived and can no longer be ordered")
+        else
+          @order = service_offering_service.order
+        end
       end
     end
   end

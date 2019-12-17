@@ -1,44 +1,27 @@
 module Catalog
   class ServiceOffering
-    def initialize
-      @name = nil
-      @description = nil
-      @service_offering_ref = nil
-      @service_offering_source_ref = nil
+    attr_reader :archived
+    attr_reader :order
+
+    def initialize(order_id)
+      @order = Order.find_by!(:id => order_id)
+      @service_offering_ref = service_offering_ref
     end
 
-    def self.find(id)
-      new.show(id)
-    end
-
-    def show(id)
-      @service_offering_ref = id
-      TopologicalInventory.call do |api_instance|
-        obj = api_instance.show_service_offering(id)
-        @service_offering_source_ref = obj.source_id
-        apply_instance_vars(obj)
+    def process
+      service_offering = TopologicalInventory.call do |api|
+        api.show_service_offering(@service_offering_ref)
       end
-    end
 
-    def to_normalized_params
-      hashy = instance_variables.each_with_object({}) do |var, hash|
-        hash[var.to_s.delete("@")] = instance_variable_get(var)
-      end
-      hashy.compact
+      @archived = service_offering.archived_at.present?
+
+      self
     end
 
     private
 
-    def apply_instance_vars(obj)
-      uniq_ivars(obj).each do |ivar|
-        value = obj.instance_variable_get(ivar)
-        instance_variable_set(ivar, value)
-      end
-      self
-    end
-
-    def uniq_ivars(object)
-      instance_variables & object.instance_variables
+    def service_offering_ref
+      @order.order_items.first.portfolio_item.service_offering_ref.to_s
     end
   end
 end

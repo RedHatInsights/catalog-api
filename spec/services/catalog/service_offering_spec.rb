@@ -1,54 +1,40 @@
 describe Catalog::ServiceOffering do
-  let(:api_instance) { double }
-  let(:service_offering) { described_class.new }
-  let(:service_offering_ref) { "1" }
-  let(:service_offering_source_ref) { "45" }
-  let(:name) { 'test name' }
-  let(:description) { 'test description' }
-  let(:ivars) do
-    [{:@name => name}, {:@description => description},
-     {:@service_offering_ref => service_offering_ref},
-     {:@service_offering_source_ref => service_offering_source_ref}]
-  end
-  let(:topology_service_offering) do
-    TopologicalInventoryApiClient::ServiceOffering.new('name'        => name,
-                                                       'id'          => service_offering_ref,
-                                                       'description' => description,
-                                                       'source_ref'  => '123',
-                                                       'extra'       => {},
-                                                       'source_id'   => service_offering_source_ref)
-  end
-
-  let(:ti_class) { class_double("TopologicalInventory").as_stubbed_const(:transfer_nested_constants => true) }
+  let(:subject) { described_class.new(order_item.order.id) }
 
   before do
-    allow(ti_class).to receive(:call).and_yield(api_instance)
+    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
   end
 
-  it "#{described_class}#find" do
-    expect(described_class).to receive(:new).and_return(service_offering)
-    expect(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
-    described_class.find(service_offering_ref)
-  end
-
-  it "#show" do
-    expect(api_instance).to receive(:show_service_offering).with(service_offering_ref).and_return(topology_service_offering)
-    service_offering.show(service_offering_ref)
-  end
-
-  it "#to_normalized_params" do
-    ivars.each do |ivar|
-      service_offering.instance_variable_set(ivar.first[0], ivar.first[1])
+  around do |example|
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
+      example.call
     end
-    service_params = service_offering.to_normalized_params
+  end
 
-    expect(service_params).to be_a Hash
-    expect(service_params.count).to eql 4
-    expect(service_params).to include(
-      'name'                        => name,
-      'description'                 => description,
-      'service_offering_ref'        => service_offering_ref,
-      'service_offering_source_ref' => service_offering_source_ref
-    )
+  describe "#process" do
+    let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item) }
+    let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
+    let(:service_offering_response) { TopologicalInventoryApiClient::ServiceOffering.new(:archived_at => archived_at) }
+
+    before do
+      stub_request(:get, "http://topology/api/topological-inventory/v1.0/service_offerings/123")
+        .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
+    end
+
+    context "when archived_at is present" do
+      let(:archived_at) { Time.now }
+
+      it "sets archived to true" do
+        expect(subject.process.archived).to be(true)
+      end
+    end
+
+    context "when archived_at is not present" do
+      let(:archived_at) { nil }
+
+      it "sets archived to false" do
+        expect(subject.process.archived).to be(false)
+      end
+    end
   end
 end
