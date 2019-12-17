@@ -74,7 +74,7 @@ describe "ServicePlansRequests", :type => :request do
   end
 
   describe "#create" do
-    context "when there is not a service_plan for the portfolio_item speicifed" do
+    context "when there is not a service_plan for the portfolio_item specified" do
       before do
         post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
       end

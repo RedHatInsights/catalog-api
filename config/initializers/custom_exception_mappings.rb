@@ -6,16 +6,16 @@
 ############################################################################
 
 ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
+  "ActionController::ParameterMissing" => :bad_request,
   "ActiveRecord::RecordNotSaved"       => :bad_request,
   "ActiveRecord::RecordInvalid"        => :bad_request,
-  "ActionController::ParameterMissing" => :bad_request,
+  "Catalog::ApprovalError"             => :service_unavailable,
+  "Catalog::ConflictError"             => :conflict,
   "Catalog::InvalidParameter"          => :bad_request,
   "Catalog::NotAuthorized"             => :forbidden,
   "Catalog::OrderUncancelable"         => :bad_request,
-  "Catalog::TopologyError"             => :service_unavailable,
-  "Catalog::ApprovalError"             => :service_unavailable,
-  "Catalog::SourcesError"              => :service_unavailable,
   "Catalog::RBACError"                 => :service_unavailable,
-  "Discard::DiscardError"              => :bad_request,
-  "Catalog::ConflictError"             => :conflict
+  "Catalog::SourcesError"              => :service_unavailable,
+  "Catalog::TopologyError"             => :service_unavailable,
+  "Discard::DiscardError"              => :bad_request
 )
