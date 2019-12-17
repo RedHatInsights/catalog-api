@@ -23,7 +23,7 @@ module Api
       end
 
       def submit_order
-        order = Catalog::CreateRequestForAppliedInventories.new(params.require(:order_id)).process.order
+        order = Catalog::CreateRequestForAppliedInventories.new(@order).process.order
         render :json => order
       end
 

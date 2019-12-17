@@ -1,5 +1,5 @@
 describe Catalog::CreateRequestForAppliedInventories, :type => :service do
-  let(:subject) { described_class.new(order_item.order.id) }
+  let(:subject) { described_class.new(order_item.order) }
   let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters") }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
 

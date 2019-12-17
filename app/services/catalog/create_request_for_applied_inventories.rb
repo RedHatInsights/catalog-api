@@ -2,8 +2,8 @@ module Catalog
   class CreateRequestForAppliedInventories
     attr_reader :order
 
-    def initialize(order_id)
-      @order = Order.find_by!(:id => order_id)
+    def initialize(order)
+      @order = order
       @item = @order.order_items.first
     end
 
