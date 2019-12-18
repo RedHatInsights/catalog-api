@@ -25,7 +25,7 @@ module Api
           return unless Insights::API::Common::RBAC::Access.enabled?
           return if catalog_administrator?
 
-          ids = access_id_list(verb, klass)
+          ids = ace_ids(verb, klass)
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.any? && ids.exclude?(id)
         end
 

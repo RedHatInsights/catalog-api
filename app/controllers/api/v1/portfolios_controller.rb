@@ -65,40 +65,32 @@ module Api
 
       def share
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        options = {:app_name      => ENV['APP_NAME'],
-                   :resource_name => 'portfolios',
-                   :resource_ids  => [portfolio.id.to_s],
-                   :permissions   => params[:permissions],
-                   :group_uuids   => params.require(:group_uuids)}
-        Insights::API::Common::RBAC::ShareResource.new(options).process
+        options = {:object      => portfolio,
+                   :permissions => params[:permissions],
+                   :group_uuids => params.require(:group_uuids)}
+        Catalog::ShareResource.new(options).process
         head :no_content
       end
 
       def unshare
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        options = {:app_name      => ENV['APP_NAME'],
-                   :resource_name => 'portfolios',
-                   :resource_ids  => [portfolio.id.to_s],
-                   :permissions   => params[:permissions],
-                   :group_uuids   => params[:group_uuids] || []}
-        Insights::API::Common::RBAC::UnshareResource.new(options).process
+        options = {:object      => portfolio,
+                   :permissions => params[:permissions],
+                   :group_uuids => params.require(:group_uuids)}
+        Catalog::UnshareResource.new(options).process
         head :no_content
       end
 
       def share_info
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        options = {:app_name      => ENV['APP_NAME'],
-                   :resource_name => 'portfolios',
-                   :resource_id   => portfolio.id.to_s}
-        obj = Insights::API::Common::RBAC::QuerySharedResource.new(options).process
-        render :json => obj.share_info
+        options = {:object => portfolio}
+        render :json => Catalog::ShareInfo.new(options).process.result
       end
 
       def copy
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio
       end
-
 
       private
 

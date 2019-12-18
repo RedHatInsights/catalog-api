@@ -35,7 +35,7 @@ module Api
           if access_obj.owner_scoped?
             relation.by_owner
           else
-            ids = access_obj.id_list
+            ids = ace_ids('read', relation.model)
             ids.any? ? relation.where(:id => ids) : relation
           end
         end

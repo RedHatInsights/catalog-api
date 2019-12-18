@@ -2,6 +2,7 @@ class Portfolio < ApplicationRecord
   include OwnerField
   include Discard::Model
   include Catalog::DiscardRestore
+  include Aceable
   destroy_dependencies :portfolio_items
 
   acts_as_tenant(:tenant)
