@@ -1,4 +1,5 @@
 describe "v1.0 - IconsRequests", :type => :request do
+  let(:api_version) { api(1.0) }
   let!(:portfolio_item) { create(:portfolio_item) }
   let!(:portfolio) { create(:portfolio) }
 
@@ -16,7 +17,7 @@ describe "v1.0 - IconsRequests", :type => :request do
   let(:image) { create(:image) }
 
   describe "#show" do
-    before { get "#{api}/icons/#{icon.id}", :headers => default_headers }
+    before { get "#{api_version}/icons/#{icon.id}", :headers => default_headers }
 
     it "returns a 200" do
       expect(response).to have_http_status(:ok)
@@ -28,7 +29,7 @@ describe "v1.0 - IconsRequests", :type => :request do
   end
 
   describe "#destroy" do
-    before { delete "#{api}/icons/#{icon.id}", :headers => default_headers }
+    before { delete "#{api_version}/icons/#{icon.id}", :headers => default_headers }
 
     it "returns a 204" do
       expect(response).to have_http_status(:no_content)
@@ -52,7 +53,7 @@ describe "v1.0 - IconsRequests", :type => :request do
     end
 
     before do
-      post "#{api}/icons", :params => params, :headers => default_headers, :as => :form
+      post "#{api_version}/icons", :params => params, :headers => default_headers, :as => :form
     end
 
     context "when providing proper parameters" do
@@ -144,7 +145,7 @@ describe "v1.0 - IconsRequests", :type => :request do
     let(:params) { {:content => form_upload_test_image("miq_logo.svg") } }
 
     before do
-      patch "#{api}/icons/#{icon.id}", :params => params, :headers => default_headers, :as => :form
+      patch "#{api_version}/icons/#{icon.id}", :params => params, :headers => default_headers, :as => :form
       icon.reload
     end
 
@@ -164,21 +165,21 @@ describe "v1.0 - IconsRequests", :type => :request do
   describe "#raw_icon" do
     context "when the icon exists" do
       it "/portfolio_items/{portfolio_item_id}/icon returns the icon" do
-        get "#{api}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
+        get "#{api_version}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq "image/svg+xml"
       end
 
       it "/portfolios/{portfolio_id}/icon returns the icon" do
-        get "#{api}/portfolios/#{portfolio.id}/icon", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio.id}/icon", :headers => default_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq "image/svg+xml"
       end
 
       it "/icons/{icon_id}/icon_data returns the icon" do
-        get "#{api}/icons/#{icon.id}/icon_data", :headers => default_headers
+        get "#{api_version}/icons/#{icon.id}/icon_data", :headers => default_headers
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq "image/svg+xml"
       end
@@ -186,13 +187,13 @@ describe "v1.0 - IconsRequests", :type => :request do
 
     context "when the icon does not exist" do
       it "/portfolio_items/{id}/icon returns no content" do
-        get "#{api}/portfolio_items/0/icon", :headers => default_headers
+        get "#{api_version}/portfolio_items/0/icon", :headers => default_headers
 
         expect(response).to have_http_status(:no_content)
       end
 
       it "/icons/{id}/icon_data returns no content" do
-        get "#{api}/icons/0/icon_data", :headers => default_headers
+        get "#{api_version}/icons/0/icon_data", :headers => default_headers
 
         expect(response).to have_http_status(:no_content)
       end

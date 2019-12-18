@@ -1,4 +1,5 @@
 describe "v1.0 - OrderRequests", :type => :request do
+  let(:api_version) { api(1.0) }
   around do |example|
     bypass_rbac do
       example.call
@@ -30,18 +31,18 @@ describe "v1.0 - OrderRequests", :type => :request do
 
       it "creates a request for applied inventories" do
         expect(svc_object).to receive(:process)
-        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
       end
 
       it "returns a 200" do
-        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
 
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(:ok)
       end
 
       it "returns the order in json format" do
-        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
 
         parsed_body = JSON.parse(response.body)
         expect(parsed_body["state"]).to eq("Created")
@@ -55,11 +56,11 @@ describe "v1.0 - OrderRequests", :type => :request do
       it "logs the error" do
         expect(Rails.logger).to receive(:error).with(/Service offering for order #{order.id} has been archived/)
 
-        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
       end
 
       it "returns a 400" do
-        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
 
         expect(response).to have_http_status(:bad_request)
       end
@@ -79,7 +80,7 @@ describe "v1.0 - OrderRequests", :type => :request do
       end
 
       it "successfully cancels the order" do
-        patch "/api/v1.0/orders/#{order.id}/cancel", :headers => default_headers
+        patch "/#{api_version}/orders/#{order.id}/cancel", :headers => default_headers
 
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(:ok)
@@ -92,7 +93,7 @@ describe "v1.0 - OrderRequests", :type => :request do
       end
 
       it "returns a 400" do
-        patch "/api/v1.0/orders/#{order.id}/cancel", :headers => default_headers
+        patch "/#{api_version}/orders/#{order.id}/cancel", :headers => default_headers
 
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(:bad_request)
@@ -104,7 +105,7 @@ describe "v1.0 - OrderRequests", :type => :request do
   context "list orders" do
     context "without filter" do
       before do
-        get "/api/v1.0/orders", :headers => default_headers
+        get "/#{api_version}/orders", :headers => default_headers
       end
 
       it "returns a 200" do
@@ -120,7 +121,7 @@ describe "v1.0 - OrderRequests", :type => :request do
 
     context "with filter" do
       before do
-        get "/api/v1.0/orders?filter[id]=#{order.id}", :headers => default_headers
+        get "/#{api_version}/orders?filter[id]=#{order.id}", :headers => default_headers
       end
 
       it "follows filter parameter" do
@@ -132,7 +133,7 @@ describe "v1.0 - OrderRequests", :type => :request do
 
   context "create" do
     it "create a new order" do
-      post "/api/v1.0/orders", :headers => default_headers, :params => {}
+      post "/#{api_version}/orders", :headers => default_headers, :params => {}
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
     end
@@ -141,7 +142,7 @@ describe "v1.0 - OrderRequests", :type => :request do
   describe "DELETE /orders/:id" do
     context "when deleting an order is sucessful" do
       before do
-        delete "/#{api}/orders/#{order.id}", :headers => default_headers
+        delete "/#{api_version}/orders/#{order.id}", :headers => default_headers
       end
 
       it "deletes the record" do
@@ -165,7 +166,7 @@ describe "v1.0 - OrderRequests", :type => :request do
         order.order_items << order_item
         allow(Order).to receive(:find).with(order.id.to_s).and_return(order)
         allow(order_item).to receive(:discard).and_return(false)
-        delete "/#{api}/orders/#{order.id}", :headers => default_headers
+        delete "/#{api_version}/orders/#{order.id}", :headers => default_headers
       end
 
       it "returns a 400" do
@@ -187,7 +188,7 @@ describe "v1.0 - OrderRequests", :type => :request do
         order_item.progress_messages << progress_message
         allow(Order).to receive(:find).with(order.id.to_s).and_return(order)
         allow(progress_message).to receive(:discard).and_return(false)
-        delete "/#{api}/orders/#{order.id}", :headers => default_headers
+        delete "/#{api_version}/orders/#{order.id}", :headers => default_headers
       end
 
       it "returns a 400" do
@@ -207,7 +208,7 @@ describe "v1.0 - OrderRequests", :type => :request do
     context "when restoring an order is successful" do
       before do
         order.discard
-        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+        post "/#{api_version}/orders/#{order.id}/restore", :headers => default_headers, :params => params
       end
 
       it "returns a 200" do
@@ -224,7 +225,7 @@ describe "v1.0 - OrderRequests", :type => :request do
 
       before do
         order.discard
-        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+        post "/#{api_version}/orders/#{order.id}/restore", :headers => default_headers, :params => params
       end
 
       it "returns a 403" do
@@ -242,7 +243,7 @@ describe "v1.0 - OrderRequests", :type => :request do
         allow(Order).to receive_message_chain(:with_discarded, :discarded, :find).with(order.id.to_s).and_return(order)
         allow(order).to receive_message_chain(:order_items, :with_discarded, :discarded).and_return([order_item])
         allow(order_item).to receive(:undiscard).and_return(false)
-        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+        post "/#{api_version}/orders/#{order.id}/restore", :headers => default_headers, :params => params
       end
 
       it "returns a 400" do
@@ -267,7 +268,7 @@ describe "v1.0 - OrderRequests", :type => :request do
         allow(order).to receive_message_chain(:order_items, :with_discarded, :discarded).and_return([order_item])
         allow(order_item).to receive_message_chain(:progress_messages, :with_discarded, :discarded).and_return([progress_message])
         allow(progress_message).to receive(:undiscard).and_return(false)
-        post "/#{api}/orders/#{order.id}/restore", :headers => default_headers, :params => params
+        post "/#{api_version}/orders/#{order.id}/restore", :headers => default_headers, :params => params
       end
 
       it "returns a 400" do

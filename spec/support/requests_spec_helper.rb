@@ -11,13 +11,14 @@ module RequestSpecHelper
     JSON.parse(response.body)
   end
 
-  def api(version = 1.0)
+  def api(version)
     "/api/v#{version}"
   end
 
   def first_error_detail
     json['errors'][0]['detail']
   end
+
 
   def bypass_rbac
     with_modified_env(:BYPASS_RBAC => 'true') { yield }

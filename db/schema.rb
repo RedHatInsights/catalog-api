@@ -127,6 +127,7 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
+    t.string "service_offering_icon_ref"
     t.datetime "discarded_at"
     t.string "owner"
     t.string "service_offering_type"

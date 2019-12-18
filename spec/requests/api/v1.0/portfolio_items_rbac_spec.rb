@@ -1,4 +1,5 @@
 describe "v1.0 - Portfolio Items RBAC API" do
+  let(:api_version) { api(1.0) }
   let(:portfolio) { create(:portfolio) }
   let!(:portfolio_item1) { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_item2) { create(:portfolio_item) }
@@ -22,7 +23,7 @@ describe "v1.0 - Portfolio Items RBAC API" do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolio_items', 'read').and_return(access_obj)
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(access_obj).to receive(:process).and_return(access_obj)
-      get "#{api('1.0')}/portfolio_items", :headers => default_headers
+      get "#{api_version}/portfolio_items", :headers => default_headers
 
       expect(response).to have_http_status(200)
       result = JSON.parse(response.body)
@@ -33,7 +34,7 @@ describe "v1.0 - Portfolio Items RBAC API" do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolio_items', 'read').and_return(block_access_obj)
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-      get "#{api('1.0')}/portfolio_items", :headers => default_headers
+      get "#{api_version}/portfolio_items", :headers => default_headers
 
       expect(response).to have_http_status(403)
     end
@@ -51,7 +52,7 @@ describe "v1.0 - Portfolio Items RBAC API" do
     end
 
     it 'returns a 403' do
-      post "#{api("1.0")}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
+      post "#{api_version}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
       expect(response).to have_http_status(403)
     end
   end
@@ -69,7 +70,7 @@ describe "v1.0 - Portfolio Items RBAC API" do
     end
 
     it 'returns a 200' do
-      post "#{api("1.0")}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
+      post "#{api_version}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
 
       expect(response).to have_http_status(:ok)
     end

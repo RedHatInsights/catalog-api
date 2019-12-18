@@ -1,4 +1,5 @@
 describe "v1.0 - Portfolios RBAC API" do
+  let(:api_version) { api(1.0) }
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true) }
@@ -20,14 +21,14 @@ describe "v1.0 - Portfolios RBAC API" do
     it "success" do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
-      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => params
+      post "#{api_version}/portfolios", :headers => default_headers, :params => params
       expect(response).to have_http_status(200)
     end
 
     it "unauthorized" do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(block_access_obj)
       allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => params
+      post "#{api_version}/portfolios", :headers => default_headers, :params => params
       expect(response).to have_http_status(403)
     end
   end
@@ -41,7 +42,7 @@ describe "v1.0 - Portfolios RBAC API" do
       create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
-      get "#{api('1.0')}/portfolios", :headers => default_headers
+      get "#{api_version}/portfolios", :headers => default_headers
 
       expect(response).to have_http_status(200)
       result = JSON.parse(response.body)
@@ -51,7 +52,7 @@ describe "v1.0 - Portfolios RBAC API" do
     it 'returns status code 403' do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(block_access_obj)
       allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-      get "#{api('1.0')}/portfolios", :headers => default_headers
+      get "#{api_version}/portfolios", :headers => default_headers
 
       expect(response).to have_http_status(403)
     end
@@ -63,7 +64,7 @@ describe "v1.0 - Portfolios RBAC API" do
         create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', permission).and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
-        get "#{api('1.0')}/portfolios?filter[name]=#{portfolio1.name}", :headers => default_headers
+        get "#{api_version}/portfolios?filter[name]=#{portfolio1.name}", :headers => default_headers
       end
 
       it 'returns a 200' do
@@ -117,7 +118,7 @@ describe "v1.0 - Portfolios RBAC API" do
   context "when the permissions array is malformed" do
     it "errors on a blank array" do
       params = {:permissions => [], :group_uuids => ['1'] }
-      post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => params
+      post "#{api_version}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => params
 
       expect(response).to have_http_status(:bad_request)
       expect(first_error_detail).to match(/contains fewer than min items/)
@@ -125,7 +126,7 @@ describe "v1.0 - Portfolios RBAC API" do
 
     it "errors when the object is not an array" do
       params = {:permissions => 1, :group_uuids => ['1'] }
-      post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => params
+      post "#{api_version}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => params
 
       expect(response).to have_http_status(:bad_request)
       expect(first_error_detail).to match(/expected array, but received Integer/)
@@ -136,7 +137,7 @@ describe "v1.0 - Portfolios RBAC API" do
     describe "#share" do
       it "goes through validation" do
         permissions = ["update"]
-        post "#{api}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
+        post "#{api_version}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => [group1.uuid]
         }
@@ -149,7 +150,7 @@ describe "v1.0 - Portfolios RBAC API" do
       it "goes through validation" do
         permissions = ["update"]
         create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'update', :aceable => portfolio1)
-        post "#{api}/portfolios/#{portfolio1.id}/unshare", :headers => default_headers, :params => {
+        post "#{api_version}/portfolios/#{portfolio1.id}/unshare", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => [group1.uuid]
         }

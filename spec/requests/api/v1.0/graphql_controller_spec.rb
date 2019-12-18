@@ -1,4 +1,5 @@
 RSpec.describe("v1.0 - GraphQL") do
+  let(:api_version) { api(1.0) }
   around do |example|
     bypass_rbac do
       example.call
@@ -16,7 +17,7 @@ RSpec.describe("v1.0 - GraphQL") do
 
   context "different graphql queries" do
     before do
-      post("/api/v1.0/graphql", :headers => default_headers, :params => graphql_portfolio_query)
+      post("/#{api_version}/graphql", :headers => default_headers, :params => graphql_portfolio_query)
     end
 
     it "querying portfolios return portfolio ids" do
