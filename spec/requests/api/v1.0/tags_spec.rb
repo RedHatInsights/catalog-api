@@ -1,4 +1,4 @@
-describe 'Tagging API' do
+describe "v1.0 - Tagging API" do
   around do |example|
     bypass_rbac do
       example.call

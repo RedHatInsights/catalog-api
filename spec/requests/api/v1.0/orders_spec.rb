@@ -1,4 +1,4 @@
-describe "OrderRequests", :type => :request do
+describe "v1.0 - OrderRequests", :type => :request do
   around do |example|
     bypass_rbac do
       example.call

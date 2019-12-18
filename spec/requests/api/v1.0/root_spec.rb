@@ -1,4 +1,4 @@
-describe "root", :type => :request do
+describe "v1.0 - root", :type => :request do
   context "v1" do
     it "#openapi.json" do
       get("/api/v1.0/openapi.json", :headers => default_headers)

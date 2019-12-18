@@ -1,4 +1,4 @@
-describe 'Group Seed API' do
+describe "v1.0 - Group Seed API" do
   let!(:tenant) { create(:tenant) }
   let!(:tenant_id) { tenant.id }
   let(:api_instance) { double }

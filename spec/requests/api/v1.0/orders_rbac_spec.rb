@@ -1,4 +1,4 @@
-describe "OrderRequests", :type => :request do
+describe "v1.0 - OrderRequests", :type => :request do
   let!(:order1) { create(:order) }
   let!(:order2) { create(:order) }
   let!(:order3) { create(:order, :owner => 'barney') }

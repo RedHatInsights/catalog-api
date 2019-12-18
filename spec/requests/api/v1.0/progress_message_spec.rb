@@ -1,4 +1,4 @@
-describe "ProgressMessageRequests", :type => :request do
+describe "v1.0 - ProgressMessageRequests", :type => :request do
   around do |example|
     bypass_rbac do
       example.call

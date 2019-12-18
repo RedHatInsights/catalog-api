@@ -1,4 +1,4 @@
-describe "ServicePlansRequests", :type => :request do
+describe "v1.0 - ServicePlansRequests", :type => :request do
   let(:service_plan) { create(:service_plan, :base => JSON.parse(modified_schema)) }
   let(:portfolio_item) { service_plan.portfolio_item }
   let(:service_offering_ref) { portfolio_item.service_offering_ref }

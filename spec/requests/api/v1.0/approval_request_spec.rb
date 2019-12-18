@@ -1,4 +1,4 @@
-describe "ApprovalRequestRequests", :type => :request do
+describe "v1.0 - ApprovalRequestRequests", :type => :request do
   around do |example|
     bypass_rbac do
       example.call

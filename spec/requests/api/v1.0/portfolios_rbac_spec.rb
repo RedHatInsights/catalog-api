@@ -1,4 +1,4 @@
-describe 'Portfolios RBAC API' do
+describe "v1.0 - Portfolios RBAC API" do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true) }

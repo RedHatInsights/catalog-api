@@ -1,4 +1,4 @@
-describe "IconsRequests", :type => :request do
+describe "v1.0 - IconsRequests", :type => :request do
   let!(:portfolio_item) { create(:portfolio_item) }
   let!(:portfolio) { create(:portfolio) }
 

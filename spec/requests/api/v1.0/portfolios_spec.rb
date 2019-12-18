@@ -1,4 +1,4 @@
-describe 'Portfolios API' do
+describe "v1.0 - Portfolios API" do
   around do |example|
     bypass_rbac do
       example.call
