@@ -22,7 +22,7 @@ describe Catalog::ServiceOffering do
     end
 
     context "when archived_at is present" do
-      let(:archived_at) { Time.now }
+      let(:archived_at) { Time.current }
 
       it "sets archived to true" do
         expect(subject.process.archived).to be(true)

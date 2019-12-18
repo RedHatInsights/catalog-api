@@ -52,7 +52,13 @@ describe "OrderRequests", :type => :request do
     context "when the service offering has been archived" do
       let(:archived) { true }
 
-      it "raises an exception and gives a 400" do
+      it "logs the error" do
+        expect(Rails.logger).to receive(:error).with(/Service offering for order #{order.id} has been archived/)
+
+        post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
+      end
+
+      it "returns a 400" do
         post "#{api}/orders/#{order.id}/submit_order", :headers => default_headers
 
         expect(response).to have_http_status(:bad_request)

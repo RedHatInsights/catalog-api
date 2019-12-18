@@ -45,9 +45,11 @@ module Api
       private
 
       def service_offering_check
-        service_offering_service = Catalog::ServiceOffering.new(params.require(:order_id)).process
+        order_id = params.require(:order_id)
+        service_offering_service = Catalog::ServiceOffering.new(order_id).process
         if service_offering_service.archived
-          raise Catalog::ServiceOfferingArchived.new("This service offering has been archived and can no longer be ordered")
+          Rails.logger.error("Service offering for order #{order_id} has been archived and can no longer be ordered")
+          raise Catalog::ServiceOfferingArchived, "Service offering for order #{order_id} has been archived and can no longer be ordered"
         else
           @order = service_offering_service.order
         end
