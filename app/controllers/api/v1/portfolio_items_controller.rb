@@ -2,10 +2,9 @@ module Api
   module V1
     class PortfolioItemsController < ApplicationController
       include Api::V1::Mixins::IndexMixin
-      include Api::V1::Mixins::TagsMixin
 
       before_action :create_access_check, :only => %i[create]
-      before_action :update_access_check, :only => %i[update create_tags]
+      before_action :update_access_check, :only => %i[update]
       before_action :delete_access_check, :only => %i[destroy]
 
       before_action :only => [:copy] do

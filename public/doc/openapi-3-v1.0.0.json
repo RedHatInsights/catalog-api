@@ -641,7 +641,9 @@
             "description": "Portfolio Not Found."
           }
         }
-      },
+      }
+    },
+    "/portfolios/{id}/tag": {
       "post": {
         "tags": [
           "Portfolio"
@@ -655,15 +657,21 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Tag successfully added",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Tag"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagItem"
+                  }
                 }
               }
             }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -679,7 +687,52 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TagItem"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagItem"
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/portfolios/{id}/untag": {
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Remove Tags from Portfolio",
+        "description": "Remove Tags from Portfolio",
+        "operationId": "removePortfolioTags",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tag Deleted"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagItem"
+                }
               }
             }
           },
@@ -1147,10 +1200,12 @@
             "description": "Portfolio Item Not Found."
           }
         }
-      },
+      }
+    },
+    "/portfolio_items/{id}/tag": {
       "post": {
         "tags": [
-          "Portfolio"
+          "PortfolioItem"
         ],
         "summary": "Add Tag for Portfolio Item",
         "operationId": "addPortfolioItemTag",
@@ -1161,15 +1216,21 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Tag successfully added",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Tag"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagItem"
+                  }
                 }
               }
             }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -1185,7 +1246,52 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TagItem"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagItem"
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/portfolio_items/{id}/untag": {
+      "post": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "summary": "Remove Tags from Portfolio Item",
+        "description": "Remove Tags from Portfolio Item",
+        "operationId": "removePortfolioItemTags",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tag Deleted"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Portfolio Item Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagItem"
+                }
               }
             }
           },
@@ -2812,6 +2918,9 @@
       "Forbidden": {
         "description": "The caller is forbidden to perform the action."
       },
+      "NotModified": {
+        "description": " The entity has not changed since the last GET request"
+      },
       "Unauthorized": {
         "description": "The caller is not authorized to access this resource."
       }
@@ -3728,18 +3837,8 @@
       "TagItem": {
         "type": "object",
         "properties": {
-          "name": {
-            "example": "architecture",
-            "readOnly": true,
-            "type": "string"
-          },
-          "namespace": {
-            "example": "openshift",
-            "readOnly": true,
-            "type": "string"
-          },
-          "value": {
-            "readOnly": true,
+          "tag": {
+            "example": "/namespace/architecture=x86_64",
             "type": "string"
           }
         }

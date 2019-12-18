@@ -413,49 +413,81 @@ describe 'Portfolios API' do
     let(:tag_name) { 'Gnocchi' }
     let(:tag_ns) { 'Charkie' }
     let(:tag_value) { 'Hundley' }
-    let(:tag_params) do
-      { :name      => tag_name,
-        :namespace => tag_ns,
-        :value     => tag_value }
-    end
+    let(:tag_params) { [{:tag => Tag.new(params).to_tag_string}] }
 
     shared_examples_for "#tag_add_test" do
       it "add tags for the portfolio" do
-        post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => tag_params
-        expect(json['name']).to eq(tag_params[:name])
-        expect(json['namespace']).to eq(tag_params[:namespace]) if tag_params.key?(:namespace)
-        expect(json['value']).to eq(tag_params[:value]) if tag_params.key?(:value)
-        expect(response).to have_http_status(200)
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+        expect(json.first["tag"]).to eq Tag.new(params).to_tag_string
+        expect(response).to have_http_status(201)
       end
     end
 
     context "GET /portfolios/{id}/tags" do
+      let(:params) { {:name => tag_name, :namespace => tag_ns} }
+
       before do
-        portfolio.tag_add("test_tag")
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
       end
 
       it "returns the tags for the portfolio" do
         get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["name"]).to eq "test_tag"
+        expect(json["data"].first["name"]).to eq tag_name
+      end
+
+      it "allows filtering on the response" do
+        get "#{api}/portfolios/#{portfolio.id}/tags?filter[namespace][eq]=#{tag_ns}&filter[name][eq]=#{tag_name}", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["name"]).to eq tag_name
       end
     end
 
     context "POST /portfolios/{id}/tag" do
       context 'no namespace and value' do
-        let(:tag_params) { { :name => tag_name } }
+        let(:params) { {:name => tag_name} }
         it_behaves_like "#tag_add_test"
       end
 
       context 'no value' do
-        let(:tag_params) { { :name => tag_name, :namespace => tag_ns } }
+        let(:params) { {:name => tag_name, :namespace => tag_ns} }
         it_behaves_like "#tag_add_test"
       end
 
       context 'all in' do
-        let(:tag_params) { { :name => tag_name, :namespace => tag_ns, :value => tag_value } }
+        let(:params) { {:name => tag_name, :namespace => tag_ns, :value => tag_value} }
         it_behaves_like "#tag_add_test"
+      end
+
+      context 'double add tags' do
+        let(:params) { {:name => tag_name} }
+
+        before do
+          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+        end
+
+        it "returns not modified" do
+          expect(response).to have_http_status(304)
+        end
+      end
+    end
+
+    context "POST /portfolios/{id}/untag" do
+      let(:name) { 'Gnocchi' }
+      let(:params) do
+        [{:tag => Tag.new(:name => name).to_tag_string}]
+      end
+
+      it "removes the tag from the portfolio item" do
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api}/portfolios/#{portfolio.id}/untag", :headers => default_headers, :params => params
+        portfolio.reload
+
+        expect(response).to have_http_status(204)
+        expect(portfolio.tags).to be_empty
       end
     end
   end
