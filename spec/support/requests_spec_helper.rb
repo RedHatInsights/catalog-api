@@ -19,7 +19,6 @@ module RequestSpecHelper
     json['errors'][0]['detail']
   end
 
-
   def bypass_rbac
     with_modified_env(:BYPASS_RBAC => 'true') { yield }
   end

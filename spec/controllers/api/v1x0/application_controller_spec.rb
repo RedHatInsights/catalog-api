@@ -1,4 +1,5 @@
 RSpec.describe ApplicationController, :type => :request do
+  let(:api_version) { api(1.0) }
   let(:portfolio) { create(:portfolio, :name => 'tenant_portfolio', :description => 'tenant desc', :owner => 'wilma') }
   let(:portfolio_id) { portfolio.id }
 
@@ -9,21 +10,19 @@ RSpec.describe ApplicationController, :type => :request do
       end
     end
 
-    let(:api_version)       { api(1) }
-    let(:api_minor_version) { api(1.0) }
 
     it "get api/v1/portfolios with tenant" do
-      get("#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers)
+      get("/api/v1/portfolios/#{portfolio_id}", :headers => default_headers)
       expect(response.status).to eq(302)
-      expect(response.headers["Location"]).to eq "#{api_minor_version}/portfolios/#{portfolio_id}"
+      expect(response.headers["Location"]).to eq "#{api_version}/portfolios/#{portfolio_id}"
     end
 
     it "get api/v1/portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("#{api_version}/portfolios/#{portfolio_id}", :headers => headers)
+      get("/api/v1/portfolios/#{portfolio_id}", :headers => headers)
       expect(response.status).to eq(302)
-      expect(response.headers["Location"]).to eq "#{api_minor_version}/portfolios/#{portfolio_id}"
+      expect(response.headers["Location"]).to eq "#{api_version}/portfolios/#{portfolio_id}"
     end
   end
 
@@ -35,8 +34,7 @@ RSpec.describe ApplicationController, :type => :request do
     end
 
     it "get /portfolios with tenant" do
-      get("/api/v1.0/portfolios/#{portfolio_id}", :headers => default_headers)
-
+      get("/#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers)
       expect(response.status).to eq(200)
       expect(response.parsed_body).to include("id" => portfolio_id.to_s)
     end
@@ -44,7 +42,7 @@ RSpec.describe ApplicationController, :type => :request do
     it "get /portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("/api/v1.0/portfolios/#{portfolio_id}", :headers => headers)
+      get("#{api_version}/portfolios/#{portfolio_id}", :headers => headers)
 
       expect(response.content_type).to eq("application/json")
       expect(response.status).to eq(401)
@@ -52,14 +50,14 @@ RSpec.describe ApplicationController, :type => :request do
 
     it "get /portfolios with tenant" do
       portfolio
-      get("/api/v1.0/portfolios", :headers => default_headers)
+      get("/#{api_version}/portfolios", :headers => default_headers)
       expect(response.status).to eq(200)
     end
 
     it "get /portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("/api/v1.0/portfolios", :headers => headers)
+      get("/#{api_version}/portfolios", :headers => headers)
 
       expect(response.content_type).to eq("application/json")
       expect(response.status).to eq(401)
@@ -86,7 +84,7 @@ RSpec.describe ApplicationController, :type => :request do
 
     it "fails if the ansible entitlement is false" do
       headers =  { 'x-rh-identity' => encoded_user_hash(false_hash), 'x-rh-insights-request-id' => 'gobbledygook' }
-      get "#{api("1.0")}/portfolios", :headers => headers
+      get "#{api_version}/portfolios", :headers => headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:forbidden)
@@ -94,7 +92,7 @@ RSpec.describe ApplicationController, :type => :request do
 
     it "allows the request through if entitlements isn't present" do
       headers = { 'x-rh-identity' => encoded_user_hash(missing_hash), 'x-rh-insights-request-id' => 'gobbledygook' }
-      get "#{api("1.0")}/portfolios", :headers => headers
+      get "#{api_version}/portfolios", :headers => headers
 
       expect(response).to have_http_status(:ok)
     end

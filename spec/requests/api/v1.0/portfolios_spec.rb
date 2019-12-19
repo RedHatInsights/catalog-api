@@ -296,7 +296,6 @@ describe "v1.0 - Portfolios API" do
       end
     end
 
-
     shared_examples_for "#shared_test" do
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
@@ -428,7 +427,7 @@ describe "v1.0 - Portfolios API" do
       let(:params) { {:name => tag_name, :namespace => tag_ns} }
 
       before do
-        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
       end
 
       it "returns the tags for the portfolio" do
@@ -439,7 +438,7 @@ describe "v1.0 - Portfolios API" do
       end
 
       it "allows filtering on the response" do
-        get "#{api}/portfolios/#{portfolio.id}/tags?filter[namespace][eq]=#{tag_ns}&filter[name][eq]=#{tag_name}", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio.id}/tags?filter[namespace][eq]=#{tag_ns}&filter[name][eq]=#{tag_name}", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["name"]).to eq tag_name
@@ -466,8 +465,8 @@ describe "v1.0 - Portfolios API" do
         let(:params) { {:name => tag_name} }
 
         before do
-          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
-          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+          post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+          post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
         end
 
         it "returns not modified" do
@@ -483,8 +482,8 @@ describe "v1.0 - Portfolios API" do
       end
 
       it "removes the tag from the portfolio item" do
-        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
-        post "#{api}/portfolios/#{portfolio.id}/untag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio.id}/untag", :headers => default_headers, :params => params
         portfolio.reload
 
         expect(response).to have_http_status(204)

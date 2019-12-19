@@ -26,7 +26,7 @@ RSpec.configure do |config|
   config.include UserHeaderSpecHelper
 
   config.include RequestSpecHelper, :type => :request
-  config.before(:each, type: :request) { api_version }
+  config.before(:each, :type => :request) { api_version }
 
   config.include ServiceSpecHelper
 
