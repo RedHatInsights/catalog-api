@@ -36,7 +36,11 @@ module Api
             relation.by_owner
           else
             ids = ace_ids('read', relation.model)
-            ids.any? ? relation.where(:id => ids) : relation
+            if relation.model.try(:supports_access_control?)
+              relation.where(:id => ids)
+            else
+              relation
+            end
           end
         end
 

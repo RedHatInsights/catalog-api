@@ -32,6 +32,21 @@ describe 'Portfolios Read Access RBAC API' do
       end
     end
 
+    context "Catalog User should not see any portfolios by default" do
+      before do
+        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
+        allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
+        allow(access_obj).to receive(:process).and_return(access_obj)
+      end
+
+      it "gets an empty list" do
+        get "#{api('1.0')}/portfolios", :headers => default_headers
+        expect(response).to have_http_status(:ok)
+        expect(json['meta']['count']).to be_zero
+        expect(json['data']).to be_empty
+      end
+    end
+
     context "Catalog Administrator can see all" do
       before do
         allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true)

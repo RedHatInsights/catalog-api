@@ -25,8 +25,10 @@ module Api
           return unless Insights::API::Common::RBAC::Access.enabled?
           return if catalog_administrator?
 
-          ids = ace_ids(verb, klass)
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.any? && ids.exclude?(id)
+          ids = access_id_list(verb, klass)
+          if klass.try(:supports_access_control?)
+            raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.any? && ids.exclude?(id)
+          end
         end
 
         def permission_check(verb, klass = controller_name.classify.constantize)
@@ -50,7 +52,7 @@ module Api
           access_obj = Insights::API::Common::RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
 
-          access_obj.id_list
+          ace_ids(verb, klass)
         end
       end
     end
