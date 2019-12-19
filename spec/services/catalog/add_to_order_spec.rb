@@ -21,13 +21,19 @@ describe Catalog::AddToOrder, :type => :service do
                                      'count'             => 1)
   end
 
-  let(:order_item) { described_class.new(params).process.order_item }
-
+  let(:subject) { described_class.new(params).process }
   let(:request) { default_request }
+  let(:service_plans_instance) { instance_double(Catalog::ServicePlans) }
+
+  before do
+    allow(Catalog::ServicePlans).to receive(:new).and_return(service_plans_instance)
+    allow(service_plans_instance).to receive(:process).and_return(service_plans_instance)
+    allow(service_plans_instance).to receive(:items).and_return([OpenStruct.new(:id => "1")])
+  end
 
   it "add order item" do
     Insights::API::Common::Request.with_request(request) do
-      expect(order_item.portfolio_item_id).to eq(portfolio_item.id)
+      expect(subject.order_item.portfolio_item_id).to eq(portfolio_item.id)
     end
   end
 
@@ -45,20 +51,28 @@ describe Catalog::AddToOrder, :type => :service do
   context "when passing in a x-rh-identity header" do
     it 'sets the context to the encoded_user_hash' do
       Insights::API::Common::Request.with_request(request) do
-        expect(order_item.context["headers"]["x-rh-identity"]).to eq encoded_user_hash
+        expect(subject.order_item.context["headers"]["x-rh-identity"]).to eq encoded_user_hash
       end
     end
 
     it 'can recreate the request from the context' do
       item = nil
       Insights::API::Common::Request.with_request(request) do
-        item = order_item
+        item = subject.order_item
       end
 
       new_request = item.context.transform_keys(&:to_sym)
       Insights::API::Common::Request.with_request(new_request) do
         expect(Insights::API::Common::Request.current.user.username).to eq "jdoe"
         expect(Insights::API::Common::Request.current.user.email).to eq "jdoe@acme.com"
+      end
+    end
+  end
+
+  context "service_plan_ref_lookup" do
+    it "gets the correct service_plan_ref from topology" do
+      Insights::API::Common::Request.with_request(request) do
+        expect(subject.order_item.service_plan_ref).to eq "1"
       end
     end
   end
