@@ -36,7 +36,7 @@ module Api
             relation.by_owner
           else
             ids = ace_ids('read', relation.model)
-            if relation.model.respond_to?(:aceable?) && relation.model.aceable?
+            if relation.model.try(:supports_access_control?)
               relation.where(:id => ids)
             else
               relation
