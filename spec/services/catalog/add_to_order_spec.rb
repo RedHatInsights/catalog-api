@@ -11,8 +11,7 @@ describe Catalog::AddToOrder, :type => :service do
                                      'portfolio_item_id'           => portfolio_item_id,
                                      'count'                       => 1,
                                      'service_parameters'          => {'name' => 'fred'},
-                                     'provider_control_parameters' => {'age' => 50},
-                                     'service_plan_ref'            => '10')
+                                     'provider_control_parameters' => {'age' => 50})
   end
 
   let(:invalid_params) do

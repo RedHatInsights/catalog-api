@@ -3304,12 +3304,6 @@
             "description": "The provider specific parameters needed to provision this service. This might include namespaces, special keys.",
             "nullable": true
           },
-          "service_plan_ref": {
-            "type": "string",
-            "title": "The Service Plan ref",
-            "description": "Stores the service plan ref from the Topology Service.",
-            "nullable": true
-          },
           "portfolio_item_id": {
             "type": "string",
             "title": "Portfolio Item ID",
