@@ -74,16 +74,29 @@ describe "ServicePlansRequests", :type => :request do
   end
 
   describe "#create" do
-    before do
-      post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+    context "when there is not a service_plan for the portfolio_item specified" do
+      before do
+        post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+      end
+
+      it "pulls in the service plans" do
+        expect(portfolio_item_without_service_plan.service_plans.count).to eq 1
+      end
+
+      it "returns the imported service plans" do
+        expect(json.first["id"]).to eq portfolio_item_without_service_plan.service_plans.first.id.to_s
+      end
     end
 
-    it "pulls in the service plans" do
-      expect(portfolio_item_without_service_plan.service_plans.count).to eq 1
-    end
+    context "when a service_plan already exists for the portfolio_item specified" do
+      before do
+        post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+        post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+      end
 
-    it "returns the imported service plans" do
-      expect(json.first["id"]).to eq portfolio_item_without_service_plan.service_plans.first.id.to_s
+      it "returns a conflict response" do
+        expect(response).to have_http_status(409)
+      end
     end
   end
 

@@ -4,12 +4,19 @@ describe "OrderItemsRequests", :type => :request do
       example.call
     end
   end
+  let(:service_plans_instance) { instance_double(Catalog::ServicePlans, :items => [OpenStruct.new(:id => "1")]) }
+
+  before do
+    allow(Catalog::ServicePlans).to receive(:new).and_return(service_plans_instance)
+    allow(service_plans_instance).to receive(:process).and_return(service_plans_instance)
+  end
 
   let!(:order_1) { create(:order) }
   let!(:order_2) { create(:order) }
   let!(:order_3) { create(:order) }
   let!(:order_item_1) { create(:order_item, :order => order_1) }
   let!(:order_item_2) { create(:order_item, :order => order_2) }
+  let!(:portfolio_item) { order_item_1.portfolio_item }
   let(:params) do
     { 'order_id'                    => order_1.id.to_s,
       'portfolio_item_id'           => order_item_1.portfolio_item.id.to_s,

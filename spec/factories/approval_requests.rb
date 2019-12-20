@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :approval_request, :traits => [:has_tenant] do
-    approval_request_ref { "MyString" }
+    sequence(:approval_request_ref)
     state { :undecided }
 
     order_item

@@ -3,9 +3,8 @@ module Api
     class PortfoliosController < ApplicationController
       include Api::V1::Mixins::IndexMixin
       include Api::V1::Mixins::ValidationMixin
-      include Api::V1::Mixins::TagsMixin
 
-      before_action :update_access_check, :only => %i[add_portfolio_item_to_portfolio update create_tags]
+      before_action :update_access_check, :only => %i[add_portfolio_item_to_portfolio update]
       before_action :create_access_check, :only => %i[create]
       before_action :delete_access_check, :only => %i[destroy]
       before_action :read_access_check, :only => %i[show]
@@ -65,40 +64,32 @@ module Api
 
       def share
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        options = {:app_name      => ENV['APP_NAME'],
-                   :resource_name => 'portfolios',
-                   :resource_ids  => [portfolio.id.to_s],
-                   :permissions   => params[:permissions],
-                   :group_uuids   => params.require(:group_uuids)}
-        Insights::API::Common::RBAC::ShareResource.new(options).process
+        options = {:object      => portfolio,
+                   :permissions => params[:permissions],
+                   :group_uuids => params.require(:group_uuids)}
+        Catalog::ShareResource.new(options).process
         head :no_content
       end
 
       def unshare
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        options = {:app_name      => ENV['APP_NAME'],
-                   :resource_name => 'portfolios',
-                   :resource_ids  => [portfolio.id.to_s],
-                   :permissions   => params[:permissions],
-                   :group_uuids   => params[:group_uuids] || []}
-        Insights::API::Common::RBAC::UnshareResource.new(options).process
+        options = {:object      => portfolio,
+                   :permissions => params[:permissions],
+                   :group_uuids => params.require(:group_uuids)}
+        Catalog::UnshareResource.new(options).process
         head :no_content
       end
 
       def share_info
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        options = {:app_name      => ENV['APP_NAME'],
-                   :resource_name => 'portfolios',
-                   :resource_id   => portfolio.id.to_s}
-        obj = Insights::API::Common::RBAC::QuerySharedResource.new(options).process
-        render :json => obj.share_info
+        options = {:object => portfolio}
+        render :json => Catalog::ShareInfo.new(options).process.result
       end
 
       def copy
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio
       end
-
 
       private
 

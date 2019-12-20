@@ -11,6 +11,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'rspec-mocks'
   gem 'rspec-rails'
+  gem 'shoulda-matchers'
   gem 'simplecov'
   gem 'webmock'
 end
@@ -23,7 +24,7 @@ end
 
 gem 'dhasher'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
-gem 'insights-api-common', '~> 3.0'
+gem 'insights-api-common', '~> 3.1'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.2'
 gem 'manageiq-messaging', '~> 0.1.2', :require => false
@@ -40,6 +41,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'topological_inventory-api-client', '~> 1.0', :git => "https://github.com/ManageIQ/topological_inventory-api-client-ruby"
 
-gem 'approval-api-client-ruby', :git => 'https://github.com/mkanoor/approval-client', :branch => "master"
+gem 'approval-api-client-ruby', :git => 'https://github.com/RedHatInsights/approval-api-client-ruby', :branch => "master"
 gem 'rbac-api-client', :git => "https://github.com/RedHatInsights/insights-rbac-api-client-ruby", :branch => "master"
 gem 'sources-api-client', :git => 'https://github.com/ManageIQ/sources-api-client-ruby.git', :branch => "master"

@@ -35,8 +35,12 @@ module Api
           if access_obj.owner_scoped?
             relation.by_owner
           else
-            ids = access_obj.id_list
-            ids.any? ? relation.where(:id => ids) : relation
+            ids = ace_ids('read', relation.model)
+            if relation.model.try(:supports_access_control?)
+              relation.where(:id => ids)
+            else
+              relation
+            end
           end
         end
 

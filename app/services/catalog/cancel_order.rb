@@ -12,7 +12,7 @@ module Catalog
 
       approval_requests.each do |approval_request|
         Approval::Service.call(ApprovalApiClient::ActionApi) do |api|
-          api.create_action_by_request(approval_request.first.approval_request_ref, canceled_action)
+          api.create_action(approval_request.first.approval_request_ref, canceled_action)
         end
       end
 
@@ -29,7 +29,7 @@ module Catalog
     end
 
     def canceled_action
-      @canceled_action ||= ApprovalApiClient::ActionIn.new(:operation => "cancel")
+      @canceled_action ||= ApprovalApiClient::Action.new(:operation => "cancel")
     end
 
     def raise_uncancelable_error

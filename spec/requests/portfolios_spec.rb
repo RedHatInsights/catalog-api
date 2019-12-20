@@ -295,25 +295,13 @@ describe 'Portfolios API' do
       end
     end
 
-    RSpec.shared_context "sharing_objects" do
-      let(:group_uuids) { %w[1 2 3] }
-      let(:permissions) { %w[catalog:portfolios:read] }
-      let(:app_name) { "catalog" }
-      let(:http_status) { '204' }
-      let(:dummy) { double("Insights::API::Common::RBAC::ShareResource", :process => self) }
-      let(:attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-    end
 
     shared_examples_for "#shared_test" do
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:app_name      => app_name,
-                     :resource_ids  => [portfolio.id.to_s],
-                     :resource_name => 'portfolios',
-                     :permissions   => permissions,
-                     :group_uuids   => group_uuids}
-          allow(Insights::API::Common::RBAC::ShareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/share", :params => attributes, :headers => default_headers
+          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+          post "#{api}/portfolios/#{shared_portfolio.id}/share", :params => attributes, :headers => default_headers
           expect(response).to have_http_status(http_status)
         end
       end
@@ -329,22 +317,7 @@ describe 'Portfolios API' do
       let(:http_status) { '400' }
 
       context 'invalid verb in permissions' do
-        let(:permissions) { %w[catalog:portfolios:something] }
-        it_behaves_like "#shared_test"
-      end
-
-      context 'invalid appname in permissions' do
-        let(:permissions) { %w[bad:portfolios:something] }
-        it_behaves_like "#shared_test"
-      end
-
-      context 'invalid object in permissions' do
-        let(:permissions) { %w[catalog:bad:read] }
-        it_behaves_like "#shared_test"
-      end
-
-      context 'invalid object type in permissions' do
-        let(:permissions) { [123] }
+        let(:permissions) { %w[something] }
         it_behaves_like "#shared_test"
       end
 
@@ -363,34 +336,34 @@ describe 'Portfolios API' do
     context 'unshare' do
       include_context "sharing_objects"
       let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-      let(:dummy) { double("Insights::API::Common::RBAC::UnshareResource", :process => self) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:app_name      => app_name,
-                     :resource_ids  => [portfolio.id.to_s],
-                     :resource_name => 'portfolios',
-                     :permissions   => permissions,
-                     :group_uuids   => group_uuids}
-          expect(Insights::API::Common::RBAC::UnshareResource).to receive(:new).with(options).and_return(dummy)
-          post "#{api}/portfolios/#{portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
+          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+          ace1
+          ace2
+          ace3
+          expect(shared_portfolio.access_control_entries.count).to eq(3)
+          post "#{api}/portfolios/#{shared_portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
+          shared_portfolio.reload
           expect(response).to have_http_status(204)
+          expect(shared_portfolio.access_control_entries.count).to eq(0)
         end
       end
     end
 
     context 'share_info' do
       include_context "sharing_objects"
-      let(:dummy_response) { double(:share_info => {'a' => 1}) }
-      let(:dummy) { double("Insights::API::Common::RBAC::UnshareResource", :process => dummy_response) }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
-          options = {:app_name      => app_name,
-                     :resource_id   => portfolio.id.to_s,
-                     :resource_name => 'portfolios'}
-          expect(Insights::API::Common::RBAC::QuerySharedResource).to receive(:new).with(options).and_return(dummy)
-          get "#{api}/portfolios/#{portfolio.id}/share_info", :headers => default_headers
-
+          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
+          ace1
+          ace2
+          ace3
+          get "#{api}/portfolios/#{shared_portfolio.id}/share_info", :headers => default_headers
           expect(response).to have_http_status(200)
+          expect(json.pluck('group_uuid')).to match_array(group_uuids)
         end
       end
     end
@@ -440,49 +413,81 @@ describe 'Portfolios API' do
     let(:tag_name) { 'Gnocchi' }
     let(:tag_ns) { 'Charkie' }
     let(:tag_value) { 'Hundley' }
-    let(:tag_params) do
-      { :name      => tag_name,
-        :namespace => tag_ns,
-        :value     => tag_value }
-    end
+    let(:tag_params) { [{:tag => Tag.new(params).to_tag_string}] }
 
     shared_examples_for "#tag_add_test" do
       it "add tags for the portfolio" do
-        post "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers, :params => tag_params
-        expect(json['name']).to eq(tag_params[:name])
-        expect(json['namespace']).to eq(tag_params[:namespace]) if tag_params.key?(:namespace)
-        expect(json['value']).to eq(tag_params[:value]) if tag_params.key?(:value)
-        expect(response).to have_http_status(200)
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+        expect(json.first["tag"]).to eq Tag.new(params).to_tag_string
+        expect(response).to have_http_status(201)
       end
     end
 
     context "GET /portfolios/{id}/tags" do
+      let(:params) { {:name => tag_name, :namespace => tag_ns} }
+
       before do
-        portfolio.tag_add("test_tag")
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
       end
 
       it "returns the tags for the portfolio" do
         get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["name"]).to eq "test_tag"
+        expect(json["data"].first["name"]).to eq tag_name
+      end
+
+      it "allows filtering on the response" do
+        get "#{api}/portfolios/#{portfolio.id}/tags?filter[namespace][eq]=#{tag_ns}&filter[name][eq]=#{tag_name}", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["name"]).to eq tag_name
       end
     end
 
     context "POST /portfolios/{id}/tag" do
       context 'no namespace and value' do
-        let(:tag_params) { { :name => tag_name } }
+        let(:params) { {:name => tag_name} }
         it_behaves_like "#tag_add_test"
       end
 
       context 'no value' do
-        let(:tag_params) { { :name => tag_name, :namespace => tag_ns } }
+        let(:params) { {:name => tag_name, :namespace => tag_ns} }
         it_behaves_like "#tag_add_test"
       end
 
       context 'all in' do
-        let(:tag_params) { { :name => tag_name, :namespace => tag_ns, :value => tag_value } }
+        let(:params) { {:name => tag_name, :namespace => tag_ns, :value => tag_value} }
         it_behaves_like "#tag_add_test"
+      end
+
+      context 'double add tags' do
+        let(:params) { {:name => tag_name} }
+
+        before do
+          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+        end
+
+        it "returns not modified" do
+          expect(response).to have_http_status(304)
+        end
+      end
+    end
+
+    context "POST /portfolios/{id}/untag" do
+      let(:name) { 'Gnocchi' }
+      let(:params) do
+        [{:tag => Tag.new(:name => name).to_tag_string}]
+      end
+
+      it "removes the tag from the portfolio item" do
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api}/portfolios/#{portfolio.id}/untag", :headers => default_headers, :params => params
+        portfolio.reload
+
+        expect(response).to have_http_status(204)
+        expect(portfolio.tags).to be_empty
       end
     end
   end

@@ -346,17 +346,71 @@ describe "PortfolioItemRequests", :type => :request do
     end
   end
 
+  context "GET /portfolio_items/{id}/tags" do
+    let(:name) { 'Gnocchi' }
+    let(:namespace) { 'default' }
+    let(:params) do
+      [{:tag => Tag.new(:name => name, :namespace => namespace).to_tag_string}]
+    end
+
+    before do
+      post "#{api}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
+    end
+
+    context "when requesting all of the tags for a portfolio_item" do
+      it "returns the tags for the portfolio item" do
+        get "#{api}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["name"]).to eq name
+      end
+
+      it "allows filtering on the response" do
+        get "#{api}/portfolio_items/#{portfolio_item.id}/tags?filter[namespace][eq]=#{namespace}&filter[name][eq]=#{name}", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["name"]).to eq name
+      end
+    end
+  end
   context "POST /portfolio_items/{id}/tag" do
     let(:name) { 'Gnocchi' }
     let(:params) do
-      {:name => name}
+      [{:tag => Tag.new(:name => name, :namespace => "default").to_tag_string}]
     end
 
     it "add tags for the portfolio item" do
-      post "#{api}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers, :params => params
+      post "#{api}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
 
-      expect(response).to have_http_status(200)
-      expect(json['name']).to eq(name)
+      expect(response).to have_http_status(201)
+      expect(json.first['tag']).to eq Tag.new(:name => name, :namespace => "default").to_tag_string
+    end
+
+    context 'double add tags' do
+      before do
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+      end
+
+      it "returns not modified" do
+        expect(response).to have_http_status(304)
+      end
+    end
+  end
+
+  context "POST /portfolio_items/{id}/untag" do
+    let(:name) { 'Gnocchi' }
+    let(:params) do
+      [{:tag => Tag.new(:name => name, :namespace => "default").to_tag_string}]
+    end
+
+    it "removes the tag from the portfolio item" do
+      post "#{api}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
+      post "#{api}/portfolio_items/#{portfolio_item.id}/untag", :headers => default_headers, :params => params
+      portfolio_item.reload
+
+      expect(response).to have_http_status(204)
+      expect(portfolio_item.tags).to be_empty
     end
   end
 end

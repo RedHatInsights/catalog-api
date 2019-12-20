@@ -1,5 +1,6 @@
 module Catalog
   class CopyPortfolio
+    include IconMixin
     attr_reader :new_portfolio
 
     def initialize(params)
@@ -18,6 +19,9 @@ module Catalog
     def make_copy
       @portfolio.dup.tap do |new_portfolio|
         new_portfolio.name = @name || Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name))
+
+        duplicate_icon(@portfolio, new_portfolio) if @portfolio.icon_id.present?
+
         new_portfolio.save!
 
         copy_portfolio_items(new_portfolio.id)
