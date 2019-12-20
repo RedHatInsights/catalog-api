@@ -35,23 +35,39 @@ describe 'Portfolios Write Access RBAC API' do
 
   describe "PATCH /portfolios" do
     before do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(access_obj).to receive(:process).and_return(access_obj)
       allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
       allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, list_group_options).and_return([group1])
-      create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
     end
 
-    it 'only allows updating a specific portfolio' do
-      patch "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
-      expect(response).to have_http_status(:ok)
+    context "user has update permission" do
+      before do
+        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
+      end
+      it 'only allows updating a specific portfolio' do
+        patch "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'fails updating a portfolio' do
+        patch "#{api('1.0')}/portfolios/#{portfolio2.id}", :headers => default_headers, :params => updated_attributes
+        expect(response).to have_http_status(:forbidden)
+      end
     end
 
-    it 'fails updating a portfolio' do
-      patch "#{api('1.0')}/portfolios/#{portfolio2.id}", :headers => default_headers, :params => updated_attributes
-      expect(response).to have_http_status(:forbidden)
+    context "user has read only permission for a specific portfolio" do
+      before do
+        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
+        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio1)
+      end
+
+      it 'fails updating a portfolio' do
+        patch "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
+        expect(response).to have_http_status(:forbidden)
+      end
     end
   end
 end
