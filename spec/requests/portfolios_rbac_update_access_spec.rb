@@ -47,6 +47,7 @@ describe 'Portfolios Write Access RBAC API' do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
         create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
       end
+
       it 'only allows updating a specific portfolio' do
         patch "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
         expect(response).to have_http_status(:ok)
