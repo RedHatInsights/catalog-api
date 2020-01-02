@@ -68,6 +68,21 @@ describe Catalog::CreateApprovalRequest, :type => :service do
         expect { subject.process }.to raise_exception(Catalog::ApprovalError)
         expect(ApprovalRequest.count).to eq(0)
       end
+
+      it "creates a progress message" do
+        expect do
+          subject.process
+          expect(ProgressMessage.last.message).to eq("Error while creating approval request")
+        end
+      end
+
+      it "fails the order" do
+        expect do
+          subject.process
+          order.reload
+          expect(order.state).to eq("Failed")
+        end
+      end
     end
 
     context "without a tenant on the request" do
