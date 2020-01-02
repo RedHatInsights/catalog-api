@@ -26,6 +26,7 @@ describe "OpenAPI stuff" do
       {:path => "/internal/v0/*path", :verb => "POST"},
       {:path => "/internal/v1.0/notify/approval_request/:id", :verb => "POST"},
       {:path => "/internal/v1.0/notify/task/:id", :verb => "POST"},
+      {:path => "/health", :verb => "GET"}
     ]
   end
 
