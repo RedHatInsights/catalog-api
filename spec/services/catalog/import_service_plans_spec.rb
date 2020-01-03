@@ -32,12 +32,12 @@ describe Catalog::ImportServicePlans, :type => :service do
   end
 
   describe "#process" do
-    before do
-      subject.process
-    end
-
     context "when there is one plan" do
       let(:data) { [service_plan] }
+
+      before do
+        subject.process
+      end
 
       it "reaches out to topology twice" do
         expect(a_request(:get, /topological-inventory\/v1.0\/service_offerings/)).to have_been_made.twice
@@ -51,12 +51,29 @@ describe Catalog::ImportServicePlans, :type => :service do
     context "when there are multiple plans" do
       let(:data) { [service_plan, service_plan.dup] }
 
+      before do
+        subject.process
+      end
+
       it "reaches out to topology twice" do
         expect(a_request(:get, /topological-inventory\/v1.0\/service_offerings/)).to have_been_made.twice
       end
 
       it "adds both the ServicePlans to the portfolio_item" do
         expect(portfolio_item.service_plans.count).to eq 2
+      end
+    end
+
+    context "if create somehow fails" do
+      let(:data) { [] }
+
+      before do
+        allow(ServicePlan).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
+      end
+
+      it "raises an error and logs a message" do
+        expect(Rails.logger).to receive(:error).with(/Error creating service plan/)
+        expect { subject.process }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end

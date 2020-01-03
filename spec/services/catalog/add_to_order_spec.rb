@@ -22,6 +22,7 @@ describe Catalog::AddToOrder, :type => :service do
   end
 
   let(:subject) { described_class.new(params).process }
+
   let(:request) { default_request }
   let(:service_plans_instance) { instance_double(Catalog::ServicePlans) }
 
@@ -37,8 +38,17 @@ describe Catalog::AddToOrder, :type => :service do
     end
   end
 
-  it "invalid parameters" do
-    expect { described_class.new(invalid_params).process }.to raise_error(ActiveRecord::RecordInvalid)
+  context "when the parameters are invalid" do
+    let(:invalid_params) do
+      ActionController::Parameters.new('order_id'          => order.id,
+                                       'portfolio_item_id' => portfolio_item.id,
+                                       'count'             => 1)
+    end
+
+    it "raises an ActiveRecord::RecordInvalid exception and logs a message" do
+      expect(Rails.logger).to receive(:error).with(/Error creating order item for order_id #{order_id}/)
+      expect { described_class.new(invalid_params).process }.to raise_error(ActiveRecord::RecordInvalid)
+    end
   end
 
   context "invalid order" do
