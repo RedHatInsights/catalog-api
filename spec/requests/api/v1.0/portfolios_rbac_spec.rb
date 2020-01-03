@@ -32,6 +32,23 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
     end
   end
 
+  describe "DELETE /portfolios/{id}" do
+    it "success" do
+      create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'delete', :aceable => portfolio1)
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(access_obj)
+      allow(access_obj).to receive(:process).and_return(access_obj)
+      delete "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
+      expect(response).to have_http_status(200)
+    end
+
+    it "unauthorized" do
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'delete').and_return(block_access_obj)
+      allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+      delete "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
+      expect(response).to have_http_status(403)
+    end
+  end
+
   describe "GET /portfolios" do
     before do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
@@ -89,7 +106,7 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
       end
 
       it 'returns a 403' do
-        post "#{api("1.0")}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
+        post "#{api_version}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
         expect(response).to have_http_status(403)
       end
     end
@@ -108,7 +125,7 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
       end
 
       it 'returns a 200' do
-        post "#{api("1.0")}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
+        post "#{api_version}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
         expect(response).to have_http_status(:ok)
       end
     end

@@ -1,5 +1,4 @@
-describe Internal::V1x0::NotifyController, :type => [:request, :v1] do
-  let(:api_version) { "internal/v1.0" }
+describe Internal::V1x0::NotifyController, :type => [:request, :v1_internal] do
   around do |example|
     bypass_rbac do
       example.call
@@ -16,7 +15,7 @@ describe Internal::V1x0::NotifyController, :type => [:request, :v1] do
     end
 
     it "returns a 200" do
-      post "/#{api_version}/notify/approval_request/123", :headers => default_headers, :params => {:payload => {:decision => "approved", :request_id => "123"}, :message => "request_finished"}
+      post "#{api_version}/notify/approval_request/123", :headers => default_headers, :params => {:payload => {:decision => "approved", :request_id => "123"}, :message => "request_finished"}
       expect(response.status).to eq(200)
     end
   end
@@ -38,11 +37,11 @@ describe Internal::V1x0::NotifyController, :type => [:request, :v1] do
 
     it "delegates to another service" do
       expect(determine_task_relevancy).to receive(:process)
-      post "/#{api_version}/notify/task/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
+      post "#{api_version}/notify/task/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
     end
 
     it "returns a 200" do
-      post "/#{api_version}/notify/task/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
+      post "#{api_version}/notify/task/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
 
       expect(response.status).to eq(200)
     end

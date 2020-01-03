@@ -11,10 +11,6 @@ module RequestSpecHelper
     JSON.parse(response.body)
   end
 
-  def api(version)
-    "/api/v#{version}"
-  end
-
   def first_error_detail
     json['errors'][0]['detail']
   end

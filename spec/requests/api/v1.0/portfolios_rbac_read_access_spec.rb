@@ -40,7 +40,7 @@ describe "v1.0 - Portfolios Read Access RBAC API", :type => [:request, :v1] do
       end
 
       it "gets an empty list" do
-        get "#{api('1.0')}/portfolios", :headers => default_headers
+        get "#{api_version}/portfolios", :headers => default_headers
         expect(response).to have_http_status(:ok)
         expect(json['meta']['count']).to be_zero
         expect(json['data']).to be_empty

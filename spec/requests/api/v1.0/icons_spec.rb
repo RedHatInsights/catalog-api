@@ -1,5 +1,4 @@
 describe "v1.0 - IconsRequests", :type => [:request, :v1] do
-  let(:api_version) { api(1.0) }
   let!(:portfolio_item) { create(:portfolio_item) }
   let!(:portfolio) { create(:portfolio) }
 

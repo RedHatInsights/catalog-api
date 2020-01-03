@@ -154,7 +154,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
     context "v1.0" do
       it "success" do
         portfolio_item
-        get "/#{api_version}/portfolio_items", :headers => default_headers
+        get "#{api_version}/portfolio_items", :headers => default_headers
         expect(response).to have_http_status(200)
         expect(JSON.parse(response.body)['data'].count).to eq(1)
       end
@@ -274,7 +274,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
 
   describe "copying portfolio items" do
     let(:copy_portfolio_item) do
-      post "#{api("1.0")}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
     end
 
     context "when copying into the same portfolio" do
