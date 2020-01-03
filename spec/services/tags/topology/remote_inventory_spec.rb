@@ -41,16 +41,16 @@ describe Tags::Topology::RemoteInventory, :type => :service do
             :app_name    => "topology",
             :object_type => "ServiceInventory",
             :tags        => [
-              {:name => "tag1", :namespace => "tag1namespace", :value => "tag1value"},
-              {:name => "tag2", :namespace => "tag2namespace", :value => "tag2value"}
+              {:tag => "tag1namespace/tag1=tag1value"},
+              {:tag => "tag2namespace/tag2=tag2value"}
             ]
           },
           {
             :app_name    => "topology",
             :object_type => "ServiceInventory",
             :tags        => [
-              {:name => "tag3", :namespace => "tag3namespace", :value => "tag3value"},
-              {:name => "tag4", :namespace => "tag4namespace", :value => "tag4value"}
+              {:tag => "tag3namespace/tag3=tag3value"},
+              {:tag => "tag4namespace/tag4=tag4value"}
             ]
           }
         ]
