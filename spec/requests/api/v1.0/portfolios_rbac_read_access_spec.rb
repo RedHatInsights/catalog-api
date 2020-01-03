@@ -1,5 +1,4 @@
-describe "v1.0 - Portfolios Read Access RBAC API" do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - Portfolios Read Access RBAC API", :type => [:request, :v1] do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true) }

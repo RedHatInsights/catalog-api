@@ -1,5 +1,4 @@
-describe "v1.0 - Portfolio Items RBAC API" do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
   let(:portfolio) { create(:portfolio) }
   let!(:portfolio_item1) { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_item2) { create(:portfolio_item) }

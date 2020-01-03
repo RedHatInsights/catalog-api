@@ -1,5 +1,4 @@
-describe "v1.0 - Settings API", :type => :request do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - Settings API", :type => [:request, :v1] do
   let!(:tenant) { create(:tenant) }
   let(:retreived_tenant) { Tenant.find(tenant.id) }
 

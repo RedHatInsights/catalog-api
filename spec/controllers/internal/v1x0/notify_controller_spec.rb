@@ -1,4 +1,4 @@
-describe Internal::V1x0::NotifyController, :type => :request do
+describe Internal::V1x0::NotifyController, :type => [:request, :v1] do
   let(:api_version) { "internal/v1.0" }
   around do |example|
     bypass_rbac do

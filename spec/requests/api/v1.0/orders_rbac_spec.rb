@@ -1,5 +1,4 @@
-describe "v1.0 - OrderRequests", :type => :request do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   let!(:order1) { create(:order) }
   let!(:order2) { create(:order) }
   let!(:order3) { create(:order, :owner => 'barney') }

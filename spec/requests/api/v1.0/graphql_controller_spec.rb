@@ -1,5 +1,4 @@
-RSpec.describe("v1.0 - GraphQL") do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - GraphQL", :type => [:request, :v1] do
   around do |example|
     bypass_rbac do
       example.call

@@ -1,5 +1,4 @@
-describe "v1.0 - root", :type => :request do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - root", :type => [:request, :v1] do
   it "#openapi.json" do
     get("/#{api_version}/openapi.json", :headers => default_headers)
 

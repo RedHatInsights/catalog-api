@@ -1,5 +1,4 @@
-RSpec.describe ApplicationController, :type => :request do
-  let(:api_version) { api(1.0) }
+RSpec.describe ApplicationController, :type => [:request, :v1] do
   let(:portfolio) { create(:portfolio, :name => 'tenant_portfolio', :description => 'tenant desc', :owner => 'wilma') }
   let(:portfolio_id) { portfolio.id }
 

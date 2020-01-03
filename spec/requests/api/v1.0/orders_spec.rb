@@ -1,5 +1,4 @@
-describe "v1.0 - OrderRequests", :type => :request do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   around do |example|
     bypass_rbac do
       example.call

@@ -1,5 +1,4 @@
-describe "v1.0 - Group Seed API" do
-  let(:api_version) { api(1.0) }
+describe "v1.0 - Group Seed API", :type => [:request, :v1] do
   let!(:tenant) { create(:tenant) }
   let!(:tenant_id) { tenant.id }
   let(:api_instance) { double }
