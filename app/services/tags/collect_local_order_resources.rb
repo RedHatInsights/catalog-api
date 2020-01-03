@@ -31,7 +31,7 @@ module Tags
     end
 
     def minimal_tags(tags)
-      tags.collect { |t| { :name => t.name, :namespace => t.namespace, :value => t.value } }
+      tags.collect { |t| { :tag => t.to_tag_string } }
     end
   end
 end
