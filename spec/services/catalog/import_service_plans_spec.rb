@@ -25,9 +25,9 @@ describe Catalog::ImportServicePlans, :type => :service do
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
 
-    stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/1")
+    stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/1")
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/1/service_plans")
+    stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/1/service_plans")
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
@@ -40,7 +40,7 @@ describe Catalog::ImportServicePlans, :type => :service do
       end
 
       it "reaches out to topology twice" do
-        expect(a_request(:get, /topological-inventory\/v1.0\/service_offerings/)).to have_been_made.twice
+        expect(a_request(:get, /topological-inventory\/v2.0\/service_offerings/)).to have_been_made.twice
       end
 
       it "adds the ServicePlan to the portfolio_item" do
@@ -56,7 +56,7 @@ describe Catalog::ImportServicePlans, :type => :service do
       end
 
       it "reaches out to topology twice" do
-        expect(a_request(:get, /topological-inventory\/v1.0\/service_offerings/)).to have_been_made.twice
+        expect(a_request(:get, /topological-inventory\/v2.0\/service_offerings/)).to have_been_made.twice
       end
 
       it "adds both the ServicePlans to the portfolio_item" do

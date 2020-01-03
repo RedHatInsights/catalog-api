@@ -34,7 +34,7 @@ describe Catalog::UpdateOrderItem, :type => :service do
       let(:topology_task_ref) { "123" }
 
       before do
-        stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_instances/321").to_return(
+        stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_instances/321").to_return(
           :status  => 200,
           :body    => service_instance.to_json,
           :headers => default_headers
@@ -48,7 +48,7 @@ describe Catalog::UpdateOrderItem, :type => :service do
           let(:state) { "completed" }
 
           before do
-            stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_instances/321").to_return(
+            stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_instances/321").to_return(
               :status  => 200,
               :body    => service_instance.to_json,
               :headers => default_headers
