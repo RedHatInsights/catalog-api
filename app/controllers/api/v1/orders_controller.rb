@@ -2,6 +2,8 @@ module Api
   module V1
     class OrdersController < ApplicationController
       include Api::V1::Mixins::IndexMixin
+      include Api::V1::Mixins::ServiceOfferingMixin
+
       before_action :read_access_check, :only => %i[show]
       before_action :service_offering_check, :only => %i[submit_order]
 
@@ -40,19 +42,6 @@ module Api
         Catalog::SoftDeleteRestore.new(order, params.require(:restore_key)).process
 
         render :json => order
-      end
-
-      private
-
-      def service_offering_check
-        order_id = params.require(:order_id)
-        service_offering_service = Catalog::ServiceOffering.new(order_id).process
-        if service_offering_service.archived
-          Rails.logger.error("Service offering for order #{order_id} has been archived and can no longer be ordered")
-          raise Catalog::ServiceOfferingArchived, "Service offering for order #{order_id} has been archived and can no longer be ordered"
-        else
-          @order = service_offering_service.order
-        end
       end
     end
   end
