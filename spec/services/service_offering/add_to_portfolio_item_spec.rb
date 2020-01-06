@@ -24,9 +24,9 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
     let(:catalog_application_type) { {:data => [{:id => 1, :name => "/insights/platform/catalog"}]} }
 
     before do
-      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/1")
+      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/1")
         .to_return(:status => 200, :body => topology_service_offering.to_json, :headers => default_headers)
-      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offering_icons/998")
+      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offering_icons/998")
         .to_return(:status => 200, :body => service_offering_icon.to_json, :headers => default_headers)
 
       stub_request(:get, "http://localhost/api/sources/v1.0/application_types")
@@ -103,7 +103,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => :service do
 
       context "when there is a topology error" do
         before do
-          stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/1")
+          stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/1")
             .to_return(:status => 500, :headers => default_headers)
         end
 

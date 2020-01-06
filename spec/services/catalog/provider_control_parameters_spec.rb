@@ -30,7 +30,7 @@ describe Catalog::ProviderControlParameters, :type => :service do
     end
 
     before do
-      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/1/container_projects")
+      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/sources/1/container_projects")
         .to_return(:status => 200, :body => container_project_response.to_json, :headers => default_headers)
     end
 

@@ -21,9 +21,9 @@ describe Catalog::ServicePlans, :type => :service do
     end
 
     before do
-      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/998")
+      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/998")
         .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/998/service_plans")
+      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/998/service_plans")
         .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
     end
 

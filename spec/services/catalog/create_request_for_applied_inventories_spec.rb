@@ -22,14 +22,14 @@ describe Catalog::CreateRequestForAppliedInventories, :type => :service do
     end
 
     before do
-      stub_request(:post, "http://localhost/api/topological-inventory/v1.0/service_offerings/123/applied_inventories")
+      stub_request(:post, "http://localhost/api/topological-inventory/v2.0/service_offerings/123/applied_inventories")
         .with(:body => request_body)
         .to_return(:status => 200, :body => topology_response.to_json, :headers => default_headers)
     end
 
     it "makes a request to compute the applied inventories" do
       subject.process
-      expect(a_request(:post, "http://localhost/api/topological-inventory/v1.0/service_offerings/123/applied_inventories")
+      expect(a_request(:post, "http://localhost/api/topological-inventory/v2.0/service_offerings/123/applied_inventories")
         .with(:body => request_body)).to have_been_made
     end
 
