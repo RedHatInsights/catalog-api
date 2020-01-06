@@ -18,10 +18,10 @@ describe Tags::CollectLocalOrderResources do
         expect(tag_resources).to match(
           [{ :app_name    => 'catalog',
              :object_type => 'PortfolioItem',
-             :tags        => [{ :name => 'Gnocchi', :namespace => 'Charkie', :value => 'Hundley' }] },
+             :tags        => [{ :tag => "/Charkie/Gnocchi=Hundley" }] },
            { :app_name    => 'catalog',
              :object_type => 'Portfolio',
-             :tags        => [{ :name => 'Curious George', :namespace => 'Compass', :value => 'Jumpy Squirrel' }]}]
+             :tags        => [{ :tag => "/Compass/Curious George=Jumpy Squirrel" }] }]
         )
       end
     end
@@ -35,7 +35,7 @@ describe Tags::CollectLocalOrderResources do
         expect(tag_resources).to match(
           [{ :app_name    => 'catalog',
              :object_type => 'PortfolioItem',
-             :tags        => [{ :name => 'Gnocchi', :namespace => 'Charkie', :value => 'Hundley' }] }]
+             :tags        => [{ :tag => "/Charkie/Gnocchi=Hundley" }] }]
         )
       end
     end
