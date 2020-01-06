@@ -18,7 +18,7 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
       get "#{api_version}/tags", :headers => default_headers
 
       expect(json["meta"]["count"]).to eq 2
-      expect(json["data"].map { |e| e["name"] }).to match_array %w[yay a_tag]
+      expect(json["data"].map { |e| Tag.parse(e["tag"])[:name] }).to match_array %w[yay a_tag]
     end
   end
 
@@ -26,7 +26,7 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
     it "returns the tag specified" do
       get "#{api_version}/tags/#{Tag.first.id}", :headers => default_headers
 
-      expect(json["name"]).to eq Tag.first.name
+      expect(json["tag"]).to eq Tag.first.to_tag_string
     end
   end
 
