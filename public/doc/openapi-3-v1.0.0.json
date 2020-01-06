@@ -2635,7 +2635,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataDrivenFormSchema"
+                  "$ref": "#/components/schemas/ServicePlan"
                 }
               }
             }
@@ -2671,7 +2671,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataDrivenFormSchema"
+                  "$ref": "#/components/schemas/ServicePlan"
                 }
               }
             }
@@ -2716,7 +2716,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataDrivenFormSchema"
+                  "type": "object"
                 }
               }
             }
@@ -3036,10 +3036,7 @@
           "modified": {
             "type": "object",
             "title": "Modified Schema",
-            "description": "the new modified schema for the service plan",
-            "example": {
-              "$ref": "#/components/schemas/DataDrivenFormSchema"
-            }
+            "description": "the new modified schema for the service plan"
           }
         }
       },
@@ -3885,171 +3882,6 @@
                 "delete",
                 "order"
               ]
-            }
-          }
-        }
-      },
-      "DataDrivenFormSchema": {
-        "type": "object",
-        "properties": {
-          "schema": {
-            "type": "object",
-            "example": {
-              "schema": {
-                "title": "",
-                "fields": [
-                  {
-                    "name": "username",
-                    "label": "What is your name",
-                    "validate": [
-                      {
-                        "type": "required-validator"
-                      },
-                      {
-                        "type": "min-length-validator",
-                        "threshold": 0
-                      },
-                      {
-                        "type": "max-length-validator",
-                        "threshold": 255
-                      }
-                    ],
-                    "component": "text-field",
-                    "helperText": "",
-                    "isRequired": true,
-                    "initialValue": ""
-                  },
-                  {
-                    "name": "quest",
-                    "label": "What is your quest?",
-                    "options": [
-                      {
-                        "label": "Test Approval",
-                        "value": "Test Approval"
-                      },
-                      {
-                        "label": "Test Catalog",
-                        "value": "Test Catalog"
-                      },
-                      {
-                        "label": "Test Topology",
-                        "value": "Test Topology"
-                      },
-                      {
-                        "label": "Seek the Holy Grail",
-                        "value": "Seek the Holy Grail"
-                      }
-                    ],
-                    "validate": [
-                      {
-                        "type": "required-validator"
-                      }
-                    ],
-                    "component": "select-field",
-                    "helperText": "",
-                    "isRequired": true,
-                    "initialValue": ""
-                  },
-                  {
-                    "name": "airspeed",
-                    "type": "number",
-                    "label": "What is the airspeed velocity of an unladen swallow?",
-                    "dataType": "float",
-                    "validate": [
-                      {
-                        "type": "min-number-value",
-                        "value": 0
-                      },
-                      {
-                        "type": "max-number-value",
-                        "value": 10
-                      }
-                    ],
-                    "component": "text-field",
-                    "helperText": "Type: Float",
-                    "initialValue": ""
-                  },
-                  {
-                    "name": "int_value",
-                    "type": "number",
-                    "label": "Integer value",
-                    "dataType": "integer",
-                    "validate": [
-                      {
-                        "type": "required-validator"
-                      },
-                      {
-                        "type": "min-number-value",
-                        "value": 0
-                      },
-                      {
-                        "type": "max-number-value",
-                        "value": 10
-                      }
-                    ],
-                    "component": "textarea-field",
-                    "helperText": "",
-                    "isRequired": true,
-                    "initialValue": 5
-                  },
-                  {
-                    "name": "date picker",
-                    "label": "Date Picker",
-                    "component": "date-picker"
-                  },
-                  {
-                    "name": "checkbox",
-                    "label": "Checkbox",
-                    "component": "checkbox"
-                  },
-                  {
-                    "component": "checkbox",
-                    "name": "checkbox multiple",
-                    "label": "Checkbox Multiple",
-                    "options": [
-                      {
-                        "label": "first",
-                        "value": "1"
-                      },
-                      {
-                        "label": "second",
-                        "value": "2"
-                      }
-                    ]
-                  },
-                  {
-                    "name": "time picker",
-                    "label": "Time Picker",
-                    "component": "time-picker"
-                  },
-                  {
-                    "component": "radio",
-                    "label": "Radio",
-                    "name": "radio",
-                    "options": [
-                      {
-                        "label": "Dogs",
-                        "value": "1"
-                      },
-                      {
-                        "label": "Cats",
-                        "value": "2"
-                      },
-                      {
-                        "label": "Hamsters",
-                        "value": "3"
-                      }
-                    ]
-                  },
-                  {
-                    "component": "switch-field",
-                    "label": "Switch",
-                    "name": "switch"
-                  }
-                ],
-                "description": ""
-              },
-              "schemaType": "default"
             }
           }
         }
