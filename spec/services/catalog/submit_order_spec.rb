@@ -47,7 +47,7 @@ describe Catalog::SubmitOrder do
 
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
 
-    stub_request(:get, "http://localhost/api/topological-inventory/v1.0/service_offerings/#{service_offering_ref}/service_plans")
+    stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/#{service_offering_ref}/service_plans")
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
@@ -65,7 +65,7 @@ describe Catalog::SubmitOrder do
           }.to_json,
           :headers => default_headers
         }
-        stub_request(:post, "http://localhost/api/topological-inventory/v1.0/service_offerings/998/order")
+        stub_request(:post, "http://localhost/api/topological-inventory/v2.0/service_offerings/998/order")
           .with(request_stubs)
           .to_return(:status => 200, :body => order_response.to_json, :headers => {"Content-type" => "application/json"})
       end

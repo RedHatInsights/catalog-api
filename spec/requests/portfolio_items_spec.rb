@@ -192,7 +192,7 @@ describe "PortfolioItemRequests", :type => :request do
     let(:url) { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     it "fetches plans" do
-      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/568/container_projects")
+      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/sources/568/container_projects")
         .to_return(:status => 200, :body => {:data => [:name => 'fred']}.to_json, :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
@@ -202,7 +202,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     it "raises error" do
-      stub_request(:get, "http://localhost/api/topological-inventory/v1.0/sources/568/container_projects")
+      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/sources/568/container_projects")
         .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers

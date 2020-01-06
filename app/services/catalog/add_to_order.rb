@@ -10,7 +10,11 @@ module Catalog
       order = Order.find_by!(:id => @params[:order_id])
       @params.delete(:service_plan_ref)
       @order_item = order.order_items.create!(order_item_params.merge!(:service_plan_ref => service_plan_ref))
+
       self
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error("Error creating order item for order_id #{order.id}: #{e.message}")
+      raise
     end
 
     private

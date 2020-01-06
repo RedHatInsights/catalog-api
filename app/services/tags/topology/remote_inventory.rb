@@ -18,7 +18,7 @@ module Tags
       def consolidate_inventory_tags
         @tag_resources = all_tag_collections.collect do |tag_collection|
           tags = tag_collection.collect do |tag|
-            tag.to_hash.slice(:name, :namespace, :value)
+            {:tag => tag.tag}
           end
 
           {
