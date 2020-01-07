@@ -15,6 +15,7 @@ ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
   "Catalog::NotAuthorized"             => :forbidden,
   "Catalog::OrderUncancelable"         => :bad_request,
   "Catalog::RBACError"                 => :service_unavailable,
+  "Catalog::ServiceOfferingArchived"   => :bad_request,
   "Catalog::SourcesError"              => :service_unavailable,
   "Catalog::TopologyError"             => :service_unavailable,
   "Discard::DiscardError"              => :bad_request
