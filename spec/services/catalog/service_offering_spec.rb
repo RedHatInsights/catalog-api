@@ -17,7 +17,7 @@ describe Catalog::ServiceOffering do
     let(:service_offering_response) { TopologicalInventoryApiClient::ServiceOffering.new(:archived_at => archived_at) }
 
     before do
-      stub_request(:get, "http://topology/api/topological-inventory/v1.0/service_offerings/123")
+      stub_request(:get, "http://topology/api/topological-inventory/v2.0/service_offerings/123")
         .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
     end
 
