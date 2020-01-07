@@ -1,4 +1,4 @@
-describe 'Portfolios Read Access RBAC API' do
+describe "v1.0 - Portfolios Read Access RBAC API", :type => [:request, :v1] do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => false, :accessible? => true) }
@@ -27,7 +27,7 @@ describe 'Portfolios Read Access RBAC API' do
         allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
 
         allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-        get "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -40,7 +40,7 @@ describe 'Portfolios Read Access RBAC API' do
       end
 
       it "gets an empty list" do
-        get "#{api('1.0')}/portfolios", :headers => default_headers
+        get "#{api_version}/portfolios", :headers => default_headers
         expect(response).to have_http_status(:ok)
         expect(json['meta']['count']).to be_zero
         expect(json['data']).to be_empty
@@ -53,12 +53,12 @@ describe 'Portfolios Read Access RBAC API' do
       end
 
       it 'specific portfolio' do
-        get "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'all portfolios' do
-        get "#{api('1.0')}/portfolios", :headers => default_headers
+        get "#{api_version}/portfolios", :headers => default_headers
         expect(response).to have_http_status(:ok)
         expect(json['data'].collect { |x| x['id'] }).to match_array([portfolio1.id.to_s, portfolio2.id.to_s])
       end
@@ -75,19 +75,19 @@ describe 'Portfolios Read Access RBAC API' do
       end
 
       it 'ok' do
-        get "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'forbidden' do
-        get "#{api('1.0')}/portfolios/#{portfolio2.id}", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio2.id}", :headers => default_headers
         expect(response).to have_http_status(:forbidden)
       end
 
       context "via graphql" do
         let(:graphql_query) { "{ portfolios(id: #{portfolio1.id}) { id name } }" }
         it 'ok' do
-          post "#{api('1.0')}/graphql", :headers => default_headers, :params => graphql_body
+          post "#{api_version}/graphql", :headers => default_headers, :params => graphql_body
           expect(response).to have_http_status(:ok)
           expect(json['data']['portfolios'][0]['name']).to eq(portfolio1.name)
         end
@@ -96,7 +96,7 @@ describe 'Portfolios Read Access RBAC API' do
       context "via graphql fetch an inaccessible portfolio" do
         let(:graphql_query) { "{ portfolios(id: #{portfolio2.id}) { id name } }" }
         it 'gives an empty body' do
-          post "#{api('1.0')}/graphql", :headers => default_headers, :params => graphql_body
+          post "#{api_version}/graphql", :headers => default_headers, :params => graphql_body
           expect(response).to have_http_status(:ok)
           expect(json['data']['portfolios']).to be_empty
         end
@@ -110,7 +110,7 @@ describe 'Portfolios Read Access RBAC API' do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(block_access_obj)
         allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
         allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-        post "#{api('1.0')}/graphql", :headers => default_headers, :params => graphql_body
+        post "#{api_version}/graphql", :headers => default_headers, :params => graphql_body
         expect(response).to have_http_status(:forbidden)
       end
     end

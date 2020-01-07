@@ -18,13 +18,12 @@ module Api
         end
 
         def delete_access_check
-          permission_check('delete')
+          resource_check('delete')
         end
 
         def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)
           return unless Insights::API::Common::RBAC::Access.enabled?
           return if catalog_administrator?
-
           ids = access_id_list(verb, klass)
           if klass.try(:supports_access_control?)
             raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.exclude?(id)

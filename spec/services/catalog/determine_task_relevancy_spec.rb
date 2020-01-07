@@ -20,7 +20,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
   describe "#process" do
     before do
-      stub_request(:get, "http://topology/api/topological-inventory/v2.0/tasks/123").to_return(
+      stub_request(:get, topological_url("tasks/123")).to_return(
         :status => 200, :body => task.to_json, :headers => default_headers
       )
     end

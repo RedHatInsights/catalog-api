@@ -1,4 +1,4 @@
-describe 'Portfolios Write Access RBAC API' do
+describe "v1.0 - Portfolios Write Access RBAC API", :type => [:request, :v1] do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true) }
@@ -17,7 +17,7 @@ describe 'Portfolios Write Access RBAC API' do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
-      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => valid_attributes
+      post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
 
       expect(response).to have_http_status(:ok)
     end
@@ -27,7 +27,7 @@ describe 'Portfolios Write Access RBAC API' do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(block_access_obj)
       allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-      post "#{api('1.0')}/portfolios", :headers => default_headers, :params => valid_attributes
+      post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -49,12 +49,12 @@ describe 'Portfolios Write Access RBAC API' do
       end
 
       it 'only allows updating a specific portfolio' do
-        patch "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
+        patch "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
         expect(response).to have_http_status(:ok)
       end
 
       it 'fails updating a portfolio' do
-        patch "#{api('1.0')}/portfolios/#{portfolio2.id}", :headers => default_headers, :params => updated_attributes
+        patch "#{api_version}/portfolios/#{portfolio2.id}", :headers => default_headers, :params => updated_attributes
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -66,7 +66,7 @@ describe 'Portfolios Write Access RBAC API' do
       end
 
       it 'fails updating a portfolio' do
-        patch "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
+        patch "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
         expect(response).to have_http_status(:forbidden)
       end
     end
