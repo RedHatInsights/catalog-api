@@ -22,8 +22,7 @@ describe "OrderItemsRequests", :type => :request do
       'portfolio_item_id'           => order_item_1.portfolio_item.id.to_s,
       'count'                       => 1,
       'service_parameters'          => {'name' => 'fred'},
-      'provider_control_parameters' => {'age' => 50},
-      'service_plan_ref'            => '10' }
+      'provider_control_parameters' => {'age' => 50}}
   end
 
   describe "CRUD" do
