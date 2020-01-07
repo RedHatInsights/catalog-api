@@ -7,7 +7,7 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
   let(:modified_schema) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :BYPASS_RBAC => 'true') do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :BYPASS_RBAC => 'true') do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end
@@ -26,9 +26,9 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
   end
 
   before do
-    stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/#{service_offering_ref}")
+    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/#{service_offering_ref}/service_plans")
+    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 

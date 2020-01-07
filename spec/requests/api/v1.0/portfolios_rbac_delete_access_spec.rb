@@ -1,4 +1,4 @@
-describe 'Portfolios Delete Access RBAC API' do
+describe 'Portfolios Delete Access RBAC API', :type => [:request, :v1] do
   let!(:portfolio1) { create(:portfolio) }
   let!(:portfolio2) { create(:portfolio) }
   let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true) }
@@ -24,12 +24,12 @@ describe 'Portfolios Delete Access RBAC API' do
       end
 
       it 'only allows deleting a specific portfolio' do
-        delete "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers
+        delete "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'fails deleting another portfolio' do
-        delete "#{api('1.0')}/portfolios/#{portfolio2.id}", :headers => default_headers
+        delete "#{api_version}/portfolios/#{portfolio2.id}", :headers => default_headers
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -42,7 +42,7 @@ describe 'Portfolios Delete Access RBAC API' do
       end
 
       it 'fails deleting any portfolio' do
-        delete "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers
+        delete "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -53,7 +53,7 @@ describe 'Portfolios Delete Access RBAC API' do
       end
 
       it 'successfully deletes a portfolio' do
-        delete "#{api('1.0')}/portfolios/#{portfolio1.id}", :headers => default_headers
+        delete "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers
         expect(response).to have_http_status(:ok)
       end
     end

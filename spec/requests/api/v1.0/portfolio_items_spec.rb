@@ -1,7 +1,7 @@
 describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
   around do |example|
     bypass_rbac do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :APPROVAL_URL => "http://localhost") { example.call }
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :APPROVAL_URL => "http://localhost") { example.call }
     end
   end
 
@@ -192,7 +192,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
     let(:url) { "#{api_version}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     it "fetches plans" do
-      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/sources/568/container_projects")
+      stub_request(:get, topological_url("sources/568/container_projects"))
         .to_return(:status => 200, :body => {:data => [:name => 'fred']}.to_json, :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
@@ -202,7 +202,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
     end
 
     it "raises error" do
-      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/sources/568/container_projects")
+      stub_request(:get, topological_url("sources/568/container_projects"))
         .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers

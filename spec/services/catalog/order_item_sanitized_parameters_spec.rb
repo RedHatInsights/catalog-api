@@ -7,7 +7,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
   end
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost") do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
       example.call
     end
   end
@@ -27,7 +27,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
       end
 
       before do
-        stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_plans/777")
+        stub_request(:get, topological_url("service_plans/777"))
           .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
       end
 
@@ -66,7 +66,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
 
         context "when the api call is not successful" do
           before do
-            stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_plans/777")
+            stub_request(:get, topological_url("service_plans/777"))
               .to_raise(TopologicalInventoryApiClient::ApiError)
           end
 
