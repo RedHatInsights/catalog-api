@@ -1,4 +1,4 @@
-describe 'Group Seed API' do
+describe "v1.0 - Group Seed API", :type => [:request, :v1] do
   let!(:tenant) { create(:tenant) }
   let!(:tenant_id) { tenant.id }
   let(:api_instance) { double }
@@ -33,7 +33,7 @@ describe 'Group Seed API' do
   describe 'GET /tenants' do
     before do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true)
-      get "#{api}/tenants", :headers => default_headers
+      get "#{api_version}/tenants", :headers => default_headers
     end
 
     it 'returns status code 200' do
@@ -71,7 +71,7 @@ describe 'Group Seed API' do
           .with(:body => principals.to_json)
           .to_return(:status => 200, :body => "", :headers => response_headers)
       end
-      before { post "#{api}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
+      before { post "#{api_version}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -99,7 +99,7 @@ describe 'Group Seed API' do
                      :body    => catalog_admin.to_json,
                      :headers => response_headers)
       end
-      before { post "#{api}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
+      before { post "#{api_version}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
 
       it 'returns status code 204' do
         expect(response).to have_http_status(204)
@@ -131,7 +131,7 @@ describe 'Group Seed API' do
                      :body    => catalog_admin.to_json,
                      :headers => response_headers)
       end
-      before { post "#{api}/tenants/#{tenant_id}/seed", :headers => default_headers }
+      before { post "#{api_version}/tenants/#{tenant_id}/seed", :headers => default_headers }
 
       it 'returns status code 403' do
         expect(response).to have_http_status(403)

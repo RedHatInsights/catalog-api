@@ -1,4 +1,4 @@
-describe "ServicePlansRequests", :type => :request do
+describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
   let(:service_plan) { create(:service_plan, :base => JSON.parse(modified_schema)) }
   let(:portfolio_item) { service_plan.portfolio_item }
   let(:service_offering_ref) { portfolio_item.service_offering_ref }
@@ -7,7 +7,7 @@ describe "ServicePlansRequests", :type => :request do
   let(:modified_schema) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :BYPASS_RBAC => 'true') do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :BYPASS_RBAC => 'true') do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end
@@ -26,17 +26,17 @@ describe "ServicePlansRequests", :type => :request do
   end
 
   before do
-    stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/#{service_offering_ref}")
+    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_offerings/#{service_offering_ref}/service_plans")
+    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
   describe "#index" do
     context "when there are service plans in the db" do
       before do
-        post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
-        get "#{api}/portfolio_items/#{portfolio_item_without_service_plan.id}/service_plans", :headers => default_headers
+        post "#{api_version}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+        get "#{api_version}/portfolio_items/#{portfolio_item_without_service_plan.id}/service_plans", :headers => default_headers
       end
 
       it "returns what we have in the db" do
@@ -49,7 +49,7 @@ describe "ServicePlansRequests", :type => :request do
 
     context "when there are not service plans in the db" do
       before do
-        get "#{api}/portfolio_items/#{portfolio_item_without_service_plan.id}/service_plans", :headers => default_headers
+        get "#{api_version}/portfolio_items/#{portfolio_item_without_service_plan.id}/service_plans", :headers => default_headers
       end
 
       it "returns the newly created ServicePlan in an array" do
@@ -60,7 +60,7 @@ describe "ServicePlansRequests", :type => :request do
 
   describe "#show" do
     before do
-      get "#{api}/service_plans/#{service_plan.id}", :headers => default_headers
+      get "#{api_version}/service_plans/#{service_plan.id}", :headers => default_headers
     end
 
     it "returns a 200" do
@@ -76,7 +76,7 @@ describe "ServicePlansRequests", :type => :request do
   describe "#create" do
     context "when there is not a service_plan for the portfolio_item specified" do
       before do
-        post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+        post "#{api_version}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
       end
 
       it "pulls in the service plans" do
@@ -90,8 +90,8 @@ describe "ServicePlansRequests", :type => :request do
 
     context "when a service_plan already exists for the portfolio_item specified" do
       before do
-        post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
-        post "#{api}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+        post "#{api_version}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+        post "#{api_version}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
       end
 
       it "returns a conflict response" do
@@ -102,7 +102,7 @@ describe "ServicePlansRequests", :type => :request do
 
   describe "#base" do
     before do
-      get "#{api}/service_plans/#{service_plan.id}/base", :headers => default_headers
+      get "#{api_version}/service_plans/#{service_plan.id}/base", :headers => default_headers
     end
 
     it "returns a 200" do
@@ -117,7 +117,7 @@ describe "ServicePlansRequests", :type => :request do
   describe "#modified" do
     context "when there is a modified schema" do
       before do
-        get "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers
+        get "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers
       end
 
       it "returns a 200" do
@@ -136,7 +136,7 @@ describe "ServicePlansRequests", :type => :request do
       end
 
       it "returns a 204" do
-        get "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers
+        get "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers
 
         expect(response).to have_http_status :no_content
       end
@@ -145,7 +145,7 @@ describe "ServicePlansRequests", :type => :request do
 
   describe "#update_modified" do
     before do
-      patch "#{api}/service_plans/#{service_plan.id}/modified", :headers => default_headers, :params => params
+      patch "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers, :params => params
     end
 
     context "when patching the modified schema with a valid schema" do
@@ -182,7 +182,7 @@ describe "ServicePlansRequests", :type => :request do
   describe "#reset" do
     context "when there is a modified schema" do
       before do
-        post "#{api}/service_plans/#{service_plan.id}/reset", :headers => default_headers
+        post "#{api_version}/service_plans/#{service_plan.id}/reset", :headers => default_headers
       end
 
       it "returns a 200" do
@@ -196,7 +196,7 @@ describe "ServicePlansRequests", :type => :request do
       end
 
       it "returns a 204" do
-        post "#{api}/service_plans/#{service_plan.id}/reset", :headers => default_headers
+        post "#{api_version}/service_plans/#{service_plan.id}/reset", :headers => default_headers
 
         expect(response).to have_http_status :no_content
       end

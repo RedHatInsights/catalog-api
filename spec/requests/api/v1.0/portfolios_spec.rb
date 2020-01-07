@@ -1,4 +1,4 @@
-describe 'Portfolios API' do
+describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   around do |example|
     bypass_rbac do
       example.call
@@ -12,7 +12,7 @@ describe 'Portfolios API' do
 
   describe "GET /portfolios/:portfolio_id" do
     before do
-      get "#{api}/portfolios/#{portfolio_id}", :headers => default_headers
+      get "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers
     end
 
     context 'when portfolios exist' do
@@ -38,7 +38,7 @@ describe 'Portfolios API' do
 
   describe "GET v1.0 /portfolios/:portfolio_id" do
     before do
-      get "#{api}/portfolios/#{portfolio_id}", :headers => default_headers
+      get "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers
     end
 
     context 'when portfolios exist' do
@@ -56,7 +56,7 @@ describe 'Portfolios API' do
   describe "GET /portfolios" do
     context "without filter" do
       before do
-        get "#{api}/portfolios", :headers => default_headers
+        get "#{api_version}/portfolios", :headers => default_headers
       end
 
       context 'when portfolios exist' do
@@ -75,14 +75,14 @@ describe 'Portfolios API' do
       let!(:portfolio_filter2) { create(:portfolio, :name => "testfilter2") }
 
       it 'returns only the id specified in the filter' do
-        get "#{api}/portfolios?filter[id]=#{portfolio_id}", :headers => default_headers
+        get "#{api_version}/portfolios?filter[id]=#{portfolio_id}", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["id"]).to eq portfolio_id.to_s
       end
 
       it 'allows filtering by name via regex' do
-        get "#{api}/portfolios?filter[name][starts_with]=test", :headers => default_headers
+        get "#{api_version}/portfolios?filter[name][starts_with]=test", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 2
 
@@ -106,7 +106,7 @@ describe 'Portfolios API' do
 
     context 'when discarding a portfolio' do
       before do
-        delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
+        delete "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
       end
 
       it 'deletes the record' do
@@ -118,7 +118,7 @@ describe 'Portfolios API' do
       end
 
       it 'allows adding portfolios with the same name when one is discarded' do
-        post "#{api}/portfolios", :headers => default_headers, :params => valid_attributes
+        post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:ok)
       end
@@ -135,7 +135,7 @@ describe 'Portfolios API' do
       end
 
       it 'reports errors when discarding child portfolio_items fails' do
-        delete "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
+        delete "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
 
         expect(response).to have_http_status(:bad_request)
       end
@@ -152,7 +152,7 @@ describe 'Portfolios API' do
 
     context "when restoring a portfolio" do
       before do
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
       end
 
       it "returns a 200" do
@@ -170,7 +170,7 @@ describe 'Portfolios API' do
 
       before do
         portfolio.discard
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
       end
 
       it "returns a 403" do
@@ -190,7 +190,7 @@ describe 'Portfolios API' do
       end
 
       it 'reports errors when undiscarding the child portfolio_items fails' do
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
 
         expect(response).to have_http_status(:bad_request)
       end
@@ -204,7 +204,7 @@ describe 'Portfolios API' do
       end
 
       it "only undeletes the one that was discarded at the same time as the portfolio" do
-        post "#{api}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
 
         second_item.reload
         expect(second_item.discarded?).to be_truthy
@@ -218,7 +218,7 @@ describe 'Portfolios API' do
     let(:partial_attributes) { { :name => 'Chef Pisghetti' } }
     context 'when patched portfolio is valid' do
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
+        patch "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers, :params => valid_attributes
       end
 
       it 'returns status code 200' do
@@ -235,7 +235,7 @@ describe 'Portfolios API' do
     context 'when patched portfolio has openapi nullable values' do
       let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => 'description for patched portfolio' } }
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => nullable_attributes
+        patch "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers, :params => nullable_attributes
       end
 
       it 'returns status code 200' do
@@ -250,7 +250,7 @@ describe 'Portfolios API' do
 
     context 'when patched portfolio params are invalid' do
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => invalid_attributes
+        patch "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers, :params => invalid_attributes
       end
 
       it 'returns status code 400' do
@@ -261,7 +261,7 @@ describe 'Portfolios API' do
 
     context 'when patched portfolio params are partial' do
       before do
-        patch "#{api}/portfolios/#{portfolio_id}", :headers => default_headers, :params => partial_attributes
+        patch "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers, :params => partial_attributes
       end
 
       it 'returns status code 200' do
@@ -274,7 +274,7 @@ describe 'Portfolios API' do
   describe 'POST /portfolios' do
     let(:valid_attributes) { { :name => 'rspec 1', :description => 'rspec 1 description' } }
     context 'when portfolio attributes are valid' do
-      before { post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers }
+      before { post "#{api_version}/portfolios", :params => valid_attributes, :headers => default_headers }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -285,7 +285,7 @@ describe 'Portfolios API' do
       end
 
       it 'returns a status code 400 when trying to create with the same name' do
-        post "#{api}/portfolios", :params => valid_attributes, :headers => default_headers
+        post "#{api_version}/portfolios", :params => valid_attributes, :headers => default_headers
 
         expect(response).to have_http_status(400)
       end
@@ -295,13 +295,12 @@ describe 'Portfolios API' do
       end
     end
 
-
     shared_examples_for "#shared_test" do
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
           allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
-          post "#{api}/portfolios/#{shared_portfolio.id}/share", :params => attributes, :headers => default_headers
+          post "#{api_version}/portfolios/#{shared_portfolio.id}/share", :params => attributes, :headers => default_headers
           expect(response).to have_http_status(http_status)
         end
       end
@@ -344,7 +343,7 @@ describe 'Portfolios API' do
           ace2
           ace3
           expect(shared_portfolio.access_control_entries.count).to eq(3)
-          post "#{api}/portfolios/#{shared_portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
+          post "#{api_version}/portfolios/#{shared_portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
           shared_portfolio.reload
           expect(response).to have_http_status(204)
           expect(shared_portfolio.access_control_entries.count).to eq(0)
@@ -361,7 +360,7 @@ describe 'Portfolios API' do
           ace1
           ace2
           ace3
-          get "#{api}/portfolios/#{shared_portfolio.id}/share_info", :headers => default_headers
+          get "#{api_version}/portfolios/#{shared_portfolio.id}/share_info", :headers => default_headers
           expect(response).to have_http_status(200)
           expect(json.pluck('group_uuid')).to match_array(group_uuids)
         end
@@ -370,7 +369,7 @@ describe 'Portfolios API' do
 
     context "copy without specifying name" do
       before do
-        post "#{api}/portfolios/#{portfolio.id}/copy", :headers => default_headers
+        post "#{api_version}/portfolios/#{portfolio.id}/copy", :headers => default_headers
       end
 
       it "returns a 200" do
@@ -400,7 +399,7 @@ describe 'Portfolios API' do
       let(:params) { { :portfolio_name => "NameyMcNameFace" } }
 
       before do
-        post "#{api}/portfolios/#{portfolio.id}/copy", :params => params, :headers => default_headers
+        post "#{api_version}/portfolios/#{portfolio.id}/copy", :params => params, :headers => default_headers
       end
 
       it "sets the name properly" do
@@ -417,7 +416,7 @@ describe 'Portfolios API' do
 
     shared_examples_for "#tag_add_test" do
       it "add tags for the portfolio" do
-        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
         expect(json.first["tag"]).to eq Tag.new(params).to_tag_string
         expect(response).to have_http_status(201)
       end
@@ -427,18 +426,18 @@ describe 'Portfolios API' do
       let(:params) { {:name => tag_name, :namespace => tag_ns} }
 
       before do
-        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
       end
 
       it "returns the tags for the portfolio" do
-        get "#{api}/portfolios/#{portfolio.id}/tags", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio.id}/tags", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["name"]).to eq tag_name
       end
 
       it "allows filtering on the response" do
-        get "#{api}/portfolios/#{portfolio.id}/tags?filter[namespace][eq]=#{tag_ns}&filter[name][eq]=#{tag_name}", :headers => default_headers
+        get "#{api_version}/portfolios/#{portfolio.id}/tags?filter[namespace][eq]=#{tag_ns}&filter[name][eq]=#{tag_name}", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["name"]).to eq tag_name
@@ -465,8 +464,8 @@ describe 'Portfolios API' do
         let(:params) { {:name => tag_name} }
 
         before do
-          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
-          post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+          post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
+          post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
         end
 
         it "returns not modified" do
@@ -482,8 +481,8 @@ describe 'Portfolios API' do
       end
 
       it "removes the tag from the portfolio item" do
-        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
-        post "#{api}/portfolios/#{portfolio.id}/untag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio.id}/untag", :headers => default_headers, :params => params
         portfolio.reload
 
         expect(response).to have_http_status(204)

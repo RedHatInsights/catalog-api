@@ -31,6 +31,10 @@ module ServiceSpecHelper
     "http://whatever.com"
   end
 
+  def topological_url(partial_path, api_version = "v2.0")
+    "http://topology/api/topological-inventory/#{api_version}/#{partial_path}"
+  end
+
   def default_request
     { :headers => default_headers, :original_url => original_url }
   end

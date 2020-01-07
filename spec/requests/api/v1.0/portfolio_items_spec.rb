@@ -1,7 +1,7 @@
-describe "PortfolioItemRequests", :type => :request do
+describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
   around do |example|
     bypass_rbac do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost", :APPROVAL_URL => "http://localhost") { example.call }
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :APPROVAL_URL => "http://localhost") { example.call }
     end
   end
 
@@ -24,7 +24,7 @@ describe "PortfolioItemRequests", :type => :request do
 
   describe "GET /portfolio_items/:portfolio_item_id" do
     before do
-      get "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+      get "#{api_version}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
     end
 
     context 'the portfolio_item exists' do
@@ -52,7 +52,7 @@ describe "PortfolioItemRequests", :type => :request do
 
   describe "GET /portfolios/:portfolio_id/portfolio_items" do
     before do
-      get "#{api}/portfolios/#{portfolio_id}/portfolio_items", :headers => default_headers
+      get "#{api_version}/portfolios/#{portfolio_id}/portfolio_items", :headers => default_headers
     end
 
     context "when the portfolio exists" do
@@ -77,7 +77,7 @@ describe "PortfolioItemRequests", :type => :request do
   describe "POST /portfolios/:portfolio_id/portfolio_items" do
     let(:params) { {:portfolio_item_id => portfolio_item_id} }
     before do
-      post "#{api}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers
+      post "#{api_version}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers
     end
 
     it 'returns a 200' do
@@ -92,7 +92,7 @@ describe "PortfolioItemRequests", :type => :request do
   describe 'DELETE admin tagged /portfolio_items/:portfolio_item_id' do
     context 'when v1.0 :portfolio_item_id is valid' do
       before do
-        delete "#{api}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+        delete "#{api_version}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
       end
 
       it 'discards the record' do
@@ -110,7 +110,7 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   describe 'POST /portfolio_items/{portfolio_item_id}/undelete' do
-    let(:undelete) { post "#{api}/portfolio_items/#{portfolio_item_id}/undelete", :params => { :restore_key => restore_key }, :headers => default_headers }
+    let(:undelete) { post "#{api_version}/portfolio_items/#{portfolio_item_id}/undelete", :params => { :restore_key => restore_key }, :headers => default_headers }
     let(:restore_key) { Digest::SHA1.hexdigest(portfolio_item.discarded_at.to_s) }
 
     context "when restoring a portfolio_item that has been discarded" do
@@ -154,7 +154,7 @@ describe "PortfolioItemRequests", :type => :request do
     context "v1.0" do
       it "success" do
         portfolio_item
-        get "/#{api}/portfolio_items", :headers => default_headers
+        get "#{api_version}/portfolio_items", :headers => default_headers
         expect(response).to have_http_status(200)
         expect(JSON.parse(response.body)['data'].count).to eq(1)
       end
@@ -173,7 +173,7 @@ describe "PortfolioItemRequests", :type => :request do
     it "returns not found when topology doesn't have the service_offering_ref" do
       allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
 
-      post "#{api}/portfolio_items", :params => params, :headers => default_headers
+      post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
       expect(response).to have_http_status(:service_unavailable)
     end
 
@@ -181,7 +181,7 @@ describe "PortfolioItemRequests", :type => :request do
       allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
       allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
 
-      post "#{api}/portfolio_items", :params => params, :headers => default_headers
+      post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
       expect(response).to have_http_status(:ok)
       expect(json["id"]).to eq portfolio_item.id.to_s
       expect(json["owner"]).to eq portfolio_item.owner
@@ -189,10 +189,10 @@ describe "PortfolioItemRequests", :type => :request do
   end
 
   context "v1.0 provider control parameters" do
-    let(:url) { "#{api}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
+    let(:url) { "#{api_version}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     it "fetches plans" do
-      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/sources/568/container_projects")
+      stub_request(:get, topological_url("sources/568/container_projects"))
         .to_return(:status => 200, :body => {:data => [:name => 'fred']}.to_json, :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
@@ -202,7 +202,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     it "raises error" do
-      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/sources/568/container_projects")
+      stub_request(:get, topological_url("sources/568/container_projects"))
         .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
@@ -221,7 +221,7 @@ describe "PortfolioItemRequests", :type => :request do
         stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
           .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
 
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
+        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
       end
 
       it 'returns a 200' do
@@ -235,7 +235,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing in read-only attributes" do
       before do
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers
+        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers
       end
 
       it 'returns a 400' do
@@ -246,7 +246,7 @@ describe "PortfolioItemRequests", :type => :request do
 
     context "when passing partial attributes" do
       before do
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => partial_attributes, :headers => default_headers
+        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => partial_attributes, :headers => default_headers
       end
 
       it 'returns a 200' do
@@ -257,7 +257,7 @@ describe "PortfolioItemRequests", :type => :request do
     context "when passing in nullable attributes" do
       let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil } }
       before do
-        patch "#{api}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
+        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
       end
 
       it 'returns a 200' do
@@ -274,7 +274,7 @@ describe "PortfolioItemRequests", :type => :request do
 
   describe "copying portfolio items" do
     let(:copy_portfolio_item) do
-      post "#{api("1.0")}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
     end
 
     context "when copying into the same portfolio" do
@@ -334,7 +334,7 @@ describe "PortfolioItemRequests", :type => :request do
 
   describe '#next_name' do
     context "when querying the next name on a portfolio item" do
-      before { get "#{api}/portfolio_items/#{portfolio_item.id}/next_name", :headers => default_headers }
+      before { get "#{api_version}/portfolio_items/#{portfolio_item.id}/next_name", :headers => default_headers }
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -354,19 +354,19 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     before do
-      post "#{api}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
     end
 
     context "when requesting all of the tags for a portfolio_item" do
       it "returns the tags for the portfolio item" do
-        get "#{api}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers
+        get "#{api_version}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["name"]).to eq name
       end
 
       it "allows filtering on the response" do
-        get "#{api}/portfolio_items/#{portfolio_item.id}/tags?filter[namespace][eq]=#{namespace}&filter[name][eq]=#{name}", :headers => default_headers
+        get "#{api_version}/portfolio_items/#{portfolio_item.id}/tags?filter[namespace][eq]=#{namespace}&filter[name][eq]=#{name}", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["name"]).to eq name
@@ -380,7 +380,7 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     it "add tags for the portfolio item" do
-      post "#{api}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
 
       expect(response).to have_http_status(201)
       expect(json.first['tag']).to eq Tag.new(:name => name, :namespace => "default").to_tag_string
@@ -388,8 +388,8 @@ describe "PortfolioItemRequests", :type => :request do
 
     context 'double add tags' do
       before do
-        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
-        post "#{api}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
       end
 
       it "returns not modified" do
@@ -405,8 +405,8 @@ describe "PortfolioItemRequests", :type => :request do
     end
 
     it "removes the tag from the portfolio item" do
-      post "#{api}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
-      post "#{api}/portfolio_items/#{portfolio_item.id}/untag", :headers => default_headers, :params => params
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/untag", :headers => default_headers, :params => params
       portfolio_item.reload
 
       expect(response).to have_http_status(204)

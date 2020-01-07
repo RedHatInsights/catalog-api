@@ -6,7 +6,7 @@ describe Tags::Topology::RemoteInventory, :type => :service do
   end
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://localhost") do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
       example.call
     end
   end
@@ -22,12 +22,12 @@ describe Tags::Topology::RemoteInventory, :type => :service do
     let(:tag4) { TopologicalInventoryApiClient::Tag.new(:tag => "/tag4namespace/tag4=tag4value") }
 
     before do
-      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_inventories/1/tags").to_return(
+      stub_request(:get, topological_url("service_inventories/1/tags")).to_return(
         :status  => 200,
         :body    => tags_collection1.to_json,
         :headers => default_headers
       )
-      stub_request(:get, "http://localhost/api/topological-inventory/v2.0/service_inventories/2/tags").to_return(
+      stub_request(:get, topological_url("service_inventories/2/tags")).to_return(
         :status  => 200,
         :body    => tags_collection2.to_json,
         :headers => default_headers

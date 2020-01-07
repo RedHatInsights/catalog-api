@@ -4,6 +4,7 @@ if ENV['CI']
 end
 
 ENV['RAILS_ENV'] ||= 'test'
+ENV['APP_NAME'] ||= 'catalog'
 require File.expand_path('../../config/environment', __FILE__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
@@ -26,6 +27,11 @@ RSpec.configure do |config|
   config.include UserHeaderSpecHelper
 
   config.include RequestSpecHelper, :type => :request
+
+  # Version tracking for specs
+  config.include V1Helper, :type => :v1
+  config.include V1InternalHelper, :type => :v1_internal
+  # ------------------------ #
 
   config.include ServiceSpecHelper
 
