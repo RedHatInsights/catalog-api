@@ -2451,15 +2451,6 @@
         "description": "Returns an array of Portfolio objects",
         "parameters": [
           {
-            "$ref": "#/components/parameters/QueryLimit"
-          },
-          {
-            "$ref": "#/components/parameters/QueryOffset"
-          },
-          {
-            "$ref": "#/components/parameters/QueryFilter"
-          },
-          {
             "$ref": "#/components/parameters/ID"
           }
         ],
@@ -2495,15 +2486,6 @@
         "operationId": "listTagPortfolioItems",
         "description": "Returns an array of Portfolio Item objects",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/QueryLimit"
-          },
-          {
-            "$ref": "#/components/parameters/QueryOffset"
-          },
-          {
-            "$ref": "#/components/parameters/QueryFilter"
-          },
           {
             "$ref": "#/components/parameters/ID"
           }
@@ -3808,18 +3790,8 @@
             "readOnly": true,
             "type": "string"
           },
-          "name": {
-            "example": "architecture",
-            "readOnly": true,
-            "type": "string"
-          },
-          "namespace": {
-            "example": "openshift",
-            "readOnly": true,
-            "type": "string"
-          },
-          "value": {
-            "readOnly": true,
+          "tag": {
+            "example": "/namespace/architecture=x86_64",
             "type": "string"
           }
         },
