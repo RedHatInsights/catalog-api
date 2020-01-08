@@ -17,9 +17,10 @@ module Catalog
       relevant_service_plans.each do |plan|
         @reference = plan.portfolio_item.service_offering_ref
         @portfolio_item_id = plan.portfolio_item.id
+        @modified = plan.modified.present?
         @service_plan = OpenStruct.new(
           :id                 => plan.id,
-          :create_json_schema => plan.send(@opts[:schema] || "modified"),
+          :create_json_schema => relevant_schema(plan),
           :name               => plan.name,
           :description        => plan.description
         )
@@ -38,6 +39,17 @@ module Catalog
 
     def relevant_service_plans
       @opts[:collection] ? @service_plans : [@service_plans.first]
+    end
+
+    def relevant_schema(plan)
+      case @opts[:schema]
+      when "base"
+        plan.base
+      when "modified"
+        plan.modified
+      else
+        plan.send(:modified) || plan.send(:base)
+      end
     end
   end
 end

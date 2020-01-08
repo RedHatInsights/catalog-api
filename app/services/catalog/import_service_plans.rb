@@ -14,7 +14,6 @@ module Catalog
           :name              => schema["name"],
           :description       => schema["description"],
           :base              => schema["create_json_schema"],
-          :modified          => schema["create_json_schema"],
           :portfolio_item_id => @portfolio_item.id
         )
       end
