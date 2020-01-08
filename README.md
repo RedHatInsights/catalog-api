@@ -1,9 +1,9 @@
 # Catalog API
 
-[![Build Status](https://api.travis-ci.org/ManageIQ/catalog-api.svg)](https://travis-ci.org/ManageIQ/catalog-api)
-[![Maintainability](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/maintainability)](https://codeclimate.com/github/ManageIQ/catalog-api/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/test_coverage)](https://codeclimate.com/github/ManageIQ/catalog-api/test_coverage)
-[![Security](https://hakiri.io/github/ManageIQ/catalog-api/master.svg)](https://hakiri.io/github/ManageIQ/catalog-api/master)
+[![Build Status](https://api.travis-ci.org/RedHatInsights/catalog-api.svg)](https://travis-ci.org/RedHatInsights/catalog-api)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/maintainability)](https://codeclimate.com/github/RedHatInsights/catalog-api/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/test_coverage)](https://codeclimate.com/github/RedHatInsights/catalog-api/test_coverage)
+[![Security](https://hakiri.io/github/RedHatInsights/catalog-api/master.svg)](https://hakiri.io/github/RedHatInsights/catalog-api/master)
 
 ## OpenAPI for Rails 5
 
