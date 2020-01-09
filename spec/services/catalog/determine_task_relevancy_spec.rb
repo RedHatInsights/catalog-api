@@ -83,9 +83,27 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       context "when the task context has a key path of [:applied_inventories]" do
         let(:payload_context) { {"applied_inventories" => ["1", "2"]} }
         let(:create_approval_request) { instance_double("Catalog::CreateApprovalRequest") }
+        let(:task) do
+          TopologicalInventoryApiClient::Task.new(
+            :id      => "123",
+            :state   => "completed",
+            :status  => "ok",
+            :context => {"applied_inventories" => ["1", "2"]}
+          )
+        end
 
         before do
-          allow(Catalog::CreateApprovalRequest).to receive(:new).and_return(create_approval_request)
+          allow(Catalog::CreateApprovalRequest).to receive(:new).with(task).and_return(create_approval_request)
+        end
+
+        it "creates a task with id, state, status and context" do
+          expect(TopologicalInventoryApiClient::Task).to receive(:new).with(
+            :id      => "123",
+            :state   => "completed",
+            :status  => "ok",
+            :context => {"applied_inventories" => ["1", "2"]}
+          ).and_return(task)
+          subject.process
         end
 
         it "delegates to creating the approval request" do
