@@ -7,6 +7,8 @@ module Catalog
         @service_plans = ServicePlan.where(:id => opts[:service_plan_id])
       elsif opts.key?(:portfolio_item_id)
         @service_plans = ServicePlan.where(:portfolio_item_id => opts[:portfolio_item_id])
+      elsif opts.key?(:service_plans)
+        @service_plans = opts[:service_plans]
       end
 
       @opts = opts

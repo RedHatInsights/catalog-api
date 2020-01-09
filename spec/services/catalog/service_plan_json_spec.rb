@@ -20,6 +20,14 @@ describe Catalog::ServicePlanJson, :type => :service do
       end
     end
 
+    context "when rendering a service plan from a list of service plans" do
+      let(:params) { {:service_plans => [service_plan]} }
+
+      it "renders the specified service_plan schema" do
+        expect(subject["create_json_schema"]).to eq service_plan.modified
+      end
+    end
+
     context "when specifying the collection flag" do
       let(:params) { {:service_plan_id => service_plan.id, :collection => true} }
 
