@@ -7,6 +7,7 @@ module Catalog
     def process
       Insights::API::Common::Request.with_request(order_item_context) do
         @task = TopologicalInventoryApiClient::Task.new(
+          :id      => @topic.payload["task_id"],
           :state   => @topic.payload["state"],
           :status  => @topic.payload["status"],
           :context => @topic.payload["context"].try(&:with_indifferent_access)
