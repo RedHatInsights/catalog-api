@@ -18,7 +18,7 @@ module Internal
       def notify_task
         Rails.logger.info("#notify_task incoming parameters: #{params}")
         task_id = params.require(:task_id)
-        payload = params.require(:payload)
+        payload = params.require(:payload).permit!.to_h
         message = params.require(:message)
 
         Rails.logger.info("Notification about task id: #{task_id}, payload: #{payload}, message: #{message}")
