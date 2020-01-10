@@ -362,14 +362,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
         get "#{api_version}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["name"]).to eq name
-      end
-
-      it "allows filtering on the response" do
-        get "#{api_version}/portfolio_items/#{portfolio_item.id}/tags?filter[namespace][eq]=#{namespace}&filter[name][eq]=#{name}", :headers => default_headers
-
-        expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["name"]).to eq name
+        expect(json["data"].first["tag"]).to eq Tag.new(:name => name, :namespace => namespace).to_tag_string
       end
     end
   end
