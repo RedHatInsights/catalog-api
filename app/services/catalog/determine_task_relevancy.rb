@@ -17,6 +17,9 @@ module Catalog
       end
 
       self
+    rescue StandardError => exception
+      add_update_message(:error) unless @task.nil?
+      Rails.logger.error(exception.inspect)
     end
 
     private
