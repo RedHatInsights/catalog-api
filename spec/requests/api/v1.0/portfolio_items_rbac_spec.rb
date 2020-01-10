@@ -42,7 +42,7 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
   context "when user does not have RBAC update portfolios access" do
     before do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolio_items', 'read').and_return(access_obj)
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
 
@@ -60,12 +60,14 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
     let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => false) }
     before do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolio_items', 'read').and_return(access_obj)
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
 
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(portfolio_access_obj)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(portfolio_access_obj)
       allow(portfolio_access_obj).to receive(:process).and_return(portfolio_access_obj)
+      create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'update', :aceable => portfolio)
+      create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio)
     end
 
     it 'returns a 200' do

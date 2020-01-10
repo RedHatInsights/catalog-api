@@ -3,12 +3,20 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1::Mixins::IndexMixin
 
-      before_action :create_access_check, :only => %i[create]
-      before_action :update_access_check, :only => %i[update]
-      before_action :delete_access_check, :only => %i[destroy]
+      before_action :create_access_check, :only => %i[create] do
+        # TODO: Busted need the caller to pass in the portfolio id
+        # parent_check(:portfolio, 'update')
+        permission_check('create', Portfolio)
+      end
+      before_action :update_access_check, :only => %i[update] do
+        parent_check(:portfolio, 'update')
+      end
+      before_action :delete_access_check, :only => %i[destroy] do
+        parent_check(:portfolio, 'delete')
+      end
 
       before_action :only => [:copy] do
-        resource_check('read', params.require(:portfolio_item_id))
+        parent_check(:portfolio, 'read', params.require(:portfolio_item_id))
         permission_check('create', Portfolio)
         permission_check('update', Portfolio)
       end

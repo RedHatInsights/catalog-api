@@ -21,6 +21,12 @@ module Api
           resource_check('delete')
         end
 
+        def parent_check(parent_relation, verb, id = params[:id], klass = controller_name.classify.constantize)
+          obj = klass.find(id)
+          parent_obj = obj.send(parent_relation)
+          resource_check(verb, parent_obj.id.to_s, parent_obj.class)
+        end
+
         def resource_check(verb, id = params[:id], klass = controller_name.classify.constantize)
           return unless Insights::API::Common::RBAC::Access.enabled?
           return if catalog_administrator?
@@ -48,7 +54,7 @@ module Api
         end
 
         def access_id_list(verb, klass)
-          access_obj = Insights::API::Common::RBAC::Access.new(controller_name.classify.constantize.table_name, verb).process
+          access_obj = Insights::API::Common::RBAC::Access.new(klass.table_name, verb).process
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" unless access_obj.accessible?
 
           ace_ids(verb, klass)
