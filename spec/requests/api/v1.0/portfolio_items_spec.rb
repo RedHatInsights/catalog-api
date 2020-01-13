@@ -218,7 +218,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
     context "when passing in valid attributes" do
       before do
-        stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
+        stub_request(:get, approval_url("workflows/PatchWorkflowRef"))
           .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
 
         patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
