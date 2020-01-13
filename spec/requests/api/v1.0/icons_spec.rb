@@ -185,8 +185,19 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
     end
 
     context "when the icon does not exist" do
+      before do
+        portfolio_item.icon.discard
+        portfolio.icon.discard
+      end
+
       it "/portfolio_items/{id}/icon returns no content" do
-        get "#{api_version}/portfolio_items/0/icon", :headers => default_headers
+        get "#{api_version}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
+
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it "/portfolios/{id}/icon returns no content" do
+        get "#{api_version}/portfolios/#{portfolio.id}/icon", :headers => default_headers
 
         expect(response).to have_http_status(:no_content)
       end
