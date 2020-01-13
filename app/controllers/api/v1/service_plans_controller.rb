@@ -29,7 +29,7 @@ module Api
       end
 
       def modified
-        plan = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:service_plan_id)).process.json
+        plan = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:service_plan_id), :schema => "modified").process.json
 
         if plan["create_json_schema"]
           render :json => plan

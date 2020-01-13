@@ -3506,6 +3506,12 @@
             "title": "ID",
             "description": "The unique identifier for this service plan.",
             "readOnly": true
+          },
+          "modified": {
+            "type": "boolean",
+            "title": "Modified",
+            "description": "Whether or not the ServicePlan has a modified create_json_schema property",
+            "readOnly": true
           }
         }
       },

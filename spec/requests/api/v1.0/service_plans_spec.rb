@@ -55,6 +55,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
       it "returns the newly created ServicePlan in an array" do
         expect(json.first["create_json_schema"]).to eq topo_service_plan.create_json_schema
       end
+
+      it "shows modified as false" do
+        expect(json.first["modified"]).to be_falsey
+      end
     end
   end
 
@@ -69,7 +73,7 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
 
     it "returns the specified service_plan" do
       expect(json["id"]).to eq service_plan.id.to_s
-      expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name]
+      expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name modified]
     end
   end
 
@@ -127,6 +131,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
       it "returns the modified schema from the service_plan" do
         expect(json["create_json_schema"]["schema"]).to eq service_plan.modified["schema"]
         expect(json["create_json_schema"]["schema"]).not_to eq service_plan.base["schema"]
+      end
+
+      it "shows modified as true" do
+        expect(json["modified"]).to be_truthy
       end
     end
 
