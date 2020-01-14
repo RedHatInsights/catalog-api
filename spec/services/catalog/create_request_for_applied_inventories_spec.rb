@@ -4,7 +4,7 @@ describe Catalog::CreateRequestForAppliedInventories, :type => :service do
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
       example.call
     end
   end

@@ -5,7 +5,7 @@ describe ServicePlan do
   let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :BYPASS_RBAC => 'true') do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :BYPASS_RBAC => 'true') do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end

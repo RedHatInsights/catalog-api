@@ -3,7 +3,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
   let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123") }
 
   around do |example|
-    with_modified_env(:APPROVAL_URL => "http://approval") do
+    with_modified_env(:APPROVAL_URL => "http://approval.example.com") do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end

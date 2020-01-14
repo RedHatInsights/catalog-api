@@ -7,7 +7,7 @@ describe Catalog::CancelOrder, :type => [:service, :current_forwardable] do
 
   describe "#process" do
     around do |example|
-      with_modified_env(:APPROVAL_URL => "http://localhost") do
+      with_modified_env(:APPROVAL_URL => "http://approval.example.com") do
         example.call
       end
     end
@@ -42,7 +42,7 @@ describe Catalog::CancelOrder, :type => [:service, :current_forwardable] do
 
     describe "when the state of the order is anything else" do
       let(:state) { "Pending" }
-      let(:cancel_order_url) { "http://localhost/api/approval/v1.0/requests/#{approval_request.approval_request_ref}/actions" }
+      let(:cancel_order_url) { approval_url("requests/#{approval_request.approval_request_ref}/actions") }
 
       before do
         stub_request(:post, cancel_order_url).with(:body => {"operation" => "cancel"}).to_return(api_response)
