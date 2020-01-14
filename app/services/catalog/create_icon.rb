@@ -23,9 +23,6 @@ module Catalog
       @destination.update!(:icon_id => @icon.id)
 
       self
-    rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error("Error creating Icon object for #{@destination.class} #{@destination.id}: #{e.message}")
-      raise
     end
   end
 end
