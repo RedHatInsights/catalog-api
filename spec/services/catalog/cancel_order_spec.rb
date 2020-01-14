@@ -1,4 +1,4 @@
-describe Catalog::CancelOrder do
+describe Catalog::CancelOrder, :type => [:service, :current_forwardable] do
   let(:order) { create(:order) }
   let(:portfolio_item) { create(:portfolio_item) }
   let(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
@@ -14,7 +14,6 @@ describe Catalog::CancelOrder do
 
     before do
       order.update(:state => state)
-      allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
     end
 
     describe "when the state of the order is Completed" do

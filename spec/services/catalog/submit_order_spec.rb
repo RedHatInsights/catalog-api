@@ -1,4 +1,4 @@
-describe Catalog::SubmitOrder do
+describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
@@ -34,18 +34,10 @@ describe Catalog::SubmitOrder do
   let(:topo_service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
   let(:service_plan_response) { topo_service_plan_response }
 
-  around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :SOURCES_URL => "http://localhost") do
-      example.call
-    end
-  end
-
   before do
     allow(Catalog::ValidateSource).to receive(:new).with(portfolio_item.service_offering_source_ref).and_return(validater)
     allow(validater).to receive(:process).and_return(validater)
     allow(validater).to receive(:valid).and_return(validity)
-
-    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
 
     stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)

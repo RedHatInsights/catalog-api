@@ -1,7 +1,7 @@
-describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
+describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   around do |example|
     bypass_rbac do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :APPROVAL_URL => "http://localhost") { example.call }
+      with_modified_env(:APPROVAL_URL => "http://localhost") { example.call }
     end
   end
 

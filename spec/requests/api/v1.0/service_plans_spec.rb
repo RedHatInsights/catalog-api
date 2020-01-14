@@ -1,4 +1,4 @@
-describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
+describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
   let(:service_plan) { create(:service_plan, :base => JSON.parse(modified_schema)) }
   let(:portfolio_item) { service_plan.portfolio_item }
   let(:service_offering_ref) { portfolio_item.service_offering_ref }
@@ -7,7 +7,7 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
   let(:modified_schema) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :BYPASS_RBAC => 'true') do
+    with_modified_env(:BYPASS_RBAC => 'true') do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end

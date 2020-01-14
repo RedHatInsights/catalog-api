@@ -1,16 +1,6 @@
-describe Catalog::OrderItemSanitizedParameters, :type => :service do
+describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :current_forwardable] do
   let(:subject) { described_class.new(params) }
   let(:params) { ActionController::Parameters.new('order_item_id' => order_item.id) }
-
-  before do
-    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-  end
-
-  around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
-      example.call
-    end
-  end
 
   describe "#process" do
     let(:order_item) { create(:order_item, :service_plan_ref => service_plan_ref) }
@@ -83,7 +73,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => :service do
 
       it "does not call the api" do
         subject.process
-        expect(a_request(:any, /localhost/)).not_to have_been_made
+        expect(a_request(:any, /topology/)).not_to have_been_made
       end
 
       it "returns an empty hash" do
