@@ -67,13 +67,23 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
       get "#{api_version}/service_plans/#{service_plan.id}", :headers => default_headers
     end
 
-    it "returns a 200" do
-      expect(response).to have_http_status :ok
+    context "when the service plan base is different than Topology's base" do
+      let(:service_plan) { create(:service_plan) }
+
+      it "returns a 400" do
+        expect(response).to have_http_status(400)
+      end
     end
 
-    it "returns the specified service_plan" do
-      expect(json["id"]).to eq service_plan.id.to_s
-      expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name modified]
+    context "when the service plan has not changed" do
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the specified service_plan" do
+        expect(json["id"]).to eq service_plan.id.to_s
+        expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name modified]
+      end
     end
   end
 

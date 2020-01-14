@@ -19,7 +19,8 @@ module Api
       end
 
       def show
-        svc = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:id))
+        service_plan = Catalog::ServicePlanCompare.new(params.require(:id)).process.service_plan
+        svc = Catalog::ServicePlanJson.new(:service_plans => [service_plan])
         render :json => svc.process.json
       end
 
