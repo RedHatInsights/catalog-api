@@ -37,19 +37,6 @@ describe Catalog::AddToOrder, :type => :service do
     end
   end
 
-  context "when the parameters are invalid" do
-    let(:invalid_params) do
-      ActionController::Parameters.new('order_id'          => order.id,
-                                       'portfolio_item_id' => portfolio_item.id,
-                                       'count'             => 1)
-    end
-
-    it "raises an ActiveRecord::RecordInvalid exception and logs a message" do
-      expect(Rails.logger).to receive(:error).with(/Error creating order item for order_id #{order_id}/)
-      expect { described_class.new(invalid_params).process }.to raise_error(ActiveRecord::RecordInvalid)
-    end
-  end
-
   context "invalid order" do
     let(:order_id) { "999" }
     it "invalid order" do
