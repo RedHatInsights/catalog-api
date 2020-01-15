@@ -3,7 +3,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
   let(:params) { ActionController::Parameters.new('order_item_id' => order_item.id) }
 
   describe "#process" do
-    let(:order_item) { create(:order_item, :service_plan_ref => service_plan_ref) }
+    let(:order_item) { create(:order_item, :service_plan_ref => service_plan_ref, :service_parameters => {"name" => "fred", "Totally not a pass" => "s3cret"}) }
 
     context "when there is a valid service_plan_ref" do
       let(:service_plan_ref) { "777" }
@@ -43,14 +43,23 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
             :component    => "textarea-field",
             :helperText   => "Don't look.",
             :initialValue => ""
+          }, {
+            :name         => "name",
+            :label        => "field 1",
+            :component    => "textarea-field",
+            :helperText   => "That's not my name.",
+            :initialValue => ""
           }]
         end
+        let(:result) { subject.process.sanitized_parameters.values }
 
         context "when the api call is successful" do
           it "returns 3 masked values" do
-            result = subject.process.sanitized_parameters
+            expect(result.count { |v| v == described_class::MASKED_VALUE }).to eq 3
+          end
 
-            expect(result.values.select { |v| v == described_class::MASKED_VALUE }.count).to eq(3)
+          it "leaves one value alone" do
+            expect(result.count { |v| v != described_class::MASKED_VALUE }).to eq 1
           end
         end
 
@@ -62,6 +71,14 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
 
           it "handles the exception and reraises a StandardError" do
             expect { subject.process }.to raise_error(StandardError)
+          end
+        end
+
+        context "when the do_not_mask_values parameter is set" do
+          let(:params) { ActionController::Parameters.new(:order_item => order_item, :do_not_mask_values => true) }
+
+          it "returns only what is in the parameters" do
+            expect(result).to match_array %w[fred s3cret]
           end
         end
       end

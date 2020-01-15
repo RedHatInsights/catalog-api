@@ -36,7 +36,7 @@ module Catalog
 
     def parameters(item)
       TopologicalInventoryApiClient::OrderParametersServiceOffering.new.tap do |obj|
-        obj.service_parameters = item.service_parameters
+        obj.service_parameters = sanitized_parameters(item)
         obj.provider_control_parameters = item.provider_control_parameters
         obj.service_plan_id = item.service_plan_ref
       end
@@ -48,6 +48,13 @@ module Catalog
       item.order_request_sent_at = Time.now.utc
       item.update_message('info', 'Ordered')
       item.save!
+    end
+
+    def sanitized_parameters(item)
+      Catalog::OrderItemSanitizedParameters.new(
+        :order_item         => item,
+        :do_not_mask_values => true
+      ).process.sanitized_parameters
     end
   end
 end
