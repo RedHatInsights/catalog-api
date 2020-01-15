@@ -54,18 +54,5 @@ describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_fo
         expect(portfolio_item.service_plans.count).to eq 2
       end
     end
-
-    context "if create somehow fails" do
-      let(:data) { [] }
-
-      before do
-        allow(ServicePlan).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
-      end
-
-      it "raises an error and logs a message" do
-        expect(Rails.logger).to receive(:error).with(/Error creating service plan/)
-        expect { subject.process }.to raise_error(ActiveRecord::RecordInvalid)
-      end
-    end
   end
 end
