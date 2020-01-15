@@ -12,10 +12,10 @@ module Catalog
     def process
       validate_groups
       @group_uuids.each do |group_uuid|
+        ace = AccessControlEntry.find_or_create_by(:group_uuid => group_uuid,
+                                                   :aceable    => @object)
         @permissions.each do |permission|
-          AccessControlEntry.find_or_create_by(:group_uuid => group_uuid,
-                                               :permission => permission,
-                                               :aceable    => @object)
+          ace.permissions << Permission.find_by(:name => permission)
         end
       end
       self

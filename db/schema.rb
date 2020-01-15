@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_06_182459) do
+ActiveRecord::Schema.define(version: 2020_01_14_164456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,13 +18,18 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
   create_table "access_control_entries", force: :cascade do |t|
     t.string "group_uuid"
     t.bigint "tenant_id"
-    t.string "permission"
     t.string "aceable_type"
     t.bigint "aceable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["aceable_type", "aceable_id"], name: "index_access_control_entries_on_aceable_type_and_aceable_id"
-    t.index ["group_uuid", "aceable_type", "permission"], name: "index_on_group_uuid_aceable_type_permission"
+    t.index ["group_uuid", "aceable_type"], name: "index_on_group_uuid_aceable_type"
+  end
+
+  create_table "access_control_entries_permissions", id: false, force: :cascade do |t|
+    t.bigint "access_control_entry_id", null: false
+    t.bigint "permission_id", null: false
+    t.index ["access_control_entry_id", "permission_id"], name: "index_ace_permissions_on_ace_id_and_permission_id"
   end
 
   create_table "approval_requests", force: :cascade do |t|
@@ -32,8 +37,8 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.integer "order_item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "reason"
     t.integer "state", default: 0
+    t.string "reason"
     t.bigint "tenant_id"
     t.datetime "request_completed_at"
     t.index ["tenant_id"], name: "index_approval_requests_on_tenant_id"
@@ -78,8 +83,8 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.bigint "portfolio_item_id"
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
-    t.string "owner"
     t.jsonb "context"
+    t.string "owner"
     t.string "external_url"
     t.string "insights_request_id"
     t.datetime "discarded_at"
@@ -99,6 +104,12 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.datetime "discarded_at"
     t.index ["discarded_at"], name: "index_orders_on_discarded_at"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
+  end
+
+  create_table "permissions", force: :cascade do |t|
+    t.integer "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "portfolio_item_tags", id: :serial, force: :cascade do |t|

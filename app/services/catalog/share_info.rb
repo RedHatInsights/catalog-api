@@ -11,7 +11,7 @@ module Catalog
     def process
       group_permissions = {}
       @object.access_control_entries.each do |ace|
-        group_permissions[ace.group_uuid] = group_permissions.fetch(ace.group_uuid, []) << ace.permission
+        group_permissions[ace.group_uuid] = ace.permissions.map(&:name)
       end
 
       @result = group_permissions.each_with_object([]) do |(uuid, permissions), memo|

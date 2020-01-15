@@ -97,8 +97,8 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
     context "when user has RBAC update portfolios access" do
       let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => true) }
       before do
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio1)
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'update', :aceable => portfolio1)
+        create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
+        create(:access_control_entry, :has_update_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
