@@ -11,6 +11,8 @@ module Catalog
         @service_plans = opts[:service_plans]
       end
 
+      raise ActiveRecord::RecordNotFound, "Service Plan not found" if @service_plans.empty?
+
       @opts = opts
       @json = []
     end
