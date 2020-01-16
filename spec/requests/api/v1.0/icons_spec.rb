@@ -111,7 +111,7 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
     context "when not passing in a portfolio or portfolio_item id" do
       let(:params) do
-        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png")))}
+        {:content => form_upload_test_image("miq_logo.png")}
       end
 
       it "throws a 400" do
@@ -121,20 +121,24 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
     context "when uploading a png" do
       let(:params) do
-        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png")))}
+        {:content           => form_upload_test_image("miq_logo.png"),
+         :portfolio_item_id => portfolio_item.id}
       end
 
       it "makes a new image and icon" do
+        expect(response).to have_http_status 200
         expect(json["image_id"]).to_not eq image.id
       end
     end
 
     context "when uploading a jpg" do
       let(:params) do
-        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg")))}
+        {:content           => form_upload_test_image("miq_logo.jpg"),
+         :portfolio_item_id => portfolio_item.id}
       end
 
       it "makes a new image and icon" do
+        expect(response).to have_http_status 200
         expect(json["image_id"]).to_not eq image.id
       end
     end
