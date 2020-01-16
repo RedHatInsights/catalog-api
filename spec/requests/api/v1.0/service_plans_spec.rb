@@ -115,16 +115,27 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
   end
 
   describe "#base" do
-    before do
-      get "#{api_version}/service_plans/#{service_plan.id}/base", :headers => default_headers
+    context "when the service plan exists" do
+      before do
+        get "#{api_version}/service_plans/#{service_plan.id}/base", :headers => default_headers
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the base schema from the service_plan" do
+        expect(json["create_json_schema"]["schema"]).to eq service_plan.base["schema"]
+      end
     end
 
-    it "returns a 200" do
-      expect(response).to have_http_status :ok
-    end
+    context "when the service plan does not exist" do
+      it "returns a 404" do
+        service_plan.destroy
+        get "#{api_version}/service_plans/#{service_plan.id}/base", :headers => default_headers
 
-    it "returns the base schema from the service_plan" do
-      expect(json["create_json_schema"]["schema"]).to eq service_plan.base["schema"]
+        expect(response).to have_http_status :not_found
+      end
     end
   end
 
@@ -157,6 +168,15 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
         get "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers
 
         expect(response).to have_http_status :no_content
+      end
+    end
+
+    context "when the service plan does not exist" do
+      it "returns a 404" do
+        service_plan.destroy
+        get "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers
+
+        expect(response).to have_http_status :not_found
       end
     end
   end
