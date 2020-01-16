@@ -679,7 +679,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/TagItem"
+                    "$ref": "#/components/schemas/Tag"
                   }
                 }
               }
@@ -704,7 +704,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -746,7 +746,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -1238,7 +1238,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/TagItem"
+                    "$ref": "#/components/schemas/Tag"
                   }
                 }
               }
@@ -1263,7 +1263,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -1305,7 +1305,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -3827,35 +3827,13 @@
       "Tag": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "created_at": {
-            "format": "date-time",
-            "readOnly": true,
-            "type": "string"
-          },
-          "description": {
-            "example": "Instruction set architecture",
-            "readOnly": true,
-            "type": "string"
-          },
           "tag": {
             "example": "/namespace/architecture=x86_64",
-            "type": "string"
+            "type": "string",
+            "pattern": "\\/.*\\/.+(=.+|[^=]$)"
           }
         },
         "additionalProperties": false
-      },
-      "TagItem": {
-        "type": "object",
-        "properties": {
-          "tag": {
-            "example": "/namespace/architecture=x86_64",
-            "type": "string"
-          }
-        }
       },
       "TagsCollection": {
         "type": "object",
