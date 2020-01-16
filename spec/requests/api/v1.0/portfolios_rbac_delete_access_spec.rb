@@ -20,7 +20,7 @@ describe 'Portfolios Delete Access RBAC API', :type => [:request, :v1] do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', permission).and_return(access_obj)
         allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
         allow(access_obj).to receive(:process).and_return(access_obj)
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
+        create(:access_control_entry, :has_delete_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
       end
 
       it 'only allows deleting a specific portfolio' do

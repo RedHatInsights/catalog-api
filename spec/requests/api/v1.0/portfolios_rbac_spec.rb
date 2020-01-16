@@ -38,7 +38,7 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
     end
 
     it 'returns status code 200' do
-      create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio1)
+      create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(access_obj).to receive(:process).and_return(access_obj)
       get "#{api_version}/portfolios", :headers => default_headers
@@ -59,8 +59,8 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
     context "with filtering" do
       before do
         permission = 'read'
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio2)
+        create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
+        create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio2)
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', permission).and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
         get "#{api_version}/portfolios?filter[name]=#{portfolio1.name}", :headers => default_headers
@@ -133,22 +133,21 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
   end
 
   context "when the permissions array is proper" do
+    let(:permissions) { ['update'] }
     describe "#share" do
       it "goes through validation" do
-        permissions = ["update"]
+        has_permissions(permissions)
         post "#{api_version}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => [group1.uuid]
         }
-
         expect(response).to have_http_status(:no_content)
       end
     end
 
     describe "#unshare" do
       it "goes through validation" do
-        permissions = ["update"]
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'update', :aceable => portfolio1)
+        create(:access_control_entry, :has_update_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
         post "#{api_version}/portfolios/#{portfolio1.id}/unshare", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => [group1.uuid]

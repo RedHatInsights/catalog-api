@@ -13,6 +13,7 @@ describe Catalog::ShareResource, :type => :service do
   end
 
   before do
+    has_permissions(permissions)
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([group1])
@@ -23,6 +24,6 @@ describe Catalog::ShareResource, :type => :service do
   it "#process" do
     subject.process
     portfolio.reload
-    expect(portfolio.access_control_entries.count).to eq(2)
+    expect(portfolio.access_control_entries.first.permissions.count).to eq(2)
   end
 end

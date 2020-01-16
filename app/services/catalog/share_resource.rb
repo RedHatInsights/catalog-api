@@ -14,9 +14,7 @@ module Catalog
       @group_uuids.each do |group_uuid|
         ace = AccessControlEntry.find_or_create_by(:group_uuid => group_uuid,
                                                    :aceable    => @object)
-        @permissions.each do |permission|
-          ace.permissions << Permission.find_by(:name => permission)
-        end
+        ace.add_permissions(@permissions)
       end
       self
     end

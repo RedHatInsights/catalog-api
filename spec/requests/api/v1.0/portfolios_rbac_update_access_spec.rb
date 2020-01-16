@@ -45,7 +45,7 @@ describe "v1.0 - Portfolios Write Access RBAC API", :type => [:request, :v1] do
     context "user has update permission" do
       before do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => permission, :aceable => portfolio1)
+        create(:access_control_entry, :has_update_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
       end
 
       it 'only allows updating a specific portfolio' do
@@ -62,7 +62,7 @@ describe "v1.0 - Portfolios Write Access RBAC API", :type => [:request, :v1] do
     context "user has read only permission for a specific portfolio" do
       before do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
-        create(:access_control_entry, :group_uuid => group1.uuid, :permission => 'read', :aceable => portfolio1)
+        create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
       end
 
       it 'fails updating a portfolio' do

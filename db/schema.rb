@@ -37,8 +37,8 @@ ActiveRecord::Schema.define(version: 2020_01_14_164456) do
     t.integer "order_item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "state", default: 0
     t.string "reason"
+    t.integer "state", default: 0
     t.bigint "tenant_id"
     t.datetime "request_completed_at"
     t.index ["tenant_id"], name: "index_approval_requests_on_tenant_id"
@@ -83,8 +83,8 @@ ActiveRecord::Schema.define(version: 2020_01_14_164456) do
     t.bigint "portfolio_item_id"
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
-    t.jsonb "context"
     t.string "owner"
+    t.jsonb "context"
     t.string "external_url"
     t.string "insights_request_id"
     t.datetime "discarded_at"
@@ -138,6 +138,7 @@ ActiveRecord::Schema.define(version: 2020_01_14_164456) do
     t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
+    t.string "service_offering_icon_ref"
     t.datetime "discarded_at"
     t.string "owner"
     t.string "service_offering_type"

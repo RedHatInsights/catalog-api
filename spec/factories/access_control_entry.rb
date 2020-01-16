@@ -11,5 +11,13 @@ FactoryBot.define do
     trait :has_read_permission do
       permissions { [Permission.create!(:name => 'read')] }
     end
+
+    trait :has_delete_permission do
+      permissions { [Permission.create!(:name => 'delete')] }
+    end
+
+    trait :has_read_and_update_permission do
+      permissions { [Permission.create!(:name => 'read'), Permission.create!(:name => 'update')] }
+    end
   end
 end
