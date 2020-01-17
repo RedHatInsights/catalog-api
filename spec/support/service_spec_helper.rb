@@ -32,15 +32,21 @@ module ServiceSpecHelper
   end
 
   def topological_url(partial_path, api_version = "v2.0")
-    "http://topology.example.com/api/topological-inventory/#{api_version}/#{partial_path}"
+    url_string = "http://topology.example.com"
+    url = URI.join(url_string, "api/", "topological-inventory/", "#{api_version}/", "#{partial_path}")
+    url.to_s
   end
 
   def approval_url(partial_path, api_version = "v1.0")
-    "http://approval.example.com/api/approval/#{api_version}/#{partial_path}"
+    url_string = "http://approval.example.com"
+    url = URI.join(url_string, "api/", "approval/", "#{api_version}/", "#{partial_path}")
+    url.to_s
   end
 
   def sources_url(partial_path, api_version = "v1.0")
-    "http://source.example.com/api/sources/#{api_version}/#{partial_path}"
+    url_string = "http://source.example.com"
+    url = URI.join(url_string, "api/", "sources/", "#{api_version}/", "#{partial_path}")
+    url.to_s
   end
 
   def default_request
