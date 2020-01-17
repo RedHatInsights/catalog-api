@@ -6,7 +6,7 @@ describe Tags::Topology::RemoteInventory, :type => :service do
   end
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
       example.call
     end
   end

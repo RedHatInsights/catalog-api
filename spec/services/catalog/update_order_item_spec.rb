@@ -9,7 +9,7 @@ describe Catalog::UpdateOrderItem, :type => :service do
     let(:order) { item.order }
 
     around do |example|
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
         example.call
       end
     end

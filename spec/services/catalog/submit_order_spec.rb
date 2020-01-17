@@ -34,6 +34,12 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
   let(:topo_service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
   let(:service_plan_response) { topo_service_plan_response }
 
+  around do |example|
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :SOURCES_URL => "http://source.example.com") do
+      example.call
+    end
+  end
+
   before do
     allow(Catalog::ValidateSource).to receive(:new).with(portfolio_item.service_offering_source_ref).and_return(validater)
     allow(validater).to receive(:process).and_return(validater)
