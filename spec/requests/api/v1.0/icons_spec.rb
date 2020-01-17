@@ -50,8 +50,11 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
              :content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
              :extension => "PNG")
     end
+    let(:max_image_size) { Image::MAX_IMAGE_SIZE }
 
     before do
+      stub_const("Image::MAX_IMAGE_SIZE", max_image_size)
+
       post "#{api_version}/icons", :params => params, :headers => default_headers, :as => :form
     end
 
@@ -140,6 +143,18 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
       it "makes a new image and icon" do
         expect(response).to have_http_status 200
         expect(json["image_id"]).to_not eq image.id
+      end
+    end
+
+    context "when uploading an image that is too large" do
+      let(:params) do
+        {:content           => form_upload_test_image("miq_logo.jpg"),
+         :portfolio_item_id => portfolio_item.id}
+      end
+      let(:max_image_size) { 1.kilobyte }
+
+      it "returns bad request" do
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end
