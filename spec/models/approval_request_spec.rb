@@ -25,4 +25,11 @@ describe ApprovalRequest, :type => :model do
       expect(results.first.id).to eq approval_request1.id
     end
   end
+
+  describe ".create" do
+    it "generates a progress_message on the associated order_item" do
+      progress_message = approval_request1.order_item.progress_messages.first
+      expect(progress_message.message).to match(/Created Approval Request ref: \d*\.  catalog approval request id: #{approval_request1.id}/)
+    end
+  end
 end

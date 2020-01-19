@@ -32,8 +32,6 @@ module Catalog
         :state                => response.decision.to_sym,
         :tenant_id            => order_item.tenant_id
       )
-
-      order_item.update_message("info", "Approval Request Submitted for ID: #{order_item.approval_requests.last.id}")
     end
 
     def fail_order
