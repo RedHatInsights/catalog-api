@@ -23,7 +23,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
       end
-      get "/#{api_version}/orders", :headers => default_headers
+      get "#{api_version}/orders", :headers => default_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
@@ -39,7 +39,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
       end
-      get "/#{api_version}/orders/#{order_id}", :headers => default_headers
+      get "#{api_version}/orders/#{order_id}", :headers => default_headers
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)

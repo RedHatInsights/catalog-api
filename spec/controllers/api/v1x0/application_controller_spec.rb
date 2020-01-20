@@ -33,7 +33,7 @@ RSpec.describe ApplicationController, :type => [:request, :v1] do
     end
 
     it "get /portfolios with tenant" do
-      get("/#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers)
+      get("#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers)
       expect(response.status).to eq(200)
       expect(response.parsed_body).to include("id" => portfolio_id.to_s)
     end
@@ -49,14 +49,14 @@ RSpec.describe ApplicationController, :type => [:request, :v1] do
 
     it "get /portfolios with tenant" do
       portfolio
-      get("/#{api_version}/portfolios", :headers => default_headers)
+      get("#{api_version}/portfolios", :headers => default_headers)
       expect(response.status).to eq(200)
     end
 
     it "get /portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("/#{api_version}/portfolios", :headers => headers)
+      get("#{api_version}/portfolios", :headers => headers)
 
       expect(response.content_type).to eq("application/json")
       expect(response.status).to eq(401)
