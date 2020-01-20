@@ -72,6 +72,15 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
         before do
           allow(Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
+          allow(update_order_item).to receive(:process)
+        end
+
+        it "updates the item with a progress message" do
+          subject.process
+          progress_message = ProgressMessage.last
+          expect(progress_message.level).to eq("info")
+          expect(progress_message.message).to match(/Task update. State: completed/)
+          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
         end
 
         it "delegates to updating the order item" do
@@ -94,6 +103,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
         before do
           allow(Catalog::CreateApprovalRequest).to receive(:new).with(task).and_return(create_approval_request)
+          allow(create_approval_request).to receive(:process)
         end
 
         it "creates a task with id, state, status and context" do
@@ -106,8 +116,23 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           subject.process
         end
 
+        it "updates the item with a progress message" do
+          subject.process
+          progress_message = ProgressMessage.last
+          expect(progress_message.level).to eq("info")
+          expect(progress_message.message).to match(/Task update. State: completed/)
+          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+        end
+
         it "delegates to creating the approval request" do
           expect(create_approval_request).to receive(:process)
+          subject.process
+        end
+
+        it "updates the item with a task progress message before delgation" do
+          subject.instance_variable_set(:@order_item, order_item)
+          expect(order_item).to receive(:update_message).with(:info, /Task update. State: completed/).ordered
+          expect(create_approval_request).to receive(:process).ordered
           subject.process
         end
       end
@@ -132,10 +157,21 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             )
             subject.process
           end
+
+          it "logs an info message" do
+            expect(Rails.logger).to receive(:info).with(
+              "Incoming task has no current relevent delegation"
+            )
+            subject.process
+          end
         end
 
         context "when the status is not 'error'" do
           let(:status) { "updated" }
+
+          before do
+            allow(Rails.logger).to receive(:info).with(anything)
+          end
 
           it "updates the item with a progress message" do
             subject.process
@@ -146,7 +182,13 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           end
 
           it "logs an info message" do
-            allow(Rails.logger).to receive(:info).with(anything)
+            expect(Rails.logger).to receive(:info).with(
+              "Incoming task has no current relevent delegation"
+            )
+            subject.process
+          end
+
+          it "logs an info message" do
             expect(Rails.logger).to receive(:info).with(
               "Task update. State: completed. Status: updated. Context: #{payload_context}"
             )
