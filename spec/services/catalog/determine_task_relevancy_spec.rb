@@ -157,10 +157,21 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             )
             subject.process
           end
+
+          it "logs an info message" do
+            expect(Rails.logger).to receive(:info).with(
+              "Incoming task has no current relevent delegation"
+            )
+            subject.process
+          end
         end
 
         context "when the status is not 'error'" do
           let(:status) { "updated" }
+
+          before do
+            allow(Rails.logger).to receive(:info).with(anything)
+          end
 
           it "updates the item with a progress message" do
             subject.process
@@ -171,7 +182,13 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           end
 
           it "logs an info message" do
-            allow(Rails.logger).to receive(:info).with(anything)
+            expect(Rails.logger).to receive(:info).with(
+              "Incoming task has no current relevent delegation"
+            )
+            subject.process
+          end
+
+          it "logs an info message" do
             expect(Rails.logger).to receive(:info).with(
               "Task update. State: completed. Status: updated. Context: #{payload_context}"
             )
