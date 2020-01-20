@@ -13,7 +13,7 @@ describe "v1.0 - ProgressMessageRequests", :type => [:request, :v1] do
   context "v1.0" do
     describe "GET /order_items/:order_item_id/progress_messages" do
       it "lists progress messages" do
-        get "/#{api_version}/order_items/#{order_item.id}/progress_messages", :headers => default_headers
+        get "#{api_version}/order_items/#{order_item.id}/progress_messages", :headers => default_headers
 
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(:ok)
@@ -24,7 +24,7 @@ describe "v1.0 - ProgressMessageRequests", :type => [:request, :v1] do
         let(:order_item_id) { 0 }
 
         it "returns a 404" do
-          get "/#{api_version}/order_items/#{order_item_id}/progress_messages", :headers => default_headers
+          get "#{api_version}/order_items/#{order_item_id}/progress_messages", :headers => default_headers
 
           expect(response.content_type).to eq("application/json")
           expect(response).to have_http_status(:not_found)
