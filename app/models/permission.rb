@@ -1,5 +1,5 @@
 class Permission < ApplicationRecord
-  enum :name => [:read, :update, :delete, :order], :_suffix => true
+  enum :name => { :read => "read", :delete => "delete", :order => "order", :update => "update" }, :_suffix => true
 
   def readonly?
     !new_record?
