@@ -1,9 +1,9 @@
-describe Catalog::SubmitOrder do
+describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
-  let(:service_parameters) { { 'var1' => 'Fred', 'var2' => 'Wilma' } }
-  let(:provider_control_parameters) { { 'namespace' => 'Bedrock' } }
+  let(:service_parameters) { {'var1' => 'Fred', 'var2' => 'Wilma'} }
+  let(:provider_control_parameters) { {'namespace' => 'Bedrock'} }
   let!(:order_item) do
     create(:order_item, :portfolio_item              => portfolio_item,
                         :service_parameters          => service_parameters,
@@ -31,11 +31,20 @@ describe Catalog::SubmitOrder do
     )
   end
 
+  let(:service_plan_show_response) do
+    TopologicalInventoryApiClient::ServicePlan.new(
+      :name               => "Plan A",
+      :id                 => "1",
+      :description        => "Plan A",
+      :create_json_schema => {:schema => {:fields => [{:name => "var1"}, {:name => "var2"}]}}
+    )
+  end
+
   let(:topo_service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
   let(:service_plan_response) { topo_service_plan_response }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :SOURCES_URL => "http://localhost") do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :SOURCES_URL => "http://source.example.com") do
       example.call
     end
   end
@@ -45,33 +54,43 @@ describe Catalog::SubmitOrder do
     allow(validater).to receive(:process).and_return(validater)
     allow(validater).to receive(:valid).and_return(validity)
 
-    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-
     stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
+    stub_request(:get, topological_url("service_plans/#{service_plan_ref}"))
+      .to_return(:status => 200, :body => service_plan_show_response.to_json, :headers => default_headers)
   end
 
   context "when the order ID is valid" do
     let(:params) { order.id.to_s }
     let(:order_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "100") }
 
-    context "when the source is valid" do
-      before do
-        request_stubs = {
+    before do
+      stub_request(:post, topological_url("service_offerings/998/order"))
+        .with(
           :body    => {
             :service_parameters          => service_parameters,
             :provider_control_parameters => provider_control_parameters,
             :service_plan_id             => service_plan_ref,
           }.to_json,
           :headers => default_headers
-        }
-        stub_request(:post, topological_url("service_offerings/998/order"))
-          .with(request_stubs)
-          .to_return(:status => 200, :body => order_response.to_json, :headers => {"Content-type" => "application/json"})
-      end
+        )
+        .to_return(:status => 200, :body => order_response.to_json, :headers => {"Content-type" => "application/json"})
+    end
 
+    context "when the source is valid" do
       it "updates the order item with the task id" do
         expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
+      end
+    end
+
+    context "when sending extra parameters" do
+      before do
+        order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
+        submit_order.process
+      end
+
+      it "only sends the parameters specified in the schema" do
+        expect(a_request(:post, topological_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
       end
     end
 

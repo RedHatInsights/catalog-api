@@ -19,7 +19,8 @@ module Api
       end
 
       def show
-        svc = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:id))
+        service_plan = Catalog::ServicePlanCompare.new(params.require(:id)).process.service_plan
+        svc = Catalog::ServicePlanJson.new(:service_plans => [service_plan])
         render :json => svc.process.json
       end
 
@@ -29,7 +30,7 @@ module Api
       end
 
       def modified
-        plan = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:service_plan_id)).process.json
+        plan = Catalog::ServicePlanJson.new(:service_plan_id => params.require(:service_plan_id), :schema => "modified").process.json
 
         if plan["create_json_schema"]
           render :json => plan

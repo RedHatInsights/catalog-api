@@ -1,4 +1,4 @@
-describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
+describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
   let(:service_plan) { create(:service_plan, :base => JSON.parse(modified_schema)) }
   let(:portfolio_item) { service_plan.portfolio_item }
   let(:service_offering_ref) { portfolio_item.service_offering_ref }
@@ -7,7 +7,7 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
   let(:modified_schema) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :BYPASS_RBAC => 'true') do
+    with_modified_env(:BYPASS_RBAC => 'true') do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end
@@ -55,6 +55,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
       it "returns the newly created ServicePlan in an array" do
         expect(json.first["create_json_schema"]).to eq topo_service_plan.create_json_schema
       end
+
+      it "shows modified as false" do
+        expect(json.first["modified"]).to be_falsey
+      end
     end
   end
 
@@ -63,13 +67,23 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
       get "#{api_version}/service_plans/#{service_plan.id}", :headers => default_headers
     end
 
-    it "returns a 200" do
-      expect(response).to have_http_status :ok
+    context "when the service plan base is different than Topology's base" do
+      let(:service_plan) { create(:service_plan) }
+
+      it "returns a 400" do
+        expect(response).to have_http_status(400)
+      end
     end
 
-    it "returns the specified service_plan" do
-      expect(json["id"]).to eq service_plan.id.to_s
-      expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name]
+    context "when the service plan has not changed" do
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the specified service_plan" do
+        expect(json["id"]).to eq service_plan.id.to_s
+        expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name modified]
+      end
     end
   end
 
@@ -101,16 +115,27 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
   end
 
   describe "#base" do
-    before do
-      get "#{api_version}/service_plans/#{service_plan.id}/base", :headers => default_headers
+    context "when the service plan exists" do
+      before do
+        get "#{api_version}/service_plans/#{service_plan.id}/base", :headers => default_headers
+      end
+
+      it "returns a 200" do
+        expect(response).to have_http_status :ok
+      end
+
+      it "returns the base schema from the service_plan" do
+        expect(json["create_json_schema"]["schema"]).to eq service_plan.base["schema"]
+      end
     end
 
-    it "returns a 200" do
-      expect(response).to have_http_status :ok
-    end
+    context "when the service plan does not exist" do
+      it "returns a 404" do
+        service_plan.destroy
+        get "#{api_version}/service_plans/#{service_plan.id}/base", :headers => default_headers
 
-    it "returns the base schema from the service_plan" do
-      expect(json["create_json_schema"]["schema"]).to eq service_plan.base["schema"]
+        expect(response).to have_http_status :not_found
+      end
     end
   end
 
@@ -128,6 +153,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
         expect(json["create_json_schema"]["schema"]).to eq service_plan.modified["schema"]
         expect(json["create_json_schema"]["schema"]).not_to eq service_plan.base["schema"]
       end
+
+      it "shows modified as true" do
+        expect(json["modified"]).to be_truthy
+      end
     end
 
     context "when there is not a modified schema" do
@@ -139,6 +168,15 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1] do
         get "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers
 
         expect(response).to have_http_status :no_content
+      end
+    end
+
+    context "when the service plan does not exist" do
+      it "returns a 404" do
+        service_plan.destroy
+        get "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers
+
+        expect(response).to have_http_status :not_found
       end
     end
   end

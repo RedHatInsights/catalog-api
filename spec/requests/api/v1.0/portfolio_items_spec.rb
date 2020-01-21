@@ -1,7 +1,7 @@
-describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
+describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   around do |example|
     bypass_rbac do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology", :APPROVAL_URL => "http://localhost") { example.call }
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :APPROVAL_URL => "http://approval.example.com") { example.call }
     end
   end
 
@@ -218,7 +218,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
 
     context "when passing in valid attributes" do
       before do
-        stub_request(:get, "http://localhost/api/approval/v1.0/workflows/PatchWorkflowRef")
+        stub_request(:get, approval_url("workflows/PatchWorkflowRef"))
           .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
 
         patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
@@ -346,6 +346,31 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
     end
   end
 
+  shared_examples_for "bad_tags" do
+    let(:bad_tags) { %w[/ /approval /approval/workflows=] }
+
+    it "throws a 400" do
+      bad_tags.each do |tag|
+        post "#{api_version}/portfolio_items/#{portfolio_item.id}/#{endpoint}", :headers => default_headers, :params => [:tag => tag]
+
+        expect(response).to have_http_status(400)
+      end
+    end
+  end
+
+  shared_examples_for "good_tags" do
+    include RandomWordsSpecHelper
+    let(:good_tags) { Array.new(10) { random_tag } }
+
+    it "adds the tag successfully" do
+      good_tags.each do |tag|
+        post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => [:tag => tag]
+        expect(response).to have_http_status(201)
+        expect(json.first["tag"]).to eq tag
+      end
+    end
+  end
+
   context "GET /portfolio_items/{id}/tags" do
     let(:name) { 'Gnocchi' }
     let(:namespace) { 'default' }
@@ -366,6 +391,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
       end
     end
   end
+
   context "POST /portfolio_items/{id}/tag" do
     let(:name) { 'Gnocchi' }
     let(:params) do
@@ -381,14 +407,18 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
 
     context 'double add tags' do
       before do
-        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
-        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
+        post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
       end
 
       it "returns not modified" do
         expect(response).to have_http_status(304)
       end
     end
+
+    let(:endpoint) { "tag" }
+    it_behaves_like "bad_tags"
+    it_behaves_like "good_tags"
   end
 
   context "POST /portfolio_items/{id}/untag" do
@@ -405,5 +435,9 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :v1] do
       expect(response).to have_http_status(204)
       expect(portfolio_item.tags).to be_empty
     end
+
+    let(:endpoint) { "untag" }
+    it_behaves_like "bad_tags"
+    it_behaves_like "good_tags"
   end
 end

@@ -1,4 +1,4 @@
-describe Catalog::ProviderControlParameters, :type => :service do
+describe Catalog::ProviderControlParameters, :type => [:service, :topology, :current_forwardable] do
   let(:source_id) { "1" }
   let(:params) { portfolio_item.id }
   let(:provider_control_parameters) { described_class.new(params) }
@@ -12,16 +12,6 @@ describe Catalog::ProviderControlParameters, :type => :service do
   let(:project2) do
     TopologicalInventoryApiClient::ContainerProject.new('name'      => project2_name,
                                                         'source_id' => "2")
-  end
-
-  before do
-    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-  end
-
-  around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
-      example.call
-    end
   end
 
   describe "#process" do

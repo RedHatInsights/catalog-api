@@ -7,6 +7,7 @@ module Catalog
 
     def initialize(params)
       @params = params
+      @order_item = params[:order_item]
     end
 
     def process
@@ -32,6 +33,10 @@ module Catalog
       order_item.service_parameters
     end
 
+    def filtered_parameters
+      service_parameters.slice(*fields.collect { |field| field.with_indifferent_access["name"] })
+    end
+
     def service_plan_schema
       TopologicalInventory.call do |api|
         @plan = api.show_service_plan(service_plan_ref.to_s)
@@ -44,6 +49,7 @@ module Catalog
 
     def compute_sanitized_parameters
       return {} if service_plan_does_not_exist?
+      return filtered_parameters if @params[:do_not_mask_values]
 
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
       fields.each_with_object({}) do |field, result|

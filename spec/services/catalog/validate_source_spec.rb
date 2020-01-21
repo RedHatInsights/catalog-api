@@ -7,15 +7,15 @@ describe Catalog::ValidateSource do
   let(:validate_source) { described_class.new(portfolio_item.service_offering_source_ref).process }
 
   around do |example|
-    with_modified_env(:SOURCES_URL => "http://localhost") do
+    with_modified_env(:SOURCES_URL => "http://source.example.com") do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end
 
   before do
-    stub_request(:get, "http://localhost/api/sources/v1.0/application_types")
+    stub_request(:get, sources_url("application_types"))
       .to_return(:status => 200, :body => catalog_application_type.to_json, :headers => response_headers)
-    stub_request(:get, "http://localhost/api/sources/v1.0/application_types/1/sources")
+    stub_request(:get, sources_url("application_types/1/sources"))
       .to_return(:status => 200, :body => response.to_json, :headers => response_headers)
   end
 

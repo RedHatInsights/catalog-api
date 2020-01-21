@@ -77,20 +77,5 @@ describe Catalog::CreateIcon, :type => :service do
 
       it_behaves_like "#process handling generic object"
     end
-
-    context "when there is an error creating the image" do
-      let(:destination) { create(:portfolio) }
-      let(:destination_params) { {:portfolio_id => destination.id} }
-      let(:image_params) { {:content => form_upload_test_image("ocp_logo.jpg")} }
-
-      before do
-        allow(Icon).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
-      end
-
-      it "logs an error and raises" do
-        expect(Rails.logger).to receive(:error).with(/Error creating Icon object/)
-        expect { subject.process }.to raise_error(ActiveRecord::RecordInvalid)
-      end
-    end
   end
 end

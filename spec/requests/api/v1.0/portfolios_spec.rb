@@ -422,6 +422,31 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       end
     end
 
+    shared_examples_for "bad_tags" do
+      let(:bad_tags) { %w[/ /approval /approval/workflows=] }
+
+      it "throws a 400" do
+        bad_tags.each do |tag|
+          post "#{api_version}/portfolios/#{portfolio.id}/#{endpoint}", :headers => default_headers, :params => [:tag => tag]
+
+          expect(response).to have_http_status(400)
+        end
+      end
+    end
+
+    shared_examples_for "good_tags" do
+      include RandomWordsSpecHelper
+      let(:good_tags) { Array.new(10) { random_tag } }
+
+      it "adds the tag successfully" do
+        good_tags.each do |tag|
+          post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => [:tag => tag]
+          expect(response).to have_http_status(201)
+          expect(json.first["tag"]).to eq tag
+        end
+      end
+    end
+
     context "GET /portfolios/{id}/tags" do
       let(:params) { {:name => tag_name, :namespace => tag_ns} }
 
@@ -465,6 +490,10 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
           expect(response).to have_http_status(304)
         end
       end
+
+      let(:endpoint) { "tag" }
+      it_behaves_like "bad_tags"
+      it_behaves_like "good_tags"
     end
 
     context "POST /portfolios/{id}/untag" do
@@ -481,6 +510,10 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
         expect(response).to have_http_status(204)
         expect(portfolio.tags).to be_empty
       end
+
+      let(:endpoint) { "tag" }
+      it_behaves_like "bad_tags"
+      it_behaves_like "good_tags"
     end
   end
 end

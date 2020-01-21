@@ -582,7 +582,22 @@
             "description": "Portfolio Icon",
             "content": {
               "image/svg+xml": {
-                "example": "<svg rel=\"stylesheet\">thing</svg>"
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
               }
             }
           },
@@ -664,7 +679,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/TagItem"
+                    "$ref": "#/components/schemas/Tag"
                   }
                 }
               }
@@ -689,7 +704,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -731,7 +746,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -1223,7 +1238,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/TagItem"
+                    "$ref": "#/components/schemas/Tag"
                   }
                 }
               }
@@ -1248,7 +1263,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -1290,7 +1305,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TagItem"
+                  "$ref": "#/components/schemas/Tag"
                 }
               }
             }
@@ -1937,7 +1952,22 @@
             "description": "Portfolio Item Icon",
             "content": {
               "image/svg+xml": {
-                "example": "<svg rel=\"stylesheet\">thing</svg>"
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
               }
             }
           },
@@ -2162,7 +2192,22 @@
             "description": "Portfolio Item Icon",
             "content": {
               "image/svg+xml": {
-                "example": "<svg rel=\"stylesheet\">thing</svg>"
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
               }
             }
           },
@@ -3506,6 +3551,12 @@
             "title": "ID",
             "description": "The unique identifier for this service plan.",
             "readOnly": true
+          },
+          "modified": {
+            "type": "boolean",
+            "title": "Modified",
+            "description": "Whether or not the ServicePlan has a modified create_json_schema property",
+            "readOnly": true
           }
         }
       },
@@ -3776,35 +3827,13 @@
       "Tag": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "created_at": {
-            "format": "date-time",
-            "readOnly": true,
-            "type": "string"
-          },
-          "description": {
-            "example": "Instruction set architecture",
-            "readOnly": true,
-            "type": "string"
-          },
           "tag": {
             "example": "/namespace/architecture=x86_64",
-            "type": "string"
+            "type": "string",
+            "pattern": "\\/.*\\/.+(=.+|[^=]$)"
           }
         },
         "additionalProperties": false
-      },
-      "TagItem": {
-        "type": "object",
-        "properties": {
-          "tag": {
-            "example": "/namespace/architecture=x86_64",
-            "type": "string"
-          }
-        }
       },
       "TagsCollection": {
         "type": "object",

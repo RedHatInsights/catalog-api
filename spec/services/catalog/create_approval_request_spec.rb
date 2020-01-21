@@ -3,7 +3,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
   let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123") }
 
   around do |example|
-    with_modified_env(:APPROVAL_URL => "http://localhost") do
+    with_modified_env(:APPROVAL_URL => "http://approval.example.com") do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end
@@ -18,14 +18,14 @@ describe Catalog::CreateApprovalRequest, :type => :service do
     allow(Catalog::CreateRequestBodyFrom).to receive(:new).with(order, order_item, task).and_return(create_request_body_from)
     allow(create_request_body_from).to receive(:process).and_return(create_request_body_from)
 
-    stub_request(:get, "http://localhost/api/approval/v1.0/workflows/1")
+    stub_request(:get, approval_url("workflows/1"))
       .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
   end
 
   describe "#process" do
     context "when the approval succeeds" do
       before do
-        stub_request(:post, "http://localhost/api/approval/v1.0/requests")
+        stub_request(:post, approval_url("requests"))
           .with(:body => request_body_from)
           .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
       end
@@ -58,7 +58,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
     context "when the approval fails" do
       before do
-        stub_request(:post, "http://localhost/api/approval/v1.0/requests")
+        stub_request(:post, approval_url("requests"))
           .with(:body => request_body_from)
           .to_return(:status => 401, :body => {}.to_json, :headers => {"Content-type" => "application/json"})
       end
@@ -87,7 +87,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
     context "without a tenant on the request" do
       before do
-        stub_request(:post, "http://localhost/api/approval/v1.0/requests")
+        stub_request(:post, approval_url("requests"))
           .with(:body => request_body_from)
           .to_return(:status => 200, :body => {:workflow_id => 7, :id => 7, :decision => "approved"}.to_json, :headers => {"Content-type" => "application/json"})
       end

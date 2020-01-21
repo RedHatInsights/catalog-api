@@ -1,14 +1,7 @@
-describe Catalog::ImportServicePlans, :type => :service do
+describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "1" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:subject) { described_class.new(portfolio_item.id) }
-
-  around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology") do
-      example.call
-    end
-  end
-
   let(:service_plan) do
     TopologicalInventoryApiClient::ServicePlan.new(
       :name               => "The Plan",
@@ -23,8 +16,6 @@ describe Catalog::ImportServicePlans, :type => :service do
   end
 
   before do
-    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-
     stub_request(:get, topological_url("service_offerings/1"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
     stub_request(:get, topological_url("service_offerings/1/service_plans"))
@@ -61,19 +52,6 @@ describe Catalog::ImportServicePlans, :type => :service do
 
       it "adds both the ServicePlans to the portfolio_item" do
         expect(portfolio_item.service_plans.count).to eq 2
-      end
-    end
-
-    context "if create somehow fails" do
-      let(:data) { [] }
-
-      before do
-        allow(ServicePlan).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
-      end
-
-      it "raises an error and logs a message" do
-        expect(Rails.logger).to receive(:error).with(/Error creating service plan/)
-        expect { subject.process }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end

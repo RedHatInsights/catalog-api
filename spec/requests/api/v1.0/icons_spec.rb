@@ -50,8 +50,11 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
              :content   => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "ocp_logo.png"))),
              :extension => "PNG")
     end
+    let(:max_image_size) { Image::MAX_IMAGE_SIZE }
 
     before do
+      stub_const("Image::MAX_IMAGE_SIZE", max_image_size)
+
       post "#{api_version}/icons", :params => params, :headers => default_headers, :as => :form
     end
 
@@ -111,7 +114,7 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
     context "when not passing in a portfolio or portfolio_item id" do
       let(:params) do
-        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png")))}
+        {:content => form_upload_test_image("miq_logo.png")}
       end
 
       it "throws a 400" do
@@ -121,21 +124,37 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
     context "when uploading a png" do
       let(:params) do
-        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.png")))}
+        {:content           => form_upload_test_image("miq_logo.png"),
+         :portfolio_item_id => portfolio_item.id}
       end
 
       it "makes a new image and icon" do
+        expect(response).to have_http_status 200
         expect(json["image_id"]).to_not eq image.id
       end
     end
 
     context "when uploading a jpg" do
       let(:params) do
-        {:content => Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.jpg")))}
+        {:content           => form_upload_test_image("miq_logo.jpg"),
+         :portfolio_item_id => portfolio_item.id}
       end
 
       it "makes a new image and icon" do
+        expect(response).to have_http_status 200
         expect(json["image_id"]).to_not eq image.id
+      end
+    end
+
+    context "when uploading an image that is too large" do
+      let(:params) do
+        {:content           => form_upload_test_image("miq_logo.jpg"),
+         :portfolio_item_id => portfolio_item.id}
+      end
+      let(:max_image_size) { 1.kilobyte }
+
+      it "returns bad request" do
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end
@@ -185,8 +204,19 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
     end
 
     context "when the icon does not exist" do
+      before do
+        portfolio_item.icon.discard
+        portfolio.icon.discard
+      end
+
       it "/portfolio_items/{id}/icon returns no content" do
-        get "#{api_version}/portfolio_items/0/icon", :headers => default_headers
+        get "#{api_version}/portfolio_items/#{portfolio_item.id}/icon", :headers => default_headers
+
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it "/portfolios/{id}/icon returns no content" do
+        get "#{api_version}/portfolios/#{portfolio.id}/icon", :headers => default_headers
 
         expect(response).to have_http_status(:no_content)
       end
