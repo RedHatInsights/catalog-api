@@ -32,7 +32,7 @@ module Catalog
         Rails.logger.info("Creating approval request for task")
         Catalog::CreateApprovalRequest.new(@task).process
       else
-        Rails.logger.info("Incoming task has no current relevent delegation")
+        Rails.logger.info("Incoming task has no current relevant delegation")
       end
     end
 
