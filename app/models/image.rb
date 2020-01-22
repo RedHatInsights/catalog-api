@@ -37,7 +37,7 @@ class Image < ApplicationRecord
 
   def image_size
     if decoded_image.bytes.count > MAX_IMAGE_SIZE
-      raise Catalog::InvalidParameter, "Image size exceeds max limit of #{MAX_IMAGE_SIZE.to_s(:human_size)}"
+      errors.add(:content, "Image size exceeds max limit of #{MAX_IMAGE_SIZE.to_s(:human_size)}")
     end
   end
 end

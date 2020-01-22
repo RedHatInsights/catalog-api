@@ -3040,7 +3040,7 @@
           "content": {
             "type": "string",
             "title": "Content",
-            "description": "The binary image contents",
+            "description": "The binary image contents, maximum size is 250KB",
             "format": "binary"
           },
           "portfolio_id": {
