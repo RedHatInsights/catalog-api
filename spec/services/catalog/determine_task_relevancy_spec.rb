@@ -160,7 +160,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
           it "logs an info message" do
             expect(Rails.logger).to receive(:info).with(
-              "Incoming task has no current relevent delegation"
+              "Incoming task has no current relevant delegation"
             )
             subject.process
           end
@@ -183,7 +183,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
           it "logs an info message" do
             expect(Rails.logger).to receive(:info).with(
-              "Incoming task has no current relevent delegation"
+              "Incoming task has no current relevant delegation"
             )
             subject.process
           end
