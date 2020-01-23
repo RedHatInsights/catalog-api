@@ -26,10 +26,11 @@ ActiveRecord::Schema.define(version: 2020_01_14_164456) do
     t.index ["group_uuid", "aceable_type"], name: "index_on_group_uuid_aceable_type"
   end
 
-  create_table "access_control_entries_permissions", id: false, force: :cascade do |t|
-    t.bigint "access_control_entry_id", null: false
-    t.bigint "permission_id", null: false
-    t.index ["access_control_entry_id", "permission_id"], name: "index_ace_permissions_on_ace_id_and_permission_id"
+  create_table "access_control_permissions", force: :cascade do |t|
+    t.bigint "tenant_id"
+    t.bigint "access_control_entry_id"
+    t.bigint "permission_id"
+    t.index ["tenant_id", "access_control_entry_id", "permission_id"], name: "index_tenant_ace_permissions_on_ace_id_and_permission_id"
   end
 
   create_table "approval_requests", force: :cascade do |t|

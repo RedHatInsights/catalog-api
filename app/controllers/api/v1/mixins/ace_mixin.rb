@@ -4,9 +4,13 @@ module Api
       module ACEMixin
         def ace_ids(permission, klass)
           AccessControlEntry.joins(:permissions).where(
-            :permissions            => {:name => permission},
-            :access_control_entries => {:group_uuid => my_group_uuids,
-                                        :aceable_type => klass.to_s}
+            :permissions            => {
+              :name => permission
+            },
+            :access_control_entries => {
+              :group_uuid   => my_group_uuids,
+              :aceable_type => klass.to_s
+            }
           ).collect { |ace| ace.aceable_id.to_s }
         end
 

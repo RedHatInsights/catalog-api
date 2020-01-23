@@ -11,12 +11,12 @@ module Catalog
 
     def process
       validate_groups
-      AccessControlEntry.
-        joins(:permissions).
-        where(:group_uuid => @group_uuids,
-              :aceable    => @object,
-              :permissions => {:name => @permissions}).
-        destroy_all
+      AccessControlEntry
+        .joins(:permissions)
+        .where(:group_uuid  => @group_uuids,
+               :aceable     => @object,
+               :permissions => {:name => @permissions})
+        .destroy_all
       self
     end
   end
