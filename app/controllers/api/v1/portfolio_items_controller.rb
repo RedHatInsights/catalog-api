@@ -24,6 +24,7 @@ module Api
       end
 
       def create
+        params.require(:portfolio_id)
         so = ServiceOffering::AddToPortfolioItem.new(params_for_create)
         render :json => so.process.item
       end

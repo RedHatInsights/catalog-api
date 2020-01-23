@@ -901,6 +901,7 @@
                 "schema": {
                   "$ref": "#/components/schemas/PortfolioItem",
                   "required": [
+                    "portfolio_id",
                     "name",
                     "service_offering_source_ref"
                   ]
