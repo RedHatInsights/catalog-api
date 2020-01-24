@@ -180,7 +180,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
       it "returns a required parameter error in the body" do
         post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
-        expect(json["errors"].first["detail"]).to match(/param is missing or the value is empty: portfolio_id/)
+        expect(first_error_detail).to match(/missing required parameters: portfolio_id/)
       end
     end
 
