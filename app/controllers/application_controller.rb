@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  include Pundit
   include Response
   include Api::V1::Mixins::ACEMixin
   include Api::V1::Mixins::RBACMixin
@@ -37,5 +38,9 @@ class ApplicationController < ActionController::API
     required_entitlements = %i[ansible?]
 
     required_entitlements.map { |e| entitlement.send(e) }.all?
+  end
+
+  def pundit_user
+    Insights::API::Common::Request.current!
   end
 end

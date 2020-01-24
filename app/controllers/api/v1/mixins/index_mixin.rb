@@ -14,7 +14,7 @@ module Api
 
         def collection(base_query)
           render :json => Insights::API::Common::PaginatedResponse.new(
-            :base_query => filtered(scoped(base_query)),
+            :base_query => filtered(policy_scope(base_query.model)),
             :request    => request,
             :limit      => pagination_limit,
             :offset     => pagination_offset
