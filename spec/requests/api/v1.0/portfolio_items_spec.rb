@@ -52,6 +52,10 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
   describe "GET /portfolios/:portfolio_id/portfolio_items" do
     before do
+      portfolio_item_policy_scope = PortfolioItemPolicy::Scope.new(nil, PortfolioItem)
+      allow(PortfolioItemPolicy::Scope).to receive(:new).and_return(portfolio_item_policy_scope)
+      allow(portfolio_item_policy_scope).to receive(:resolve).and_return(PortfolioItem.all)
+
       get "#{api_version}/portfolios/#{portfolio_id}/portfolio_items", :headers => default_headers
     end
 
@@ -152,6 +156,12 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
   describe 'GET portfolio items' do
     context "v1.0" do
+      before do
+        portfolio_item_policy_scope = PortfolioItemPolicy::Scope.new(nil, PortfolioItem)
+        allow(PortfolioItemPolicy::Scope).to receive(:new).and_return(portfolio_item_policy_scope)
+        allow(portfolio_item_policy_scope).to receive(:resolve).and_return(PortfolioItem.all)
+      end
+
       it "success" do
         portfolio_item
         get "#{api_version}/portfolio_items", :headers => default_headers
