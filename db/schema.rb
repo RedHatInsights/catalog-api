@@ -30,6 +30,8 @@ ActiveRecord::Schema.define(version: 2020_01_14_164456) do
     t.bigint "tenant_id"
     t.bigint "access_control_entry_id"
     t.bigint "permission_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["tenant_id", "access_control_entry_id", "permission_id"], name: "index_tenant_ace_permissions_on_ace_id_and_permission_id"
   end
 

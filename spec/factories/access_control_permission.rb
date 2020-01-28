@@ -6,10 +6,10 @@ FactoryBot.define do
   end
 
   trait :has_update_permission do
-    permission { Permission.create!(:name => 'update') }
+    permission { Permission.find_or_create_by(:name => 'update') }
   end
 
   trait :has_delete_permission do
-    permission { Permission.create!(:name => 'delete') }
+    permission { Permission.find_or_create_by(:name => 'delete') }
   end
 end

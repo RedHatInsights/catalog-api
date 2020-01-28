@@ -11,7 +11,7 @@ module ServiceSpecHelper
     end
   end
 
-  def has_permissions(perms)
+  def permissions_exist?(perms)
     perms.each { |perm| Permission.create!(:name => perm) }
   end
 

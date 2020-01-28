@@ -30,12 +30,11 @@ class NormalizeAceTable < ActiveRecord::Migration[5.2]
       # pull a group of all known group_uuid, aceable entries to grab the accumulated permissions
       aces = AccessControlEntry.where(:group_uuid => ace[0], :aceable_type => ace[1], :aceable_id => ace[2])
       perms = aces.map(&:permission)
-      current_ace = nil
+      # Set the current record that we are going to deem the savable record
+      current_ace = aces.first
       # Loop through the permissions and apply them to the current distinct ace record
       perms.each do |perm|
         permission = Permission.find_by(:name => perm)
-        # Set the current record that we are going to deem the savable record
-        current_ace = aces.first
         current_ace.access_control_permissions.build(:permission_id => permission.id, :tenant_id => current_ace.tenant_id)
       end
       # When finished with this ACE record, set the soon to be deleted permission record to 'distinct_group'

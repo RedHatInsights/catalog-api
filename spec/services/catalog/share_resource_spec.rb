@@ -13,7 +13,7 @@ describe Catalog::ShareResource, :type => :service do
   end
 
   before do
-    has_permissions(permissions)
+    permissions_exist?(permissions)
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([group1])

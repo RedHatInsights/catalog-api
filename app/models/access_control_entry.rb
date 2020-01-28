@@ -4,7 +4,8 @@ class AccessControlEntry < ApplicationRecord
   has_many :access_control_permissions, :dependent => :destroy
   has_many :permissions, :through => :access_control_permissions
 
-  def add_permissions(permissions)
-    permissions.each { |name| self.permissions << Permission.find_by!(:name => name) }
+  def add_new_permissions(permissions)
+    new_permissions = permissions - self.permissions.map(&:name)
+    new_permissions.each { |name| self.permissions << Permission.find_by!(:name => name) }
   end
 end
