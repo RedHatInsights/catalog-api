@@ -40,8 +40,8 @@ module Api
         primary_instance = primary_collection_model.find(request_path_parts["primary_collection_id"])
 
         parsed_body.each do |i|
-          tag = Tag.find_by!(Tag.parse(i["tag"]))
-          primary_instance.tags.destroy(tag)
+          tag = Tag.find_by(Tag.parse(i["tag"]))
+          primary_instance.tags.destroy(tag) if tag
         end
 
         head :no_content, :location => "#{instance_link(primary_instance)}/tags"

@@ -735,9 +735,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Portfolio Not Found."
           }
         },
         "requestBody": {
@@ -1294,9 +1291,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Portfolio Item Not Found."
           }
         },
         "requestBody": {
