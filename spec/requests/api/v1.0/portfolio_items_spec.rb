@@ -436,6 +436,13 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
       expect(portfolio_item.tags).to be_empty
     end
 
+    it "silences not found errors" do
+      portfolio_item.tags.destroy_all
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/untag", :headers => default_headers, :params => params
+
+      expect(response).to have_http_status(204)
+    end
+
     let(:endpoint) { "untag" }
     it_behaves_like "bad_tags"
     it_behaves_like "good_tags"
