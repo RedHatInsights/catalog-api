@@ -13,8 +13,7 @@ describe Catalog::ShareInfo, :type => :service do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, pagination_options).and_return([group1])
-    create(:access_control_entry, :group_uuid => group1.uuid, :permission => permissions[0], :aceable => portfolio)
-    create(:access_control_entry, :group_uuid => group1.uuid, :permission => permissions[1], :aceable => portfolio)
+    create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
   end
 
   let(:subject) { described_class.new(params) }
@@ -35,7 +34,7 @@ describe Catalog::ShareInfo, :type => :service do
 
   context "when only some group uuids exist" do
     before do
-      create(:access_control_entry, :group_uuid => "non-existent", :permission => permissions[1], :aceable => portfolio)
+      create(:access_control_entry, :has_update_permission, :group_uuid => "non-existent", :aceable => portfolio)
     end
 
     it_behaves_like "#process"

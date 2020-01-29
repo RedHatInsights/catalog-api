@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_06_182459) do
+ActiveRecord::Schema.define(version: 2020_01_14_164456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,13 +18,21 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
   create_table "access_control_entries", force: :cascade do |t|
     t.string "group_uuid"
     t.bigint "tenant_id"
-    t.string "permission"
     t.string "aceable_type"
     t.bigint "aceable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["aceable_type", "aceable_id"], name: "index_access_control_entries_on_aceable_type_and_aceable_id"
-    t.index ["group_uuid", "aceable_type", "permission"], name: "index_on_group_uuid_aceable_type_permission"
+    t.index ["group_uuid", "aceable_type"], name: "index_on_group_uuid_aceable_type"
+  end
+
+  create_table "access_control_permissions", force: :cascade do |t|
+    t.bigint "tenant_id"
+    t.bigint "access_control_entry_id"
+    t.bigint "permission_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "access_control_entry_id", "permission_id"], name: "index_tenant_ace_permissions_on_ace_id_and_permission_id"
   end
 
   create_table "approval_requests", force: :cascade do |t|
@@ -101,6 +109,9 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
+# Could not dump table "permissions" because of following StandardError
+#   Unknown type 'permissions_name' for column 'name'
+
   create_table "portfolio_item_tags", id: :serial, force: :cascade do |t|
     t.bigint "tag_id", null: false
     t.bigint "portfolio_item_id", null: false
@@ -127,6 +138,7 @@ ActiveRecord::Schema.define(version: 2019_12_06_182459) do
     t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
+    t.string "service_offering_icon_ref"
     t.datetime "discarded_at"
     t.string "owner"
     t.string "service_offering_type"

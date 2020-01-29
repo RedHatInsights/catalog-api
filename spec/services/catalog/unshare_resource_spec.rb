@@ -16,8 +16,8 @@ describe Catalog::UnshareResource, :type => :service do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([group1])
-    create(:access_control_entry, :group_uuid => group1.uuid, :permission => permissions[0], :aceable => portfolio)
-    create(:access_control_entry, :group_uuid => group1.uuid, :permission => permissions[1], :aceable => portfolio)
+    create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio)
+    create(:access_control_entry, :has_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
   end
 
   let(:subject) { described_class.new(params) }
