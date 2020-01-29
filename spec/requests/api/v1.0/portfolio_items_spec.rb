@@ -163,7 +163,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
   context "when adding portfolio items" do
     let(:add_to_portfolio_svc) { double(ServiceOffering::AddToPortfolioItem) }
-    let(:params) { {:service_offering_ref => service_offering_ref, :portfolio_id => portfolio.id} }
+    let(:params) { {:service_offering_ref => service_offering_ref, :portfolio_id => portfolio.id.to_s} }
     let(:permitted_params) { ActionController::Parameters.new(params).permit(:service_offering_ref, :portfolio_id) }
 
     before do
