@@ -22,32 +22,6 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
     end
   end
 
-  describe "GET /tags/{id}" do
-    it "returns the tag specified" do
-      get "#{api_version}/tags/#{Tag.first.id}", :headers => default_headers
-
-      expect(json["tag"]).to eq Tag.first.to_tag_string
-    end
-  end
-
-  describe "GET /tags/{id}/portfolio_items" do
-    it "returns the tags specified to the portfolio_item" do
-      get "#{api_version}/tags/#{portfolio_item.tags.first.id}/portfolio_items", :headers => default_headers
-
-      expect(json["meta"]["count"]).to eq 1
-      expect(json["data"].first["name"]).to eq portfolio_item.name
-    end
-  end
-
-  describe "GET /tags/{id}/portfolios" do
-    it "returns the tags specified to the portfolio_item" do
-      get "#{api_version}/tags/#{portfolio.tags.first.id}/portfolios", :headers => default_headers
-
-      expect(json["meta"]["count"]).to eq 1
-      expect(json["data"].first["name"]).to eq portfolio.name
-    end
-  end
-
   describe "Multiple Tags" do
     context "when only populating the name" do
       it "re-uses the same tag in the database" do

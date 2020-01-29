@@ -67,10 +67,7 @@ Rails.application.routes.draw do
         get :icon_data, :to => 'icons#raw_icon'
       end
       resources :settings
-      resources :tags, :only => [:index, :show] do
-        resources :portfolios, :only => [:index]
-        resources :portfolio_items, :only => [:index]
-      end
+      resources :tags, :only => [:index]
       resources :tenants, :only => [:index, :show] do
         post 'seed', :to => 'tenants#seed'
       end
