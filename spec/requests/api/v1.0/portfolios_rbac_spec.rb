@@ -136,7 +136,6 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
     let(:permissions) { ['update'] }
     describe "#share" do
       it "goes through validation" do
-        permissions_exist?(permissions)
         post "#{api_version}/portfolios/#{portfolio1.id}/share", :headers => default_headers, :params => {
           :permissions => permissions,
           :group_uuids => [group1.uuid]

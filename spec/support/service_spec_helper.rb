@@ -11,10 +11,6 @@ module ServiceSpecHelper
     end
   end
 
-  def permissions_exist?(perms)
-    perms.each { |perm| Permission.create!(:name => perm) }
-  end
-
   def with_modified_env(options, &block)
     Thread.current[:api_instance] = nil
     ClimateControl.modify(options, &block)
