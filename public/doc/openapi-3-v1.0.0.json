@@ -2911,7 +2911,14 @@
       },
       "CreatePortfolioItem": {
         "type": "object",
+        "required": ["portfolio_id"],
         "properties": {
+          "portfolio_id": {
+            "type": "string",
+            "title": "Portfolio ID",
+            "description": "The Portfolio this portfolio item should belong to",
+            "example": "1"
+          },
           "service_offering_ref": {
             "type": "string",
             "title": "Service Offering Ref",
