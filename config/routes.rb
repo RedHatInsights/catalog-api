@@ -45,7 +45,6 @@ Rails.application.routes.draw do
 
         post :restore, :to => "order_items#restore"
       end
-      post '/portfolios/:portfolio_id/portfolio_items', :to => "portfolios#add_portfolio_item_to_portfolio", :as => 'add_portfolio_item_to_portfolio'
       post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'
       post '/portfolios/:portfolio_id/unshare', :to => "portfolios#unshare", :as => 'unshare'
       get '/portfolios/:portfolio_id/share_info', :to => "portfolios#share_info", :as => 'share_info'
