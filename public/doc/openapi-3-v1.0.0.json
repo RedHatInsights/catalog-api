@@ -317,43 +317,6 @@
             "description": "Portfolio not found"
           }
         }
-      },
-      "post": {
-        "tags": [
-          "Portfolio"
-        ],
-        "summary": "Add a portfolio item to a portfolio",
-        "operationId": "addPortfolioItemToPortfolio",
-        "description": "Adds a new portfolio item to an existing portfolio.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/PortfolioID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully added a portfolio item to the portfolio."
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "The portfolio or the portfolio item was not found."
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPortfolioItem"
-              }
-            }
-          },
-          "required": true
-        }
       }
     },
     "/portfolios/{portfolio_id}/share": {
@@ -2961,17 +2924,6 @@
             "title": "Portfolio Item ID",
             "description": "The Portfolio Item to import the service plans for.",
             "example": "177"
-          }
-        }
-      },
-      "AddPortfolioItem": {
-        "type": "object",
-        "properties": {
-          "portfolio_item_id": {
-            "type": "string",
-            "title": "Portfolio Item Id",
-            "example": "100",
-            "description": "This is the ID of the portfolio item object."
           }
         }
       },

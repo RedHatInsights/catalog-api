@@ -74,21 +74,6 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
   end
 
-  describe "POST /portfolios/:portfolio_id/portfolio_items" do
-    let(:params) { {:portfolio_item_id => portfolio_item_id} }
-    before do
-      post "#{api_version}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers
-    end
-
-    it 'returns a 200' do
-      expect(response).to have_http_status(200)
-    end
-
-    it 'returns the portfolio_item which now points back to the portfolio' do
-      expect(json.size).to eq 1
-    end
-  end
-
   describe 'DELETE admin tagged /portfolio_items/:portfolio_item_id' do
     context 'when v1.0 :portfolio_item_id is valid' do
       before do
