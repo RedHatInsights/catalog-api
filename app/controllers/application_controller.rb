@@ -8,6 +8,7 @@ class ApplicationController < ActionController::API
   include Insights::API::Common::ApplicationControllerMixins::RequestBodyValidation
   include Insights::API::Common::ApplicationControllerMixins::RequestPath
   include Insights::API::Common::ApplicationControllerMixins::Parameters
+  include Pundit
 
   around_action :with_current_request
 
@@ -37,5 +38,9 @@ class ApplicationController < ActionController::API
     required_entitlements = %i[ansible?]
 
     required_entitlements.map { |e| entitlement.send(e) }.all?
+  end
+
+  def pundit_user
+    Insights::API::Common::Request.current!
   end
 end

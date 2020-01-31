@@ -18,5 +18,6 @@ ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
   "Catalog::ServiceOfferingArchived"   => :bad_request,
   "Catalog::SourcesError"              => :service_unavailable,
   "Catalog::TopologyError"             => :service_unavailable,
-  "Discard::DiscardError"              => :bad_request
+  "Discard::DiscardError"              => :bad_request,
+  "Pundit::NotAuthorizedError"         => :forbidden
 )
