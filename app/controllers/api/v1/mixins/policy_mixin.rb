@@ -23,7 +23,7 @@ module Api
           return if catalog_administrator?
           ids = access_id_list(verb, klass)
           if klass.try(:supports_access_control?)
-            raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.exclude?(id)
+            raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.exclude?(id.to_s)
           end
         end
 
