@@ -2,16 +2,14 @@ module Api
   module V1
     class OrdersController < ApplicationController
       include Api::V1::Mixins::IndexMixin
-      include Api::V1::Mixins::ServiceOfferingMixin
-
-      before_action :read_access_check, :only => %i[show]
-      before_action :service_offering_check, :only => %i[submit_order]
 
       def index
         collection(Order.all)
       end
 
       def show
+        authorize Order
+
         render :json => Order.find(params.require(:id))
       end
 
@@ -25,7 +23,10 @@ module Api
       end
 
       def submit_order
-        order = Catalog::CreateRequestForAppliedInventories.new(@order).process.order
+        order = Order.find(params.require(:order_id))
+        authorize order
+
+        order = Catalog::CreateRequestForAppliedInventories.new(order).process.order
         render :json => order
       end
 

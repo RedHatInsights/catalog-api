@@ -1,5 +1,5 @@
 describe Catalog::ServiceOffering do
-  let(:subject) { described_class.new(order_item.order.id) }
+  let(:subject) { described_class.new(order_item.order) }
 
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
