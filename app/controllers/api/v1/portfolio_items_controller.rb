@@ -3,16 +3,6 @@ module Api
     class PortfolioItemsController < ApplicationController
       include Api::V1::Mixins::IndexMixin
 
-      before_action :create_access_check, :only => %i[create]
-      before_action :update_access_check, :only => %i[update]
-      before_action :delete_access_check, :only => %i[destroy]
-
-      before_action :only => [:copy] do
-        resource_check('read', params.require(:portfolio_item_id))
-        permission_check('create', Portfolio)
-        permission_check('update', Portfolio)
-      end
-
       def index
         if params[:portfolio_id]
           collection(Portfolio.find(params.require(:portfolio_id)).portfolio_items)
@@ -24,12 +14,16 @@ module Api
       end
 
       def create
+        authorize PortfolioItem
+
         so = ServiceOffering::AddToPortfolioItem.new(params_for_create)
         render :json => so.process.item
       end
 
       def update
         portfolio_item = PortfolioItem.find(params.require(:id))
+        authorize portfolio_item
+
         portfolio_item.update!(params_for_update)
 
         render :json => portfolio_item
@@ -41,12 +35,17 @@ module Api
 
       def destroy
         item = PortfolioItem.find(params.require(:id))
+        authorize item
+
         soft_delete = Catalog::SoftDelete.new(item)
 
         render :json => { :restore_key => soft_delete.process.restore_key }
       end
 
       def copy
+        portfolio_item = PortfolioItem.find(params[:portfolio_item_id])
+        authorize portfolio_item
+
         svc = Catalog::CopyPortfolioItem.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio_item
       end
