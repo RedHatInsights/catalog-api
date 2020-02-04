@@ -52,6 +52,10 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
   describe "GET /portfolios/:portfolio_id/portfolio_items" do
     before do
+      portfolio_item_policy_scope = PortfolioItemPolicy::Scope.new(nil, PortfolioItem)
+      allow(PortfolioItemPolicy::Scope).to receive(:new).and_return(portfolio_item_policy_scope)
+      allow(portfolio_item_policy_scope).to receive(:resolve).and_return(PortfolioItem.all)
+
       get "#{api_version}/portfolios/#{portfolio_id}/portfolio_items", :headers => default_headers
     end
 
@@ -71,21 +75,6 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
         expect(first_error_detail).to match(/Couldn't find Portfolio/)
         expect(response.status).to eq(404)
       end
-    end
-  end
-
-  describe "POST /portfolios/:portfolio_id/portfolio_items" do
-    let(:params) { {:portfolio_item_id => portfolio_item_id} }
-    before do
-      post "#{api_version}/portfolios/#{portfolio.id}/portfolio_items", :params => params, :headers => default_headers
-    end
-
-    it 'returns a 200' do
-      expect(response).to have_http_status(200)
-    end
-
-    it 'returns the portfolio_item which now points back to the portfolio' do
-      expect(json.size).to eq 1
     end
   end
 
@@ -152,6 +141,12 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
   describe 'GET portfolio items' do
     context "v1.0" do
+      before do
+        portfolio_item_policy_scope = PortfolioItemPolicy::Scope.new(nil, PortfolioItem)
+        allow(PortfolioItemPolicy::Scope).to receive(:new).and_return(portfolio_item_policy_scope)
+        allow(portfolio_item_policy_scope).to receive(:resolve).and_return(PortfolioItem.all)
+      end
+
       it "success" do
         portfolio_item
         get "#{api_version}/portfolio_items", :headers => default_headers
@@ -163,28 +158,50 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
   context "when adding portfolio items" do
     let(:add_to_portfolio_svc) { double(ServiceOffering::AddToPortfolioItem) }
-    let(:params) { { :service_offering_ref => service_offering_ref } }
-    let(:permitted_params) { ActionController::Parameters.new(params).permit(:service_offering_ref) }
+    let(:params) { {:service_offering_ref => service_offering_ref, :portfolio_id => portfolio.id.to_s} }
+    let(:permitted_params) { ActionController::Parameters.new(params).permit(:service_offering_ref, :portfolio_id) }
 
     before do
       allow(ServiceOffering::AddToPortfolioItem).to receive(:new).with(permitted_params).and_return(add_to_portfolio_svc)
     end
 
-    it "returns not found when topology doesn't have the service_offering_ref" do
-      allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
+    context "when a portfolio_id is not included in the parameters" do
+      let(:params) { {:service_offering_ref => service_offering_ref} }
 
-      post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
-      expect(response).to have_http_status(:service_unavailable)
+      it "returns a 400" do
+        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "returns a required parameter error in the body" do
+        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
+        expect(first_error_detail).to match(/missing required parameters: portfolio_id/)
+      end
     end
 
-    it "returns the new portfolio item when topology has the service_offering_ref" do
-      allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
-      allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
+    context "when topology doesn't have the service offering ref" do
+      before do
+        allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
+      end
 
-      post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
-      expect(response).to have_http_status(:ok)
-      expect(json["id"]).to eq portfolio_item.id.to_s
-      expect(json["owner"]).to eq portfolio_item.owner
+      it "returns not found when topology doesn't have the service_offering_ref" do
+        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
+        expect(response).to have_http_status(:service_unavailable)
+      end
+    end
+
+    context "when topology does have the service offering ref" do
+      before do
+        allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
+        allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
+      end
+
+      it "returns the new portfolio item when topology has the service_offering_ref" do
+        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
+        expect(response).to have_http_status(:ok)
+        expect(json["id"]).to eq portfolio_item.id.to_s
+        expect(json["owner"]).to eq portfolio_item.owner
+      end
     end
   end
 
@@ -434,6 +451,13 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
       expect(response).to have_http_status(204)
       expect(portfolio_item.tags).to be_empty
+    end
+
+    it "silences not found errors" do
+      portfolio_item.tags.destroy_all
+      post "#{api_version}/portfolio_items/#{portfolio_item.id}/untag", :headers => default_headers, :params => params
+
+      expect(response).to have_http_status(204)
     end
 
     let(:endpoint) { "untag" }

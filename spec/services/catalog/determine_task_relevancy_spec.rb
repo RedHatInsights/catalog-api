@@ -12,6 +12,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       create(:order_item, :topology_task_ref => "123")
     end
   end
+  let(:order_state_transition) { instance_double(Catalog::OrderStateTransition) }
 
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
@@ -143,6 +144,11 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         context "when the status is 'error'" do
           let(:status) { "error" }
 
+          before do
+            allow(Catalog::OrderStateTransition).to receive(:new).with(order_item.order.id).and_return(order_state_transition)
+            allow(order_state_transition).to receive(:process)
+          end
+
           it "updates the item with a progress message" do
             subject.process
             progress_message = ProgressMessage.last
@@ -160,9 +166,16 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
           it "logs an info message" do
             expect(Rails.logger).to receive(:info).with(
-              "Incoming task has no current relevent delegation"
+              "Incoming task has no current relevant delegation"
             )
             subject.process
+          end
+
+          it "transitions the order state and marks the order item failed" do
+            expect(order_state_transition).to receive(:process)
+            subject.process
+            order_item.reload
+            expect(order_item.state).to eq("Failed")
           end
         end
 
@@ -183,7 +196,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
           it "logs an info message" do
             expect(Rails.logger).to receive(:info).with(
-              "Incoming task has no current relevent delegation"
+              "Incoming task has no current relevant delegation"
             )
             subject.process
           end

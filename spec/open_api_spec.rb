@@ -1,6 +1,6 @@
 describe "OpenAPI stuff" do
   include RandomWordsSpecHelper
-  SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags tags images icons service_plans access_control_entries].freeze
+  SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags tags images icons service_plans access_control_entries access_control_permissions permissions].freeze
   let(:rails_routes) do
     Rails.application.routes.routes.each_with_object([]) do |route, array|
       r = ActionDispatch::Routing::RouteWrapper.new(route)
@@ -26,6 +26,7 @@ describe "OpenAPI stuff" do
       {:path => "/internal/v0/*path", :verb => "POST"},
       {:path => "/internal/v1.0/notify/approval_request/:id", :verb => "POST"},
       {:path => "/internal/v1.0/notify/task/:id", :verb => "POST"},
+      {:path => "/health", :verb => "GET"}
     ]
   end
 

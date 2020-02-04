@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   routing_helper = Insights::API::Common::Routing.new(self)
 
+  get '/health', :to => "status#health"
+
   prefix = "api"
   if ENV["PATH_PREFIX"].present? && ENV["APP_NAME"].present?
     prefix = File.join(ENV["PATH_PREFIX"], ENV["APP_NAME"]).gsub(/^\/+|\/+$/, "")
@@ -43,7 +45,6 @@ Rails.application.routes.draw do
 
         post :restore, :to => "order_items#restore"
       end
-      post '/portfolios/:portfolio_id/portfolio_items', :to => "portfolios#add_portfolio_item_to_portfolio", :as => 'add_portfolio_item_to_portfolio'
       post '/portfolios/:portfolio_id/share', :to => "portfolios#share", :as => 'share'
       post '/portfolios/:portfolio_id/unshare', :to => "portfolios#unshare", :as => 'unshare'
       get '/portfolios/:portfolio_id/share_info', :to => "portfolios#share_info", :as => 'share_info'
@@ -65,10 +66,7 @@ Rails.application.routes.draw do
         get :icon_data, :to => 'icons#raw_icon'
       end
       resources :settings
-      resources :tags, :only => [:index, :show] do
-        resources :portfolios, :only => [:index]
-        resources :portfolio_items, :only => [:index]
-      end
+      resources :tags, :only => [:index]
       resources :tenants, :only => [:index, :show] do
         post 'seed', :to => 'tenants#seed'
       end

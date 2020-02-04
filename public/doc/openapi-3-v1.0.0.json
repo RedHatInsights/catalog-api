@@ -317,43 +317,6 @@
             "description": "Portfolio not found"
           }
         }
-      },
-      "post": {
-        "tags": [
-          "Portfolio"
-        ],
-        "summary": "Add a portfolio item to a portfolio",
-        "operationId": "addPortfolioItemToPortfolio",
-        "description": "Adds a new portfolio item to an existing portfolio.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/PortfolioID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully added a portfolio item to the portfolio."
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "The portfolio or the portfolio item was not found."
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPortfolioItem"
-              }
-            }
-          },
-          "required": true
-        }
       }
     },
     "/portfolios/{portfolio_id}/share": {
@@ -735,9 +698,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Portfolio Not Found."
           }
         },
         "requestBody": {
@@ -1294,9 +1254,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Portfolio Item Not Found."
           }
         },
         "requestBody": {
@@ -2450,114 +2407,6 @@
         }
       }
     },
-    "/tags/{id}": {
-      "get": {
-        "tags": [
-          "Tags"
-        ],
-        "summary": "Show Tag",
-        "operationId": "showTag",
-        "description": "Show a specific Tag",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The requestesd Tag",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Tag"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Tag Not Found."
-          }
-        }
-      }
-    },
-    "/tags/{id}/portfolios": {
-      "get": {
-        "tags": [
-          "Tags"
-        ],
-        "summary": "List Portfolios for Tag",
-        "operationId": "listTagPortfolios",
-        "description": "Returns an array of Portfolio objects",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Portfolio collection",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfoliosCollection"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Tag Not Found."
-          }
-        }
-      }
-    },
-    "/tags/{id}/portfolio_items": {
-      "get": {
-        "tags": [
-          "Tags"
-        ],
-        "summary": "List Portfolio Items for Tag",
-        "operationId": "listTagPortfolioItems",
-        "description": "Returns an array of Portfolio Item objects",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Portfolio Item collection",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfolioItemsCollection"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Tag Not Found."
-          }
-        }
-      }
-    },
     "/service_plans": {
       "post": {
         "tags": [
@@ -3025,7 +2874,14 @@
       },
       "CreatePortfolioItem": {
         "type": "object",
+        "required": ["portfolio_id"],
         "properties": {
+          "portfolio_id": {
+            "type": "string",
+            "title": "Portfolio ID",
+            "description": "The Portfolio this portfolio item should belong to",
+            "example": "1"
+          },
           "service_offering_ref": {
             "type": "string",
             "title": "Service Offering Ref",
@@ -3040,7 +2896,7 @@
           "content": {
             "type": "string",
             "title": "Content",
-            "description": "The binary image contents",
+            "description": "The binary image contents, maximum size is 250KB",
             "format": "binary"
           },
           "portfolio_id": {
@@ -3075,17 +2931,6 @@
             "title": "Portfolio Item ID",
             "description": "The Portfolio Item to import the service plans for.",
             "example": "177"
-          }
-        }
-      },
-      "AddPortfolioItem": {
-        "type": "object",
-        "properties": {
-          "portfolio_item_id": {
-            "type": "string",
-            "title": "Portfolio Item Id",
-            "example": "100",
-            "description": "This is the ID of the portfolio item object."
           }
         }
       },

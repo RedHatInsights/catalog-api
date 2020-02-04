@@ -156,6 +156,10 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
       it "returns bad request" do
         expect(response).to have_http_status(:bad_request)
       end
+
+      it "throws ActiveRecord::RecordInvalid" do
+        expect(first_error_detail).to match(/ActiveRecord::RecordInvalid/)
+      end
     end
   end
 

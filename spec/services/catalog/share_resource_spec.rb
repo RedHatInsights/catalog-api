@@ -23,6 +23,6 @@ describe Catalog::ShareResource, :type => :service do
   it "#process" do
     subject.process
     portfolio.reload
-    expect(portfolio.access_control_entries.count).to eq(2)
+    expect(portfolio.access_control_entries.first.permissions.count).to eq(2)
   end
 end
