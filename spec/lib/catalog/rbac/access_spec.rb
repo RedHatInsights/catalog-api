@@ -1,4 +1,4 @@
-describe Catalog::RBACAccess, :type => [:current_forwardable] do
+describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   let(:current_user) { Insights::API::Common::User.new("identity") }
   let(:current_request) { Insights::API::Common::Request.new(:user => current_user, :headers => "headers", :original_url => "original_url") }
   let(:params) { {:id => "321"} }

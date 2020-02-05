@@ -1,32 +1,32 @@
 class PortfolioPolicy < ApplicationPolicy
   def create?
-    create_access_check
+    rbac_access.create_access_check
 
     true
   end
 
   def destroy?
-    delete_access_check
+    rbac_access.destroy_access_check
 
     true
   end
 
   def show?
-    read_access_check
+    rbac_access.read_access_check
 
     true
   end
 
   def update?
-    update_access_check
+    rbac_access.update_access_check
 
     true
   end
 
   def copy?
-    resource_check('read', @record.id)
-    permission_check('create')
-    permission_check('update')
+    rbac_access.resource_check('read', @record.id)
+    rbac_access.permission_check('create')
+    rbac_access.permission_check('update')
 
     true
   end

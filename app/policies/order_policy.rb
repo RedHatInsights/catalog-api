@@ -2,7 +2,7 @@ class OrderPolicy < ApplicationPolicy
   include Api::V1::Mixins::ServiceOfferingMixin
 
   def show?
-    read_access_check
+    rbac_access.read_access_check
 
     true
   end

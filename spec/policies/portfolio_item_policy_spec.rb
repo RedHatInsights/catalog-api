@@ -1,16 +1,16 @@
 describe PortfolioItemPolicy do
   let(:portfolio_item) { create(:portfolio_item) }
   let(:user_context) { UserContext.new("current_request", "params", "controller_name") }
-  let(:rbac_access) { instance_double(Catalog::RBACAccess) }
+  let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
   let(:subject) { described_class.new(user_context, portfolio_item) }
 
   before do
-    allow(Catalog::RBACAccess).to receive(:new).with(user_context).and_return(rbac_access)
+    allow(Catalog::RBAC::Access).to receive(:new).with(user_context).and_return(rbac_access)
   end
 
   describe "#create?" do
-    context "when the policy access returns nil" do
+    context "when the rbac access returns nil" do
       before do
         allow(rbac_access).to receive(:create_access_check).and_return(nil)
       end
@@ -20,7 +20,7 @@ describe PortfolioItemPolicy do
       end
     end
 
-    context "when the policy access throws an error" do
+    context "when the rbac access throws an error" do
       before do
         allow(rbac_access).to receive(:create_access_check).and_raise(Catalog::NotAuthorized, "Create access not authorized for PortfolioItem")
       end
@@ -32,7 +32,7 @@ describe PortfolioItemPolicy do
   end
 
   describe "#update?" do
-    context "when the policy access returns nil" do
+    context "when the rbac access returns nil" do
       before do
         allow(rbac_access).to receive(:update_access_check).and_return(nil)
       end
@@ -42,7 +42,7 @@ describe PortfolioItemPolicy do
       end
     end
 
-    context "when the policy access throws an error" do
+    context "when the rbac access throws an error" do
       before do
         allow(rbac_access).to receive(:update_access_check).and_raise(Catalog::NotAuthorized, "Update access not authorized for PortfolioItem")
       end
@@ -54,7 +54,7 @@ describe PortfolioItemPolicy do
   end
 
   describe "#destroy?" do
-    context "when the policy access returns nil" do
+    context "when the rbac access returns nil" do
       before do
         allow(rbac_access).to receive(:destroy_access_check).and_return(nil)
       end
@@ -64,7 +64,7 @@ describe PortfolioItemPolicy do
       end
     end
 
-    context "when the policy access throws an error" do
+    context "when the rbac access throws an error" do
       before do
         allow(rbac_access).to receive(:destroy_access_check).and_raise(Catalog::NotAuthorized, "Delete access not authorized for PortfolioItem")
       end
@@ -76,7 +76,7 @@ describe PortfolioItemPolicy do
   end
 
   describe "#copy?" do
-    context "when all three policy access checks returns nil" do
+    context "when all three rbac access checks returns nil" do
       before do
         allow(rbac_access).to receive(:resource_check).with('read', portfolio_item.id).and_return(nil)
         allow(rbac_access).to receive(:permission_check).with('create', Portfolio).and_return(nil)
@@ -88,7 +88,7 @@ describe PortfolioItemPolicy do
       end
     end
 
-    context "when any of the policy access checks throw an error" do
+    context "when any of the rbac access checks throw an error" do
       before do
         allow(rbac_access).to receive(:resource_check).with('read', portfolio_item.id).and_raise(Catalog::NotAuthorized, "Read access not authorized for PortfolioItem")
       end

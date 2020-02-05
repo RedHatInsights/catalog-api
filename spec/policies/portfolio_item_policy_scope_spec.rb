@@ -1,7 +1,7 @@
 describe PortfolioItemPolicy::Scope, :type => [:service] do
   let(:user) { nil }
   let(:scope) { PortfolioItem }
-  let(:rbac_access) { instance_double(Catalog::RBACAccess) }
+  let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
   let(:subject) { described_class.new(user, scope) }
 
   describe "#resolve" do
@@ -17,7 +17,7 @@ describe PortfolioItemPolicy::Scope, :type => [:service] do
 
     before do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with("Catalog Administrator").and_return(admin?)
-      allow(Catalog::RBACAccess).to receive(:new).with(user).and_return(rbac_access)
+      allow(Catalog::RBAC::Access).to receive(:new).with(user).and_return(rbac_access)
     end
 
     context "when the user is a catalog administrator" do

@@ -27,12 +27,12 @@ class PortfolioItemPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      if catalog_administrator?
+      if Catalog::RBAC::Role.catalog_administrator?
         scope.all
       else
         rbac_access.permission_check('read', Portfolio)
 
-        ids = ace_ids('read', Portfolio)
+        ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', Portfolio)
         scope.where(:portfolio_id => ids)
       end
     end
