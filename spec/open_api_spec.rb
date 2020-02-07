@@ -16,7 +16,7 @@ describe "OpenAPI stuff" do
     published_versions = rails_routes.collect do |rails_route|
       (version_match = rails_route[:path].match(/\/api\/catalog\/v([\d]+\.[\d])\/openapi.json$/)) && version_match[1]
     end.compact
-    Api::Docs.routes.select do |spec_route|
+    ::Insights::API::Common::OpenApi::Docs.instance.routes.select do |spec_route|
       published_versions.include?(spec_route[:path].match(/\/api\/catalog\/v([\d]+\.[\d])\//)[1])
     end
   end
@@ -25,7 +25,12 @@ describe "OpenAPI stuff" do
     [
       {:path => "/internal/v0/*path", :verb => "POST"},
       {:path => "/internal/v1.0/notify/approval_request/:id", :verb => "POST"},
-      {:path => "/internal/v1.0/notify/task/:id", :verb => "POST"},
+      {:path => "/internal/v1.0/notify/task/:id", :verb => "POST"}
+    ]
+  end
+
+  let(:health_check_routes) do
+    [
       {:path => "/health", :verb => "GET"}
     ]
   end
@@ -47,9 +52,10 @@ describe "OpenAPI stuff" do
     context "with the openapi json" do
       it "matches the routes" do
         redirect_routes = [
-          {:path => "#{path_prefix}/#{app_name}/v1/*path", :verb => "DELETE|GET|OPTIONS|PATCH|POST"}
+          {:path => "#{path_prefix}/#{app_name}/v1/*path", :verb => "DELETE|GET|OPTIONS|PATCH|POST"},
+          {:path => "#{path_prefix}/#{app_name}/v2/*path", :verb => "DELETE|GET|OPTIONS|PATCH|POST"}
         ]
-        expect(rails_routes).to match_array(open_api_routes + redirect_routes + internal_api_routes)
+        expect(rails_routes).to match_array(open_api_routes + redirect_routes + internal_api_routes + health_check_routes)
       end
     end
 
