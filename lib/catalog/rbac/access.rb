@@ -24,6 +24,7 @@ module Catalog
       def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
         return unless Insights::API::Common::RBAC::Access.enabled?
         return if Catalog::RBAC::Role.catalog_administrator?
+
         ids = access_id_list(verb, klass)
         if klass.try(:supports_access_control?)
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.exclude?(id.to_s)

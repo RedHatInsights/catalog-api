@@ -21,21 +21,21 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       let(:rbac_enabled) { true }
       let(:access_pagination) do
         RBACApiClient::AccessPagination.new(
-          :meta   => pagination_meta,
-          :links  => pagination_links,
-          :data   => access_list
+          :meta  => pagination_meta,
+          :links => pagination_links,
+          :data  => access_list
         )
       end
       let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
       let(:pagination_links) { RBACApiClient::PaginationLinks.new }
 
       before do
-        stub_request(:get, "http://rbac.example.com/api/rbac/v1/access/?application=catalog&limit=500&offset=0").
-          to_return(
+        stub_request(:get, "http://rbac.example.com/api/rbac/v1/access/?application=catalog&limit=500&offset=0")
+          .to_return(
             :status  => 200,
             :body    => access_pagination.to_json,
             :headers => default_headers
-        )
+          )
       end
 
       context "when the object is accessible" do
@@ -76,34 +76,34 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         let(:admin?) { false }
         let(:access_pagination) do
           RBACApiClient::AccessPagination.new(
-            :meta   => pagination_meta,
-            :links  => pagination_links,
-            :data   => access_list
+            :meta  => pagination_meta,
+            :links => pagination_links,
+            :data  => access_list
           )
         end
         let(:group_pagination) do
           RBACApiClient::GroupPagination.new(
-            :meta   => pagination_meta,
-            :links  => pagination_links,
-            :data   => group_list
+            :meta  => pagination_meta,
+            :links => pagination_links,
+            :data  => group_list
           )
         end
         let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
         let(:pagination_links) { RBACApiClient::PaginationLinks.new }
 
         before do
-          stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal").
-            to_return(
+          stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal")
+            .to_return(
               :status  => 200,
               :body    => group_pagination.to_json,
               :headers => default_headers
-          )
-          stub_request(:get, "http://rbac.example.com/api/rbac/v1/access/?application=catalog&limit=500&offset=0").
-            to_return(
+            )
+          stub_request(:get, "http://rbac.example.com/api/rbac/v1/access/?application=catalog&limit=500&offset=0")
+            .to_return(
               :status  => 200,
               :body    => access_pagination.to_json,
               :headers => default_headers
-          )
+            )
         end
 
         context "when the object is accessible" do

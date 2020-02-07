@@ -12,7 +12,7 @@ module Api
       end
 
       def create
-        authorize Portfolio
+        authorize(Portfolio)
 
         portfolio = Portfolio.create!(params_for_create)
         render :json => portfolio
@@ -20,7 +20,7 @@ module Api
 
       def update
         portfolio = Portfolio.find(params.require(:id))
-        authorize portfolio
+        authorize(portfolio)
 
         portfolio.update!(params_for_update)
 
@@ -29,14 +29,14 @@ module Api
 
       def show
         portfolio = Portfolio.find(params.require(:id))
-        authorize portfolio
+        authorize(portfolio)
 
         render :json => portfolio
       end
 
       def destroy
         portfolio = Portfolio.find(params.require(:id))
-        authorize portfolio
+        authorize(portfolio)
 
         svc = Catalog::SoftDelete.new(portfolio)
         key = svc.process.restore_key
@@ -77,7 +77,7 @@ module Api
 
       def copy
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        authorize portfolio
+        authorize(portfolio)
 
         svc = Catalog::CopyPortfolio.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio

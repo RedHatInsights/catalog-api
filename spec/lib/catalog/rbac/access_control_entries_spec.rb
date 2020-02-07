@@ -8,9 +8,9 @@ describe Catalog::RBAC::AccessControlEntries, :type => [:current_forwardable] do
   describe "#ace_ids" do
     let(:group_pagination) do
       RBACApiClient::GroupPagination.new(
-        :meta   => pagination_meta,
-        :links  => pagination_links,
-        :data   => group_list
+        :meta  => pagination_meta,
+        :links => pagination_links,
+        :data  => group_list
       )
     end
     let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
@@ -18,12 +18,12 @@ describe Catalog::RBAC::AccessControlEntries, :type => [:current_forwardable] do
     let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
 
     before do
-      stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal").
-        to_return(
+      stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal")
+        .to_return(
           :status  => 200,
           :body    => group_pagination.to_json,
           :headers => default_headers
-      )
+        )
     end
 
     context "when access control entries exist that match the given parameters" do

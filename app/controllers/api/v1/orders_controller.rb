@@ -8,7 +8,7 @@ module Api
       end
 
       def show
-        authorize Order
+        authorize(Order)
 
         render :json => Order.find(params.require(:id))
       end
@@ -24,7 +24,7 @@ module Api
 
       def submit_order
         order = Order.find(params.require(:order_id))
-        authorize order
+        authorize(order)
 
         order = Catalog::CreateRequestForAppliedInventories.new(order).process.order
         render :json => order

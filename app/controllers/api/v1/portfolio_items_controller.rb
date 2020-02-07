@@ -14,7 +14,7 @@ module Api
       end
 
       def create
-        authorize PortfolioItem
+        authorize(PortfolioItem)
 
         so = ServiceOffering::AddToPortfolioItem.new(params_for_create)
         render :json => so.process.item
@@ -22,7 +22,7 @@ module Api
 
       def update
         portfolio_item = PortfolioItem.find(params.require(:id))
-        authorize portfolio_item
+        authorize(portfolio_item)
 
         portfolio_item.update!(params_for_update)
 
@@ -35,7 +35,7 @@ module Api
 
       def destroy
         item = PortfolioItem.find(params.require(:id))
-        authorize item
+        authorize(item)
 
         soft_delete = Catalog::SoftDelete.new(item)
 
@@ -44,7 +44,7 @@ module Api
 
       def copy
         portfolio_item = PortfolioItem.find(params[:portfolio_item_id])
-        authorize portfolio_item
+        authorize(portfolio_item)
 
         svc = Catalog::CopyPortfolioItem.new(portfolio_copy_params)
         render :json => svc.process.new_portfolio_item

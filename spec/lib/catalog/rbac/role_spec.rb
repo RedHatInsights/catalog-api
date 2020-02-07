@@ -9,9 +9,9 @@ describe Catalog::RBAC::Role, :type => [:current_forwardable] do
 
   let(:role_pagination) do
     RBACApiClient::RolePagination.new(
-      :meta   => pagination_meta,
-      :links  => pagination_links,
-      :data   => role_list
+      :meta  => pagination_meta,
+      :links => pagination_links,
+      :data  => role_list
     )
   end
   let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
@@ -20,12 +20,12 @@ describe Catalog::RBAC::Role, :type => [:current_forwardable] do
 
   describe ".catalog_administrator?" do
     before do
-      stub_request(:get, "http://rbac.example.com/api/rbac/v1/roles/?limit=10&name=Catalog%20Administrator&offset=0&scope=principal").
-        to_return(
+      stub_request(:get, "http://rbac.example.com/api/rbac/v1/roles/?limit=10&name=Catalog%20Administrator&offset=0&scope=principal")
+        .to_return(
           :status  => 200,
           :body    => role_pagination.to_json,
           :headers => default_headers
-      )
+        )
     end
 
     context "when an assigned role exists" do
@@ -54,13 +54,12 @@ describe Catalog::RBAC::Role, :type => [:current_forwardable] do
       let(:enabled?) { true }
 
       before do
-        stub_request(:get, "http://rbac.example.com/api/rbac/v1/roles/?limit=10&name=test&offset=0&scope=principal").
-          to_return(
+        stub_request(:get, "http://rbac.example.com/api/rbac/v1/roles/?limit=10&name=test&offset=0&scope=principal")
+          .to_return(
             :status  => 200,
             :body    => role_pagination.to_json,
             :headers => default_headers
-        )
-
+          )
       end
 
       context "when an assigned role exists" do
