@@ -184,6 +184,12 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
         allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
       end
 
+      it "authorizes the specified portfolio" do
+        expect_any_instance_of(Api::V1::PortfolioItemsController).to receive(:authorize).with(portfolio)
+
+        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
+      end
+
       it "returns not found when topology doesn't have the service_offering_ref" do
         post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
         expect(response).to have_http_status(:service_unavailable)
@@ -194,6 +200,12 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
       before do
         allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
         allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
+      end
+
+      it "authorizes the specified portfolio" do
+        expect_any_instance_of(Api::V1::PortfolioItemsController).to receive(:authorize).with(portfolio)
+
+        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
       end
 
       it "returns the new portfolio item when topology has the service_offering_ref" do

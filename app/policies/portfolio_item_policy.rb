@@ -1,6 +1,6 @@
 class PortfolioItemPolicy < ApplicationPolicy
   def create?
-    rbac_access.create_access_check
+    rbac_access.resource_check('update', @record.id, Portfolio)
 
     true
   end

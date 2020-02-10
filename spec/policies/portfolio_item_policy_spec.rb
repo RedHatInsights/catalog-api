@@ -1,5 +1,6 @@
 describe PortfolioItemPolicy do
-  let(:portfolio_item) { create(:portfolio_item) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
+  let(:portfolio) { create(:portfolio) }
   let(:user_context) { UserContext.new("current_request", "params", "controller_name") }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
@@ -10,9 +11,11 @@ describe PortfolioItemPolicy do
   end
 
   describe "#create?" do
+    let(:subject) { described_class.new(user_context, portfolio) }
+
     context "when the rbac access returns nil" do
       before do
-        allow(rbac_access).to receive(:create_access_check).and_return(nil)
+        allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(nil)
       end
 
       it "returns true" do
@@ -22,7 +25,9 @@ describe PortfolioItemPolicy do
 
     context "when the rbac access throws an error" do
       before do
-        allow(rbac_access).to receive(:create_access_check).and_raise(Catalog::NotAuthorized, "Create access not authorized for PortfolioItem")
+        allow(rbac_access).to receive(:resource_check)
+          .with('update', portfolio.id, Portfolio)
+          .and_raise(Catalog::NotAuthorized, "Create access not authorized for PortfolioItem")
       end
 
       it "throws an error" do
