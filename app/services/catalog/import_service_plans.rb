@@ -1,6 +1,6 @@
 module Catalog
   class ImportServicePlans
-    attr_reader :service_plans
+    attr_reader :json
 
     def initialize(portfolio_item_id)
       @portfolio_item = PortfolioItem.find(portfolio_item_id)
@@ -18,7 +18,7 @@ module Catalog
         )
       end
 
-      @service_plans = @portfolio_item.service_plans
+      @json = Catalog::ServicePlanJson.new(:portfolio_item_id => @portfolio_item.id, :collection => true).process.json
 
       self
     end

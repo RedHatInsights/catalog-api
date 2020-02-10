@@ -100,6 +100,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
       it "returns the imported service plans" do
         expect(json.first["id"]).to eq portfolio_item_without_service_plan.service_plans.first.id.to_s
       end
+
+      it "returns the base schema in the :create_json_schema field" do
+        expect(json.first["create_json_schema"]).to eq JSON.parse(modified_schema)
+      end
     end
 
     context "when a service_plan already exists for the portfolio_item specified" do
