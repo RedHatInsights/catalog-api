@@ -36,6 +36,7 @@ gem 'puma', '~> 3.12.2'
 gem 'pundit'
 gem 'rack-cors', '>= 1.0.4'
 gem 'rest-client', '>= 1.8.0'
+gem 'sources-api-client', '~> 1.0'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
@@ -44,4 +45,3 @@ gem 'topological_inventory-api-client', '~> 2.0', :git => "https://github.com/Ma
 
 gem 'approval-api-client-ruby', :git => 'https://github.com/RedHatInsights/approval-api-client-ruby', :branch => "master"
 gem 'rbac-api-client', :git => "https://github.com/RedHatInsights/insights-rbac-api-client-ruby", :branch => "master"
-gem 'sources-api-client', :git => 'https://github.com/ManageIQ/sources-api-client-ruby.git', :branch => "master"
