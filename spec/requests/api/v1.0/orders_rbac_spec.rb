@@ -45,6 +45,12 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       expect(response).to have_http_status(:ok)
       expect(json['id']).to eq order_id.to_s
     end
+
+    it "authorizes the order to be shown" do
+      expect_any_instance_of(Api::V1::OrdersController).to receive(:authorize).with(order1)
+
+      get "#{api_version}/orders/#{order_id}", :headers => default_headers
+    end
   end
 
   context "Catalog User" do

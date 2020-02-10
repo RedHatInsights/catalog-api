@@ -8,9 +8,10 @@ module Api
       end
 
       def show
-        authorize(Order)
+        order = Order.find(params.require(:id))
+        authorize(order)
 
-        render :json => Order.find(params.require(:id))
+        render :json => order
       end
 
       def create
