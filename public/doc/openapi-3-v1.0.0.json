@@ -2030,40 +2030,6 @@
       }
     },
     "/icons/{id}": {
-      "get": {
-        "tags": [
-          "Icon"
-        ],
-        "summary": "Fetch an Icon by ID",
-        "operationId": "getIcon",
-        "description": "Fetch an Icon by ID",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The Icon matching the Icon ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon not found"
-          }
-        }
-      },
       "patch": {
         "tags": [
           "Icon"
@@ -2127,55 +2093,6 @@
           },
           "404": {
             "description": "Icon not found."
-          }
-        }
-      }
-    },
-    "/icons/{id}/icon_data": {
-      "get": {
-        "tags": [
-          "Icon"
-        ],
-        "summary": "Fetches the specified icon's image",
-        "operationId": "showIconData",
-        "description": "Fetch the specified portfolio item's icon image.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Portfolio Item Icon",
-            "content": {
-              "image/svg+xml": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              },
-              "image/png": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              },
-              "image/jpeg": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
-          "204": {
-            "description": "No icon data present."
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
           }
         }
       }

@@ -62,9 +62,7 @@ Rails.application.routes.draw do
         post :copy, :action => 'copy', :controller => 'portfolio_items'
         post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
       end
-      resources :icons, :only => [:create, :destroy, :show, :update] do
-        get :icon_data, :to => 'icons#raw_icon'
-      end
+      resources :icons, :only => [:create, :update, :destroy]
       resources :settings
       resources :tags, :only => [:index]
       resources :tenants, :only => [:index, :show] do
