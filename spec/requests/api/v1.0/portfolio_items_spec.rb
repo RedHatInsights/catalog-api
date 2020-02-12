@@ -79,10 +79,16 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   end
 
   describe 'DELETE admin tagged /portfolio_items/:portfolio_item_id' do
+    subject do
+      delete "#{api_version}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+    end
+
     context 'when v1.0 :portfolio_item_id is valid' do
-      before do
-        delete "#{api_version}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
+
+      it_behaves_like "action that tests authorization", :destroy?, PortfolioItem
 
       it 'discards the record' do
         expect(response).to have_http_status(:ok)
@@ -161,6 +167,10 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     let(:params) { {:service_offering_ref => service_offering_ref, :portfolio_id => portfolio.id.to_s} }
     let(:permitted_params) { ActionController::Parameters.new(params).permit(:service_offering_ref, :portfolio_id) }
 
+    subject do
+      post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
+    end
+
     before do
       allow(ServiceOffering::AddToPortfolioItem).to receive(:new).with(permitted_params).and_return(add_to_portfolio_svc)
     end
@@ -168,48 +178,44 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     context "when a portfolio_id is not included in the parameters" do
       let(:params) { {:service_offering_ref => service_offering_ref} }
 
+      before do
+        subject
+      end
+
       it "returns a 400" do
-        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
         expect(response).to have_http_status(:bad_request)
       end
 
       it "returns a required parameter error in the body" do
-        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
         expect(first_error_detail).to match(/missing required parameters: portfolio_id/)
       end
     end
 
     context "when topology doesn't have the service offering ref" do
-      before do
+      before do |example|
         allow(add_to_portfolio_svc).to receive(:process).and_raise(topo_ex)
+
+        subject unless example.metadata[:subject_inside]
       end
 
-      it "authorizes the specified portfolio" do
-        expect_any_instance_of(Api::V1::PortfolioItemsController).to receive(:authorize).with(portfolio)
-
-        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
-      end
+      it_behaves_like "action that tests authorization", :create?, Portfolio
 
       it "returns not found when topology doesn't have the service_offering_ref" do
-        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
         expect(response).to have_http_status(:service_unavailable)
       end
     end
 
     context "when topology does have the service offering ref" do
-      before do
+      before do |example|
         allow(add_to_portfolio_svc).to receive(:process).and_return(add_to_portfolio_svc)
         allow(add_to_portfolio_svc).to receive(:item).and_return(portfolio_item)
+
+        subject unless example.metadata[:subject_inside]
       end
 
-      it "authorizes the specified portfolio" do
-        expect_any_instance_of(Api::V1::PortfolioItemsController).to receive(:authorize).with(portfolio)
-
-        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
-      end
+      it_behaves_like "action that tests authorization", :create?, Portfolio
 
       it "returns the new portfolio item when topology has the service_offering_ref" do
-        post "#{api_version}/portfolio_items", :params => params, :headers => default_headers
         expect(response).to have_http_status(:ok)
         expect(json["id"]).to eq portfolio_item.id.to_s
         expect(json["owner"]).to eq portfolio_item.owner
@@ -241,31 +247,39 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   end
 
   describe "patching portfolio items" do
-    let(:valid_attributes) { { :name => 'PatchPortfolio', :description => 'PatchDescription' } }
-    let(:invalid_attributes) { { :name => 'PatchPortfolio', :service_offering_ref => "27" } }
-    let(:partial_attributes) { { :name => 'Curious George' } }
+    subject do
+      patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => params, :headers => default_headers
+    end
 
     context "when passing in valid attributes" do
-      before do
+      let(:params) { {:name => 'PatchPortfolio', :description => 'PatchDescription'} }
+
+      before do |example|
         stub_request(:get, approval_url("workflows/PatchWorkflowRef"))
           .to_return(:status => 200, :body => "", :headers => {"Content-type" => "application/json"})
 
-        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => valid_attributes, :headers => default_headers
+        subject unless example.metadata[:subject_inside]
       end
+
+      it_behaves_like "action that tests authorization", :update?, PortfolioItem
 
       it 'returns a 200' do
         expect(response).to have_http_status(:ok)
       end
 
       it 'patches the record' do
-        expect(json).to include(valid_attributes.stringify_keys)
+        expect(json).to include(params.stringify_keys)
       end
     end
 
     context "when passing in read-only attributes" do
-      before do
-        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => invalid_attributes, :headers => default_headers
+      let(:params) { {:name => 'PatchPortfolio', :service_offering_ref => "27"} }
+
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
+
+      it_behaves_like "action that tests authorization", :update?, PortfolioItem
 
       it 'returns a 400' do
         expect(response).to have_http_status(:bad_request)
@@ -274,9 +288,13 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
 
     context "when passing partial attributes" do
-      before do
-        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => partial_attributes, :headers => default_headers
+      let(:params) { {:name => 'Curious George'} }
+
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
+
+      it_behaves_like "action that tests authorization", :update?, PortfolioItem
 
       it 'returns a 200' do
         expect(response).to have_http_status(:ok)
@@ -284,10 +302,13 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
 
     context "when passing in nullable attributes" do
-      let(:nullable_attributes) { { :name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil } }
-      before do
-        patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => nullable_attributes, :headers => default_headers
+      let(:params) { {:name => 'PatchPortfolio', :description => nil, :long_description => nil, :distributor => nil} }
+
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
+
+      it_behaves_like "action that tests authorization", :update?, PortfolioItem
 
       it 'returns a 200' do
         expect(response).to have_http_status(:ok)
@@ -302,16 +323,18 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   end
 
   describe "copying portfolio items" do
-    let(:copy_portfolio_item) do
+    subject do
       post "#{api_version}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
     end
 
-    context "when copying into the same portfolio" do
-      let(:params) { { :portfolio_id => portfolio_id } }
+    before do |example|
+      subject unless example.metadata[:subject_inside]
+    end
 
-      before do
-        copy_portfolio_item
-      end
+    context "when copying into the same portfolio" do
+      let(:params) { {:portfolio_id => portfolio_id} }
+
+      it_behaves_like "action that tests authorization", :copy?, PortfolioItem
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -329,12 +352,10 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
 
     context "when copying into a different portfolio" do
-      let(:params) { { :portfolio_id => new_portfolio.id.to_s } }
+      let(:params) { {:portfolio_id => new_portfolio.id.to_s} }
       let(:new_portfolio) { create(:portfolio) }
 
-      before do
-        copy_portfolio_item
-      end
+      it_behaves_like "action that tests authorization", :copy?, PortfolioItem
 
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
@@ -348,12 +369,10 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
 
     context "when copying into a different portfolio in a different tenant" do
-      let(:params) { { :portfolio_id => not_my_portfolio.id.to_s } }
+      let(:params) { {:portfolio_id => not_my_portfolio.id.to_s} }
       let(:not_my_portfolio) { create(:portfolio, :tenant => create(:tenant, :external_tenant => "xyz")) }
 
-      before do
-        copy_portfolio_item
-      end
+      it_behaves_like "action that tests authorization", :copy?, PortfolioItem
 
       it 'returns a 400' do
         expect(response).to have_http_status(:bad_request)

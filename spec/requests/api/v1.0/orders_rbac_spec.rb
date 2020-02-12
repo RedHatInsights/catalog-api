@@ -32,6 +32,8 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   end
 
   shared_examples_for "#show" do
+    subject { get "#{api_version}/orders/#{order_id}", :headers => default_headers }
+
     it "fetches a single allowed order" do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(is_admin)
 
@@ -39,18 +41,14 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
         allow(Insights::API::Common::RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
         allow(access_obj).to receive(:process).and_return(access_obj)
       end
-      get "#{api_version}/orders/#{order_id}", :headers => default_headers
+      subject
 
       expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
       expect(json['id']).to eq order_id.to_s
     end
 
-    it "authorizes the order to be shown" do
-      expect_any_instance_of(Api::V1::OrdersController).to receive(:authorize).with(order1)
-
-      get "#{api_version}/orders/#{order_id}", :headers => default_headers
-    end
+    it_behaves_like "action that tests authorization", :show?, Order
   end
 
   context "Catalog User" do
