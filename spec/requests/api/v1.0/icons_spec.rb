@@ -15,18 +15,6 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
   let(:image) { create(:image) }
 
-  describe "#show" do
-    before { get "#{api_version}/icons/#{icon.id}", :headers => default_headers }
-
-    it "returns a 200" do
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "returns the icon specified" do
-      expect(json["id"]).to eq icon.id.to_s
-    end
-  end
-
   describe "#destroy" do
     before { delete "#{api_version}/icons/#{icon.id}", :headers => default_headers }
 
@@ -199,12 +187,6 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq "image/svg+xml"
       end
-
-      it "/icons/{icon_id}/icon_data returns the icon" do
-        get "#{api_version}/icons/#{icon.id}/icon_data", :headers => default_headers
-        expect(response).to have_http_status(:ok)
-        expect(response.content_type).to eq "image/svg+xml"
-      end
     end
 
     context "when the icon does not exist" do
@@ -221,12 +203,6 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
       it "/portfolios/{id}/icon returns no content" do
         get "#{api_version}/portfolios/#{portfolio.id}/icon", :headers => default_headers
-
-        expect(response).to have_http_status(:no_content)
-      end
-
-      it "/icons/{id}/icon_data returns no content" do
-        get "#{api_version}/icons/0/icon_data", :headers => default_headers
 
         expect(response).to have_http_status(:no_content)
       end

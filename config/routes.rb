@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
 
   draw(:v1x0, routing_helper, prefix)
-  draw(:v2x0, routing_helper, prefix)
+  draw(:v1x1, routing_helper, prefix)
   draw(:v1x0_internal)
   draw(:public)
 end
