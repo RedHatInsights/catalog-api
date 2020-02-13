@@ -2011,14 +2011,7 @@
         },
         "responses": {
           "200": {
-            "description": "The newly created Icon",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
+            "description": "Icon Created"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -2055,14 +2048,7 @@
         "operationId": "updateIcon",
         "responses": {
           "200": {
-            "description": "Return the updated Icon object",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
+            "description": "Icon Updated Successfully"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -3203,47 +3189,6 @@
               "canceled"
             ],
             "description": "The state of the approval request (approved, denied, undecided, canceled)",
-            "readOnly": true
-          }
-        }
-      },
-      "Icon": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "ID",
-            "description": "The unique identifier for this Service Offering Icon",
-            "readOnly": true
-          },
-          "image_id": {
-            "type": "string",
-            "title": "Image ID",
-            "description": "The Image reference containing the binary image data for this icon",
-            "readOnly": false
-          },
-          "source_ref": {
-            "type": "string",
-            "title": "Source Ref",
-            "description": "Stores the Source Ref for this icon",
-            "readOnly": true
-          },
-          "source_id": {
-            "type": "string",
-            "title": "Source ID",
-            "description": "The source ID for this icon",
-            "readOnly": true
-          },
-          "portfolio_id": {
-            "type": "string",
-            "title": "Portfolio ID",
-            "description": "The portfolio this icon belongs to.",
-            "readOnly": true
-          },
-          "portfolio_item_id": {
-            "type": "string",
-            "title": "Portfolio Item ID",
-            "description": "The portfolio_item this icon belongs to.",
             "readOnly": true
           }
         }

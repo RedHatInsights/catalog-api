@@ -7,8 +7,8 @@ module Api
       skip_before_action :validate_request, :only => %i[create update]
 
       def create
-        icon = Catalog::CreateIcon.new(icon_params).process.icon
-        render :json => icon
+        Catalog::CreateIcon.new(icon_params).process
+        head :ok
       end
 
       def destroy
@@ -17,8 +17,8 @@ module Api
       end
 
       def update
-        icon = Catalog::UpdateIcon.new(params.require(:id), icon_patch_params).process.icon
-        render :json => icon
+        Catalog::UpdateIcon.new(params.require(:id), icon_patch_params).process
+        head :ok
       end
 
       def raw_icon

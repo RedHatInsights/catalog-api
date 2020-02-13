@@ -52,17 +52,14 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
       it "returns a 200" do
         expect(response).to have_http_status(:ok)
       end
-
-      it "returns the created icon" do
-        expect(json["image_id"]).to be_truthy
-      end
     end
 
     context "when uploading a duplicate svg icon" do
       let(:params) { {:content => form_upload_test_image("ocp_logo.svg"), :portfolio_item_id => portfolio_item.id} }
 
       it "uses the reference from the one that is already there" do
-        expect(json["image_id"]).to eq image.id.to_s
+        portfolio_item.reload
+        expect(portfolio_item.icon.image_id).to eq image.id
       end
     end
 
@@ -75,7 +72,8 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
       end
 
       it "uses the already-existing image" do
-        expect(json["image_id"]).to eq ocp_png_image.id.to_s
+        portfolio_item.reload
+        expect(portfolio_item.icon.image_id).to eq ocp_png_image.id
       end
     end
 
@@ -88,7 +86,8 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
       end
 
       it "uses the already-existing image" do
-        expect(json["image_id"]).to eq ocp_jpg_image.id.to_s
+        portfolio_item.reload
+        expect(portfolio_item.icon.image_id).to eq ocp_jpg_image.id
       end
     end
 
@@ -118,7 +117,8 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
       it "makes a new image and icon" do
         expect(response).to have_http_status 200
-        expect(json["image_id"]).to_not eq image.id
+        portfolio_item.reload
+        expect(portfolio_item.icon.image_id).not_to eq image.id
       end
     end
 
@@ -130,7 +130,8 @@ describe "v1.0 - IconsRequests", :type => [:request, :v1] do
 
       it "makes a new image and icon" do
         expect(response).to have_http_status 200
-        expect(json["image_id"]).to_not eq image.id
+        portfolio_item.reload
+        expect(portfolio_item.icon.image_id).not_to eq image.id
       end
     end
 
