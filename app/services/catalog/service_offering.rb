@@ -3,8 +3,8 @@ module Catalog
     attr_reader :archived
     attr_reader :order
 
-    def initialize(order_id)
-      @order = Order.find_by!(:id => order_id)
+    def initialize(order)
+      @order = order
       @service_offering_ref = service_offering_ref
     end
 

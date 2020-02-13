@@ -12,7 +12,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
     let(:service_offering_service) { instance_double("Catalog::ServiceOffering") }
 
     before do
-      allow(Catalog::ServiceOffering).to receive(:new).with(order.id.to_s).and_return(service_offering_service)
+      allow(Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering_service)
       allow(service_offering_service).to receive(:process).and_return(service_offering_service)
       allow(service_offering_service).to receive(:archived).and_return(archived)
       allow(service_offering_service).to receive(:order).and_return(order)

@@ -68,6 +68,7 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(portfolio_access_obj)
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(portfolio_access_obj)
       allow(portfolio_access_obj).to receive(:process).and_return(portfolio_access_obj)
+      create(:access_control_entry, :has_read_permission, :aceable_id => portfolio.id)
     end
 
     it 'returns a 200' do
