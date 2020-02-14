@@ -30,6 +30,24 @@ describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_fo
       end
     end
 
+    context "when force_reset is set" do
+      let!(:service_plan_current) { create(:service_plan, :portfolio_item => portfolio_item) }
+      let(:data) { [service_plan] }
+
+      before do
+        described_class.new(portfolio_item.id, true).process
+      end
+
+      it "destroys the current service_plans" do
+        expect{ServicePlan.find(service_plan_current.id)}.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+
+      it "reimports the service plan" do
+        portfolio_item.service_plans.reload
+        expect(portfolio_item.service_plans.any?).to be_truthy
+      end
+    end
+
     context "when there is one plan" do
       let(:data) { [service_plan] }
 

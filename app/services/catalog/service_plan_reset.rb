@@ -3,23 +3,27 @@ module Catalog
     attr_reader :status
 
     def initialize(service_plan_id)
-      @service_plan_id = service_plan_id
+      @plan = ServicePlan.find(service_plan_id)
     end
 
     def process
-      plan = ServicePlan.find(@service_plan_id)
+      @status = if @plan.modified.nil?
+                  :no_content
+                else
+                  :ok
+                end
 
-      if plan.modified.nil?
-        @status = :no_content
-      else
-        plan.update!(:modified => nil)
-        @status = :ok
-      end
-
+      reimport_from_topo
       self
     rescue StandardError => e
       Rails.logger.error("Service Plans #{e.message}")
       raise
+    end
+
+    private
+
+    def reimport_from_topo
+      Catalog::ImportServicePlans.new(@plan.portfolio_item_id, true).process
     end
   end
 end
