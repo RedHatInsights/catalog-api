@@ -2,7 +2,7 @@ module Catalog
   class OrderItemSanitizedParameters
     attr_reader :sanitized_parameters
 
-    MASKED_VALUE = "********".freeze
+    MASKED_VALUE = "$protected$".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
 
     def initialize(params)
