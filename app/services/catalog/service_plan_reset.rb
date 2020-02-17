@@ -23,7 +23,7 @@ module Catalog
     private
 
     def reimport_from_topo
-      Catalog::ImportServicePlans.new(@plan.portfolio_item_id, true).process
+      Catalog::ImportServicePlans.new(@plan.portfolio_item_id, :force_reset => true).process
     end
   end
 end

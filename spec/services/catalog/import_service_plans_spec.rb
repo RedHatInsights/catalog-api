@@ -35,7 +35,7 @@ describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_fo
       let(:data) { [service_plan] }
 
       before do
-        described_class.new(portfolio_item.id, true).process
+        described_class.new(portfolio_item.id, :force_reset => true).process
       end
 
       it "destroys the current service_plans" do

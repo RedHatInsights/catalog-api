@@ -2,7 +2,7 @@ module Catalog
   class ImportServicePlans
     attr_reader :json
 
-    def initialize(portfolio_item_id, force_reset=false)
+    def initialize(portfolio_item_id, force_reset: false)
       @portfolio_item = PortfolioItem.find(portfolio_item_id)
       force_reset ? clear_service_plans : check_conflict
     end
