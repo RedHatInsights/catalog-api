@@ -1,7 +1,7 @@
 describe Catalog::CreateRequestBodyFrom, :type => :service do
   let(:subject) { described_class.new(order, order_item, task) }
   let(:order) { create(:order) }
-  let(:order_item) { create(:order_item) }
+  let(:order_item) { create(:order_item_with_callback) }
   let(:task) { TopologicalInventoryApiClient::Task.new }
 
   describe "#process" do
