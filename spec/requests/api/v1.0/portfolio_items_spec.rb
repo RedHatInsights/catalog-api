@@ -223,6 +223,20 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
   end
 
+  context "when passing in read-only parameters" do
+    let(:params) { {:service_offering_ref => service_offering_ref, :portfolio_id => portfolio.id.to_s, :owner => "me"} }
+
+    before { post "#{api_version}/portfolio_items", :params => params, :headers => default_headers }
+
+    it "returns a 400" do
+      expect(response).to have_http_status(400)
+    end
+
+    it "returns a required parameter error in the body" do
+      expect(first_error_detail).to match(/unpermitted.*owner/)
+    end
+  end
+
   context "v1.0 provider control parameters" do
     let(:url) { "#{api_version}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
