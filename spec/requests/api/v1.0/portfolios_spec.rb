@@ -353,11 +353,10 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
 
     context 'share_info' do
       include_context "sharing_objects"
-      let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT} }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, pagination_options).and_return(groups)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
           ace1
           ace2
           ace3

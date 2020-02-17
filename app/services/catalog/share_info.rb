@@ -2,7 +2,6 @@ module Catalog
   class ShareInfo
     require 'rbac-api-client'
     attr_reader :result
-    MAX_GROUPS_LIMIT = 500
 
     def initialize(options)
       @object = options[:object]
@@ -28,7 +27,7 @@ module Catalog
 
     def group_names
       @group_names ||= Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-        Insights::API::Common::RBAC::Service.paginate(api, :list_groups, :limit => MAX_GROUPS_LIMIT).each_with_object({}) do |group, memo|
+        Insights::API::Common::RBAC::Service.paginate(api, :list_groups, {}).each_with_object({}) do |group, memo|
           memo[group.uuid] = group.name
         end
       end
