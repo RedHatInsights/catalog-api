@@ -34,7 +34,7 @@ describe Catalog::RBAC::AccessControlEntries, :type => [:current_forwardable] do
       end
 
       it "returns a list of the permitted object ids" do
-        expect(subject.ace_ids('read', Portfolio)).to eq(["123", "456"])
+        expect(subject.ace_ids('read', Portfolio)).to match_array(["123", "456"])
       end
     end
 
