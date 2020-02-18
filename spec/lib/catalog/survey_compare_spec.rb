@@ -36,4 +36,24 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
       end
     end
   end
+
+  describe "#any_changed?" do
+    let(:plans) { [service_plan] }
+
+    context "when the base has changed from topology" do
+      let(:service_plan) { create(:service_plan) }
+
+      it "returns true" do
+        expect(Catalog::SurveyCompare.any_changed?(plans)).to be true
+      end
+    end
+
+    context "when the base has not changed from topology" do
+      let(:service_plan) { create(:service_plan, :base => valid_ddf) }
+
+      it "returns false" do
+        expect(Catalog::SurveyCompare.any_changed?(plans)).to be false
+      end
+    end
+  end
 end
