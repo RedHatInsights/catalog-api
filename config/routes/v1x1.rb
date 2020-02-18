@@ -1,4 +1,4 @@
-namespace :v1x0, :path => "v1.0" do
+namespace :v1x1, :path => "v1.1" do
   concern :taggable do
     post      :tag,   :to => "tags#tag"
     post      :untag, :to => "tags#untag"
@@ -37,9 +37,7 @@ namespace :v1x0, :path => "v1.0" do
     post :copy, :action => 'copy', :controller => 'portfolio_items'
     post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
   end
-  resources :icons, :only => [:create, :destroy, :show, :update] do
-    get :icon_data, :to => 'icons#raw_icon'
-  end
+  resources :icons, :only => [:create, :destroy, :update]
   resources :settings
   resources :tags, :only => [:index]
   resources :tenants, :only => [:index, :show] do

@@ -8,9 +8,12 @@ Rails.application.routes.draw do
   if ENV["PATH_PREFIX"].present? && ENV["APP_NAME"].present?
     prefix = File.join(ENV["PATH_PREFIX"], ENV["APP_NAME"]).gsub(/^\/+|\/+$/, "")
   end
+  scope :as => :api, :module => "api", :path => prefix do
+    routing_helper.redirect_major_version("v1.1", prefix)
 
-  draw(:v1x0, routing_helper, prefix)
-  draw(:v1x1, routing_helper, prefix)
-  draw(:v1x0_internal)
+    draw(:v1x0)
+    draw(:v1x1)
+  end
   draw(:public)
+  draw(:v1x0_internal)
 end

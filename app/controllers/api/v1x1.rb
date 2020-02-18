@@ -1,14 +1,13 @@
 module Api
-  module V2x0
+  module V1x1
     class RootController < ApplicationController
       def openapi
-        render :json => Api::Docs["2.0"]
+        render :json => Api::Docs["1.1"]
       end
     end
 
     class ApprovalRequestsController          < Api::V1::ApprovalRequestsController; end
     class GraphqlController                   < Api::V1::GraphqlController; end
-    class IconsController                     < Api::V1::IconsController; end
     class OrderItemsController                < Api::V1::OrderItemsController; end
     class OrdersController                    < Api::V1::OrdersController; end
     class PortfoliosController                < Api::V1::PortfoliosController; end
