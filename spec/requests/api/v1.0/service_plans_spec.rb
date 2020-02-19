@@ -36,14 +36,35 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
     context "when there are service plans in the db" do
       before do
         post "#{api_version}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
-        get "#{api_version}/portfolio_items/#{portfolio_item_without_service_plan.id}/service_plans", :headers => default_headers
       end
 
-      it "returns what we have in the db" do
-        db_plans = portfolio_item_without_service_plan.service_plans
+      context "when the modified schema is nil" do
+        before do
+          get "#{api_version}/portfolio_items/#{portfolio_item_without_service_plan.id}/service_plans", :headers => default_headers
+        end
 
-        expect(db_plans.count).to eq json.count
-        expect(db_plans.first.portfolio_item_id).to eq portfolio_item_without_service_plan.id
+        it "returns modified as true" do
+          expect(json.first['modified']).to be_truthy
+        end
+
+        it "returns the base schema" do
+          expect(json.first['create_json_schema']).to eq service_plan.base
+        end
+      end
+
+      context "when the modified schema is present" do
+        before do
+          portfolio_item_without_service_plan.service_plans.first.update(:modified => JSON.parse(modified_schema))
+          get "#{api_version}/portfolio_items/#{portfolio_item_without_service_plan.id}/service_plans", :headers => default_headers
+        end
+
+        it "returns modified as true" do
+          expect(json.first['modified']).to be_truthy
+        end
+
+        it "returns the modified schema" do
+          expect(json.first['create_json_schema']).to eq JSON.parse(modified_schema)
+        end
       end
     end
 
