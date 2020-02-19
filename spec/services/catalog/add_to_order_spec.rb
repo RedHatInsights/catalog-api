@@ -52,16 +52,18 @@ describe Catalog::AddToOrder, :type => :service do
     end
 
     it 'can recreate the request from the context' do
-      item = nil
-      Insights::API::Common::Request.with_request(request) do
-        item = subject.order_item
-      end
+      item = Insights::API::Common::Request.with_request(request) { subject.order_item }
 
       new_request = item.context.transform_keys(&:to_sym)
       Insights::API::Common::Request.with_request(new_request) do
         expect(Insights::API::Common::Request.current.user.username).to eq "jdoe"
         expect(Insights::API::Common::Request.current.user.email).to eq "jdoe@acme.com"
       end
+    end
+
+    it "should create a process message with the x-rh-insights-request-id" do
+      progress_message = Insights::API::Common::Request.with_request(request) { subject.order_item.progress_messages.first }
+      expect(progress_message.message).to match('Order item tracking ID (x-rh-insights-request-id): gobbledygook')
     end
   end
 

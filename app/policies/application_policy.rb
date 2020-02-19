@@ -1,4 +1,7 @@
 class ApplicationPolicy
+  include Api::V1::Mixins::ACEMixin
+  include Api::V1::Mixins::RBACMixin
+
   attr_reader :user, :record
 
   def initialize(user, record)
@@ -30,9 +33,13 @@ class ApplicationPolicy
     false
   end
 
+  private
+
+  def rbac_access
+    @rbac_access ||= Catalog::RBAC::Access.new(@user)
+  end
+
   class Scope
-    include Api::V1::Mixins::ACEMixin
-    include Api::V1::Mixins::RBACMixin
 
     attr_reader :user, :scope
 
@@ -43,6 +50,10 @@ class ApplicationPolicy
 
     def resolve
       scope.all # Override in sub-policy scope for now
+    end
+
+    def rbac_access
+      @rbac_access ||= Catalog::RBAC::Access.new(@user)
     end
   end
 end

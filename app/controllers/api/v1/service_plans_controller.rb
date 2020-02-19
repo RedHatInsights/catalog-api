@@ -15,7 +15,7 @@ module Api
 
       def create
         svc = Catalog::ImportServicePlans.new(params.require(:portfolio_item_id))
-        render :json => svc.process.service_plans
+        render :json => svc.process.json
       end
 
       def show

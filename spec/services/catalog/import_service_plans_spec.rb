@@ -23,6 +23,31 @@ describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_fo
   end
 
   describe "#process" do
+    shared_examples_for "returns_json" do
+      it "returns the json" do
+        schemas = subject.json.collect { |plan| plan["create_json_schema"] }
+        expect(schemas.all? { |schema| schema == service_plan.create_json_schema }).to be_truthy
+      end
+    end
+
+    context "when force_reset is set" do
+      let!(:service_plan_current) { create(:service_plan, :portfolio_item => portfolio_item) }
+      let(:data) { [service_plan] }
+
+      before do
+        described_class.new(portfolio_item.id, :force_reset => true).process
+      end
+
+      it "destroys the current service_plans" do
+        expect{ServicePlan.find(service_plan_current.id)}.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+
+      it "reimports the service plan" do
+        portfolio_item.service_plans.reload
+        expect(portfolio_item.service_plans.any?).to be_truthy
+      end
+    end
+
     context "when there is one plan" do
       let(:data) { [service_plan] }
 
@@ -37,6 +62,8 @@ describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_fo
       it "adds the ServicePlan to the portfolio_item" do
         expect(portfolio_item.service_plans.count).to eq 1
       end
+
+      it_behaves_like "returns_json"
     end
 
     context "when there are multiple plans" do
@@ -53,6 +80,8 @@ describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_fo
       it "adds both the ServicePlans to the portfolio_item" do
         expect(portfolio_item.service_plans.count).to eq 2
       end
+
+      it_behaves_like "returns_json"
     end
   end
 end
