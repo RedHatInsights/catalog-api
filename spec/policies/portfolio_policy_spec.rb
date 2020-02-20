@@ -10,117 +10,71 @@ describe PortfolioPolicy do
   end
 
   describe "#create?" do
-    context "when the create access check returns nil" do
-      before do
-        allow(rbac_access).to receive(:create_access_check).and_return(nil)
-      end
-
-      it "returns true" do
-        expect(subject.create?).to eq(true)
-      end
-    end
-
-    context "when the create access check throws an error" do
-      before do
-        allow(rbac_access).to receive(:create_access_check)
-          .and_raise(Catalog::NotAuthorized, "Create access not authorized for Portfolio")
-      end
-
-      it "throws an error" do
-        expect { subject.create? }.to raise_error(Catalog::NotAuthorized, /Create access not authorized for Portfolio/)
-      end
+    it "delegates to the rbac access create check" do
+      expect(rbac_access).to receive(:create_access_check).and_return(true)
+      expect(subject.create?).to eq(true)
     end
   end
 
   describe "#destroy?" do
-    context "when the destroy access check returns nil" do
-      before do
-        allow(rbac_access).to receive(:destroy_access_check).and_return(nil)
-      end
-
-      it "returns true" do
-        expect(subject.destroy?).to eq(true)
-      end
-    end
-
-    context "when the destroy access check throws an error" do
-      before do
-        allow(rbac_access).to receive(:destroy_access_check)
-          .and_raise(Catalog::NotAuthorized, "Destroy access not authorized for Portfolio")
-      end
-
-      it "throws an error" do
-        expect { subject.destroy? }.to raise_error(Catalog::NotAuthorized, /Destroy access not authorized for Portfolio/)
-      end
+    it "delegates to the rbac access destroy check" do
+      expect(rbac_access).to receive(:destroy_access_check).and_return(true)
+      expect(subject.destroy?).to eq(true)
     end
   end
 
   describe "#show?" do
-    context "when the show access check returns nil" do
-      before do
-        allow(rbac_access).to receive(:read_access_check).and_return(nil)
-      end
-
-      it "returns true" do
-        expect(subject.show?).to eq(true)
-      end
-    end
-
-    context "when the show access check throws an error" do
-      before do
-        allow(rbac_access).to receive(:read_access_check)
-          .and_raise(Catalog::NotAuthorized, "Show access not authorized for Portfolio")
-      end
-
-      it "throws an error" do
-        expect { subject.show? }.to raise_error(Catalog::NotAuthorized, /Show access not authorized for Portfolio/)
-      end
+    it "delegates to the rbac access read check" do
+      expect(rbac_access).to receive(:read_access_check).and_return(true)
+      expect(subject.show?).to eq(true)
     end
   end
 
   describe "#update?" do
-    context "when the update access check returns nil" do
-      before do
-        allow(rbac_access).to receive(:update_access_check).and_return(nil)
-      end
-
-      it "returns true" do
-        expect(subject.update?).to eq(true)
-      end
-    end
-
-    context "when the update access check throws an error" do
-      before do
-        allow(rbac_access).to receive(:update_access_check)
-          .and_raise(Catalog::NotAuthorized, "Update access not authorized for Portfolio")
-      end
-
-      it "throws an error" do
-        expect { subject.update? }.to raise_error(Catalog::NotAuthorized, /Update access not authorized for Portfolio/)
-      end
+    it "delegates to the rbac access update check" do
+      expect(rbac_access).to receive(:update_access_check).and_return(true)
+      expect(subject.update?).to eq(true)
     end
   end
 
   describe "#copy?" do
-    context "when all three rbac access checks returns nil" do
-      before do
-        allow(rbac_access).to receive(:resource_check).with('read', portfolio.id).and_return(nil)
-        allow(rbac_access).to receive(:permission_check).with('create').and_return(nil)
-        allow(rbac_access).to receive(:permission_check).with('update').and_return(nil)
-      end
+    let(:copy_read_check) { true }
+    let(:copy_create_check) { true }
+    let(:copy_update_check) { true }
 
-      it "returns true" do
-        expect(subject.copy?).to eq(true)
+    before do
+      allow(rbac_access).to receive(:resource_check).with('read', portfolio.id).and_return(copy_read_check)
+      allow(rbac_access).to receive(:create_access_check).and_return(copy_create_check)
+      allow(rbac_access).to receive(:resource_check).with('update', portfolio.id).and_return(copy_update_check)
+    end
+
+    context "when the rbac access check is false on the portfolio read" do
+      let(:copy_read_check) { false }
+
+      it "returns false" do
+        expect(subject.copy?).to eq(false)
       end
     end
 
-    context "when any of the rbac access checks throw an error" do
-      before do
-        allow(rbac_access).to receive(:resource_check).with('read', portfolio.id).and_raise(Catalog::NotAuthorized, "Read access not authorized for Portfolio")
-      end
+    context "when the rbac access create check is false" do
+      let(:copy_create_check) { false }
 
-      it "throws an error" do
-        expect { subject.copy? }.to raise_error(Catalog::NotAuthorized, /Read access not authorized for Portfolio/)
+      it "returns false" do
+        expect(subject.copy?).to eq(false)
+      end
+    end
+
+    context "when the rbac access update check is false" do
+      let(:copy_update_check) { false }
+
+      it "returns false" do
+        expect(subject.copy?).to eq(false)
+      end
+    end
+
+    context "when all three rbac access checks return true" do
+      it "returns true" do
+        expect(subject.copy?).to eq(true)
       end
     end
   end

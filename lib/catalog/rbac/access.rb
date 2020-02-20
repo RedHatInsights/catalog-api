@@ -30,21 +30,24 @@ module Catalog
       end
 
       def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
-        return unless rbac_enabled?
-        return if catalog_admin?
+        return true unless rbac_enabled?
+        return true if catalog_admin?
 
+        return false unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?
         ids = access_id_list(verb, klass)
         if klass.try(:supports_access_control?)
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.exclude?(id.to_s)
+          return false if ids.exclude?(id.to_s)
         end
+
+        return true
       end
 
       def permission_check(verb, klass = @user.controller_name.classify.constantize)
-        return unless rbac_enabled?
+        return true unless rbac_enabled?
 
-        unless access_object(klass.table_name, verb).accessible?
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}"
-        end
+        return false unless access_object(klass.table_name, verb).accessible?
+
+        return true
       end
 
       private
@@ -58,10 +61,6 @@ module Catalog
       end
 
       def access_id_list(verb, klass)
-        unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}"
-        end
-
         Catalog::RBAC::AccessControlEntries.new.ace_ids(verb, klass)
       end
 

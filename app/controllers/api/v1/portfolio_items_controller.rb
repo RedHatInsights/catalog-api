@@ -9,6 +9,7 @@ module Api
         elsif params[:tag_id]
           collection(Tag.find(params.require(:tag_id)).portfolio_items)
         else
+          authorize(PortfolioItem)
           collection(policy_scope(PortfolioItem.all))
         end
       end
