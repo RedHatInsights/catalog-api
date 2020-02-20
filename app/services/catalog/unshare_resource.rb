@@ -1,8 +1,5 @@
 module Catalog
   class UnshareResource
-    require 'rbac-api-client'
-    include Insights::API::Common::RBAC::Utilities
-
     def initialize(options)
       @group_uuids = SortedSet.new(options.fetch(:group_uuids, []))
       @permissions = options[:permissions]
@@ -10,7 +7,6 @@ module Catalog
     end
 
     def process
-      validate_groups
       AccessControlEntry
         .joins(:permissions)
         .where(:group_uuid  => @group_uuids,

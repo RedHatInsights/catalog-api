@@ -198,4 +198,38 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   describe "#destroy_access_check" do
     it_behaves_like "resource checking", :destroy_access_check, [], "delete", PortfolioItem, :has_delete_permission
   end
+
+  describe "#admin_check" do
+    context "when RBAC is not enabled" do
+      let(:rbac_enabled) { false }
+
+      it "returns nil" do
+        expect(subject.admin_check).to eq(nil)
+      end
+    end
+
+    context "when RBAC is enabled" do
+      let(:rbac_enabled) { true }
+
+      before do
+        allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(catalog_administrator?)
+      end
+
+      context "when the user is a catalog administrator" do
+        let(:catalog_administrator?) { true }
+
+        it "returns nil" do
+          expect(subject.admin_check).to eq(nil)
+        end
+      end
+
+      context "when the user is not a catalog administrator" do
+        let(:catalog_administrator?) { false }
+
+        it "throws an exception" do
+          expect { subject.admin_check }.to raise_error(Catalog::NotAuthorized, /Not authorized/)
+        end
+      end
+    end
+  end
 end

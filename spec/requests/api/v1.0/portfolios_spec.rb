@@ -309,62 +309,6 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       end
     end
 
-    shared_examples_for "#shared_test" do
-      it "portfolio" do
-        with_modified_env :APP_NAME => app_name do
-          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
-          post "#{api_version}/portfolios/#{shared_portfolio.id}/share", :params => attributes, :headers => default_headers
-          expect(response).to have_http_status(http_status)
-        end
-      end
-    end
-
-    context 'share' do
-      include_context "sharing_objects"
-      it_behaves_like "#shared_test"
-    end
-
-    context 'bad permissions' do
-      include_context "sharing_objects"
-      let(:http_status) { '400' }
-
-      context 'invalid verb in permissions' do
-        let(:permissions) { %w[something] }
-        it_behaves_like "#shared_test"
-      end
-
-      context 'invalid group uuids, empty array' do
-        let(:group_uuids) { [] }
-        # TODO : Waiting for Openapi Parser PR to get merged
-        # it_behaves_like "#shared_test"
-      end
-
-      context 'invalid group uuids, data type' do
-        let(:group_uuids) { "fred" }
-        it_behaves_like "#shared_test"
-      end
-    end
-
-    context 'unshare' do
-      include_context "sharing_objects"
-      let(:unsharing_attributes) { {:group_uuids => group_uuids, :permissions => permissions} }
-      it "portfolio" do
-        with_modified_env :APP_NAME => app_name do
-          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return(groups)
-          ace1
-          ace2
-          ace3
-          expect(shared_portfolio.access_control_entries.count).to eq(3)
-          post "#{api_version}/portfolios/#{shared_portfolio.id}/unshare", :params => unsharing_attributes, :headers => default_headers
-          shared_portfolio.reload
-          expect(response).to have_http_status(204)
-          expect(shared_portfolio.access_control_entries.count).to eq(0)
-        end
-      end
-    end
-
     context 'share_info' do
       include_context "sharing_objects"
       let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT} }
@@ -536,6 +480,82 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       let(:endpoint) { "untag" }
       it_behaves_like "bad_tags"
       it_behaves_like "good_tags"
+    end
+  end
+
+  describe "#share" do
+    let(:params) do
+      {:group_uuids => ["group_uuids"], :permissions => ["read"]}
+    end
+    let(:share_resource) { instance_double(Catalog::ShareResource) }
+    let(:options) do
+      {
+        :object => portfolio,
+        :permissions => ["read"],
+        :group_uuids => ["group_uuids"]
+      }
+    end
+
+    subject do
+      post "#{api_version}/portfolios/#{portfolio.id}/share", :params => params, :headers => default_headers
+    end
+
+    before do
+      allow(Catalog::ShareResource).to receive(:new).and_return(share_resource)
+      allow(share_resource).to receive(:process)
+    end
+
+    it_behaves_like "action that tests authorization", :share?, Portfolio
+
+    it "shares the resource" do
+      expect(Catalog::ShareResource).to receive(:new).with(options)
+      expect(share_resource).to receive(:process)
+
+      subject
+    end
+
+    it "returns a 204" do
+      subject
+
+      expect(response).to have_http_status(:no_content)
+    end
+  end
+
+  describe "#unshare" do
+    let(:params) do
+      {:group_uuids => ["group_uuids"], :permissions => ["read"]}
+    end
+    let(:unshare_resource) { instance_double(Catalog::UnshareResource) }
+    let(:options) do
+      {
+        :object => portfolio,
+        :permissions => ["read"],
+        :group_uuids => ["group_uuids"]
+      }
+    end
+
+    subject do
+      post "#{api_version}/portfolios/#{portfolio.id}/unshare", :params => params, :headers => default_headers
+    end
+
+    before do
+      allow(Catalog::UnshareResource).to receive(:new).and_return(unshare_resource)
+      allow(unshare_resource).to receive(:process)
+    end
+
+    it_behaves_like "action that tests authorization", :unshare?, Portfolio
+
+    it "unshares the resource" do
+      expect(Catalog::UnshareResource).to receive(:new).with(options)
+      expect(unshare_resource).to receive(:process)
+
+      subject
+    end
+
+    it "returns a 204" do
+      subject
+
+      expect(response).to have_http_status(:no_content)
     end
   end
 end

@@ -53,6 +53,7 @@ module Api
 
       def share
         portfolio = Portfolio.find(params.require(:portfolio_id))
+        authorize(portfolio)
         options = {:object      => portfolio,
                    :permissions => params[:permissions],
                    :group_uuids => params.require(:group_uuids)}
@@ -62,6 +63,7 @@ module Api
 
       def unshare
         portfolio = Portfolio.find(params.require(:portfolio_id))
+        authorize(portfolio)
         options = {:object      => portfolio,
                    :permissions => params[:permissions],
                    :group_uuids => params.require(:group_uuids)}
