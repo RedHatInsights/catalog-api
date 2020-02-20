@@ -295,6 +295,20 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       end
     end
 
+    context 'when portfolio attributes are not valid' do
+      let(:invalid_attributes) { { :name => 'rspec 1', :description => 'rspec 1 description', :icon_id => "17" } }
+
+      before { post "#{api_version}/portfolios", :params => invalid_attributes, :headers => default_headers }
+
+      it 'returns status code 400' do
+        expect(response).to have_http_status(400)
+      end
+
+      it 'warns about unpermitted field' do
+        expect(first_error_detail).to match(/unpermitted.*icon_id/)
+      end
+    end
+
     shared_examples_for "#shared_test" do
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do

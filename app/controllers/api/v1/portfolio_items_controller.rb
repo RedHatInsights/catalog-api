@@ -17,7 +17,7 @@ module Api
         portfolio = Portfolio.find(params.require(:portfolio_id))
         authorize(portfolio)
 
-        so = ServiceOffering::AddToPortfolioItem.new(params_for_create)
+        so = ServiceOffering::AddToPortfolioItem.new(writeable_params_for_create)
         render :json => so.process.item
       end
 
