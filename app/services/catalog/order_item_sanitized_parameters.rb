@@ -2,7 +2,7 @@ module Catalog
   class OrderItemSanitizedParameters
     attr_reader :sanitized_parameters
 
-    MASKED_VALUE = "********".freeze
+    MASKED_VALUE = "$protected$".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
 
     def initialize(params)
@@ -29,12 +29,12 @@ module Catalog
       order_item.service_plan_ref
     end
 
-    def service_parameters
-      order_item.service_parameters
+    def service_parameters_raw
+      order_item.service_parameters_raw
     end
 
     def filtered_parameters
-      service_parameters.slice(*fields.collect { |field| field.with_indifferent_access["name"] })
+      service_parameters_raw.slice(*fields.collect { |field| field.with_indifferent_access["name"] })
     end
 
     def service_plan_schema
@@ -51,7 +51,7 @@ module Catalog
       return {} if service_plan_does_not_exist?
       return filtered_parameters if @params[:do_not_mask_values]
 
-      svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters)
+      svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters_raw)
       fields.each_with_object({}) do |field, result|
         value = mask_value?(field) ? MASKED_VALUE : svc_params[field[:name]]
         result[field[:name]] = value

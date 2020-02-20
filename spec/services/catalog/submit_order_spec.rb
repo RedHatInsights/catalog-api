@@ -4,15 +4,6 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
   let(:order) { create(:order) }
   let(:service_parameters) { {'var1' => 'Fred', 'var2' => 'Wilma'} }
   let(:provider_control_parameters) { {'namespace' => 'Bedrock'} }
-  let!(:order_item) do
-    create(:order_item, :portfolio_item              => portfolio_item,
-                        :service_parameters          => service_parameters,
-                        :service_plan_ref            => service_plan_ref,
-                        :provider_control_parameters => provider_control_parameters,
-                        :order_id                    => order.id,
-                        :count                       => 1,
-                        :context                     => default_request)
-  end
   let(:portfolio_item) do
     create(:portfolio_item, :service_offering_ref => service_offering_ref, :service_offering_source_ref => "17")
   end
@@ -44,10 +35,12 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
   let(:service_plan_response) { topo_service_plan_response }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :SOURCES_URL => "http://source.example.com") do
+    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
       example.call
     end
   end
+
+  include_context "uses an order item with raw service parameters set"
 
   before do
     allow(Catalog::ValidateSource).to receive(:new).with(portfolio_item.service_offering_source_ref).and_return(validater)
@@ -56,8 +49,6 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
 
     stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
-    stub_request(:get, topological_url("service_plans/#{service_plan_ref}"))
-      .to_return(:status => 200, :body => service_plan_show_response.to_json, :headers => default_headers)
   end
 
   context "when the order ID is valid" do
@@ -85,7 +76,7 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
 
     context "when sending extra parameters" do
       before do
-        order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
+        @order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
         submit_order.process
       end
 
