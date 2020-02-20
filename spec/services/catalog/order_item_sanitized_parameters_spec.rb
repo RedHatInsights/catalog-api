@@ -3,7 +3,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
   let(:params) { ActionController::Parameters.new('order_item_id' => order_item.id) }
 
   describe "#process" do
-    let(:order_item) { create(:order_item, :service_plan_ref => service_plan_ref, :service_parameters => {"name" => "fred", "Totally not a pass" => "s3cret"}) }
+    let(:order_item) { create(:order_item_with_callback, :service_plan_ref => service_plan_ref, :service_parameters => {"name" => "fred", "Totally not a pass" => "s3cret"}) }
 
     context "when there is a valid service_plan_ref" do
       let(:service_plan_ref) { "777" }
