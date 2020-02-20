@@ -10,7 +10,7 @@ module Catalog
 
     def process
       @reference = PortfolioItem.find(@portfolio_item_id).service_offering_ref
-      @modified = false
+      @imported = false
 
       TopologicalInventory.call do |api_instance|
         service_offering = api_instance.show_service_offering(@reference)
