@@ -21,7 +21,7 @@ module Catalog
       relevant_service_plans.each do |plan|
         @reference = plan.portfolio_item.service_offering_ref
         @portfolio_item_id = plan.portfolio_item.id
-        @modified = plan.modified.present?
+        @imported = true
         @service_plan = OpenStruct.new(
           :id                 => plan.id,
           :create_json_schema => relevant_schema(plan),

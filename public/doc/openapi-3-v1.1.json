@@ -3321,10 +3321,10 @@
             "description": "The unique identifier for this service plan.",
             "readOnly": true
           },
-          "modified": {
+          "imported": {
             "type": "boolean",
-            "title": "Modified",
-            "description": "Whether or not the ServicePlan has a modified create_json_schema property",
+            "title": "Imported",
+            "description": "Whether or not the ServicePlan has been imported for editing",
             "readOnly": true
           }
         }
