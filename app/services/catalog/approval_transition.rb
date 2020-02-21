@@ -46,11 +46,13 @@ module Catalog
     def mark_canceled
       finalize_order
       @order_item.update_message("info", "Order #{@order_item.order_id} has been canceled")
+      Rails.logger.info("Order #{@order_item.order_id} has been canceled")
     end
 
     def mark_denied
       finalize_order
       @order_item.update_message("info", "Order #{@order_item.order_id} has been denied")
+      Rails.logger.info("Order #{@order_item.order_id} has been denied")
     end
 
     def finalize_order
