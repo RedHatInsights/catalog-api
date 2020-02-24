@@ -203,8 +203,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
     context "when RBAC is not enabled" do
       let(:rbac_enabled) { false }
 
-      it "returns nil" do
-        expect(subject.admin_check).to eq(nil)
+      it "returns true" do
+        expect(subject.admin_check).to eq(true)
       end
     end
 
@@ -218,17 +218,78 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       context "when the user is a catalog administrator" do
         let(:catalog_administrator?) { true }
 
-        it "returns nil" do
-          expect(subject.admin_check).to eq(nil)
+        it "returns true" do
+          expect(subject.admin_check).to eq(true)
         end
       end
 
       context "when the user is not a catalog administrator" do
         let(:catalog_administrator?) { false }
 
-        it "throws an exception" do
-          expect { subject.admin_check }.to raise_error(Catalog::NotAuthorized, /Not authorized/)
+        it "returns false" do
+          expect(subject.admin_check).to eq(false)
         end
+      end
+    end
+  end
+
+  describe "#group_check" do
+    let(:current_user) { Insights::API::Common::User.new("identity") }
+    let(:current_request) { Insights::API::Common::Request.new(:user => current_user, :headers => "headers", :original_url => "original_url") }
+    let(:params) { {:group_uuids => group_uuids} }
+    let(:controller_name) { "portfolio_items" }
+    let(:user_context) { UserContext.new(current_request, params, controller_name) }
+
+    let(:meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
+    let(:groups) { RBACApiClient::GroupPagination.new(:meta => meta, :links => nil, :data => [group_out]) }
+    let(:group_out) { RBACApiClient::GroupOut.new(:name => "group1", :uuid => "123") }
+    let(:group_uuids) { ["123"] }
+
+    before do
+      stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0")
+        .to_return(
+          :status  => 200,
+          :body    => groups.to_json,
+          :headers => default_headers
+        )
+    end
+
+    context "when rbac is enabled" do
+      let(:rbac_enabled) { true }
+
+      context "when there are group uuids missing" do
+        let(:group_uuids) { ["123", "456"] }
+
+        it "throws an error" do
+          expect { subject.group_check }.to raise_error(
+            Insights::API::Common::InvalidParameter,
+            /group uuids are missing 456/
+          )
+        end
+      end
+
+      context "when there are not group uuids missing" do
+        it "validates the groups without an error" do
+          subject.group_check
+          expect(a_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0")).to have_been_made
+        end
+
+        it "returns true" do
+          expect(subject.group_check).to eq(true)
+        end
+      end
+    end
+
+    context "when rbac is not enabled" do
+      let(:rbac_enabled) { false }
+
+      it "does not validate the groups" do
+        subject.group_check
+        expect(a_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0")).not_to have_been_made
+      end
+
+      it "returns true" do
+        expect(subject.group_check).to eq(true)
       end
     end
   end

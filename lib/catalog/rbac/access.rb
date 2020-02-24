@@ -1,6 +1,8 @@
 module Catalog
   module RBAC
     class Access
+      include Insights::API::Common::RBAC::Utilities
+
       def initialize(user)
         @user = user
       end
@@ -22,9 +24,18 @@ module Catalog
       end
 
       def admin_check
-        return unless rbac_enabled?
+        return true unless rbac_enabled?
 
-        raise Catalog::NotAuthorized, "Not authorized" unless catalog_admin?
+        return catalog_admin?
+      end
+
+      def group_check
+        return true unless rbac_enabled?
+
+        @group_uuids = SortedSet.new(@user.params.fetch(:group_uuids, []))
+        validate_groups
+
+        return true
       end
 
       def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)

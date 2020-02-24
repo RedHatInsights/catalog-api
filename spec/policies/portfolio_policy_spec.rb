@@ -125,46 +125,49 @@ describe PortfolioPolicy do
     end
   end
 
-  describe "#share?" do
-    context "when the admin check returns nil" do
-      before do
-        allow(rbac_access).to receive(:admin_check).and_return(nil)
-      end
+  describe "#share_or_unshare?" do
+    before do
+      allow(rbac_access).to receive(:admin_check).and_return(admin_check)
+      allow(rbac_access).to receive(:group_check).and_return(group_check)
+    end
 
-      it "returns true" do
-        expect(subject.share?).to eq(true)
+    shared_examples "rbac combination is false" do
+      it "returns false" do
+        expect(subject.share_or_unshare?).to eq(false)
       end
     end
 
-    context "when the admin check throws an error" do
-      before do
-        allow(rbac_access).to receive(:admin_check).and_raise(Catalog::NotAuthorized, /Not authorized/)
+    context "when the admin check is true" do
+      let(:admin_check) { true }
+
+      context "when the group check is true" do
+        let(:group_check) { true }
+
+        it "returns true" do
+          expect(subject.share_or_unshare?).to eq(true)
+        end
       end
 
-      it "throws an error" do
-        expect { subject.share? }.to raise_error(Catalog::NotAuthorized, /Not authorized/)
-      end
-    end
-  end
+      context "when the group check is false" do
+        let(:group_check) { false }
 
-  describe "#unshare?" do
-    context "when the admin check returns nil" do
-      before do
-        allow(rbac_access).to receive(:admin_check).and_return(nil)
-      end
-
-      it "returns true" do
-        expect(subject.unshare?).to eq(true)
+        it_behaves_like "rbac combination is false"
       end
     end
 
-    context "when the admin check throws an error" do
-      before do
-        allow(rbac_access).to receive(:admin_check).and_raise(Catalog::NotAuthorized, /Not authorized/)
+    context "when the admin check is false" do
+      let(:admin_check) { false }
+
+      context "when the group check is true" do
+        let(:group_check) { true }
+
+        it_behaves_like "rbac combination is false"
       end
 
-      it "throws an error" do
-        expect { subject.unshare? }.to raise_error(Catalog::NotAuthorized, /Not authorized/)
+      context "when the group check is false" do
+        let(:group_check) { false }
+
+        it_behaves_like "rbac combination is false"
       end
     end
   end
