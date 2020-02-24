@@ -64,6 +64,25 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
         expect(response).to have_http_status(:bad_request)
       end
     end
+
+    context "when the survey has changed" do
+      let(:archived) { false }
+
+      let!(:order_item) { create(:order_item, :order => order) }
+      let!(:service_plan) { create(:service_plan, :portfolio_item => order.order_items.first.portfolio_item) }
+
+      before do
+        allow(Catalog::SurveyCompare).to receive(:any_changed?).with(order.order_items.first.portfolio_item.service_plans).and_return(true)
+      end
+
+      it "returns a 400" do
+        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
+
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(400)
+        expect(first_error_detail).to match(/Catalog::InvalidSurvey/)
+      end
+    end
   end
 
   context "#cancel_order" do

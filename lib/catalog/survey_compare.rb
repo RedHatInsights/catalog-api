@@ -6,6 +6,10 @@ module Catalog
         potential = new(plan)
         potential.topo_base != potential.base
       end
+
+      def any_changed?(plans)
+        plans.any? { |plan| changed?(plan) }
+      end
     end
 
     def initialize(plan)
