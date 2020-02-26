@@ -505,7 +505,7 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       allow(share_resource).to receive(:process)
     end
 
-    it_behaves_like "action that tests authorization", :share_or_unshare?, Portfolio
+    it_behaves_like "action that tests authorization", :share?, Portfolio
 
     it "shares the resource" do
       expect(Catalog::ShareResource).to receive(:new).with(options)
@@ -543,7 +543,7 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       allow(unshare_resource).to receive(:process)
     end
 
-    it_behaves_like "action that tests authorization", :share_or_unshare?, Portfolio
+    it_behaves_like "action that tests authorization", :unshare?, Portfolio
 
     it "unshares the resource" do
       expect(Catalog::UnshareResource).to receive(:new).with(options)

@@ -125,49 +125,51 @@ describe PortfolioPolicy do
     end
   end
 
-  describe "#share_or_unshare?" do
-    before do
-      allow(rbac_access).to receive(:admin_check).and_return(admin_check)
-      allow(rbac_access).to receive(:group_check).and_return(group_check)
-    end
-
-    shared_examples "rbac combination is false" do
-      it "returns false" do
-        expect(subject.share_or_unshare?).to eq(false)
+  [:share?, :unshare?].each do |method|
+    describe "##{method}" do
+      before do
+        allow(rbac_access).to receive(:admin_check).and_return(admin_check)
+        allow(rbac_access).to receive(:group_check).and_return(group_check)
       end
-    end
 
-    context "when the admin check is true" do
-      let(:admin_check) { true }
-
-      context "when the group check is true" do
-        let(:group_check) { true }
-
-        it "returns true" do
-          expect(subject.share_or_unshare?).to eq(true)
+      shared_examples "rbac combination is false" do
+        it "returns false" do
+          expect(subject.send(method)).to eq(false)
         end
       end
 
-      context "when the group check is false" do
-        let(:group_check) { false }
+      context "when the admin check is true" do
+        let(:admin_check) { true }
 
-        it_behaves_like "rbac combination is false"
+        context "when the group check is true" do
+          let(:group_check) { true }
+
+          it "returns true" do
+            expect(subject.send(method)).to eq(true)
+          end
+        end
+
+        context "when the group check is false" do
+          let(:group_check) { false }
+
+          it_behaves_like "rbac combination is false"
+        end
       end
-    end
 
-    context "when the admin check is false" do
-      let(:admin_check) { false }
+      context "when the admin check is false" do
+        let(:admin_check) { false }
 
-      context "when the group check is true" do
-        let(:group_check) { true }
+        context "when the group check is true" do
+          let(:group_check) { true }
 
-        it_behaves_like "rbac combination is false"
-      end
+          it_behaves_like "rbac combination is false"
+        end
 
-      context "when the group check is false" do
-        let(:group_check) { false }
+        context "when the group check is false" do
+          let(:group_check) { false }
 
-        it_behaves_like "rbac combination is false"
+          it_behaves_like "rbac combination is false"
+        end
       end
     end
   end
