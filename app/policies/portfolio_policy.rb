@@ -32,7 +32,7 @@ class PortfolioPolicy < ApplicationPolicy
   end
 
   def share?
-    rbac_access.admin_check && rbac_access.group_check
+    rbac_access.admin_check
   end
 
   alias unshare? share?

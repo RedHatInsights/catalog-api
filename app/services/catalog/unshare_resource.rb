@@ -7,6 +7,8 @@ module Catalog
     end
 
     def process
+      Catalog::RBAC::Group.new(@group_uuids).check
+
       AccessControlEntry
         .joins(:permissions)
         .where(:group_uuid  => @group_uuids,
