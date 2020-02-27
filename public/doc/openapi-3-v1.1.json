@@ -3326,6 +3326,12 @@
             "title": "Imported",
             "description": "Whether or not the ServicePlan has been imported for editing",
             "readOnly": true
+          },
+          "modified": {
+            "type": "boolean",
+            "title": "Modified",
+            "description": "Whether or not the ServicePlan has a modified schema",
+            "readOnly": true
           }
         }
       },
