@@ -15,6 +15,7 @@ module Catalog
           :product   => @order_item.portfolio_item.name,
           :portfolio => @order_item.portfolio_item.portfolio.name,
           :order_id  => @order_item.order_id.to_s,
+          :platform  => platform(@order_item.portfolio_item),
           :params    => @order_item.service_parameters
         }
         request.tag_resources = all_tag_resources
@@ -24,6 +25,16 @@ module Catalog
     end
 
     private
+
+    def platform(portfolio_item)
+      service_offering = TopologicalInventory.call do |api_instance|
+        api_instance.show_service_offering(portfolio_item.service_offering_ref)
+      end
+      source = Sources.call do |api_instance|
+        api_instance.show_source(service_offering.source_id)
+      end
+      source.name
+    end
 
     def all_tag_resources
       local_tag_resources = Tags::CollectLocalOrderResources.new(:order_id => @order.id).process.tag_resources
