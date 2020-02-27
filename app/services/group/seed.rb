@@ -4,20 +4,20 @@ module Group
     CATALOG_ADMINISTRATOR_GROUP = "Catalog Administrators".freeze
 
     def initialize(tenant)
-      @user = Insights::API::Common::Request.current.user
+      @request = Insights::API::Common::Request.current
       validate(tenant)
     end
 
     def validate(tenant)
       account_number = Insights::API::Common::Request.current.identity['identity']['account_number']
       raise Catalog::NotAuthorized if account_number != tenant.external_tenant
-      raise Catalog::NotAuthorized unless @user.org_admin?
+      raise Catalog::NotAuthorized unless @request.user.org_admin?
 
       true
     end
 
     def tenant
-      @user.tenant
+      @request.tenant
     end
 
     def code(status)
@@ -43,18 +43,18 @@ module Group
     def run_seeding
       seeded = Insights::API::Common::RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
       if seeded
-        RbacSeed.create!(:external_tenant => @user.tenant)
+        RbacSeed.create!(:external_tenant => @request.tenant)
         code(200)
       end
     end
 
     def mark_as_seeded
-      RbacSeed.find_or_create_by(:external_tenant => @user.tenant) if @seeded.data.present?
+      RbacSeed.find_or_create_by(:external_tenant => @request.tenant) if @seeded.data.present?
     end
 
     def add_user_to_catalog_admin_group
       group_principal_in = RBACApiClient::GroupPrincipalIn.new.tap do |group|
-        group.principals = [RBACApiClient::PrincipalIn.new(:username => @user.username)]
+        group.principals = [RBACApiClient::PrincipalIn.new(:username => @request.user.username)]
       end
 
       Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
