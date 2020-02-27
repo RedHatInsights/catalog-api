@@ -9,20 +9,20 @@ describe Catalog::UnshareResource, :type => :service do
       :object      => portfolio
     }
   end
-  let(:rbac_group) { instance_double(Catalog::RBAC::Group) }
+  let(:group_validator) { instance_double(Insights::API::Common::RBAC::ValidateGroups) }
 
   before do
     create(:access_control_entry, :has_read_permission, :group_uuid => uuid, :aceable => portfolio)
     create(:access_control_entry, :has_update_permission, :group_uuid => uuid, :aceable => portfolio)
-    allow(Catalog::RBAC::Group).to receive(:new).with([uuid]).and_return(rbac_group)
-    allow(rbac_group).to receive(:check)
+    allow(Insights::API::Common::RBAC::ValidateGroups).to receive(:new).with([uuid]).and_return(group_validator)
+    allow(group_validator).to receive(:process)
   end
 
   let(:subject) { described_class.new(params) }
 
   describe "#process" do
-    it "checks the groups" do
-      expect(rbac_group).to receive(:check)
+    it "validates the groups" do
+      expect(group_validator).to receive(:process)
       subject.process
     end
 

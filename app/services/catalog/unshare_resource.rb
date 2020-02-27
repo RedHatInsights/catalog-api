@@ -7,7 +7,7 @@ module Catalog
     end
 
     def process
-      Catalog::RBAC::Group.new(@group_uuids).check
+      Insights::API::Common::RBAC::ValidateGroups.new(@group_uuids).process
 
       AccessControlEntry
         .joins(:permissions)
