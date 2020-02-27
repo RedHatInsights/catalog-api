@@ -1,5 +1,5 @@
 class Tenant < ApplicationRecord
-  scope :current, ->(user) { where(:external_tenant => user.tenant) }
+  scope :current, ->(request) { where(:external_tenant => request.tenant) }
 
   validates :external_tenant, :uniqueness => true, :presence => true
 
@@ -7,7 +7,7 @@ class Tenant < ApplicationRecord
   after_initialize :setup_settings, :unless => proc { settings.nil? }
 
   def self.scoped_tenants
-    current(Insights::API::Common::Request.current.user)
+    current(Insights::API::Common::Request.current)
   rescue NoMethodError
     []
   end
