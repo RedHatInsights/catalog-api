@@ -3,6 +3,7 @@ describe ServicePlan do
   let!(:portfolio_item) { service_plan.portfolio_item }
   let!(:service_offering_ref) { portfolio_item.service_offering_ref }
   let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
+  let(:empty_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "no_service_plan_ddf.json"))) }
 
   around do |example|
     with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :BYPASS_RBAC => 'true') do
@@ -53,6 +54,19 @@ describe ServicePlan do
 
       it "shows the modified column is unchanged" do
         expect(service_plan.modified["schema"]).to eq valid_ddf["schema"]
+      end
+    end
+
+    describe "empty_schema?" do
+      let(:empty_service_plan) { create(:service_plan, :base => empty_ddf) }
+      let(:full_service_plan) { create(:service_plan, :base => valid_ddf) }
+
+      it "returns true for a schemaType of emptySchema" do
+        expect(empty_service_plan.empty_schema?).to be_truthy
+      end
+
+      it "returns false for any other schema" do
+        expect(full_service_plan.empty_schema?).to be_falsey
       end
     end
 

@@ -3,12 +3,17 @@ module Catalog
     attr_reader :base
     class << self
       def changed?(plan)
+        return false if empty?(plan)
         potential = new(plan)
         potential.topo_base != potential.base
       end
 
       def any_changed?(plans)
         plans.any? { |plan| changed?(plan) }
+      end
+
+      def empty?(plan)
+        plan.empty_schema?
       end
     end
 

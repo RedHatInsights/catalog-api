@@ -7,6 +7,10 @@ class ServicePlan < ApplicationRecord
   validate :modified_survey, :on => :update, :if => proc { modified.present? }
   validate :data_driven_form, :on => :update, :if => proc { modified.present? }
 
+  def empty_schema?
+    base["schemaType"].presence == "emptySchema"
+  end
+
   private
 
   def modified_survey
