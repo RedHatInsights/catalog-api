@@ -1,6 +1,8 @@
 module Catalog
   module RBAC
     class Access
+      include Insights::API::Common::RBAC::Utilities
+
       def initialize(user)
         @user = user
       end
@@ -21,9 +23,15 @@ module Catalog
         resource_check('delete')
       end
 
+      def admin_check
+        return true unless rbac_enabled?
+
+        return catalog_admin?
+      end
+
       def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
-        return unless Insights::API::Common::RBAC::Access.enabled?
-        return if Catalog::RBAC::Role.catalog_administrator?
+        return unless rbac_enabled?
+        return if catalog_admin?
 
         ids = access_id_list(verb, klass)
         if klass.try(:supports_access_control?)
@@ -32,7 +40,7 @@ module Catalog
       end
 
       def permission_check(verb, klass = @user.controller_name.classify.constantize)
-        return unless Insights::API::Common::RBAC::Access.enabled?
+        return unless rbac_enabled?
 
         unless access_object(klass.table_name, verb).accessible?
           raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}"
@@ -40,6 +48,14 @@ module Catalog
       end
 
       private
+
+      def rbac_enabled?
+        Insights::API::Common::RBAC::Access.enabled?
+      end
+
+      def catalog_admin?
+        Catalog::RBAC::Role.catalog_administrator?
+      end
 
       def access_id_list(verb, klass)
         unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?

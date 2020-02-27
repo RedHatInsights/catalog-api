@@ -30,4 +30,10 @@ class PortfolioPolicy < ApplicationPolicy
 
     true
   end
+
+  def share?
+    rbac_access.admin_check
+  end
+
+  alias unshare? share?
 end

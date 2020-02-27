@@ -1,31 +1,36 @@
 describe Catalog::UnshareResource, :type => :service do
   let(:portfolio) { create(:portfolio) }
-  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:permissions) { ['read', 'update'] }
-  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
-  let(:api_instance) { double }
-  let(:principal_options) { {:scope=>"principal"} }
+  let(:uuid) { "123" }
 
   let(:params) do
-    { :group_uuids => [group1.uuid],
-      :permissions => permissions,
-      :object      => portfolio }
+    {
+      :group_uuids => [uuid],
+      :permissions => %w[read update],
+      :object      => portfolio
+    }
   end
+  let(:rbac_group) { instance_double(Catalog::RBAC::Group) }
 
   before do
-    allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
-    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([group1])
-    create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio)
-    create(:access_control_entry, :has_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
+    create(:access_control_entry, :has_read_permission, :group_uuid => uuid, :aceable => portfolio)
+    create(:access_control_entry, :has_update_permission, :group_uuid => uuid, :aceable => portfolio)
+    allow(Catalog::RBAC::Group).to receive(:new).with([uuid]).and_return(rbac_group)
+    allow(rbac_group).to receive(:check)
   end
 
   let(:subject) { described_class.new(params) }
 
-  it "#process" do
-    expect(portfolio.access_control_entries.count).to eq(2)
-    subject.process
-    portfolio.reload
-    expect(portfolio.access_control_entries.count).to eq(0)
+  describe "#process" do
+    it "checks the groups" do
+      expect(rbac_group).to receive(:check)
+      subject.process
+    end
+
+    it "removes the access control entries on the portfolio" do
+      expect(portfolio.access_control_entries.count).to eq(2)
+      subject.process
+      portfolio.reload
+      expect(portfolio.access_control_entries.count).to eq(0)
+    end
   end
 end
