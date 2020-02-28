@@ -7,7 +7,7 @@ module Catalog
     end
 
     def process
-      Catalog::RBAC::Group.new(@group_uuids).check
+      Insights::API::Common::RBAC::ValidateGroups.new(@group_uuids).process
 
       @group_uuids.each do |group_uuid|
         ace = AccessControlEntry.find_or_create_by(:group_uuid => group_uuid,

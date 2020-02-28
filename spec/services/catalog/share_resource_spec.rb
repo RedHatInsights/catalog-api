@@ -8,18 +8,18 @@ describe Catalog::ShareResource, :type => :service do
       :object      => portfolio
     }
   end
-  let(:rbac_group) { instance_double(Catalog::RBAC::Group) }
+  let(:group_validator) { instance_double(Insights::API::Common::RBAC::ValidateGroups) }
 
   let(:subject) { described_class.new(params) }
 
   before do
-    allow(Catalog::RBAC::Group).to receive(:new).with(["123"]).and_return(rbac_group)
-    allow(rbac_group).to receive(:check)
+    allow(Insights::API::Common::RBAC::ValidateGroups).to receive(:new).with(["123"]).and_return(group_validator)
+    allow(group_validator).to receive(:process)
   end
 
   describe "#process" do
-    it "checks the groups" do
-      expect(rbac_group).to receive(:check)
+    it "validates the groups" do
+      expect(group_validator).to receive(:process)
       subject.process
     end
 
