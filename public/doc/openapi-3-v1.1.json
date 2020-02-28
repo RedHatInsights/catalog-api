@@ -3111,7 +3111,8 @@
               "Failed",
               "Completed",
               "Approved",
-              "Denied"
+              "Denied",
+              "Canceled"
             ],
             "title": "State",
             "description": "Current state of this order item.",
