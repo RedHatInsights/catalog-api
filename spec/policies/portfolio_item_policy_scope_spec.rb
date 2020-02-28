@@ -39,7 +39,6 @@ describe PortfolioItemPolicy::Scope, :type => [:service] do
       end
 
       before do
-        allow(rbac_access).to receive(:permission_check).and_return(nil)
         stub_request(:get, "http://rbac/api/rbac/v1/groups/?limit=10&offset=0&scope=principal").to_return(
           :status  => 200,
           :body    => rbac_paginated_response.to_json,
@@ -52,22 +51,12 @@ describe PortfolioItemPolicy::Scope, :type => [:service] do
           create(:access_control_entry, :has_read_permission, :aceable_id => portfolio.id)
         end
 
-        it "checks read permission" do
-          expect(rbac_access).to receive(:permission_check).with('read', Portfolio)
-          subject.resolve
-        end
-
         it "returns the set limited by the correct portfolio ids" do
           expect(subject.resolve).to eq([portfolio_item1])
         end
       end
 
       context "when access control entries do not exist" do
-        it "checks read permission" do
-          expect(rbac_access).to receive(:permission_check).with('read', Portfolio)
-          subject.resolve
-        end
-
         it "returns an empty set" do
           expect(subject.resolve).to eq([])
         end
