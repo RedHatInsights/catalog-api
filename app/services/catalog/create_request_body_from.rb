@@ -27,11 +27,8 @@ module Catalog
     private
 
     def platform(portfolio_item)
-      service_offering = TopologicalInventory.call do |api_instance|
-        api_instance.show_service_offering(portfolio_item.service_offering_ref)
-      end
       source = Sources.call do |api_instance|
-        api_instance.show_source(service_offering.source_id)
+        api_instance.show_source(portfolio_item.service_offering_source_ref)
       end
       source.name
     end
