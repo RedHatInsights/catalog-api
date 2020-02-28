@@ -12,7 +12,7 @@ describe Catalog::CreateRequestBodyFrom, :type => [:service, :current_forwardabl
       TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true}, :source_id => "333", :name => "test-platform-name")
     end
     let(:source_response) do
-      SourcesApiClient::Source.new
+      SourcesApiClient::Source.new(:name => 'the platform')
     end
 
     before do
@@ -34,13 +34,14 @@ describe Catalog::CreateRequestBodyFrom, :type => [:service, :current_forwardabl
           :product   => order_item.portfolio_item.name,
           :portfolio => order_item.portfolio_item.portfolio.name,
           :order_id  => order_item.order_id.to_s,
-          :platform  => Catalog::CreateRequestBodyFrom.new(order_item.order, order_item, 1).send(:platform, order_item.portfolio_item),
+          :platform  => "the platform",
           :params    => {:a => 1}
         }
         request.tag_resources = ["a", "b"]
       end
 
       expect(subject.process.result.to_json).to eq(req.to_json)
+      expect(subject.process.result.content[:platform]).to eq (source_response.name)
     end
   end
 end
