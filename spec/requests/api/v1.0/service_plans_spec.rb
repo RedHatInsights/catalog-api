@@ -50,6 +50,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
         it "returns the base schema" do
           expect(json.first['create_json_schema']).to eq service_plan.base
         end
+
+        it "shows modified as false" do
+          expect(json.first['modified']).to be_falsey
+        end
       end
 
       context "when the modified schema is present" do
@@ -65,6 +69,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
         it "returns the imported schema" do
           expect(json.first['create_json_schema']).to eq JSON.parse(modified_schema)
         end
+
+        it "shows modified as true" do
+          expect(json.first['modified']).to be_truthy
+        end
       end
     end
 
@@ -79,6 +87,10 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
 
       it "shows imported as false" do
         expect(json.first["imported"]).to be_falsey
+      end
+
+      it "shows modified as false" do
+        expect(json.first['modified']).to be_falsey
       end
     end
   end
@@ -103,7 +115,7 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
 
       it "returns the specified service_plan" do
         expect(json["id"]).to eq service_plan.id.to_s
-        expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name imported]
+        expect(json.keys).to match_array %w[service_offering_id create_json_schema portfolio_item_id id description name imported modified]
       end
     end
   end
