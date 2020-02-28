@@ -10,7 +10,7 @@ module Api
             raise Catalog::ServiceOfferingArchived, "Service offering for order #{order.id} has been archived and can no longer be ordered"
           end
 
-          return true
+          true
         end
       end
     end

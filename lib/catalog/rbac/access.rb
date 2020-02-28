@@ -26,7 +26,7 @@ module Catalog
       def admin_check
         return true unless rbac_enabled?
 
-        return catalog_admin?
+        catalog_admin?
       end
 
       def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
@@ -39,7 +39,7 @@ module Catalog
           return false if ids.exclude?(id.to_s)
         end
 
-        return true
+        true
       end
 
       def permission_check(verb, klass = @user.controller_name.classify.constantize)
@@ -47,7 +47,7 @@ module Catalog
 
         return false unless access_object(klass.table_name, verb).accessible?
 
-        return true
+        true
       end
 
       private
