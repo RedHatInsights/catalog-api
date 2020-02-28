@@ -15,12 +15,14 @@ module Catalog
         fail_item(order_item) if Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)
 
         submit_order_item(order_item)
+
+        Rails.logger.info("Order #{@order_id} submitted for provisioning")
       end
       @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
       @order.reload
       self
     rescue StandardError => e
-      Rails.logger.error("Submit Order #{e.message}")
+      Rails.logger.error("Error Submitting Order #{@order_id}: #{e.message}")
       raise
     end
 

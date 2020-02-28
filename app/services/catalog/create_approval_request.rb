@@ -32,6 +32,8 @@ module Catalog
         :state                => response.decision.to_sym,
         :tenant_id            => order_item.tenant_id
       )
+
+      Rails.logger.info("Approval Requests Submitted for Order #{@order.id}")
     end
 
     def fail_order
