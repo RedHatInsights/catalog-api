@@ -12,7 +12,7 @@ describe ServiceOffering::AddToPortfolioItem, :type => [:service, :topology] do
 
   around do |example|
     Insights::API::Common::Request.with_request(default_request) do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :SOURCES_URL => "http://source.example.com") do
+      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :SOURCES_URL => "http://sources.example.com") do
         example.call
       end
     end
