@@ -3547,7 +3547,8 @@
             "title": "The Group UUIDs",
             "description": "An array of group UUID's retrieved from the RBAC Service with whom the resource has to be shared.",
             "items": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "minItems": 1
           }
@@ -3579,7 +3580,8 @@
             "title": "The Group UUIDs",
             "description": "An array of group UUID's retrieved from the RBAC Service from which the permissions have to be removed. If group uuids are not specified we will unshare it from all groups.",
             "items": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         }
