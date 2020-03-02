@@ -14,7 +14,6 @@ module Api
     class PortfolioItemsController            < Api::V1::PortfolioItemsController; end
     class ProgressMessagesController          < Api::V1::ProgressMessagesController; end
     class ProviderControlParametersController < Api::V1::ProviderControlParametersController; end
-    class ServicePlansController              < Api::V1::ServicePlansController; end
     class SettingsController                  < Api::V1::SettingsController; end
     class TagsController                      < Api::V1::TagsController; end
     class TenantsController                   < Api::V1::TenantsController; end

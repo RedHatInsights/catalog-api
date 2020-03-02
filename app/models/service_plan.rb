@@ -11,12 +11,14 @@ class ServicePlan < ApplicationRecord
     base["schemaType"].presence == "emptySchema"
   end
 
+  def orderable?
+    !Catalog::SurveyCompare.changed?(self)
+  end
+
   private
 
   def modified_survey
-    if Catalog::SurveyCompare.changed?(self)
-      raise Catalog::InvalidSurvey, "Base survey does not match Topology"
-    end
+    raise Catalog::InvalidSurvey, "Base survey does not match Topology" unless orderable?
   end
 
   def data_driven_form

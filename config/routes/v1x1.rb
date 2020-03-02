@@ -48,5 +48,6 @@ namespace :v1x1, :path => "v1.1" do
     get 'modified', :to => 'service_plans#modified'
     patch 'modified', :to => 'service_plans#update_modified'
     post :reset, :to => 'service_plans#reset'
+    get 'orderable', :to => 'service_plans#orderable'
   end
 end

@@ -2567,6 +2567,38 @@
           }
         }
       }
+    },
+    "/service_plans/{id}/orderable": {
+      "get": {
+        "tags": [
+          "Service Plans"
+        ],
+        "summary": "Get Service Plan orderable status",
+        "operationId": "servicePlanOrderable",
+        "description": "Returns whether or not the Service Plan can be ordered",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service Plan can be ordered"
+          },
+          "400": {
+            "description": "Service Plan cannot be ordered"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Service Plan Not Found."
+          }
+        }
+      }
     }
   },
   "servers": [
