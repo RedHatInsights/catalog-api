@@ -39,10 +39,6 @@ module Catalog
       @order_item ||= OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
     end
 
-    def order_item_context
-      order_item.context.transform_keys(&:to_sym)
-    end
-
     def add_task_update_message
       message = "Task update. State: #{@task.state}. Status: #{@task.status}. Context: #{@task.context}"
       @task.status == "error" ? add_update_message(:error, message) : add_update_message(:info, message)
