@@ -1,10 +1,4 @@
 describe "v1.0 - Tagging API", :type => [:request, :v1] do
-  around do |example|
-    with_modified_env(:RBAC_URL => "http://rbac.example.com") do
-      example.call
-    end
-  end
-
   let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => false) }
   let(:rbac_aces) { instance_double(Catalog::RBAC::AccessControlEntries) }
 

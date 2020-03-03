@@ -21,7 +21,7 @@ module Api
           ).response
         end
 
-        def rbac_scope(relation, pre_authorized)
+        def rbac_scope(relation, pre_authorized = false)
           return relation if pre_authorized
 
           if Catalog::RBAC::Role.catalog_administrator?

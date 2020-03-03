@@ -433,27 +433,6 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
   end
 
-  context "GET /portfolio_items/{id}/tags" do
-    let(:name) { 'Gnocchi' }
-    let(:namespace) { 'default' }
-    let(:params) do
-      [{:tag => Tag.new(:name => name, :namespace => namespace).to_tag_string}]
-    end
-
-    before do
-      post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
-    end
-
-    context "when requesting all of the tags for a portfolio_item" do
-      it "returns the tags for the portfolio item" do
-        get "#{api_version}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers
-
-        expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["tag"]).to eq Tag.new(:name => name, :namespace => namespace).to_tag_string
-      end
-    end
-  end
-
   context "POST /portfolio_items/{id}/tag" do
     let(:name) { 'Gnocchi' }
     let(:params) do
