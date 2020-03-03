@@ -26,4 +26,15 @@ class PortfolioPolicy < ApplicationPolicy
   end
 
   alias unshare? share?
+
+  class Scope < Scope
+    def resolve
+      if catalog_administrator?
+        scope.all
+      else
+        ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', Portfolio)
+        scope.where(:id => ids)
+      end
+    end
+  end
 end

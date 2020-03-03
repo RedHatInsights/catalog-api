@@ -10,7 +10,7 @@ module Api
           collection(Tag.find(params.require(:tag_id)).portfolio_items)
         else
           authorize(PortfolioItem)
-          collection(policy_scope(PortfolioItem.all))
+          collection(policy_scope(PortfolioItem.all), true)
         end
       end
 

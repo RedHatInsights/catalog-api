@@ -40,7 +40,6 @@ class ApplicationPolicy
   end
 
   class Scope
-
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -54,6 +53,12 @@ class ApplicationPolicy
 
     def rbac_access
       @rbac_access ||= Catalog::RBAC::Access.new(@user)
+    end
+
+    private
+
+    def catalog_administrator?
+      Catalog::RBAC::Role.catalog_administrator?
     end
   end
 end

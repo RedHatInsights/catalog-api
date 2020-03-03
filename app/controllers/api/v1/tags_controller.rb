@@ -6,9 +6,17 @@ module Api
 
       def index
         if params[:portfolio_id]
-          collection(Portfolio.find(params.require(:portfolio_id)).tags)
+          scope = Portfolio.where(:id => params.require(:portfolio_id))
+          relevant_portfolio = policy_scope(scope, :policy_scope_class => PortfolioPolicy::Scope).first
+          relevant_tags = relevant_portfolio.try(:tags) || Tag.none
+
+          collection(relevant_tags, true)
         elsif params[:portfolio_item_id]
-          collection(PortfolioItem.find(params.require(:portfolio_item_id)).tags)
+          scope = PortfolioItem.where(:id => params.require(:portfolio_item_id))
+          relevant_portfolio_item = policy_scope(scope, :policy_scope_class => PortfolioItemPolicy::Scope).first
+          relevant_tags = relevant_portfolio_item.try(:tags) || Tag.none
+
+          collection(relevant_tags, true)
         else
           collection(Tag.all)
         end
