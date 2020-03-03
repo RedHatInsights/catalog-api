@@ -2,37 +2,63 @@ require 'fileutils'
 module Api
   module Tools
     class Versioning
-      def self.build_new(version)
-        _self = new(version)
-        _self.build_dirs
-        _self.build_files
-        _self.append_new_to_existing
+      def self.build_new(new_version, previous_version)
+        add_version = new(new_version, previous_version)
+        add_version.build_dirs
+        add_version.build_files
+        add_version.append_new_to_existing
       end
 
-      def initialize(version)
-        @version = version
-        @last_known_minor
-        @last_known_major
+      def self.remove(version)
+        remove_version = new(version, version)
+        remove_version.rm_dirs
+        remove_version.rm_files
+      end
+
+      def initialize(new_version, previous)
+        @new_version = new_version
+        @previous = previous
       end
 
       def append_new_to_existing
-        puts "Appending stuff"
+        puts "Need to append stuff here"
+      end
+
+      def rm_dirs
+        # build new dirs
+        dot_new = @new_version.split('x').join('.')
+        %w[app/controllers/api spec/requests/api].each do |dir|
+          path = dir.match('requests') ? "#{dir}/v#{dot_new}" : "#{dir}/v#{@new_version}"
+          FileUtils.rm_rf(path)
+        end
+      end
+
+      def rm_files
+        # build new filess
+        dot_new = @new_version.split('x').join('.')
+        ["app/controllers/api/v#{@new_version}.rb", "config/routes/v#{@new_version}.rb", "public/doc/openapi-3-v#{dot_new}.json"].each_with_index do |file, index|
+          FileUtils.rm(file)
+        end
       end
 
       def build_dirs
         # build new dirs
-        %w[app/controllers/api specs/requests/api].each do |dir|
-          path = "#{dir}/v#{@version}"
+        dot_new = @new_version.split('x').join('.')
+        %w[app/controllers/api spec/requests/api].each do |dir|
+          path = dir.match('requests') ? "#{dir}/v#{dot_new}" : "#{dir}/v#{@new_version}"
           raise StandardError.new("Path already exists") if check_existing?(path)
           FileUtils.mkdir(path)
         end
       end
 
       def build_files
-        # build new filess
-        ["config/routes/v#{@version}", "public/doc/openapi-3v#{version}.json"].each do |file|
+        # build new files
+        dot_prev = @previous.split('x').join('.')
+        dot_new = @new_version.split('x').join('.')
+        prev = ["app/controllers/api/v#{@previous}.rb", "config/routes/v#{@previous}.rb", "public/doc/openapi-3-v#{dot_prev}.json"]
+        ["app/controllers/api/v#{@new_version}.rb", "config/routes/v#{@new_version}.rb", "public/doc/openapi-3-v#{dot_new}.json"].each_with_index do |file, index|
           raise StandardError.new("File already exists") if check_existing?(file)
-          FileUtils.cp(file)
+          FileUtils.cp(prev[index], file)
         end
       end
 
