@@ -1,8 +1,6 @@
 module Catalog
   module RBAC
     class Access
-      include Insights::API::Common::RBAC::Utilities
-
       def initialize(user)
         @user = user
       end
@@ -35,9 +33,7 @@ module Catalog
 
         return false unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?
         ids = access_id_list(verb, klass)
-        if klass.try(:supports_access_control?)
-          return false if ids.exclude?(id.to_s)
-        end
+        return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
 
         true
       end
