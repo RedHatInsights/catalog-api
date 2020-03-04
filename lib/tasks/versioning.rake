@@ -16,10 +16,11 @@ namespace :api do
       Api::Tools::Versioning.build_new(new_version, previous_version)
     end
 
-    desc "Remove version [version_to_remove] rake api:versioning:remove['1x2']"
-    task :remove, [:version] => :environment do |_task, args|
-      version = args.version
-      Api::Tools::Versioning.remove(version)
+    desc "Remove version [version_to_remove, restore_version] rake api:versioning:remove['1x2','1x1']"
+    task :remove, [:version_to_remove, :restore_version] => :environment do |_task, args|
+      version_to_remove = args.version_to_remove
+      restore = args.restore_version
+      Api::Tools::Versioning.remove(version_to_remove, restore)
     end
   end
 end
