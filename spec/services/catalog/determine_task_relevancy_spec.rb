@@ -7,16 +7,8 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
     )
   end
 
-  let!(:order_item) do
-    Insights::API::Common::Request.with_request(default_request) do
-      create(:order_item, :topology_task_ref => "123")
-    end
-  end
+  let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
   let(:order_state_transition) { instance_double(Catalog::OrderStateTransition) }
-
-  before do
-    allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-  end
 
   describe "#process" do
     context "when the state is running" do
