@@ -1,6 +1,8 @@
 module Catalog
   module RBAC
     class Access
+      include Insights::API::Common::RBAC::Utilities
+
       def initialize(user)
         @user = user
       end
@@ -21,31 +23,44 @@ module Catalog
         resource_check('delete')
       end
 
-      def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
-        return unless Insights::API::Common::RBAC::Access.enabled?
-        return if Catalog::RBAC::Role.catalog_administrator?
+      def admin_check
+        return true unless rbac_enabled?
 
+        catalog_admin?
+      end
+
+      def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
+        return true unless rbac_enabled?
+        return true if catalog_admin?
+
+        return false unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?
         ids = access_id_list(verb, klass)
         if klass.try(:supports_access_control?)
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}" if ids.exclude?(id.to_s)
+          return false if ids.exclude?(id.to_s)
         end
+
+        true
       end
 
       def permission_check(verb, klass = @user.controller_name.classify.constantize)
-        return unless Insights::API::Common::RBAC::Access.enabled?
+        return true unless rbac_enabled?
 
-        unless access_object(klass.table_name, verb).accessible?
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}"
-        end
+        return false unless access_object(klass.table_name, verb).accessible?
+
+        true
       end
 
       private
 
-      def access_id_list(verb, klass)
-        unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?
-          raise Catalog::NotAuthorized, "#{verb.titleize} access not authorized for #{klass}"
-        end
+      def rbac_enabled?
+        Insights::API::Common::RBAC::Access.enabled?
+      end
 
+      def catalog_admin?
+        Catalog::RBAC::Role.catalog_administrator?
+      end
+
+      def access_id_list(verb, klass)
         Catalog::RBAC::AccessControlEntries.new.ace_ids(verb, klass)
       end
 

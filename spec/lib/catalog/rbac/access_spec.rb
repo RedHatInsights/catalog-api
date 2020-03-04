@@ -41,16 +41,16 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       context "when the object is accessible" do
         let(:access_list) { [RBACApiClient::Access.new(:permission => ":portfolio_items:#{verb}")] }
 
-        it "returns nil" do
-          expect(subject.send(method, *arguments)).to eq(nil)
+        it "returns true" do
+          expect(subject.send(method, *arguments)).to eq(true)
         end
       end
 
       context "when the object is not accessible" do
         let(:access_list) { [] }
 
-        it "throws an error" do
-          expect { subject.send(method, *arguments) }.to raise_error(Catalog::NotAuthorized, /access not authorized for/)
+        it "returns false" do
+          expect(subject.send(method, *arguments)).to eq(false)
         end
       end
     end
@@ -58,8 +58,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
     context "when RBAC is not enabled" do
       let(:rbac_enabled) { false }
 
-      it "returns nil" do
-        expect(subject.send(method, *arguments)).to eq(nil)
+      it "returns true" do
+        expect(subject.send(method, *arguments)).to eq(true)
       end
     end
   end
@@ -124,16 +124,16 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
             context "when the ids exclude the given id" do
               let(:aceable_id) { "456" }
 
-              it "raises an error" do
-                expect { subject.send(method, *arguments) }.to raise_error(Catalog::NotAuthorized, /access not authorized for/)
+              it "returns false" do
+                expect(subject.send(method, *arguments)).to eq(false)
               end
             end
 
             context "when the ids include the given id" do
               let(:aceable_id) { "321" }
 
-              it "returns nil" do
-                expect(subject.send(method, *arguments)).to eq(nil)
+              it "returns true" do
+                expect(subject.send(method, *arguments)).to eq(true)
               end
             end
           end
@@ -141,8 +141,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
           context "when the class does not support access control" do
             let(:supports_access_control?) { false }
 
-            it "returns nil" do
-              expect(subject.send(method, *arguments)).to eq(nil)
+            it "returns true" do
+              expect(subject.send(method, *arguments)).to eq(true)
             end
           end
         end
@@ -151,8 +151,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
           let(:access_list) { [] }
           let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
 
-          it "raises an error" do
-            expect { subject.send(method, *arguments) }.to raise_error(Catalog::NotAuthorized, /access not authorized for/)
+          it "returns false" do
+            expect(subject.send(method, *arguments)).to eq(false)
           end
         end
       end
@@ -160,8 +160,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       context "when the user is a catalog administrator" do
         let(:admin?) { true }
 
-        it "returns nil" do
-          expect(subject.send(method, *arguments)).to eq(nil)
+        it "returns true" do
+          expect(subject.send(method, *arguments)).to eq(true)
         end
       end
     end
@@ -169,8 +169,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
     context "when RBAC is not enabled" do
       let(:rbac_enabled) { false }
 
-      it "returns nil" do
-        expect(subject.send(method, *arguments)).to eq(nil)
+      it "returns true" do
+        expect(subject.send(method, *arguments)).to eq(true)
       end
     end
   end
@@ -197,5 +197,39 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
   describe "#destroy_access_check" do
     it_behaves_like "resource checking", :destroy_access_check, [], "delete", PortfolioItem, :has_delete_permission
+  end
+
+  describe "#admin_check" do
+    context "when RBAC is not enabled" do
+      let(:rbac_enabled) { false }
+
+      it "returns true" do
+        expect(subject.admin_check).to eq(true)
+      end
+    end
+
+    context "when RBAC is enabled" do
+      let(:rbac_enabled) { true }
+
+      before do
+        allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(catalog_administrator?)
+      end
+
+      context "when the user is a catalog administrator" do
+        let(:catalog_administrator?) { true }
+
+        it "returns true" do
+          expect(subject.admin_check).to eq(true)
+        end
+      end
+
+      context "when the user is not a catalog administrator" do
+        let(:catalog_administrator?) { false }
+
+        it "returns false" do
+          expect(subject.admin_check).to eq(false)
+        end
+      end
+    end
   end
 end

@@ -7,7 +7,7 @@ describe Catalog::ValidateSource do
   let(:validate_source) { described_class.new(portfolio_item.service_offering_source_ref).process }
 
   around do |example|
-    with_modified_env(:SOURCES_URL => "http://source.example.com") do
+    with_modified_env(:SOURCES_URL => "http://sources.example.com") do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end

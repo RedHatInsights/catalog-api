@@ -9,11 +9,14 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { double }
   let(:principal_options) { {:scope=>"principal"} }
+  let(:role_list) { [RBACApiClient::RoleOut.new(:name => "role", :uuid => "123-456")] }
 
   before do
     allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
+    allow(rs_class).to receive(:call).with(RBACApiClient::RoleApi).and_yield(api_instance)
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
     allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([group1])
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_roles, {:name => "Catalog Administrator", :scope => "principal"}).and_return(role_list)
   end
 
   describe "POST /portfolios" do

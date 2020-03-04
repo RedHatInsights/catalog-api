@@ -17,12 +17,13 @@ class ApplicationController < ActionController::API
 
   def with_current_request
     Insights::API::Common::Request.with_request(request) do |current|
+      Rails.logger.info("Request started #{request.original_url}")
       if current.required_auth?
         raise Insights::API::Common::EntitlementError, "User not Entitled" unless check_entitled(current.entitlement)
 
-        ActsAsTenant.with_tenant(current_tenant(current.user)) { yield }
+        ActsAsTenant.with_tenant(current_tenant(current)) { yield.tap { Rails.logger.info("Request ended #{request.original_url}") } }
       else
-        ActsAsTenant.without_tenant { yield }
+        ActsAsTenant.without_tenant { yield.tap {Rails.logger.info("Request ended #{request.original_url}")} }
       end
     end
   rescue Insights::API::Common::EntitlementError => e
@@ -31,8 +32,8 @@ class ApplicationController < ActionController::API
     json_response({:errors => e.message}, :unauthorized)
   end
 
-  def current_tenant(current_user)
-    Tenant.find_or_create_by(:external_tenant => current_user.tenant)
+  def current_tenant(request)
+    Tenant.find_or_create_by(:external_tenant => request.tenant)
   end
 
   def check_entitled(entitlement)

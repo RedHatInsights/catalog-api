@@ -107,7 +107,7 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
       end
 
       it 'account number is in RbacSeed table' do
-        expect(RbacSeed.seeded(Insights::API::Common::Request.current.user)).to be_truthy
+        expect(RbacSeed.seeded(Insights::API::Common::Request.current)).to be_truthy
       end
 
       it 'gets the current list of groups' do

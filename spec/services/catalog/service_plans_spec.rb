@@ -32,7 +32,7 @@ describe Catalog::ServicePlans, :type => [:service, :topology, :current_forwarda
 
       it "returns an array with one object with a specific plain text create json schema" do
         json_schema = items.first["create_json_schema"]
-        expect(json_schema["schemaType"]).to eq("default")
+        expect(json_schema["schemaType"]).to eq("emptySchema")
         expect(json_schema["schema"]["fields"].first["component"]).to eq("plain-text")
         expect(json_schema["schema"]["fields"].first["name"]).to eq("empty-service-plan")
         expect(json_schema["schema"]["fields"].first["label"]).to match("requires no user input")

@@ -1,7 +1,6 @@
 module Catalog
   class SubmitOrder
     include SourceMixin
-    include SurveyMixin
 
     attr_reader :order
 
@@ -13,15 +12,17 @@ module Catalog
       @order = Order.find_by!(:id => @order_id)
       @order.order_items.each do |order_item|
         raise Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
-        raise Catalog::InvalidSurvey, "Base survey does not match Topology" if item_surveys_changed?(order_item.portfolio_item)
+        fail_item(order_item) if Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)
 
         submit_order_item(order_item)
+
+        Rails.logger.info("Order #{@order_id} submitted for provisioning")
       end
       @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
       @order.reload
       self
     rescue StandardError => e
-      Rails.logger.error("Submit Order #{e.message}")
+      Rails.logger.error("Error Submitting Order #{@order_id}: #{e.message}")
       raise
     end
 
@@ -48,6 +49,13 @@ module Catalog
       item.order_request_sent_at = Time.now.utc
       item.update_message('info', 'Ordered')
       item.save!
+    end
+
+    def fail_item(item)
+      item.update!(:completed_at => DateTime.now, :state => "Failed")
+      item.update_message("error", "Order Item Failed: Base survey does not match Topology")
+
+      raise Catalog::InvalidSurvey, "Base survey does not match Topology"
     end
 
     def sanitized_parameters(item)

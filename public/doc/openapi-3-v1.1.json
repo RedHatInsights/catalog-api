@@ -3111,7 +3111,8 @@
               "Failed",
               "Completed",
               "Approved",
-              "Denied"
+              "Denied",
+              "Canceled"
             ],
             "title": "State",
             "description": "Current state of this order item.",
@@ -3321,10 +3322,16 @@
             "description": "The unique identifier for this service plan.",
             "readOnly": true
           },
+          "imported": {
+            "type": "boolean",
+            "title": "Imported",
+            "description": "Whether or not the ServicePlan has been imported for editing",
+            "readOnly": true
+          },
           "modified": {
             "type": "boolean",
             "title": "Modified",
-            "description": "Whether or not the ServicePlan has a modified create_json_schema property",
+            "description": "Whether or not the ServicePlan has a modified schema",
             "readOnly": true
           }
         }
@@ -3541,7 +3548,8 @@
             "title": "The Group UUIDs",
             "description": "An array of group UUID's retrieved from the RBAC Service with whom the resource has to be shared.",
             "items": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "minItems": 1
           }
@@ -3573,7 +3581,8 @@
             "title": "The Group UUIDs",
             "description": "An array of group UUID's retrieved from the RBAC Service from which the permissions have to be removed. If group uuids are not specified we will unshare it from all groups.",
             "items": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         }

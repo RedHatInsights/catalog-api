@@ -44,7 +44,7 @@ module ServiceSpecHelper
   end
 
   def sources_url(partial_path, api_version = "v1.0")
-    url_string = "http://source.example.com"
+    url_string = "http://sources.example.com"
     url = URI.join(url_string, "api/", "sources/", "#{api_version}/", "#{partial_path}")
     url.to_s
   end
