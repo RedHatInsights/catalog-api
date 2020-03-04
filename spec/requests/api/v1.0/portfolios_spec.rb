@@ -406,21 +406,6 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       end
     end
 
-    context "GET /portfolios/{id}/tags" do
-      let(:params) { {:name => tag_name, :namespace => tag_ns} }
-
-      before do
-        post "#{api_version}/portfolios/#{portfolio.id}/tag", :headers => default_headers, :params => tag_params
-      end
-
-      it "returns the tags for the portfolio" do
-        get "#{api_version}/portfolios/#{portfolio.id}/tags", :headers => default_headers
-
-        expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["tag"]).to eq Tag.new(:name => tag_name, :namespace => tag_ns).to_tag_string
-      end
-    end
-
     context "POST /portfolios/{id}/tag" do
       context 'no namespace and value' do
         let(:params) { {:name => tag_name} }

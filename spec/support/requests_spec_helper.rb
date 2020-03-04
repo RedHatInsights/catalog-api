@@ -20,6 +20,6 @@ module RequestSpecHelper
   end
 
   def catalog_admin_role
-    Api::V1::PortfoliosController::ADMINISTRATOR_ROLE_NAME
+    Catalog::RBAC::Role::ADMINISTRATOR_ROLE_NAME
   end
 end
