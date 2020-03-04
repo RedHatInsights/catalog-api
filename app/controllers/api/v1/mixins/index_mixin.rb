@@ -3,7 +3,7 @@ module Api
     module Mixins
       module IndexMixin
         def scoped(relation, pre_authorized)
-          relation = rbac_scope(relation, pre_authorized) if Insights::API::Common::RBAC::Access.enabled?
+          relation = rbac_scope(relation, :pre_authorized => pre_authorized) if Insights::API::Common::RBAC::Access.enabled?
           if relation.model.respond_to?(:taggable?) && relation.model.taggable?
             ref_schema = {relation.model.tagging_relation_name => :tag}
 
@@ -12,7 +12,7 @@ module Api
           relation
         end
 
-        def collection(base_query, pre_authorized = false)
+        def collection(base_query, pre_authorized: false)
           render :json => Insights::API::Common::PaginatedResponse.new(
             :base_query => filtered(scoped(base_query, pre_authorized)),
             :request    => request,
@@ -21,7 +21,7 @@ module Api
           ).response
         end
 
-        def rbac_scope(relation, pre_authorized = false)
+        def rbac_scope(relation, pre_authorized: false)
           return relation if pre_authorized
 
           if Catalog::RBAC::Role.catalog_administrator?
