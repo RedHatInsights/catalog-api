@@ -6,7 +6,9 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   end
 
   let!(:order) { create(:order) }
+  let!(:order_item) { create(:order_item, :order => order) }
   let!(:order2) { create(:order) }
+  let!(:order_item2) { create(:order_item, :order => order2) }
 
   describe "#submit_order" do
     let(:service_offering_service) { instance_double("Catalog::ServiceOffering") }
