@@ -2,8 +2,12 @@ require 'fileutils'
 module Api
   module Tools
     class Versioning
-      def self.build_new(new_version, previous_version)
+      def self.build_new(new_version, previous_version, controller_names=[])
         Add.new(new_version, previous_version).apply
+
+        if controller_names.present?
+          Template.new(new_version, controller_names).write_templates
+        end
       end
 
       def self.remove(version, previous)
