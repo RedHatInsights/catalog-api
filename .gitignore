@@ -13,3 +13,5 @@
 /pkg/
 /spec/reports/
 /tmp/
+/.sonar/sonar-scanner.properties
+/.scannerwork/
