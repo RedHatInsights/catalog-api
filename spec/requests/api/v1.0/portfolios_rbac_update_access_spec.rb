@@ -1,39 +1,42 @@
 describe "v1.0 - Portfolios Write Access RBAC API", :type => [:request, :v1] do
-  let!(:portfolio1) { create(:portfolio) }
-  let!(:portfolio2) { create(:portfolio) }
-  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true) }
-  let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
-  let(:updated_attributes) { {:name => 'Barney', :description => "Barney's Portfolio" } }
-  let(:block_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => false) }
-  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:permission) { 'update' }
-  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
-  let(:api_instance) { double }
-  let(:list_group_options) { {:scope=>"principal"} }
-
   describe "POST /portfolios" do
-    it 'creates a portfolio' do
-      allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(access_obj)
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
-      allow(access_obj).to receive(:process).and_return(access_obj)
-      post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
+    let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
 
-      expect(response).to have_http_status(:ok)
+    context "when the user is a catalog administrator" do
+      before do
+        allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true)
+      end
+
+      it 'creates a portfolio' do
+        post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
+
+        expect(response).to have_http_status(:ok)
+      end
     end
 
-    it 'returns status code 403' do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(block_access_obj)
-      allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(block_access_obj)
-      allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-      post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
+    context "when the user is not a catalog administrator" do
+      before do
+        allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
+      end
 
-      expect(response).to have_http_status(:forbidden)
+      it 'returns status code 403' do
+        post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
+
+        expect(response).to have_http_status(:forbidden)
+      end
     end
   end
 
   describe "PATCH /portfolios" do
+    let!(:portfolio1) { create(:portfolio) }
+    let!(:portfolio2) { create(:portfolio) }
+    let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true) }
+    let(:updated_attributes) { {:name => 'Barney', :description => "Barney's Portfolio" } }
+    let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
+    let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
+    let(:api_instance) { double }
+    let(:list_group_options) { {:scope=>"principal"} }
+
     before do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)

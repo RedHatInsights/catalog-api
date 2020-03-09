@@ -8,22 +8,34 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def update?
-    rbac_access.update_access_check
+    rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
   end
 
   def destroy?
-    rbac_access.destroy_access_check
+    rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
   end
 
   def copy?
-    rbac_access.resource_check('read', @record.id) &&
-      rbac_access.permission_check('create', Portfolio) &&
-      rbac_access.permission_check('update', Portfolio)
+    destination_id = @user.params[:portfolio_id] || @record.portfolio_id
+
+    if destination_id == @record.portfolio_id
+      can_read_and_update_destination?(destination_id)
+    else
+      rbac_access.resource_check('read', @record.portfolio_id, Portfolio) &&
+        can_read_and_update_destination?(destination_id)
+    end
+  end
+
+  private
+
+  def can_read_and_update_destination?(destination_id)
+    rbac_access.resource_check('read', destination_id, Portfolio) &&
+      rbac_access.resource_check('update', destination_id, Portfolio)
   end
 
   class Scope < Scope
     def resolve
-      if Catalog::RBAC::Role.catalog_administrator?
+      if catalog_administrator?
         scope.all
       else
         ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', Portfolio)

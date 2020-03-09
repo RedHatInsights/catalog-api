@@ -1,7 +1,8 @@
 describe PortfolioItemPolicy do
   let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
   let(:portfolio) { create(:portfolio) }
-  let(:user_context) { UserContext.new("current_request", "params", "controller_name") }
+  let(:user_context) { UserContext.new("current_request", params, "controller_name") }
+  let(:params) { {} }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
   subject { described_class.new(user_context, portfolio_item) }
@@ -20,64 +21,122 @@ describe PortfolioItemPolicy do
   describe "#create?" do
     subject { described_class.new(user_context, portfolio) }
 
-    it "delegates to the rbac access create check" do
+    it "delegates to the check for update permissions on the portfolio" do
       expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
       expect(subject.create?).to eq(true)
     end
   end
 
   describe "#update?" do
-    it "delegates to the rbac access update check" do
-      expect(rbac_access).to receive(:update_access_check).and_return(true)
+    it "delegates to the check for update permissions on the portfolio" do
+      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
       expect(subject.update?).to eq(true)
     end
   end
 
   describe "#destroy?" do
-    it "delegates to the rbac access destroy check" do
-      expect(rbac_access).to receive(:destroy_access_check).and_return(true)
+    it "delegates to the check for update permissions on the portfolio" do
+      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
       expect(subject.destroy?).to eq(true)
     end
   end
 
   describe "#copy?" do
-    let(:copy_read_check) { true }
-    let(:copy_create_check) { true }
-    let(:copy_update_check) { true }
+    let(:source_read_check) { true }
+    let(:destination_read_check) { true }
+    let(:destination_update_check) { true }
+    let(:source_id) { portfolio.id }
+    let(:destination_id) { source_id }
 
     before do
-      allow(rbac_access).to receive(:resource_check).with('read', portfolio_item.id).and_return(copy_read_check)
-      allow(rbac_access).to receive(:permission_check).with('create', Portfolio).and_return(copy_create_check)
-      allow(rbac_access).to receive(:permission_check).with('update', Portfolio).and_return(copy_update_check)
+      allow(rbac_access).to receive(:resource_check).with('read', source_id, Portfolio).and_return(source_read_check)
+      allow(rbac_access).to receive(:resource_check).with('read', destination_id, Portfolio).and_return(destination_read_check)
+      allow(rbac_access).to receive(:resource_check).with('update', destination_id, Portfolio).and_return(destination_update_check)
     end
 
-    context "when the rbac access check is false on the portfolio item read" do
-      let(:copy_read_check) { false }
+    context "when the parameters contain a portfolio_id" do
+      let(:params) { {:portfolio_id => destination_id} }
 
-      it "returns false" do
-        expect(subject.copy?).to eq(false)
+      context "when the portfolio id matches the record's portfolio id" do
+        context "when destination reading is false" do
+          let(:destination_read_check) { false }
+
+          it "returns false" do
+            expect(subject.copy?).to eq(false)
+          end
+        end
+
+        context "when destination updating is false" do
+          let(:destination_update_check) { false }
+
+          it "returns false" do
+            expect(subject.copy?).to eq(false)
+          end
+        end
+
+        context "when both conditions are true" do
+          it "returns true" do
+            expect(subject.copy?).to eq(true)
+          end
+        end
+      end
+
+      context "when the portfolio id does not match the record's portfolio id" do
+        let(:destination_id) { source_id + 1 }
+
+        context "when source reading is false" do
+          let(:source_read_check) { false }
+
+          it "returns false" do
+            expect(subject.copy?).to eq(false)
+          end
+        end
+
+        context "when destination reading is false" do
+          let(:destination_read_check) { false }
+
+          it "returns false" do
+            expect(subject.copy?).to eq(false)
+          end
+        end
+
+        context "when destination updating is false" do
+          let(:destination_update_check) { false }
+
+          it "returns false" do
+            expect(subject.copy?).to eq(false)
+          end
+        end
+
+        context "when all three conditions are true" do
+          it "returns true" do
+            expect(subject.copy?).to eq(true)
+          end
+        end
       end
     end
 
-    context "when the rbac access create check is false" do
-      let(:copy_create_check) { false }
+    context "when the parameters do not contain a portfolio_id" do
+      context "when destination reading is false" do
+        let(:destination_read_check) { false }
 
-      it "returns false" do
-        expect(subject.copy?).to eq(false)
+        it "returns false" do
+          expect(subject.copy?).to eq(false)
+        end
       end
-    end
 
-    context "when the rbac access update check is false" do
-      let(:copy_update_check) { false }
+      context "when destination updating is false" do
+        let(:destination_update_check) { false }
 
-      it "returns false" do
-        expect(subject.copy?).to eq(false)
+        it "returns false" do
+          expect(subject.copy?).to eq(false)
+        end
       end
-    end
 
-    context "when all three rbac access checks return true" do
-      it "returns true" do
-        expect(subject.copy?).to eq(true)
+      context "when both conditions are true" do
+        it "returns true" do
+          expect(subject.copy?).to eq(true)
+        end
       end
     end
   end

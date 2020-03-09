@@ -6,6 +6,10 @@ class OrderPolicy < ApplicationPolicy
   end
 
   def submit_order?
-    service_offering_check(@record)
+    order_items_check = @record.order_items.collect do |order_item|
+      rbac_access.resource_check('order', order_item.portfolio_item.portfolio_id, Portfolio)
+    end
+
+    order_items_check.all? && service_offering_check(@record)
   end
 end

@@ -20,18 +20,20 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
   end
 
   describe "POST /portfolios" do
-    it "success" do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
-      allow(access_obj).to receive(:process).and_return(access_obj)
-      post "#{api_version}/portfolios", :headers => default_headers, :params => params
-      expect(response).to have_http_status(200)
+    context "when the user is a catalog administrator" do
+      it "success" do
+        post "#{api_version}/portfolios", :headers => default_headers, :params => params
+        expect(response).to have_http_status(200)
+      end
     end
 
-    it "unauthorized" do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(block_access_obj)
-      allow(block_access_obj).to receive(:process).and_return(block_access_obj)
-      post "#{api_version}/portfolios", :headers => default_headers, :params => params
-      expect(response).to have_http_status(403)
+    context "when the user is not a catalog administrator" do
+      let(:role_list) { [] }
+
+      it "unauthorized" do
+        post "#{api_version}/portfolios", :headers => default_headers, :params => params
+        expect(response).to have_http_status(403)
+      end
     end
   end
 
@@ -80,39 +82,22 @@ describe "v1.0 - Portfolios RBAC API", :type => [:request, :v1] do
         expect(result['data'][0]['name']).to eq(portfolio1.name)
       end
     end
+  end
 
-    context "when user does not have RBAC update portfolios access" do
-      before do
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
-        allow(access_obj).to receive(:process).and_return(access_obj)
-
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(block_access_obj)
-        allow(block_access_obj).to receive(:process).and_return(block_access_obj)
+  describe "POST /portfolios/:portfolio_id/copy" do
+    context "when the user is a catalog administrator" do
+      it 'returns a 200' do
+        post "#{api_version}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
+        expect(response).to have_http_status(:ok)
       end
+    end
+
+    context "when the user is not a catalog administrator" do
+      let(:role_list) { [] }
 
       it 'returns a 403' do
         post "#{api_version}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
         expect(response).to have_http_status(403)
-      end
-    end
-
-    context "when user has RBAC update portfolios access" do
-      let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => true) }
-      before do
-        create(:access_control_entry, :has_read_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
-        create(:access_control_entry, :has_update_permission, :group_uuid => group1.uuid, :aceable => portfolio1)
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
-        allow(access_obj).to receive(:process).and_return(access_obj)
-
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(portfolio_access_obj)
-        allow(portfolio_access_obj).to receive(:process).and_return(portfolio_access_obj)
-      end
-
-      it 'returns a 200' do
-        post "#{api_version}/portfolios/#{portfolio1.id}/copy", :headers => default_headers
-        expect(response).to have_http_status(:ok)
       end
     end
   end
