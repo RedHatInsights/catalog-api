@@ -1,7 +1,7 @@
 class Order < ApplicationRecord
   include OwnerField
   include Discard::Model
-  include Catalog::DiscardRestore
+  include V1x0::Catalog::DiscardRestore
   destroy_dependencies :order_items
   acts_as_tenant(:tenant)
 

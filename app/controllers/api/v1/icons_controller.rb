@@ -11,7 +11,7 @@ module Api
       end
 
       def create
-        icon = Catalog::CreateIcon.new(icon_params).process.icon
+        icon = V1x0::Catalog::CreateIcon.new(icon_params).process.icon
         render :json => icon
       end
 

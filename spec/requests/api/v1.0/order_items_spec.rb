@@ -4,10 +4,10 @@ describe "v1.0 - OrderItemsRequests", :type => [:request, :v1] do
       example.call
     end
   end
-  let(:service_plans_instance) { instance_double(Catalog::ServicePlans, :items => [OpenStruct.new(:id => "1")]) }
+  let(:service_plans_instance) { instance_double(V1x0::Catalog::ServicePlans, :items => [OpenStruct.new(:id => "1")]) }
 
   before do
-    allow(Catalog::ServicePlans).to receive(:new).and_return(service_plans_instance)
+    allow(V1x0::Catalog::ServicePlans).to receive(:new).and_return(service_plans_instance)
     allow(service_plans_instance).to receive(:process).and_return(service_plans_instance)
   end
 
