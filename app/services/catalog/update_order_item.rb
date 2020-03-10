@@ -75,6 +75,7 @@ module Catalog
       @order_item.completed_at = DateTime.now
       @order_item.state = "Failed"
       @order_item.update_message("error", "Order Item Failed")
+      @order_item.external_url = fetch_external_url
 
       Rails.logger.info("Updating OrderItem: #{@order_item.id} with 'Failed' state")
       @order_item.save!
