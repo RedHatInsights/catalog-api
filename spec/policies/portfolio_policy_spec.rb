@@ -35,4 +35,26 @@ describe PortfolioPolicy do
       it_behaves_like "a policy action that requires admin access", method
     end
   end
+
+  describe "#user_capabilities" do
+    before do
+      allow(rbac_access).to receive(:admin_check).and_return(true)
+
+      allow(rbac_access).to receive(:read_access_check).and_return(true)
+
+      allow(rbac_access).to receive(:update_access_check).and_return(true)
+    end
+
+    it "returns a hash of user capabilities" do
+      expect(subject.user_capabilities).to eq({
+        "create"  => true,
+        "update"  => true,
+        "destroy" => true,
+        "copy"    => true,
+        "share"   => true,
+        "unshare" => true,
+        "show"    => true
+      })
+    end
+  end
 end

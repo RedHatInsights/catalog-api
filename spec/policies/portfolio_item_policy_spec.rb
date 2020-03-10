@@ -140,4 +140,27 @@ describe PortfolioItemPolicy do
       end
     end
   end
+
+  describe "#user_capabilities" do
+    before do
+      # Index
+      allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
+
+      # Create, Update, Destroy, and half of Copy
+      allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+
+      # Other half of Copy
+      allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+    end
+
+    it "returns a hash of user capabilities" do
+      expect(subject.user_capabilities).to eq({
+        "index"   => true,
+        "create"  => true,
+        "update"  => true,
+        "destroy" => true,
+        "copy"    => true
+      })
+    end
+  end
 end

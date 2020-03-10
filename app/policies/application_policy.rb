@@ -33,6 +33,15 @@ class ApplicationPolicy
     false
   end
 
+  def user_capabilities
+    capabilities = {}
+    (self.class.instance_methods(false) - [:user_capabilities]).each do |method|
+      capabilities[method.to_s.delete_suffix('?')] = self.send(method)
+    end
+
+    capabilities
+  end
+
   private
 
   def rbac_access
