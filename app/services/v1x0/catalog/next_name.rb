@@ -9,7 +9,6 @@ module V1x0
       end
 
       def process
-        byebug
         names = @portfolio.portfolio_items.pluck(:name)
         @next_name = ::Catalog::NameAdjust.create_copy_name(@item.name, names)
 

@@ -30,7 +30,7 @@ module Catalog
 
     def copy_portfolio_items(portfolio_id)
       @portfolio.portfolio_items.each do |item|
-        Catalog::CopyPortfolioItem.new(:portfolio_item_id => item.id, :portfolio_id => portfolio_id).process
+        V1x0::Catalog::CopyPortfolioItem.new(:portfolio_item_id => item.id, :portfolio_id => portfolio_id).process
       end
     end
   end

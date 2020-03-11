@@ -117,7 +117,7 @@ describe V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :topolog
       let(:sources_response) { {:data => [{:id => 1}]} }
 
       it "raises an unauthorized error" do
-        expect { subject.process }.to raise_exception(Catalog::NotAuthorized)
+        expect { subject.process }.to raise_exception(::Catalog::NotAuthorized)
       end
     end
   end
