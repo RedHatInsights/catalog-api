@@ -63,6 +63,7 @@ describe Catalog::CopyPortfolioItem, :type => :service do
 
         expect(new.icon_id).not_to eq portfolio_item.icon_id
         expect(new.icon.image_id).to eq portfolio_item.icon.image_id
+        expect(new.icon.restore_to).to eq new
       end
     end
 
