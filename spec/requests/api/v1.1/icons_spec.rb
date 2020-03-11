@@ -151,27 +151,6 @@ describe "v1.1 - IconsRequests", :type => [:request, :v1x1] do
     end
   end
 
-  describe "#update" do
-    let(:params) { {:content => form_upload_test_image("miq_logo.svg") } }
-
-    before do
-      patch "#{api_version}/icons/#{icon.id}", :params => params, :headers => default_headers, :as => :form
-      icon.reload
-    end
-
-    it "returns a 200" do
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "updates the fields passed in" do
-      expect(icon.image.content).to eq Base64.strict_encode64(File.read(Rails.root.join("spec", "support", "images", "miq_logo.svg")))
-    end
-
-    it "updated to a new image record" do
-      expect(icon.image_id).to_not eq image.id
-    end
-  end
-
   describe "#raw_icon" do
     context "when the icon exists" do
       it "/portfolio_items/{portfolio_item_id}/icon returns the icon" do

@@ -2037,51 +2037,6 @@
       }
     },
     "/icons/{id}": {
-      "patch": {
-        "tags": [
-          "Icon"
-        ],
-        "summary": "Edit an existing Icon",
-        "description": "Edits Icon specified by the given ID.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ID"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Icon"
-              }
-            }
-          },
-          "description": "Parameters needed to update an Icon",
-          "required": true
-        },
-        "operationId": "updateIcon",
-        "responses": {
-          "200": {
-            "description": "Return the updated Icon object",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Icon"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Icon not found."
-          }
-        }
-      },
       "delete": {
         "tags": [
           "Icon"

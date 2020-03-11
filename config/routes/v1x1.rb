@@ -37,7 +37,7 @@ namespace :v1x1, :path => "v1.1" do
     post :copy, :action => 'copy', :controller => 'portfolio_items'
     post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
   end
-  resources :icons, :only => [:create, :destroy, :update]
+  resources :icons, :only => [:create, :destroy]
   resources :settings
   resources :tags, :only => [:index]
   resources :tenants, :only => [:index, :show] do
