@@ -19,5 +19,7 @@ module Api
     class SettingsController                  < Api::V1::SettingsController; end
     class TagsController                      < Api::V1::TagsController; end
     class TenantsController                   < Api::V1::TenantsController; end
+
+    extend_each_subclass Api::V1::Mixins::Processor
   end
 end

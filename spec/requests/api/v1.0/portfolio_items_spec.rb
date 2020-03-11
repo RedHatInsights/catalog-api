@@ -163,7 +163,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   end
 
   context "when adding portfolio items" do
-    let(:add_to_portfolio_svc) { double(ServiceOffering::AddToPortfolioItem) }
+    let(:add_to_portfolio_svc) { instance_double(V1x0::ServiceOffering::AddToPortfolioItem) }
     let(:params) { {:service_offering_ref => service_offering_ref, :portfolio_id => portfolio.id.to_s} }
     let(:permitted_params) { ActionController::Parameters.new(params).permit(:service_offering_ref, :portfolio_id) }
 
@@ -172,7 +172,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
 
     before do
-      allow(ServiceOffering::AddToPortfolioItem).to receive(:new).with(permitted_params).and_return(add_to_portfolio_svc)
+      allow(V1x0::ServiceOffering::AddToPortfolioItem).to receive(:new).with(permitted_params).and_return(add_to_portfolio_svc)
     end
 
     context "when a portfolio_id is not included in the parameters" do

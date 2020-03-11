@@ -18,8 +18,8 @@ module Api
         portfolio = Portfolio.find(params.require(:portfolio_id))
         authorize(portfolio)
 
-        so = ServiceOffering::AddToPortfolioItem.new(writeable_params_for_create)
-        render :json => so.process.item
+        so = process_service("AddToPortfolioItem", writeable_params_for_create, :namespace => "ServiceOffering")
+        render :json => so.item
       end
 
       def update
@@ -48,8 +48,8 @@ module Api
         portfolio_item = PortfolioItem.find(params[:portfolio_item_id])
         authorize(portfolio_item)
 
-        svc = Catalog::CopyPortfolioItem.new(portfolio_copy_params)
-        render :json => svc.process.new_portfolio_item
+        svc = process_service("CopyPortfolioItem", portfolio_copy_params)
+        render :json => svc.new_portfolio_item
       end
 
       def undestroy
@@ -60,8 +60,8 @@ module Api
       end
 
       def next_name
-        svc = Catalog::NextName.new(params.require(:portfolio_item_id), params[:destination_portfolio_id])
-        render :json => { :next_name => svc.process.next_name }
+        svc = process_service("NextName", [params.require(:portfolio_item_id), params[:destination_portfolio_id]])
+        render :json => {:next_name => svc.next_name}
       end
 
       private
