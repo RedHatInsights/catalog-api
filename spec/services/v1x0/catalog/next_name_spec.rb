@@ -1,4 +1,4 @@
-describe Catalog::NextName, :type => :service do
+describe V1x0::Catalog::NextName, :type => :service do
   let(:portfolio) { create(:portfolio) }
   let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
   let(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio) }

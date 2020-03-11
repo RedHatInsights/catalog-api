@@ -1,4 +1,4 @@
-describe Catalog::CopyPortfolioItem, :type => :service do
+describe V1x0::Catalog::CopyPortfolioItem, :type => :service do
   let(:portfolio) { create(:portfolio) }
   let(:portfolio2) { create(:portfolio) }
   let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :icon => create(:icon)) }
