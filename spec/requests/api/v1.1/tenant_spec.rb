@@ -1,4 +1,4 @@
-describe "v1.0 - Group Seed API", :type => [:request, :v1] do
+describe "v1.1 - Group Seed API", :type => [:request, :v1x1] do
   let!(:tenant) { create(:tenant) }
   let!(:tenant_id) { tenant.id }
   let(:api_instance) { double }
@@ -46,7 +46,7 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
     end
   end
 
-  describe 'POST /tenants/:id/seed' do
+  describe 'POST /tenants/seed' do
     context "when the group was previously not seeded" do
       let(:no_groups) do
         { :data => [], :meta => { :count => 0 } }
@@ -71,7 +71,7 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
           .with(:body => principals.to_json)
           .to_return(:status => 200, :body => "", :headers => response_headers)
       end
-      before { post "#{api_version}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
+      before { post "#{api_version}/tenants/seed", :headers => modified_headers(org_admin) }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -99,7 +99,7 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
                      :body    => catalog_admin.to_json,
                      :headers => response_headers)
       end
-      before { post "#{api_version}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
+      before { post "#{api_version}/tenants/seed", :headers => modified_headers(org_admin) }
 
       it 'returns status code 204' do
         expect(response).to have_http_status(204)
@@ -134,7 +134,6 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
       before { post "#{api_version}/tenants/seed", :headers => default_headers }
 
       it 'returns status code 403' do
-        require 'byebug'; byebug
         expect(response).to have_http_status(403)
       end
     end

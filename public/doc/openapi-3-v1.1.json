@@ -789,7 +789,7 @@
         }
       }
     },
-    "/tenants/{tenant_id}/seed": {
+    "/tenants/seed": {
       "post": {
         "tags": [
           "Tenant"
@@ -797,11 +797,6 @@
         "summary": "Seed Tenant Groups",
         "operationId": "tenantSeed",
         "description": "Run a task to seed the Tenant Groups required for an org admin to onboard additional users.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TenantID"
-          }
-        ],
         "responses": {
           "200": {
             "description": "The tenant was seeded"
