@@ -137,7 +137,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           let(:status) { "error" }
 
           before do
-            allow(Catalog::OrderStateTransition).to receive(:new).with(order_item.order.id).and_return(order_state_transition)
+            allow(Catalog::OrderStateTransition).to receive(:new).with(order_item.order).and_return(order_state_transition)
             allow(order_state_transition).to receive(:process)
           end
 

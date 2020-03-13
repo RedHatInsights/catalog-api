@@ -10,7 +10,7 @@ describe Catalog::OrderStateTransition do
     end
 
     let(:transition) do
-      described_class.new(order.id).process
+      described_class.new(order).process
       order.reload
     end
 
