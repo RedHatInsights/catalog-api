@@ -4,7 +4,7 @@ module Api
       include Api::V1::Mixins::IndexMixin
 
       # Due to the fact form-data is getting uploaded and isn't supported by openapi_parser
-      skip_before_action :validate_request, :only => %i[create update]
+      skip_before_action :validate_request, :only => %i[create]
 
       def create
         icon = Catalog::CreateIcon.new(icon_params).process.icon
@@ -14,11 +14,6 @@ module Api
       def destroy
         Catalog::SoftDelete.new(Icon.find(params.require(:id))).process
         head :no_content
-      end
-
-      def update
-        icon = Catalog::UpdateIcon.new(params.require(:id), icon_patch_params).process.icon
-        render :json => icon
       end
 
       def raw_icon
@@ -35,11 +30,7 @@ module Api
 
       def icon_params
         params.require(:content)
-        icon_patch_params
-      end
-
-      def icon_patch_params
-        params.permit(:content, :source_ref, :source_id, :portfolio_item_id, :portfolio_id, :id)
+        params.permit(:content, :portfolio_item_id, :portfolio_id)
       end
 
       def find_icon(ids)
