@@ -23,14 +23,6 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         expect(progress_message.message).to match(/Task update/)
         expect(progress_message.order_item_id).to eq(order_item.id.to_s)
       end
-
-      it "logs an info message" do
-        allow(Rails.logger).to receive(:info).with(anything)
-        expect(Rails.logger).to receive(:info).with(
-          "Task update. State: running. Status: ok. Context: "
-        )
-        subject.process
-      end
     end
 
     context "when the state is something else" do
@@ -44,14 +36,6 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         expect(progress_message.level).to eq("info")
         expect(progress_message.message).to match(/Task update/)
         expect(progress_message.order_item_id).to eq(order_item.id.to_s)
-      end
-
-      it "logs an info message" do
-        allow(Rails.logger).to receive(:info).with(anything)
-        expect(Rails.logger).to receive(:info).with(
-          "Task update. State: what. Status: ok. Context: "
-        )
-        subject.process
       end
     end
 
@@ -137,7 +121,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           let(:status) { "error" }
 
           before do
-            allow(Catalog::OrderStateTransition).to receive(:new).with(order_item.order.id).and_return(order_state_transition)
+            allow(Catalog::OrderStateTransition).to receive(:new).with(order_item.order).and_return(order_state_transition)
             allow(order_state_transition).to receive(:process)
           end
 
@@ -147,20 +131,6 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             expect(progress_message.level).to eq("error")
             expect(progress_message.message).to match(/Task update/)
             expect(progress_message.order_item_id).to eq(order_item.id.to_s)
-          end
-
-          it "logs an error" do
-            expect(Rails.logger).to receive(:error).with(
-              "Task update. State: completed. Status: error. Context: #{payload_context}"
-            )
-            subject.process
-          end
-
-          it "logs an info message" do
-            expect(Rails.logger).to receive(:info).with(
-              "Incoming task has no current relevant delegation"
-            )
-            subject.process
           end
 
           it "transitions the order state and marks the order item failed" do
@@ -184,20 +154,6 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             expect(progress_message.level).to eq("info")
             expect(progress_message.message).to match(/Task update/)
             expect(progress_message.order_item_id).to eq(order_item.id.to_s)
-          end
-
-          it "logs an info message" do
-            expect(Rails.logger).to receive(:info).with(
-              "Incoming task has no current relevant delegation"
-            )
-            subject.process
-          end
-
-          it "logs an info message" do
-            expect(Rails.logger).to receive(:info).with(
-              "Task update. State: completed. Status: updated. Context: #{payload_context}"
-            )
-            subject.process
           end
         end
       end

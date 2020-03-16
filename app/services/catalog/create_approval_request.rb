@@ -15,7 +15,7 @@ module Catalog
       @order.update(:state => "Approval Pending", :order_request_sent_at => Time.now.utc)
       self
     rescue Catalog::ApprovalError => e
-      fail_order
+      @order.order_items.first.mark_failed("Error while creating approval request")
       Rails.logger.error("Error putting in approval Request for #{order.id}: #{e.message}")
       raise
     end
@@ -34,11 +34,6 @@ module Catalog
       )
 
       Rails.logger.info("Approval Requests Submitted for Order #{@order.id}")
-    end
-
-    def fail_order
-      @order.order_items.first.update_message(:error, "Error while creating approval request")
-      @order.update!(:state => "Failed")
     end
   end
 end

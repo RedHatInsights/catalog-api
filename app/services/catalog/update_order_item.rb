@@ -46,40 +46,15 @@ module Catalog
       when "ok"
         case @payload["state"]
         when "completed"
-          mark_item_finished
-          Catalog::OrderStateTransition.new(@order_item.order_id).process
+          @order_item.mark_completed("Order Item Complete", :external_url => fetch_external_url)
         when "running"
           @order_item.update_message("info", "Order Item being processed with context: #{@payload["context"]}")
-          @order_item.save!
         end
       when "error"
-        mark_item_failed
-        Catalog::OrderStateTransition.new(@order_item.order_id).process
+        @order_item.mark_failed("Order Item Failed", :external_url => fetch_external_url)
       else
         # Do nothing for now, only other case is "warn"
       end
-    end
-
-    def mark_item_finished
-      @order_item.completed_at = DateTime.now
-      @order_item.state = "Completed"
-      @order_item.update_message("info", "Order Item Complete")
-      @order_item.external_url = fetch_external_url
-
-      Rails.logger.info("Updating OrderItem: #{@order_item.id} with 'Completed' state and #{@order_item.external_url} external url")
-      @order_item.save!
-      Rails.logger.info("Finished updating OrderItem: #{@order_item.id} with 'Completed' state")
-    end
-
-    def mark_item_failed
-      @order_item.completed_at = DateTime.now
-      @order_item.state = "Failed"
-      @order_item.update_message("error", "Order Item Failed")
-      @order_item.external_url = fetch_external_url
-
-      Rails.logger.info("Updating OrderItem: #{@order_item.id} with 'Failed' state")
-      @order_item.save!
-      Rails.logger.info("Finished updating OrderItem: #{@order_item.id} with 'Failed' state")
     end
   end
 end

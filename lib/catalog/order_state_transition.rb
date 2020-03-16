@@ -2,8 +2,8 @@ module Catalog
   class OrderStateTransition
     attr_reader :state
 
-    def initialize(order_id)
-      @order = Order.find(order_id)
+    def initialize(order)
+      @order = order
     end
 
     def process

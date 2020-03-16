@@ -14,7 +14,7 @@ module Catalog
 
       add_task_update_message
       delegate_task if @task.state == "completed"
-      fail_order if @task.status == "error"
+      order_item.mark_failed if @task.status == "error"
 
       self
     rescue StandardError => exception
@@ -47,11 +47,6 @@ module Catalog
     def add_update_message(state, message)
       order_item.update_message(state, message)
       Rails.logger.send(state, message)
-    end
-
-    def fail_order
-      order_item.update!(:state => "Failed")
-      Catalog::OrderStateTransition.new(order_item.order_id).process
     end
   end
 end
