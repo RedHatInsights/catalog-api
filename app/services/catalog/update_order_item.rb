@@ -47,13 +47,11 @@ module Catalog
         case @payload["state"]
         when "completed"
           @order_item.mark_completed("Order Item Complete", :external_url => fetch_external_url)
-          Rails.logger.info("Updated OrderItem: #{@order_item.id} with 'Completed' state")
         when "running"
           @order_item.update_message("info", "Order Item being processed with context: #{@payload["context"]}")
         end
       when "error"
         @order_item.mark_failed("Order Item Failed", :external_url => fetch_external_url)
-        Rails.logger.info("Updated OrderItem: #{@order_item.id} with 'Failed' state")
       else
         # Do nothing for now, only other case is "warn"
       end
