@@ -14,4 +14,12 @@ class PortfolioItem < ApplicationRecord
   belongs_to :portfolio
   validates :service_offering_ref, :name, :presence => true
   validates :favorite_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
+
+  attribute :metadata, ActiveRecord::Type::Json.new
+
+  def metadata
+    user = Insights::API::Common::Request.current!
+
+    {:user_capabilities => PortfolioItemPolicy.new(user, self).user_capabilities}
+  end
 end

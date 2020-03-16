@@ -17,7 +17,7 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def copy?
-    destination_id = @user.params[:portfolio_id] || @record.portfolio_id
+    destination_id = @user.try(:params).try(:dig, :portfolio_id) || @record.portfolio_id
 
     if destination_id == @record.portfolio_id
       can_read_and_update_destination?(destination_id)

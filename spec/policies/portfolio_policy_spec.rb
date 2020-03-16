@@ -6,7 +6,7 @@ describe PortfolioPolicy do
   let(:subject) { described_class.new(user_context, portfolio) }
 
   before do
-    allow(Catalog::RBAC::Access).to receive(:new).with(user_context).and_return(rbac_access)
+    allow(Catalog::RBAC::Access).to receive(:new).with(user_context, portfolio).and_return(rbac_access)
   end
 
   shared_examples "a policy action that requires admin access" do |method|

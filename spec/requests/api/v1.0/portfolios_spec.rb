@@ -24,6 +24,7 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
         expect(json).not_to be_empty
         expect(json['id']).to eq(portfolio_id.to_s)
         expect(json['created_at']).to eq(portfolio.created_at.iso8601)
+        expect(json['metadata']).to have_key('user_capabilities')
       end
     end
 

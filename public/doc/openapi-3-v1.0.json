@@ -2876,6 +2876,12 @@
             "format": "date-time",
             "title": "Updated at",
             "readOnly": true
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "JSON Metadata about the portfolio",
+            "readOnly": true
           }
         }
       },
@@ -3098,6 +3104,12 @@
             "type": "string",
             "format": "date-time",
             "title": "Updated at",
+            "readOnly": true
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "JSON Metadata about the portfolio item",
             "readOnly": true
           }
         }

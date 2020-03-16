@@ -4,7 +4,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   let(:params) { {:id => "321"} }
   let(:controller_name) { "portfolio_items" }
   let(:user_context) { UserContext.new(current_request, params, controller_name) }
-  let(:subject) { described_class.new(user_context) }
+  let(:subject) { described_class.new(user_context, portfolio_item) }
+  let(:portfolio_item) { create(:portfolio_item, :id => "321") }
 
   around do |example|
     with_modified_env(:RBAC_URL => "http://rbac.example.com") do
