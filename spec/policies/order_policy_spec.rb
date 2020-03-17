@@ -23,7 +23,7 @@ describe OrderPolicy do
   end
 
   describe "#submit_order?" do
-    let(:service_offering) { instance_double(Catalog::ServiceOffering, :archived => archived) }
+    let(:service_offering) { instance_double(Catalog::ServiceOffering) }
 
     before do
       allow(Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering)
@@ -32,24 +32,30 @@ describe OrderPolicy do
       allow(rbac_access).to receive(:resource_check).with('order', portfolio2.id, Portfolio).and_return(order_check2)
     end
 
+    context "when the resource check for ordering from all portfolios is false" do
+      let(:order_check) { false }
+      let(:order_check2) { false }
+
+      it "returns false" do
+        expect(subject.submit_order?).to eq(false)
+      end
+    end
+
     context "when the resource check for ordering from any portfolio is false" do
       let(:order_check) { false }
       let(:order_check2) { true }
 
-      context "when the service offering is archived" do
-        let(:archived) { true }
-
-        it "returns false" do
-          expect(subject.submit_order?).to eq(false)
-        end
+      it "returns false" do
+        expect(subject.submit_order?).to eq(false)
       end
+    end
 
-      context "when the service offering is not archived" do
-        let(:archived) { false }
+    context "when the resource check for ordering from any portfolio is false" do
+      let(:order_check) { true }
+      let(:order_check2) { false }
 
-        it "returns false" do
-          expect(subject.submit_order?).to eq(false)
-        end
+      it "returns false" do
+        expect(subject.submit_order?).to eq(false)
       end
     end
 
@@ -57,20 +63,8 @@ describe OrderPolicy do
       let(:order_check) { true }
       let(:order_check2) { true }
 
-      context "when the service offering is archived" do
-        let(:archived) { true }
-
-        it "raises an error" do
-          expect { subject.submit_order? }.to raise_error(Catalog::ServiceOfferingArchived, /has been archived/)
-        end
-      end
-
-      context "when the service offering is not archived" do
-        let(:archived) { false }
-
-        it "returns true" do
-          expect(subject.submit_order?).to eq(true)
-        end
+      it "returns true" do
+        expect(subject.submit_order?).to eq(true)
       end
     end
   end

@@ -68,7 +68,7 @@ class OrderItem < ApplicationRecord
   def mark_item(msg, level: "info", **opts)
     update!(**opts)
     update_message(level, msg) if msg
-    Rails.logger.send(level, "Updated OrderItem: #{id} with '#{opts[:state]}' state".tap { |log| log << " message: #{msg}" if msg })
+    Rails.logger.send(level, "Updated OrderItem: #{id} with '#{opts[:state]}' state".tap { |log| log << " message: #{msg}" }) if msg
 
     Catalog::OrderStateTransition.new(order).process
   end

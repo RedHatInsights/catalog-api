@@ -12,6 +12,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
 
   describe "#submit_order" do
     let(:service_offering_service) { instance_double("Catalog::ServiceOffering") }
+    subject { post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers }
 
     before do
       allow(Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering_service)
@@ -24,27 +25,26 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       let(:archived) { false }
       let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
 
-      before do
+      before do |example|
         allow(Catalog::CreateRequestForAppliedInventories).to receive(:new).with(order).and_return(svc_object)
         allow(svc_object).to receive(:process).and_return(svc_object)
         allow(svc_object).to receive(:order).and_return(order)
+        subject unless example.metadata[:subject_inside]
       end
 
-      it "creates a request for applied inventories" do
+      it_behaves_like "action that tests authorization", :submit_order?, Order
+
+      it "creates a request for applied inventories", :subject_inside do
         expect(svc_object).to receive(:process)
-        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
+        subject
       end
 
       it "returns a 200" do
-        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
-
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(:ok)
       end
 
       it "returns the order in json format" do
-        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
-
         parsed_body = JSON.parse(response.body)
         expect(parsed_body["state"]).to eq("Created")
         expect(parsed_body["id"]).to eq(order.id.to_s)
@@ -54,15 +54,28 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
     context "when the service offering has been archived" do
       let(:archived) { true }
 
-      it "logs the error" do
-        expect(Rails.logger).to receive(:error).with(/Service offering for order #{order.id} has been archived/)
+      before do |example|
+        subject unless example.metadata[:subject_inside]
+      end
 
-        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
+      it_behaves_like "action that tests authorization", :submit_order?, Order
+
+      it "logs the error", :subject_inside do
+        expect(Rails.logger).to receive(:error).with(/Service offering for order #{order.id} has been archived/).twice
+
+        subject
+      end
+
+      it "creates progress messages for the order items" do
+        expect(ProgressMessage.last.message).to match(/has been archived/)
+      end
+
+      it "marks the order as failed" do
+        order.reload
+        expect(order.state).to eq("Failed")
       end
 
       it "returns a 400" do
-        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
-
         expect(response).to have_http_status(:bad_request)
       end
     end
@@ -73,13 +86,15 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       let!(:order_item) { create(:order_item, :order => order) }
       let!(:service_plan) { create(:service_plan, :portfolio_item => order.order_items.first.portfolio_item) }
 
-      before do
+      before do |example|
         allow(Catalog::SurveyCompare).to receive(:any_changed?).with(order.order_items.first.portfolio_item.service_plans).and_return(true)
+
+        subject unless example.metadata[:subject_inside]
       end
 
-      it "returns a 400" do
-        post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers
+      it_behaves_like "action that tests authorization", :submit_order?, Order
 
+      it "returns a 400" do
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(400)
         expect(first_error_detail).to match(/Catalog::InvalidSurvey/)

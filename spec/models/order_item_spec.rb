@@ -72,19 +72,29 @@ describe OrderItem do
   end
 
   describe "#mark_failed" do
-    let(:params) { {:external_url => "not.a.real/url"} }
-    before do
-      order_item.mark_failed(params)
-      order_item.reload
+    context "when there are no message parameters passed in" do
+      let(:params) { {:external_url => "not.a.real/url"} }
+
+      before do
+        order_item.mark_failed(params)
+        order_item.reload
+      end
+
+      it "marks the order and order item as failed" do
+        expect(order_item.state).to eq "Failed"
+        expect(order_item.order.state).to eq "Failed"
+        expect(order_item.completed_at).to be_truthy
+      end
+
+      it_behaves_like "#mark_item"
     end
 
-    it "marks the order and order item as failed" do
-      expect(order_item.state).to eq "Failed"
-      expect(order_item.order.state).to eq "Failed"
-      expect(order_item.completed_at).to be_truthy
+    context "when there are no message parameters passed in" do
+      it "does not log a message" do
+        expect(Rails.logger).not_to receive(:error)
+        order_item.mark_failed
+      end
     end
-
-    it_behaves_like "#mark_item"
   end
 
   describe "#mark_ordered" do
