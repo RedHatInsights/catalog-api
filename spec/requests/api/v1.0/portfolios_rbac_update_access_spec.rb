@@ -38,7 +38,7 @@ describe "v1.0 - Portfolios Write Access RBAC API", :type => [:request, :v1] do
     let(:list_group_options) { {:scope=>"principal"} }
 
     before do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(access_obj)
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'read').and_return(access_obj)
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
       allow(access_obj).to receive(:process).and_return(access_obj)
       allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
