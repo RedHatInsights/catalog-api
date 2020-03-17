@@ -8,11 +8,8 @@ module Api
           service_offering_service = Catalog::ServiceOffering.new(@order).process
           if service_offering_service.archived
             @order.order_items.each do |order_item|
-              order_item.update!(:completed_at => DateTime.now, :state => "Failed")
-              order_item.update_message("error", archived_error_message)
+              order_item.mark_failed(archived_error_message)
             end
-
-            @order.update!(:state => "Failed")
 
             raise Catalog::ServiceOfferingArchived, archived_error_message
           end
