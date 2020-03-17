@@ -148,6 +148,12 @@ describe Catalog::UpdateOrderItem, :type => :service do
           expect(item.completed_at).to eq(fake_now)
         end
 
+        it "sets the external url" do
+          subject.process
+          item.reload
+          expect(item.external_url).to eq("external url")
+        end
+
         it "marks the item as failed" do
           subject.process
           item.reload

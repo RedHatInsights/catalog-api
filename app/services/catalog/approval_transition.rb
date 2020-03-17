@@ -30,7 +30,7 @@ module Catalog
         mark_canceled
       else
         @state = "Pending"
-        Catalog::OrderStateTransition.new(@order_item.order_id).process
+        Catalog::OrderStateTransition.new(@order_item.order).process
       end
     end
 
@@ -57,7 +57,7 @@ module Catalog
 
     def finalize_order
       @order_item.update(:state => @state)
-      Catalog::OrderStateTransition.new(@order_item.order_id).process
+      Catalog::OrderStateTransition.new(@order_item.order).process
     end
 
     def approved?

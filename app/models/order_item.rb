@@ -34,6 +34,18 @@ class OrderItem < ApplicationRecord
     touch
   end
 
+  def mark_completed(msg = nil, **opts)
+    mark_item(msg, :completed_at => DateTime.now, :state => "Completed", **opts)
+  end
+
+  def mark_failed(msg = nil, **opts)
+    mark_item(msg, :completed_at => DateTime.now, :state => "Failed", :level => "error", **opts)
+  end
+
+  def mark_ordered(msg = nil, **opts)
+    mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered",  **opts)
+  end
+
   private
 
   def sanitize_parameters
@@ -51,5 +63,13 @@ class OrderItem < ApplicationRecord
 
   def parameters_contain_sanitized_values?(val)
     val.to_s.include?("\"#{Catalog::OrderItemSanitizedParameters::MASKED_VALUE}\"")
+  end
+
+  def mark_item(msg, level: "info", **opts)
+    update!(**opts)
+    update_message(level, msg) if msg
+    Rails.logger.send(level, "Updated OrderItem: #{id} with '#{opts[:state]}' state".tap { |log| log << " message: #{msg}" }) if msg
+
+    Catalog::OrderStateTransition.new(order).process
   end
 end

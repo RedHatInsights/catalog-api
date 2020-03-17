@@ -24,11 +24,14 @@ describe Catalog::AddToOrder, :type => :service do
 
   let(:request) { default_request }
   let(:service_plans_instance) { instance_double(Catalog::ServicePlans) }
+  let(:order_item_sanitized_parameters) { instance_double(Catalog::OrderItemSanitizedParameters, :sanitized_parameters => {"name" => "fred"}) }
 
   before do
     allow(Catalog::ServicePlans).to receive(:new).and_return(service_plans_instance)
     allow(service_plans_instance).to receive(:process).and_return(service_plans_instance)
     allow(service_plans_instance).to receive(:items).and_return([OpenStruct.new(:id => "1")])
+    allow(Catalog::OrderItemSanitizedParameters).to receive(:new).with(:order_item => order_item).and_return(order_item_sanitized_parameters)
+    allow(order_item_sanitized_parameters).to receive(:process).and_return(order_item_sanitized_parameters)
   end
 
   it "add order item" do

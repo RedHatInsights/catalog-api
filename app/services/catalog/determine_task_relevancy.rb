@@ -5,18 +5,16 @@ module Catalog
     end
 
     def process
-      Insights::API::Common::Request.with_request(order_item_context) do
-        @task = TopologicalInventoryApiClient::Task.new(
-          :id      => @topic.payload["task_id"],
-          :state   => @topic.payload["state"],
-          :status  => @topic.payload["status"],
-          :context => @topic.payload["context"].try(&:with_indifferent_access)
-        )
+      @task = TopologicalInventoryApiClient::Task.new(
+        :id      => @topic.payload["task_id"],
+        :state   => @topic.payload["state"],
+        :status  => @topic.payload["status"],
+        :context => @topic.payload["context"].try(&:with_indifferent_access)
+      )
 
-        add_task_update_message
-        delegate_task if @task.state == "completed"
-        fail_order if @task.status == "error"
-      end
+      add_task_update_message
+      delegate_task if @task.state == "completed"
+      order_item.mark_failed if @task.status == "error"
 
       self
     rescue StandardError => exception
@@ -41,10 +39,6 @@ module Catalog
       @order_item ||= OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
     end
 
-    def order_item_context
-      order_item.context.transform_keys(&:to_sym)
-    end
-
     def add_task_update_message
       message = "Task update. State: #{@task.state}. Status: #{@task.status}. Context: #{@task.context}"
       @task.status == "error" ? add_update_message(:error, message) : add_update_message(:info, message)
@@ -53,11 +47,6 @@ module Catalog
     def add_update_message(state, message)
       order_item.update_message(state, message)
       Rails.logger.send(state, message)
-    end
-
-    def fail_order
-      order_item.update!(:state => "Failed")
-      Catalog::OrderStateTransition.new(order_item.order_id).process
     end
   end
 end

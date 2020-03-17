@@ -1,7 +1,7 @@
 describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   around do |example|
     bypass_rbac do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :APPROVAL_URL => "http://approval.example.com") { example.call }
+      with_modified_env(:APPROVAL_URL => "http://approval.example.com") { example.call }
     end
   end
 
@@ -429,27 +429,6 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
         post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => [:tag => tag]
         expect(response).to have_http_status(201)
         expect(json.first["tag"]).to eq tag
-      end
-    end
-  end
-
-  context "GET /portfolio_items/{id}/tags" do
-    let(:name) { 'Gnocchi' }
-    let(:namespace) { 'default' }
-    let(:params) do
-      [{:tag => Tag.new(:name => name, :namespace => namespace).to_tag_string}]
-    end
-
-    before do
-      post "#{api_version}/portfolio_items/#{portfolio_item.id}/tag", :headers => default_headers, :params => params
-    end
-
-    context "when requesting all of the tags for a portfolio_item" do
-      it "returns the tags for the portfolio item" do
-        get "#{api_version}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers
-
-        expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["tag"]).to eq Tag.new(:name => name, :namespace => namespace).to_tag_string
       end
     end
   end

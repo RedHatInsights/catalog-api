@@ -23,6 +23,7 @@ describe Catalog::CopyPortfolio, :type => :service do
 
         expect(new.icon_id).not_to eq portfolio.icon_id
         expect(new.icon.image_id).to eq portfolio.icon.image_id
+        expect(new.icon.restore_to).to eq new_portfolio
       end
 
       it "copies over all of the portfolio items" do

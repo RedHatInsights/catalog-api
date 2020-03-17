@@ -12,7 +12,7 @@ group :development, :test do
   gem 'rspec-mocks'
   gem 'rspec-rails'
   gem 'shoulda-matchers'
-  gem 'simplecov'
+  gem 'simplecov', '~> 0.17.1'
   gem 'webmock'
 end
 
@@ -24,7 +24,7 @@ end
 
 gem 'dhasher'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
-gem 'insights-api-common', '~> 3.4'
+gem 'insights-api-common', '~> 3.6'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.2'
 gem 'manageiq-messaging', '~> 0.1.2', :require => false

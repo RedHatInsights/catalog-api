@@ -60,15 +60,12 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
 
   context "when user has RBAC update portfolios access" do
     let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => false) }
-    before do
-      allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false)
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolio_items', 'read').and_return(access_obj)
-      allow(access_obj).to receive(:process).and_return(access_obj)
+    let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'update').and_return(portfolio_access_obj)
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).with('portfolios', 'create').and_return(portfolio_access_obj)
-      allow(portfolio_access_obj).to receive(:process).and_return(portfolio_access_obj)
-      create(:access_control_entry, :has_read_permission, :aceable_id => portfolio.id)
+    before do
+      allow(Catalog::RBAC::Access).to receive(:new).and_return(rbac_access)
+      allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+      allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
     end
 
     it 'returns a 200' do

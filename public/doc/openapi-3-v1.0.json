@@ -3682,7 +3682,7 @@
           "tag": {
             "example": "/namespace/architecture=x86_64",
             "type": "string",
-            "pattern": "\\/.*\\/.+(=.+|[^=]$)"
+            "pattern": "^/.*/.+(=.+|[^=]$)"
           }
         },
         "additionalProperties": false

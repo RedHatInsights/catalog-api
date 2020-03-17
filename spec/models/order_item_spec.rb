@@ -45,4 +45,72 @@ describe OrderItem do
       end
     end
   end
+
+  shared_examples_for "#mark_item" do
+    it "sets the params properly" do
+      params.each do |k,v|
+        expect(order_item.send(k)).to eq v
+      end
+    end
+  end
+
+  describe "#mark_completed" do
+    let(:params) { {:external_url => "not.a.real/url"} }
+
+    before do
+      order_item.mark_completed(params)
+      order_item.reload
+    end
+
+    it "marks the order and order item as completed" do
+      expect(order_item.state).to eq "Completed"
+      expect(order_item.order.state).to eq "Completed"
+      expect(order_item.completed_at).to be_truthy
+    end
+
+    it_behaves_like "#mark_item"
+  end
+
+  describe "#mark_failed" do
+    context "when there are no message parameters passed in" do
+      let(:params) { {:external_url => "not.a.real/url"} }
+
+      before do
+        order_item.mark_failed(params)
+        order_item.reload
+      end
+
+      it "marks the order and order item as failed" do
+        expect(order_item.state).to eq "Failed"
+        expect(order_item.order.state).to eq "Failed"
+        expect(order_item.completed_at).to be_truthy
+      end
+
+      it_behaves_like "#mark_item"
+    end
+
+    context "when there are no message parameters passed in" do
+      it "does not log a message" do
+        expect(Rails.logger).not_to receive(:error)
+        order_item.mark_failed
+      end
+    end
+  end
+
+  describe "#mark_ordered" do
+    let(:params) { {:topology_task_ref => "an id", :external_url => "not.a.real/url"} }
+
+    before do
+      order_item.mark_ordered(params)
+      order_item.reload
+    end
+
+    it "marks the order and order item as failed" do
+      expect(order_item.state).to eq "Ordered"
+      expect(order_item.order.state).to eq "Ordered"
+      expect(order_item.completed_at).to be_falsey
+    end
+
+    it_behaves_like "#mark_item"
+  end
 end
