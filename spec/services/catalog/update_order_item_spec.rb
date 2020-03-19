@@ -148,10 +148,10 @@ describe Catalog::UpdateOrderItem, :type => :service do
           expect(item.completed_at).to eq(fake_now)
         end
 
-        it "sets the external url" do
+        it "sets the service_instance_ref" do
           subject.process
           item.reload
-          expect(item.external_url).to eq("external url")
+          expect(item.service_instance_ref).to eq("321")
         end
 
         it "marks the item as failed" do
@@ -172,6 +172,23 @@ describe Catalog::UpdateOrderItem, :type => :service do
           subject.process
           order.reload
           expect(order.state).to eq("Failed")
+        end
+      end
+
+      context "when the item had been marked failed before and the task does not have a service instance id" do
+        let(:status) { "error" }
+        let(:state) { "bar" }
+        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {}) }
+
+        before do
+          item.update(:service_instance_ref => "321")
+          item.reload
+        end
+
+        it "sets the external url" do
+          subject.process
+          item.reload
+          expect(item.external_url).to eq("external url")
         end
       end
 

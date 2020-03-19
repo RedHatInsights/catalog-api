@@ -156,6 +156,24 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             expect(progress_message.order_item_id).to eq(order_item.id.to_s)
           end
         end
+
+        context "when the service_instance_ref is present on the order_item but the external_url is nil" do
+          let(:status) { "error" }
+          let(:update_order_item) { instance_double("Catalog::UpdateOrderItem") }
+
+          before do
+            order_item.update(:service_instance_ref => "1")
+            order_item.reload
+
+            allow(Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
+            allow(update_order_item).to receive(:process)
+          end
+
+          it "updates the order_item" do
+            expect(update_order_item).to receive(:process)
+            subject.process
+          end
+        end
       end
     end
   end
