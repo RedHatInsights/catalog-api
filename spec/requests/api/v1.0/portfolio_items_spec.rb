@@ -39,10 +39,6 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
       it 'portfolio item references parent portfolio' do
         expect(json["portfolio_id"]).to eq portfolio_id
       end
-
-      it "returns the metadata" do
-        expect(json["metadata"]).to have_key("user_capabilities")
-      end
     end
 
     context 'the portfolio_item does not exist' do
