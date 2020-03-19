@@ -8,7 +8,7 @@ describe PortfolioItemPolicy do
   subject { described_class.new(user_context, portfolio_item) }
 
   before do
-    allow(Catalog::RBAC::Access).to receive(:new).with(user_context).and_return(rbac_access)
+    allow(Catalog::RBAC::Access).to receive(:new).with(user_context, portfolio_item).and_return(rbac_access)
   end
 
   describe "#index?" do
@@ -19,11 +19,24 @@ describe PortfolioItemPolicy do
   end
 
   describe "#create?" do
-    subject { described_class.new(user_context, portfolio) }
+    context "when the record passed into the policy is a portfolio" do
+      subject { described_class.new(user_context, portfolio) }
 
-    it "delegates to the check for update permissions on the portfolio" do
-      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
-      expect(subject.create?).to eq(true)
+      before do
+        allow(Catalog::RBAC::Access).to receive(:new).with(user_context, portfolio).and_return(rbac_access)
+      end
+
+      it "delegates to the check for update permissions on the portfolio" do
+        expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+        expect(subject.create?).to eq(true)
+      end
+    end
+
+    context "when the record passed into the policy is a portfolio item" do
+      it "delegates to the check for update permissions on the parent portfolio" do
+        expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+        expect(subject.create?).to eq(true)
+      end
     end
   end
 
@@ -138,6 +151,55 @@ describe PortfolioItemPolicy do
           expect(subject.copy?).to eq(true)
         end
       end
+    end
+
+    context "when there are no parameters at all" do
+      let(:user_context) { UserContext.new("current_request", nil, "controller_name") }
+
+      context "when destination reading is false" do
+        let(:destination_read_check) { false }
+
+        it "returns false" do
+          expect(subject.copy?).to eq(false)
+        end
+      end
+
+      context "when destination updating is false" do
+        let(:destination_update_check) { false }
+
+        it "returns false" do
+          expect(subject.copy?).to eq(false)
+        end
+      end
+
+      context "when both conditions are true" do
+        it "returns true" do
+          expect(subject.copy?).to eq(true)
+        end
+      end
+    end
+  end
+
+  describe "#user_capabilities" do
+    before do
+      # Index
+      allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
+
+      # Create, Update, Destroy, and half of Copy
+      allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+
+      # Other half of Copy
+      allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+    end
+
+    it "returns a hash of user capabilities" do
+      expect(subject.user_capabilities).to eq({
+        "index"   => true,
+        "create"  => true,
+        "update"  => true,
+        "destroy" => true,
+        "copy"    => true
+      })
     end
   end
 end

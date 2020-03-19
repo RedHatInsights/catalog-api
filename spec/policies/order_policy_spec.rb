@@ -12,7 +12,7 @@ describe OrderPolicy do
   let(:subject) { described_class.new(user_context, order) }
 
   before do
-    allow(Catalog::RBAC::Access).to receive(:new).with(user_context).and_return(rbac_access)
+    allow(Catalog::RBAC::Access).to receive(:new).with(user_context, order).and_return(rbac_access)
   end
 
   describe "#show?" do

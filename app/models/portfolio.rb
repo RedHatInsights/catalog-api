@@ -18,4 +18,12 @@ class Portfolio < ApplicationRecord
   def add_portfolio_item(portfolio_item)
     portfolio_items << portfolio_item
   end
+
+  attribute :metadata, ActiveRecord::Type::Json.new
+
+  def metadata
+    user = Insights::API::Common::Request.current!
+
+    {:user_capabilities => PortfolioPolicy.new(user, self).user_capabilities}
+  end
 end

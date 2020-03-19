@@ -17,7 +17,7 @@ describe PortfolioItemPolicy::Scope, :type => [:service] do
 
     before do
       allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with("Catalog Administrator").and_return(admin?)
-      allow(Catalog::RBAC::Access).to receive(:new).with(user).and_return(rbac_access)
+      allow(Catalog::RBAC::Access).to receive(:new).with(user, portfolio_item1).and_return(rbac_access)
     end
 
     context "when the user is a catalog administrator" do

@@ -1,8 +1,9 @@
 module Catalog
   module RBAC
     class Access
-      def initialize(user)
+      def initialize(user, record)
         @user = user
+        @record = record
       end
 
       def update_access_check
@@ -27,18 +28,18 @@ module Catalog
         catalog_admin?
       end
 
-      def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
+      def resource_check(verb, id = @record.id, klass = @record.class)
         return true unless rbac_enabled?
         return true if catalog_admin?
 
-        return false unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?
+        return false unless access_object(@record.class.table_name, verb).accessible?
         ids = access_id_list(verb, klass)
         return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
 
         true
       end
 
-      def permission_check(verb, klass = @user.controller_name.classify.constantize)
+      def permission_check(verb, klass = @record.class)
         return true unless rbac_enabled?
 
         return false unless access_object(klass.table_name, verb).accessible?

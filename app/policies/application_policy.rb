@@ -33,10 +33,19 @@ class ApplicationPolicy
     false
   end
 
+  def user_capabilities
+    capabilities = {}
+    (self.class.instance_methods(false) - [:user_capabilities]).each do |method|
+      capabilities[method.to_s.delete_suffix('?')] = self.send(method)
+    end
+
+    capabilities
+  end
+
   private
 
   def rbac_access
-    @rbac_access ||= Catalog::RBAC::Access.new(@user)
+    @rbac_access ||= Catalog::RBAC::Access.new(@user, @record)
   end
 
   class Scope
@@ -49,10 +58,6 @@ class ApplicationPolicy
 
     def resolve
       scope.all # Override in sub-policy scope for now
-    end
-
-    def rbac_access
-      @rbac_access ||= Catalog::RBAC::Access.new(@user)
     end
 
     private

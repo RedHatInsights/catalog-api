@@ -4,7 +4,8 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def create?
-    rbac_access.resource_check('update', @record.id, Portfolio)
+    portfolio_id = @record.class == Portfolio ? @record.id : @record.portfolio_id
+    rbac_access.resource_check('update', portfolio_id, Portfolio)
   end
 
   def update?
@@ -16,7 +17,7 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def copy?
-    destination_id = @user.params[:portfolio_id] || @record.portfolio_id
+    destination_id = @user.try(:params).try(:dig, :portfolio_id) || @record.portfolio_id
 
     if destination_id == @record.portfolio_id
       can_read_and_update_destination?(destination_id)
