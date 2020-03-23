@@ -1,3 +1,4 @@
+require 'securerandom'
 describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   around do |example|
     bypass_rbac do
@@ -469,15 +470,16 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   end
 
   describe "#share" do
+    let(:group_uuid) { SecureRandom.uuid }
     let(:params) do
-      {:group_uuids => ["group_uuids"], :permissions => ["read"]}
+      {:group_uuids => [group_uuid], :permissions => ["read"]}
     end
     let(:share_resource) { instance_double(Catalog::ShareResource) }
     let(:options) do
       {
         :object => portfolio,
         :permissions => ["read"],
-        :group_uuids => ["group_uuids"]
+        :group_uuids => [group_uuid]
       }
     end
 
@@ -507,15 +509,16 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   end
 
   describe "#unshare" do
+    let(:group_uuid) { SecureRandom.uuid }
     let(:params) do
-      {:group_uuids => ["group_uuids"], :permissions => ["read"]}
+      {:group_uuids => [group_uuid], :permissions => ["read"]}
     end
     let(:unshare_resource) { instance_double(Catalog::UnshareResource) }
     let(:options) do
       {
         :object => portfolio,
         :permissions => ["read"],
-        :group_uuids => ["group_uuids"]
+        :group_uuids => [group_uuid]
       }
     end
 
