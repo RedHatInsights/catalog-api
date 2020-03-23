@@ -59,11 +59,5 @@ class ApplicationPolicy
     def resolve
       scope.all # Override in sub-policy scope for now
     end
-
-    private
-
-    def catalog_administrator?
-      Catalog::RBAC::Role.catalog_administrator?
-    end
   end
 end

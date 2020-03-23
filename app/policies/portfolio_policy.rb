@@ -1,6 +1,6 @@
 class PortfolioPolicy < ApplicationPolicy
   def create?
-    rbac_access.admin_check
+    rbac_access.create_access_check
   end
 
   alias destroy? create?
@@ -18,7 +18,7 @@ class PortfolioPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      if catalog_administrator?
+      if user.catalog_access.admin_scope?(Portfolio, 'read', ENV['APP_NAME'])
         scope.all
       else
         ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', Portfolio)

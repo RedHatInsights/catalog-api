@@ -4,6 +4,7 @@ module Catalog
       def initialize(user, record)
         @user = user
         @record = record
+        @catalog_access = @user.catalog_access
       end
 
       def update_access_check
@@ -22,17 +23,12 @@ module Catalog
         resource_check('delete')
       end
 
-      def admin_check
-        return true unless rbac_enabled?
-
-        catalog_admin?
-      end
-
       def resource_check(verb, id = @record.id, klass = @record.class)
         return true unless rbac_enabled?
-        return true if catalog_admin?
 
-        return false unless access_object(@record.class.table_name, verb).accessible?
+        return false unless @catalog_access.accessible?(@record.class.table_name, verb, ENV['APP_NAME'])
+        return true if @catalog_access.admin_scope?(@record.class.table_name, verb, ENV['APP_NAME'])
+
         ids = access_id_list(verb, klass)
         return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
 
@@ -42,7 +38,7 @@ module Catalog
       def permission_check(verb, klass = @record.class)
         return true unless rbac_enabled?
 
-        return false unless access_object(klass.table_name, verb).accessible?
+        return false unless @catalog_access.accessible?(klass.table_name, verb)
 
         true
       end
@@ -51,10 +47,6 @@ module Catalog
 
       def rbac_enabled?
         Insights::API::Common::RBAC::Access.enabled?
-      end
-
-      def catalog_admin?
-        Catalog::RBAC::Role.catalog_administrator?
       end
 
       def access_id_list(verb, klass)
