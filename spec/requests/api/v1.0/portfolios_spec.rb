@@ -9,6 +9,7 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   let!(:portfolio_item)  { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)     { portfolio.id }
+  let(:bad_portfolio_id) { portfolio.id + 1}
 
   describe "GET /portfolios/:portfolio_id" do
     before do
@@ -438,7 +439,7 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       context 'bad portfolio' do
         let(:params) { {:name => tag_name} }
         it 'returns 404' do
-          post "#{api_version}/portfolios/1515151515/tag", :headers => default_headers, :params => tag_params
+          post "#{api_version}/portfolios/#{bad_portfolio_id}/tag", :headers => default_headers, :params => tag_params
           expect(response).to have_http_status(404)
         end
       end

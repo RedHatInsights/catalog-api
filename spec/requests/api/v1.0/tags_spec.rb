@@ -4,6 +4,8 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
 
   let!(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio) { create(:portfolio) }
+  let(:bad_portfolio_id) { portfolio.id + 1 }
+  let(:bad_portfolio_item_id) { portfolio_item.id + 1 }
 
   before do
     portfolio_item.tag_add("yay")
@@ -40,7 +42,7 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
       end
 
       it "returns not found when portfolio item missing" do
-        get "#{api_version}/portfolio_items/8888888/tags", :headers => default_headers
+        get "#{api_version}/portfolio_items/#{bad_portfolio_item_id}/tags", :headers => default_headers
 
         expect(response).to have_http_status(404)
       end
@@ -51,11 +53,10 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
         allow(rbac_aces).to receive(:ace_ids).with('read', Portfolio).and_return([])
       end
 
-      it "returns an empty array" do
+      it "returns 404" do
         get "#{api_version}/portfolio_items/#{portfolio_item.id}/tags", :headers => default_headers
 
-        expect(json["meta"]["count"]).to eq 0
-        expect(json["data"]).to eq([])
+        expect(response).to have_http_status(404)
       end
     end
   end
@@ -74,7 +75,7 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
       end
 
       it "returns not found when portfolio is missing" do
-        get "#{api_version}/portfolios/8888888/tags", :headers => default_headers
+        get "#{api_version}/portfolios/#{bad_portfolio_id}/tags", :headers => default_headers
 
         expect(response).to have_http_status(404)
       end
@@ -85,11 +86,10 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
         allow(rbac_aces).to receive(:ace_ids).with('read', Portfolio).and_return([])
       end
 
-      it "returns an empty array" do
+      it "returns a 404" do
         get "#{api_version}/portfolios/#{portfolio.id}/tags", :headers => default_headers
 
-        expect(json["meta"]["count"]).to eq 0
-        expect(json["data"]).to eq([])
+        expect(response).to have_http_status(404)
       end
     end
   end
