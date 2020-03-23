@@ -435,6 +435,14 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
         end
       end
 
+      context 'bad portfolio' do
+        let(:params) { {:name => tag_name} }
+        it 'returns 404' do
+          post "#{api_version}/portfolios/1515151515/tag", :headers => default_headers, :params => tag_params
+          expect(response).to have_http_status(404)
+        end
+      end
+
       let(:endpoint) { "tag" }
       it_behaves_like "bad_tags"
       it_behaves_like "good_tags"

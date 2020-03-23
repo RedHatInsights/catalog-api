@@ -38,6 +38,12 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["tag"]).to eq Tag.new(:name => "yay").to_tag_string
       end
+
+      it "returns not found when portfolio item missing" do
+        get "#{api_version}/portfolio_items/8888888/tags", :headers => default_headers
+
+        expect(response).to have_http_status(404)
+      end
     end
 
     context "when requesting all tags for a portfolio item you do not have access to" do
@@ -65,6 +71,12 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
 
         expect(json["meta"]["count"]).to eq 1
         expect(json["data"].first["tag"]).to eq Tag.new(:name => "a_tag").to_tag_string
+      end
+
+      it "returns not found when portfolio is missing" do
+        get "#{api_version}/portfolios/8888888/tags", :headers => default_headers
+
+        expect(response).to have_http_status(404)
       end
     end
 
