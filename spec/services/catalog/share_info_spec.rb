@@ -5,7 +5,7 @@ describe Catalog::ShareInfo, :type => :service do
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { double }
   let(:principal_options) { {:scope=>"principal"} }
-  let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT} }
+  let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT, :uuid => [group1.uuid]} }
 
   let(:params) { { :object => portfolio } }
 
@@ -33,6 +33,7 @@ describe Catalog::ShareInfo, :type => :service do
   end
 
   context "when only some group uuids exist" do
+    let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT, :uuid => [group1.uuid, 'non-existent']} }
     before do
       create(:access_control_entry, :has_update_permission, :group_uuid => "non-existent", :aceable => portfolio)
     end

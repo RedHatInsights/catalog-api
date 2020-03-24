@@ -10,10 +10,13 @@ module Catalog
 
     def process
       group_permissions = {}
+      uuids = []
       @object.access_control_entries.each do |ace|
         group_permissions[ace.group_uuid] = ace.permissions.map(&:name)
+        uuids << ace.group_uuid
       end
 
+      group_names = fetch_group_names(uuids.uniq)
       @result = group_permissions.each_with_object([]) do |(uuid, permissions), memo|
         if group_names.key?(uuid)
           memo << { :group_name => group_names[uuid], :group_uuid => uuid, :permissions => permissions }
@@ -26,9 +29,10 @@ module Catalog
 
     private
 
-    def group_names
-      @group_names ||= Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-        Insights::API::Common::RBAC::Service.paginate(api, :list_groups, :limit => MAX_GROUPS_LIMIT).each_with_object({}) do |group, memo|
+    def fetch_group_names(uuids)
+      opts = {:limit => MAX_GROUPS_LIMIT, :uuid => uuids}
+      Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
+        Insights::API::Common::RBAC::Service.paginate(api, :list_groups, opts).each_with_object({}) do |group, memo|
           memo[group.uuid] = group.name
         end
       end
