@@ -32,7 +32,7 @@ module Catalog
         return true unless rbac_enabled?
         return true if catalog_admin?
 
-        return false unless access_object(@record.class.table_name, verb).accessible?
+        return false unless access_object.accessible?(@record.class.table_name, verb)
         ids = access_id_list(verb, klass)
         return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
 
@@ -42,7 +42,7 @@ module Catalog
       def permission_check(verb, klass = @record.class)
         return true unless rbac_enabled?
 
-        return false unless access_object(klass.table_name, verb).accessible?
+        return false unless access_object.accessible?(klass.table_name, verb)
 
         true
       end
@@ -61,8 +61,8 @@ module Catalog
         Catalog::RBAC::AccessControlEntries.new.ace_ids(verb, klass)
       end
 
-      def access_object(table_name, verb)
-        Insights::API::Common::RBAC::Access.new(table_name, verb).process
+      def access_object
+        @access_object ||= Insights::API::Common::RBAC::Access.new.process
       end
     end
   end

@@ -40,7 +40,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       end
 
       context "when the object is accessible" do
-        let(:access_list) { [RBACApiClient::Access.new(:permission => ":portfolio_items:#{verb}")] }
+        let(:access_list) { [RBACApiClient::Access.new(:permission => "catalog:portfolio_items:#{verb}")] }
 
         it "returns true" do
           expect(subject.send(method, *arguments)).to eq(true)
@@ -108,7 +108,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         end
 
         context "when the object is accessible" do
-          let(:access_list) { [RBACApiClient::Access.new(:permission => ":portfolio_items:#{verb}")] }
+          let(:access_list) { [RBACApiClient::Access.new(:permission => "catalog:portfolio_items:#{verb}")] }
           let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
 
           before do
