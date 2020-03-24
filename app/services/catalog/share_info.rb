@@ -10,7 +10,6 @@ module Catalog
 
     def process
       group_permissions = {}
-      uuids = []
       uuids = @object.access_control_entries.collect do |ace|
         group_permissions[ace.group_uuid] = ace.permissions.map(&:name)
         ace.group_uuid
