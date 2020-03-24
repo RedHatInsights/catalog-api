@@ -1,3 +1,4 @@
+require 'securerandom'
 RSpec.shared_context "sharing_objects" do
   let(:app_name) { 'catalog' }
   let!(:shared_portfolio) { create(:portfolio) }
@@ -10,8 +11,8 @@ RSpec.shared_context "sharing_objects" do
   let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
   let(:api_instance) { double }
   let(:group_uuids) { [group1.uuid, group2.uuid, group3.uuid] }
-  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:group2) { instance_double(RBACApiClient::GroupOut, :name => 'group2', :uuid => "12345") }
-  let(:group3) { instance_double(RBACApiClient::GroupOut, :name => 'group3', :uuid => "45665") }
+  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => SecureRandom.uuid) }
+  let(:group2) { instance_double(RBACApiClient::GroupOut, :name => 'group2', :uuid => SecureRandom.uuid) }
+  let(:group3) { instance_double(RBACApiClient::GroupOut, :name => 'group3', :uuid => SecureRandom.uuid) }
   let(:groups) { [group1, group2, group3] }
 end
