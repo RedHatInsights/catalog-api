@@ -16,6 +16,11 @@ class PortfolioPolicy < ApplicationPolicy
     rbac_access.update_access_check
   end
 
+  def set_approval?
+    # TODO: Add "Approval Administrator" check as &&
+    rbac_access.update_access_check
+  end
+
   class Scope < Scope
     def resolve
       if catalog_administrator?

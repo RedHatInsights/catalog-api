@@ -30,6 +30,13 @@ describe PortfolioPolicy do
     end
   end
 
+  describe "#set_approval?" do
+    it "delegates to the rbac access update check" do
+      expect(rbac_access).to receive(:update_access_check).and_return(true)
+      expect(subject.set_approval?).to eq(true)
+    end
+  end
+
   [:create?, :destroy?, :copy?, :share?, :unshare?].each do |method|
     describe "##{method}" do
       it_behaves_like "a policy action that requires admin access", method
@@ -47,13 +54,14 @@ describe PortfolioPolicy do
 
     it "returns a hash of user capabilities" do
       expect(subject.user_capabilities).to eq({
-        "create"  => true,
-        "update"  => true,
-        "destroy" => true,
-        "copy"    => true,
-        "share"   => true,
-        "unshare" => true,
-        "show"    => true
+        "create"       => true,
+        "update"       => true,
+        "destroy"      => true,
+        "copy"         => true,
+        "share"        => true,
+        "unshare"      => true,
+        "show"         => true,
+        "set_approval" => true
       })
     end
   end

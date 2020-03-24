@@ -47,6 +47,20 @@ describe PortfolioItemPolicy do
     end
   end
 
+  describe "#edit_survey?" do
+    it "delegates to the check for update permissions on the portfolio" do
+      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+      expect(subject.edit_survey?).to eq(true)
+    end
+  end
+
+  describe "#set_approval?" do
+    it "delegates to the check for update permissions on the portfolio" do
+      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+      expect(subject.set_approval?).to eq(true)
+    end
+  end
+
   describe "#destroy?" do
     it "delegates to the check for update permissions on the portfolio" do
       expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
@@ -194,11 +208,12 @@ describe PortfolioItemPolicy do
 
     it "returns a hash of user capabilities" do
       expect(subject.user_capabilities).to eq({
-        "index"   => true,
-        "create"  => true,
-        "update"  => true,
-        "destroy" => true,
-        "copy"    => true
+        "create"       => true,
+        "update"       => true,
+        "destroy"      => true,
+        "copy"         => true,
+        "set_approval" => true,
+        "edit_survey"  => true
       })
     end
   end
