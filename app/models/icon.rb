@@ -10,4 +10,8 @@ class Icon < ApplicationRecord
   has_one :portfolio_item, :dependent => :destroy
 
   validates :image_id, :presence => true
+
+  after_discard do
+    restore_to.update!(:icon_id => nil)
+  end
 end
