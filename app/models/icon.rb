@@ -6,8 +6,8 @@ class Icon < ApplicationRecord
   belongs_to :image
   belongs_to :restore_to, :polymorphic => true
 
-  has_one :portfolio, :dependent => :destroy
-  has_one :portfolio_item, :dependent => :destroy
+  has_one :portfolio, :dependent => :nullify
+  has_one :portfolio_item, :dependent => :nullify
 
   validates :image_id, :presence => true
 
