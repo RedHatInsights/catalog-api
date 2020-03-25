@@ -25,6 +25,11 @@ describe "v1.1 - IconsRequests", :type => [:request, :v1x1] do
     it "deletes the icon" do
       expect { Icon.find(icon.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
+
+    it "removes the reference on the restore_to object" do
+      icon.reload
+      expect(icon.restore_to.icon_id).to be_falsey
+    end
   end
 
   describe "#create" do
