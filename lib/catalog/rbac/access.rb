@@ -26,13 +26,15 @@ module Catalog
       def resource_check(verb, id = @record.id, klass = @record.class)
         return true unless rbac_enabled?
 
-        return false unless @catalog_access.accessible?(@record.class.table_name, verb, ENV['APP_NAME'])
-        return true if @catalog_access.admin_scope?(@record.class.table_name, verb, ENV['APP_NAME'])
-
-        ids = access_id_list(verb, klass)
-        return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
-
-        true
+        scopes = @catalog_access.scopes(@record.class.table_name, verb)
+        if scopes.include?('admin')
+          return true
+        elsif scopes.include?('group')
+          ids = access_id_list(verb, klass)
+          return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
+        else
+          false
+        end
       end
 
       def permission_check(verb, klass = @record.class)
@@ -51,10 +53,6 @@ module Catalog
 
       def access_id_list(verb, klass)
         Catalog::RBAC::AccessControlEntries.new.ace_ids(verb, klass)
-      end
-
-      def access_object(table_name, verb)
-        Insights::API::Common::RBAC::Access.new(table_name, verb).process
       end
     end
   end

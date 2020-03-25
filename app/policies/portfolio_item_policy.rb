@@ -36,9 +36,10 @@ class PortfolioItemPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      if user.catalog_access.admin_scope?(Portfolio, 'read', ENV['APP_NAME'])
+      scopes = user.catalog_access.scopes(Portfolio, 'read')
+      if scopes.include?('admin')
         scope.all
-      else
+      elsif scopes.include?('group')
         ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', Portfolio)
         scope.where(:portfolio_id => ids)
       end

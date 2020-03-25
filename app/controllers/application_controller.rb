@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::API
   include Response
   include Api::V1::Mixins::ACEMixin
-  include Api::V1::Mixins::RBACMixin
   include Api::V1::Mixins::ValidationMixin
   include Insights::API::Common::ApplicationControllerMixins::ApiDoc
   include Insights::API::Common::ApplicationControllerMixins::Common
