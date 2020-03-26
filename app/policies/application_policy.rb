@@ -1,5 +1,5 @@
 class ApplicationPolicy
-  include Api::V1::Mixins::ACEMixin
+  include Api::V1x0::Mixins::ACEMixin
 
   attr_reader :user, :record
 
