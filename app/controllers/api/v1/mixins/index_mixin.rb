@@ -34,8 +34,8 @@ module Api
           elsif access_scopes.include?('user')
             relation.by_owner
           else
-            Rails.logger(:error, "Error in scope search for #{relation.model}")
-            Rails.logger(:error, "Scope does not include admin, group, or user. List of scopes: #{scopes}")
+            Rails.logger.error("Error in scope search for #{relation.model}")
+            Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{scopes}")
             raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}"
           end
         end
