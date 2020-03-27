@@ -119,4 +119,11 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
       end
     end
   end
+
+  describe "DELETE /portfolios" do
+    it "allows deletion of any portfolio" do
+      delete "#{api_version}/portfolios/#{portfolio.id}", :headers => default_headers
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
