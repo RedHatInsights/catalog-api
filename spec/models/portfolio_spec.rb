@@ -78,4 +78,13 @@ describe Portfolio do
       end
     end
   end
+
+  context "default socpe" do
+    it "returns portfolios sorted by case insensitive names" do
+      Portfolio.destroy_all
+      %w[aa bb Bc Ad].each { |name| create(:portfolio, :name => name) }
+
+      expect(Portfolio.pluck(:name)).to eq(%w[aa Ad bb Bc])
+    end
+  end
 end

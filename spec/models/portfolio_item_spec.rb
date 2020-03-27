@@ -35,4 +35,12 @@ describe PortfolioItem do
       expect(item).to be_valid
     end
   end
+
+  context "default socpe" do
+    it "returns portfolio_items sorted by case insensitive names" do
+      %w[ab bb Bc Ad].each { |name| create(:portfolio_item, :name => name) }
+
+      expect(PortfolioItem.pluck(:name)).to eq(%w[ab Ad bb Bc])
+    end
+  end
 end
