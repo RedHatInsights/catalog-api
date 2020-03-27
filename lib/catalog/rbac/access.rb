@@ -1,8 +1,8 @@
 module Catalog
   module RBAC
     class Access
-      def initialize(user, record)
-        @user = user
+      def initialize(user_context, record)
+        @user_context = user_context
         @record = record
       end
 
@@ -30,9 +30,9 @@ module Catalog
           true
         elsif scopes.include?("group")
           ids = access_id_list(verb, klass)
-          !(klass.try(:supports_access_control?) && ids.exclude?(id.to_s))
+          klass.try(:supports_access_control?) ? ids.include?(id.to_s) : true
         elsif scopes.include?("user")
-          @record.owner == @user.user.user.username
+          @record.owner == @user_context.user.user.username
         else
           Rails.logger(:error, "Error in resource checking for verb: #{verb}, id: #{id}, klass: #{klass}")
           Rails.logger(:error, "Scope does not include admin, group, or user. List of scopes: #{scopes}")
@@ -47,7 +47,7 @@ module Catalog
       private
 
       def rbac_enabled?
-        @user.rbac_enabled?
+        @user_context.rbac_enabled?
       end
 
       def access_id_list(verb, klass)
@@ -55,7 +55,7 @@ module Catalog
       end
 
       def access_object
-        @user.catalog_access
+        @user_context.catalog_access
       end
     end
   end
