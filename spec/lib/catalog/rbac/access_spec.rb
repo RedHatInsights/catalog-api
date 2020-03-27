@@ -1,6 +1,5 @@
 describe Catalog::RBAC::Access, :type => [:current_forwardable] do
-  let(:current_user) { Insights::API::Common::User.new("identity") }
-  let(:current_request) { Insights::API::Common::Request.new(:user => current_user, :headers => "headers", :original_url => "original_url") }
+  let(:current_request) { Insights::API::Common::Request.new(default_request) }
   let(:user_context) { UserContext.new(current_request, nil) }
 
   let(:subject) { described_class.new(user_context, portfolio_item) }
@@ -8,7 +7,9 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
   around do |example|
     with_modified_env(:RBAC_URL => "http://rbac.example.com") do
-      example.call
+      Insights::API::Common::Request.with_request(current_request) do
+        example.call
+      end
     end
   end
 
@@ -61,7 +62,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         allow(catalog_access).to receive(:scopes).with("portfolio_items", verb).and_return(scopes)
       end
 
-      context "when the user is not in the admin scope" do
+      context "when the user is in the group scope" do
         let(:scopes) { %w[group user] }
 
         let(:group_pagination) do
@@ -117,6 +118,46 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
           it "returns true" do
             expect(subject.send(method, *arguments)).to eq(true)
+          end
+        end
+      end
+
+      context "when the user is only in the user scope" do
+        let(:scopes) { %w[user] }
+
+        let(:group_pagination) do
+          RBACApiClient::GroupPagination.new(
+            :meta  => pagination_meta,
+            :links => pagination_links,
+            :data  => group_list
+          )
+        end
+        let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
+        let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
+        let(:pagination_links) { RBACApiClient::PaginationLinks.new }
+
+        before do
+          stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal")
+            .to_return(
+              :status  => 200,
+              :body    => group_pagination.to_json,
+              :headers => default_headers
+            )
+        end
+
+        context "when the username matches the record owner" do
+          it "returns true" do
+            expect(subject.send(method, *arguments)).to eq(true)
+          end
+        end
+
+        context "when the username does not match the record owner" do
+          before do
+            allow(portfolio_item).to receive(:owner).and_return("notjdoe")
+          end
+
+          it "returns false" do
+            expect(subject.send(method, *arguments)).to eq(false)
           end
         end
       end

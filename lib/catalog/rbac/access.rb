@@ -26,27 +26,22 @@ module Catalog
         return true unless rbac_enabled?
 
         scopes = access_object.scopes(@record.class.table_name, verb)
-        if scopes.include?("admin")
-          return true
+        check = if scopes.include?("admin")
+          true
         elsif scopes.include?("group")
           ids = access_id_list(verb, klass)
-          return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
-        #TODO: scopes.include?("user")
-        # We currently care about the "user" scope in index mixin by doing .by_owner,
-        # what is the equivalent here?
+          !(klass.try(:supports_access_control?) && ids.exclude?(id.to_s))
+        elsif scopes.include?("user")
+          @record.owner == @user.user.user.username
         else
-          return false
+          false
         end
 
-        true
+        check
       end
 
       def permission_check(verb, klass = @record.class)
-        return true unless rbac_enabled?
-
-        return false unless access_object.accessible?(klass.table_name, verb)
-
-        true
+        rbac_enabled? ? access_object.accessible?(klass.table_name, verb) : true
       end
 
       private
