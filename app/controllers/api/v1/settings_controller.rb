@@ -1,6 +1,8 @@
 module Api
   module V1
     class SettingsController < ApplicationController
+      include Api::V1::Mixins::RBACMixin
+
       skip_before_action :validate_primary_collection_id
 
       before_action do
