@@ -14,7 +14,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
     subject { post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers }
 
     before do
-      allow(Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering_service)
+      allow(Api::V1x0::Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering_service)
       allow(service_offering_service).to receive(:process).and_return(service_offering_service)
       allow(service_offering_service).to receive(:archived).and_return(archived)
       allow(service_offering_service).to receive(:order).and_return(order)
@@ -105,7 +105,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
     let(:cancel_order) { instance_double("Catalog::CancelOrder", :order => "test") }
 
     before do
-      allow(Catalog::CancelOrder).to receive(:new).and_return(cancel_order)
+      allow(Api::V1x0::Catalog::CancelOrder).to receive(:new).and_return(cancel_order)
     end
 
     context "when the order is cancelable" do

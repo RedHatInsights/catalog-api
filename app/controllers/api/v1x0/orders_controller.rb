@@ -1,3 +1,4 @@
+require 'api/v1x0/catalog'
 module Api
   module V1x0
     class OrdersController < ApplicationController

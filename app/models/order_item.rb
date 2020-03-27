@@ -1,7 +1,7 @@
 class OrderItem < ApplicationRecord
   include OwnerField
   include Discard::Model
-  include Catalog::DiscardRestore
+  include Api::V1x0::Catalog::DiscardRestore
   destroy_dependencies :progress_messages
 
   acts_as_tenant(:tenant)
