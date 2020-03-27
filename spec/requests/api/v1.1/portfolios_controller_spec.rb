@@ -120,10 +120,95 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     end
   end
 
-  describe "DELETE /portfolios" do
+  describe "DELETE /portfolios #delete" do
     it "allows deletion of any portfolio" do
       delete "#{api_version}/portfolios/#{portfolio.id}", :headers => default_headers
       expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "POST /portfolios/:portfolio_id/copy #copy" do
+    it 'returns a 200' do
+      post "#{api_version}/portfolios/#{portfolio.id}/copy", :headers => default_headers
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "POST /portfolios/:portfolio_id/share #share" do
+    let(:group_uuid) { SecureRandom.uuid }
+    let(:params) do
+      {:group_uuids => [group_uuid], :permissions => ["read"]}
+    end
+    let(:share_resource) { instance_double(Catalog::ShareResource) }
+    let(:options) do
+      {
+        :object => portfolio,
+        :permissions => ["read"],
+        :group_uuids => [group_uuid]
+      }
+    end
+
+    subject do
+      post "#{api_version}/portfolios/#{portfolio.id}/share", :params => params, :headers => default_headers
+    end
+
+    before do
+      allow(Catalog::ShareResource).to receive(:new).and_return(share_resource)
+      allow(share_resource).to receive(:process)
+    end
+
+    it_behaves_like "action that tests authorization", :share?, Portfolio
+
+    it "shares the resource" do
+      expect(Catalog::ShareResource).to receive(:new).with(options)
+      expect(share_resource).to receive(:process)
+
+      subject
+    end
+
+    it "returns a 204" do
+      subject
+
+      expect(response).to have_http_status(:no_content)
+    end
+  end
+
+  describe "POST /portfolios/:portfolio_id/unshare #unshare" do
+    let(:group_uuid) { SecureRandom.uuid }
+    let(:params) do
+      {:group_uuids => [group_uuid], :permissions => ["read"]}
+    end
+    let(:unshare_resource) { instance_double(Catalog::UnshareResource) }
+    let(:options) do
+      {
+        :object => portfolio,
+        :permissions => ["read"],
+        :group_uuids => [group_uuid]
+      }
+    end
+
+    subject do
+      post "#{api_version}/portfolios/#{portfolio.id}/unshare", :params => params, :headers => default_headers
+    end
+
+    before do
+      allow(Catalog::UnshareResource).to receive(:new).and_return(unshare_resource)
+      allow(unshare_resource).to receive(:process)
+    end
+
+    it_behaves_like "action that tests authorization", :unshare?, Portfolio
+
+    it "unshares the resource" do
+      expect(Catalog::UnshareResource).to receive(:new).with(options)
+      expect(unshare_resource).to receive(:process)
+
+      subject
+    end
+
+    it "returns a 204" do
+      subject
+
+      expect(response).to have_http_status(:no_content)
     end
   end
 end

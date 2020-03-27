@@ -44,7 +44,7 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
   end
 
   context "when user has RBAC update portfolios access" do
-    let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => false) }
+    let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true) }
     let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
     before do
