@@ -33,14 +33,8 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   end
 
   context "Catalog User" do
-    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[group]) }
+    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[user]) }
     let(:order_ids) { [order1.id.to_s, order2.id.to_s] }
-    let(:ace_entries) { instance_double(Catalog::RBAC::AccessControlEntries) }
-
-    before do
-      allow(Catalog::RBAC::AccessControlEntries).to receive(:new).and_return(ace_entries)
-      allow(ace_entries).to receive(:ace_ids).with('read', Order).and_return(order_ids)
-    end
 
     context "index" do
       it_behaves_like "#index"

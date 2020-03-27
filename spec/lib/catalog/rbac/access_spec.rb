@@ -125,26 +125,6 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       context "when the user is only in the user scope" do
         let(:scopes) { %w[user] }
 
-        let(:group_pagination) do
-          RBACApiClient::GroupPagination.new(
-            :meta  => pagination_meta,
-            :links => pagination_links,
-            :data  => group_list
-          )
-        end
-        let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
-        let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
-        let(:pagination_links) { RBACApiClient::PaginationLinks.new }
-
-        before do
-          stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal")
-            .to_return(
-              :status  => 200,
-              :body    => group_pagination.to_json,
-              :headers => default_headers
-            )
-        end
-
         context "when the username matches the record owner" do
           it "returns true" do
             expect(subject.send(method, *arguments)).to eq(true)
@@ -167,6 +147,19 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
         it "returns true" do
           expect(subject.send(method, *arguments)).to eq(true)
+        end
+      end
+
+      context "when the user has no scopes" do
+        let(:scopes) { [] }
+
+        it "logs messages" do
+          expect(Rails.logger).to receive(:error).twice
+          subject.send(method, *arguments)
+        end
+
+        it "returns false" do
+          expect(subject.send(method, *arguments)).to eq(false)
         end
       end
     end
