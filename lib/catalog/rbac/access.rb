@@ -14,8 +14,8 @@ module Catalog
         resource_check('read')
       end
 
-      def create_access_check
-        permission_check('create')
+      def create_access_check(klass)
+        permission_check('create', klass)
       end
 
       def destroy_access_check

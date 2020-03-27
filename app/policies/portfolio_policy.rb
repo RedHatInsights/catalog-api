@@ -1,6 +1,6 @@
 class PortfolioPolicy < ApplicationPolicy
   def create?
-    rbac_access.create_access_check
+    rbac_access.create_access_check(Portfolio)
   end
 
   alias copy? create?

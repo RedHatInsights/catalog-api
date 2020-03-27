@@ -181,7 +181,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   end
 
   describe "#create_access_check" do
-    it_behaves_like "permission checking", :create_access_check, [], "create"
+    it_behaves_like "permission checking", :create_access_check, [PortfolioItem], "create"
   end
 
   describe "#permission_check" do
