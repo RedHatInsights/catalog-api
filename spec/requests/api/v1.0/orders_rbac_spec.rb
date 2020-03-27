@@ -2,27 +2,14 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   let!(:order1) { create(:order) }
   let!(:order2) { create(:order) }
   let!(:order3) { create(:order, :owner => 'barney') }
-  let(:is_admin) { false }
-  let(:access_obj) { nil }
-  let(:user_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :owner_scoped? => true, :accessible? => true) }
-
-  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
-  let(:api_instance) { double }
-  let(:principal_options) { {:scope=>"principal"} }
 
   before do
-    allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, principal_options).and_return([group1])
-    allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, {}).and_return([group1])
+    allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+    allow(catalog_access).to receive(:process).and_return(catalog_access)
   end
+
   shared_examples_for "#index" do
     it "fetch all allowed orders" do
-      allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(is_admin)
-      if access_obj
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
-        allow(access_obj).to receive(:process).and_return(access_obj)
-      end
       get "#{api_version}/orders", :headers => default_headers
 
       expect(response.content_type).to eq("application/json")
@@ -35,12 +22,6 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
     subject { get "#{api_version}/orders/#{order_id}", :headers => default_headers }
 
     it "fetches a single allowed order" do
-      allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(is_admin)
-
-      if access_obj
-        allow(Insights::API::Common::RBAC::Access).to receive(:new).with('orders', 'read').and_return(access_obj)
-        allow(access_obj).to receive(:process).and_return(access_obj)
-      end
       subject
 
       expect(response.content_type).to eq("application/json")
@@ -52,27 +33,37 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   end
 
   context "Catalog User" do
-    let(:access_obj) { user_access_obj }
+    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[group]) }
     let(:order_ids) { [order1.id.to_s, order2.id.to_s] }
+    let(:ace_entries) { instance_double(Catalog::RBAC::AccessControlEntries) }
+
+    before do
+      allow(Catalog::RBAC::AccessControlEntries).to receive(:new).and_return(ace_entries)
+      allow(ace_entries).to receive(:ace_ids).with('read', Order).and_return(order_ids)
+    end
+
     context "index" do
       it_behaves_like "#index"
     end
 
     context "show" do
       let(:order_id) { order1.id }
+
       it_behaves_like "#show"
     end
   end
 
   context "Catalog Administrator" do
-    let(:is_admin) { true }
+    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
     let(:order_ids) { [order1.id.to_s, order2.id.to_s, order3.id.to_s] }
+
     context "index" do
       it_behaves_like "#index"
     end
 
     context "show" do
       let(:order_id) { order1.id }
+
       it_behaves_like "#show"
     end
   end

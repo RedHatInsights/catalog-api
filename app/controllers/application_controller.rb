@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::API
   include Response
   include Api::V1::Mixins::ACEMixin
-  include Api::V1::Mixins::RBACMixin
   include Api::V1::Mixins::ValidationMixin
   include Insights::API::Common::ApplicationControllerMixins::ApiDoc
   include Insights::API::Common::ApplicationControllerMixins::Common
@@ -43,10 +42,6 @@ class ApplicationController < ActionController::API
   end
 
   def pundit_user
-    UserContext.new(
-      Insights::API::Common::Request.current!,
-      params,
-      controller_name
-    )
+    UserContext.new(Insights::API::Common::Request.current!, params)
   end
 end

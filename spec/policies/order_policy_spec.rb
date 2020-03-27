@@ -6,7 +6,7 @@ describe OrderPolicy do
   let(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio2) }
   let(:portfolio) { create(:portfolio) }
   let(:portfolio2) { create(:portfolio) }
-  let(:user_context) { UserContext.new("current_request", "params", "controller_name") }
+  let(:user_context) { UserContext.new("current_request", "params") }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
   let(:subject) { described_class.new(user_context, order) }
@@ -28,8 +28,8 @@ describe OrderPolicy do
     before do
       allow(Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering)
       allow(service_offering).to receive(:process).and_return(service_offering)
-      allow(rbac_access).to receive(:resource_check).with('order', portfolio.id, Portfolio).and_return(order_check)
-      allow(rbac_access).to receive(:resource_check).with('order', portfolio2.id, Portfolio).and_return(order_check2)
+      allow(rbac_access).to receive(:resource_check).with('order', :id => portfolio.id, :klass => Portfolio).and_return(order_check)
+      allow(rbac_access).to receive(:resource_check).with('order', :id => portfolio2.id, :klass => Portfolio).and_return(order_check2)
     end
 
     context "when the resource check for ordering from all portfolios is false" do

@@ -4,15 +4,12 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
   let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio_id) }
   let(:portfolio_item_id) { portfolio_item.id.to_s }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
-  let(:resource_check) { true }
-  let(:update_resource_check) { true }
-  let(:permission_check) { true }
 
   before do
     allow(Catalog::RBAC::Access).to receive(:new).and_return(rbac_access)
-    allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(resource_check)
-    allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(update_resource_check)
-    allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(permission_check)
+    allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+    allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+    allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
   end
 
   describe "GET /portfolio_items/:portfolio_item_id #show" do
@@ -38,8 +35,7 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
           "copy"    => true,
           "create"  => true,
           "destroy" => true,
-          "update"  => true,
-          "index"   => true
+          "update"  => true
         )
       end
     end

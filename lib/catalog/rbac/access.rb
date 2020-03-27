@@ -22,19 +22,21 @@ module Catalog
         resource_check('delete')
       end
 
-      def admin_check
-        return true unless rbac_enabled?
-
-        catalog_admin?
-      end
-
       def resource_check(verb, id = @record.id, klass = @record.class)
         return true unless rbac_enabled?
-        return true if catalog_admin?
 
-        return false unless access_object.accessible?(@record.class.table_name, verb)
-        ids = access_id_list(verb, klass)
-        return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
+        scopes = access_object.scopes(@record.class.table_name, verb)
+        if scopes.include?("admin")
+          return true
+        elsif scopes.include?("group")
+          ids = access_id_list(verb, klass)
+          return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
+        #TODO: scopes.include?("user")
+        # We currently care about the "user" scope in index mixin by doing .by_owner,
+        # what is the equivalent here?
+        else
+          return false
+        end
 
         true
       end
@@ -50,11 +52,7 @@ module Catalog
       private
 
       def rbac_enabled?
-        Insights::API::Common::RBAC::Access.enabled?
-      end
-
-      def catalog_admin?
-        Catalog::RBAC::Role.catalog_administrator?
+        @user.rbac_enabled?
       end
 
       def access_id_list(verb, klass)
@@ -62,7 +60,7 @@ module Catalog
       end
 
       def access_object
-        @access_object ||= Insights::API::Common::RBAC::Access.new.process
+        @user.catalog_access
       end
     end
   end

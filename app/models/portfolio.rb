@@ -22,7 +22,7 @@ class Portfolio < ApplicationRecord
   attribute :metadata, ActiveRecord::Type::Json.new
 
   def metadata
-    user = Insights::API::Common::Request.current!
+    user = UserContext.new(Insights::API::Common::Request.current!, nil)
 
     {:user_capabilities => PortfolioPolicy.new(user, self).user_capabilities}
   end

@@ -24,27 +24,40 @@ module Api
         def rbac_scope(relation, pre_authorized: false)
           return relation if pre_authorized
 
-          if Catalog::RBAC::Role.catalog_administrator?
+          # if Catalog::RBAC::Role.catalog_administrator?
+          #   relation
+          # else
+          #   access_relation(relation)
+          # end
+
+          access_scopes = pundit_user.catalog_access.scopes(relation.model.table_name, 'read')
+
+          if access_scopes.include?('admin')
             relation
+          elsif access_scopes.include?('group')
+            ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', relation.model)
+            relation.where(:id => ids)
+          elsif access_scopes.include?('user')
+            relation.by_owner
           else
-            access_relation(relation)
+            false
           end
         end
 
-        def access_relation(relation)
-          access_obj = Insights::API::Common::RBAC::Access.new(relation.model.table_name, 'read').process
-          raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}" unless access_obj.accessible?
-          if access_obj.owner_scoped?
-            relation.by_owner
-          else
-            if relation.model.try(:supports_access_control?)
-              ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', relation.model)
-              relation.where(:id => ids)
-            else
-              relation
-            end
-          end
-        end
+        # def access_relation(relation)
+        #   access_obj = Insights::API::Common::RBAC::Access.new(relation.model.table_name, 'read').process
+        #   raise Catalog::NotAuthorized, "Not Authorized for #{relation.model}" unless access_obj.accessible?
+        #   if access_obj.owner_scoped?
+        #     relation.by_owner
+        #   else
+        #     if relation.model.try(:supports_access_control?)
+        #       ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', relation.model)
+        #       relation.where(:id => ids)
+        #     else
+        #       relation
+        #     end
+        #   end
+        # end
 
         def filtered(base_query)
           Insights::API::Common::Filter.new(base_query, params[:filter], api_doc_definition).apply
