@@ -72,4 +72,51 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
       end
     end
   end
+
+  describe "POST /portfolios #create" do
+    let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
+
+    context "when the user has create access" do
+      it 'creates a portfolio' do
+        post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when the user does not have create access" do
+      before do
+        allow(rbac_access).to receive(:create_access_check).and_return(false)
+      end
+
+      it 'returns status code 403' do
+        post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
+  describe "PATCH /portfolios #update" do
+    let!(:portfolio1) { create(:portfolio) }
+    let(:updated_attributes) { {:name => 'Barney', :description => "Barney's Portfolio" } }
+
+    context "user has update permission" do
+      it 'only allows updating a specific portfolio' do
+        patch "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "user has read only permission for a specific portfolio" do
+      before do
+        allow(rbac_access).to receive(:update_access_check).and_return(false)
+      end
+
+      it 'fails updating a portfolio' do
+        patch "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
 end
