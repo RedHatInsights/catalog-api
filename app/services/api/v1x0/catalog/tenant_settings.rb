@@ -1,24 +1,28 @@
-module Catalog
-  class TenantSettings
-    attr_reader :response
+module Api
+  module V1x0
+    module Catalog
+      class TenantSettings
+        attr_reader :response
 
-    def initialize(tenant)
-      @tenant = tenant
-    end
+        def initialize(tenant)
+          @tenant = tenant
+        end
 
-    def process
-      @response = {
-        :current => @tenant.settings,
-        :schema  => JSON.parse(schema)
-      }
+        def process
+          @response = {
+            :current => @tenant.settings,
+            :schema  => JSON.parse(schema)
+          }
 
-      self
-    end
+          self
+        end
 
-    private
+        private
 
-    def schema
-      @schema ||= File.read(Rails.root.join("schemas", "json", "tenant_settings.json"))
+        def schema
+          @schema ||= File.read(Rails.root.join("schemas", "json", "tenant_settings.json"))
+        end
+      end
     end
   end
 end

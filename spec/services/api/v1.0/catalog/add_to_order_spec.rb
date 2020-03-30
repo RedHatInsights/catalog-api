@@ -1,4 +1,4 @@
-describe Catalog::AddToOrder, :type => :service do
+describe Api::V1x0::Catalog::AddToOrder, :type => :service do
   let(:service_offering_ref) { "998" }
   let(:order) { create(:order) }
   let(:order_id) { order.id.to_s }
