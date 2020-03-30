@@ -51,7 +51,7 @@ module Catalog
       end
 
       def access_id_list(verb, klass)
-        Catalog::RBAC::AccessControlEntries.new.ace_ids(verb, klass)
+        Catalog::RBAC::AccessControlEntries.new(@user_context.group_uuids).ace_ids(verb, klass)
       end
 
       def access_object

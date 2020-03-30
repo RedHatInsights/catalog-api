@@ -30,7 +30,7 @@ class PortfolioPolicy < ApplicationPolicy
       if catalog_administrator?
         scope.all
       else
-        ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', Portfolio)
+        ids = Catalog::RBAC::AccessControlEntries.new(@user_context.group_uuids).ace_ids('read', Portfolio)
         scope.where(:id => ids)
       end
     end

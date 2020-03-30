@@ -29,7 +29,7 @@ module Api
           if access_scopes.include?('admin')
             relation
           elsif access_scopes.include?('group')
-            ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', relation.model)
+            ids = Catalog::RBAC::AccessControlEntries.new(pundit_user.group_uuids).ace_ids('read', relation.model)
             relation.where(:id => ids)
           elsif access_scopes.include?('user')
             relation.by_owner
