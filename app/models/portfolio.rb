@@ -24,6 +24,7 @@ class Portfolio < ApplicationRecord
   def metadata
     user = UserContext.new(Insights::API::Common::Request.current!, nil)
 
-    {:user_capabilities => PortfolioPolicy.new(user, self).user_capabilities}
+    {:user_capabilities => PortfolioPolicy.new(user, self).user_capabilities,
+     :shared            => self.access_control_entries.any?}
   end
 end
