@@ -1,46 +1,35 @@
 describe Catalog::RBAC::Access, :type => [:current_forwardable] do
-  let(:current_user) { Insights::API::Common::User.new("identity") }
-  let(:current_request) { Insights::API::Common::Request.new(:user => current_user, :headers => "headers", :original_url => "original_url") }
-  let(:params) { {:id => "321"} }
-  let(:controller_name) { "portfolio_items" }
-  let(:user_context) { UserContext.new(current_request, params, controller_name) }
+  let(:current_request) { Insights::API::Common::Request.new(default_request) }
+  let(:user_context) { UserContext.new(current_request, nil) }
+
   let(:subject) { described_class.new(user_context, portfolio_item) }
   let(:portfolio_item) { create(:portfolio_item, :id => "321") }
 
   around do |example|
     with_modified_env(:RBAC_URL => "http://rbac.example.com") do
-      example.call
+      Insights::API::Common::Request.with_request(current_request) do
+        example.call
+      end
     end
   end
 
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access) }
+
   before do
     allow(Insights::API::Common::RBAC::Access).to receive(:enabled?).and_return(rbac_enabled)
+    allow(user_context).to receive(:catalog_access).and_return(catalog_access)
   end
 
   shared_examples_for "permission checking" do |method, arguments, verb|
     context "when RBAC is enabled" do
       let(:rbac_enabled) { true }
-      let(:access_pagination) do
-        RBACApiClient::AccessPagination.new(
-          :meta  => pagination_meta,
-          :links => pagination_links,
-          :data  => access_list
-        )
-      end
-      let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
-      let(:pagination_links) { RBACApiClient::PaginationLinks.new }
 
       before do
-        stub_request(:get, "http://rbac.example.com/api/rbac/v1/access/?application=catalog&limit=500&offset=0")
-          .to_return(
-            :status  => 200,
-            :body    => access_pagination.to_json,
-            :headers => default_headers
-          )
+        allow(catalog_access).to receive(:accessible?).with("portfolio_items", verb).and_return(accessible)
       end
 
       context "when the object is accessible" do
-        let(:access_list) { [RBACApiClient::Access.new(:permission => ":portfolio_items:#{verb}")] }
+        let(:accessible) { true }
 
         it "returns true" do
           expect(subject.send(method, *arguments)).to eq(true)
@@ -48,7 +37,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       end
 
       context "when the object is not accessible" do
-        let(:access_list) { [] }
+        let(:accessible) { false }
 
         it "returns false" do
           expect(subject.send(method, *arguments)).to eq(false)
@@ -70,18 +59,12 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       let(:rbac_enabled) { true }
 
       before do
-        allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with("Catalog Administrator").and_return(admin?)
+        allow(catalog_access).to receive(:scopes).with("portfolio_items", verb).and_return(scopes)
       end
 
-      context "when the user is not a catalog administrator" do
-        let(:admin?) { false }
-        let(:access_pagination) do
-          RBACApiClient::AccessPagination.new(
-            :meta  => pagination_meta,
-            :links => pagination_links,
-            :data  => access_list
-          )
-        end
+      context "when the user is in the group scope" do
+        let(:scopes) { %w[group user] }
+
         let(:group_pagination) do
           RBACApiClient::GroupPagination.new(
             :meta  => pagination_meta,
@@ -89,6 +72,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
             :data  => group_list
           )
         end
+        let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
         let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
         let(:pagination_links) { RBACApiClient::PaginationLinks.new }
 
@@ -99,48 +83,29 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
               :body    => group_pagination.to_json,
               :headers => default_headers
             )
-          stub_request(:get, "http://rbac.example.com/api/rbac/v1/access/?application=catalog&limit=500&offset=0")
-            .to_return(
-              :status  => 200,
-              :body    => access_pagination.to_json,
-              :headers => default_headers
-            )
         end
 
-        context "when the object is accessible" do
-          let(:access_list) { [RBACApiClient::Access.new(:permission => ":portfolio_items:#{verb}")] }
-          let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
+        before do
+          allow(aceable_type).to receive(:try).with(:supports_access_control?).and_return(supports_access_control?)
+        end
+
+        context "when the class supports access control" do
+          let(:supports_access_control?) { true }
 
           before do
-            allow(aceable_type).to receive(:try).with(:supports_access_control?).and_return(supports_access_control?)
+            create(:access_control_entry, permission_under_test, :aceable_id => aceable_id, :aceable_type => aceable_type)
           end
 
-          context "when the class supports access control" do
-            let(:supports_access_control?) { true }
+          context "when the ids exclude the given id" do
+            let(:aceable_id) { "456" }
 
-            before do
-              create(:access_control_entry, permission_under_test, :aceable_id => aceable_id, :aceable_type => aceable_type)
-            end
-
-            context "when the ids exclude the given id" do
-              let(:aceable_id) { "456" }
-
-              it "returns false" do
-                expect(subject.send(method, *arguments)).to eq(false)
-              end
-            end
-
-            context "when the ids include the given id" do
-              let(:aceable_id) { "321" }
-
-              it "returns true" do
-                expect(subject.send(method, *arguments)).to eq(true)
-              end
+            it "returns false" do
+              expect(subject.send(method, *arguments)).to eq(false)
             end
           end
 
-          context "when the class does not support access control" do
-            let(:supports_access_control?) { false }
+          context "when the ids include the given id" do
+            let(:aceable_id) { "321" }
 
             it "returns true" do
               expect(subject.send(method, *arguments)).to eq(true)
@@ -148,9 +113,28 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
           end
         end
 
-        context "when the object is not accessible" do
-          let(:access_list) { [] }
-          let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
+        context "when the class does not support access control" do
+          let(:supports_access_control?) { false }
+
+          it "returns true" do
+            expect(subject.send(method, *arguments)).to eq(true)
+          end
+        end
+      end
+
+      context "when the user is only in the user scope" do
+        let(:scopes) { %w[user] }
+
+        context "when the username matches the record owner" do
+          it "returns true" do
+            expect(subject.send(method, *arguments)).to eq(true)
+          end
+        end
+
+        context "when the username does not match the record owner" do
+          before do
+            allow(portfolio_item).to receive(:owner).and_return("notjdoe")
+          end
 
           it "returns false" do
             expect(subject.send(method, *arguments)).to eq(false)
@@ -158,11 +142,24 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         end
       end
 
-      context "when the user is a catalog administrator" do
-        let(:admin?) { true }
+      context "when the user is in the admin scope" do
+        let(:scopes) { %w[admin group user] }
 
         it "returns true" do
           expect(subject.send(method, *arguments)).to eq(true)
+        end
+      end
+
+      context "when the user has no scopes" do
+        let(:scopes) { [] }
+
+        it "logs messages" do
+          expect(Rails.logger).to receive(:error).twice
+          subject.send(method, *arguments)
+        end
+
+        it "returns false" do
+          expect(subject.send(method, *arguments)).to eq(false)
         end
       end
     end
@@ -177,7 +174,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   end
 
   describe "#create_access_check" do
-    it_behaves_like "permission checking", :create_access_check, [], "create"
+    it_behaves_like "permission checking", :create_access_check, [PortfolioItem], "create"
   end
 
   describe "#permission_check" do
@@ -198,39 +195,5 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
   describe "#destroy_access_check" do
     it_behaves_like "resource checking", :destroy_access_check, [], "delete", PortfolioItem, :has_delete_permission
-  end
-
-  describe "#admin_check" do
-    context "when RBAC is not enabled" do
-      let(:rbac_enabled) { false }
-
-      it "returns true" do
-        expect(subject.admin_check).to eq(true)
-      end
-    end
-
-    context "when RBAC is enabled" do
-      let(:rbac_enabled) { true }
-
-      before do
-        allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(catalog_administrator?)
-      end
-
-      context "when the user is a catalog administrator" do
-        let(:catalog_administrator?) { true }
-
-        it "returns true" do
-          expect(subject.admin_check).to eq(true)
-        end
-      end
-
-      context "when the user is not a catalog administrator" do
-        let(:catalog_administrator?) { false }
-
-        it "returns false" do
-          expect(subject.admin_check).to eq(false)
-        end
-      end
-    end
   end
 end

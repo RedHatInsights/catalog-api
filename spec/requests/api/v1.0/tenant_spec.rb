@@ -31,8 +31,11 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
   end
 
   describe 'GET /tenants' do
+    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+
     before do
-      allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true)
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+      allow(catalog_access).to receive(:process).and_return(catalog_access)
       get "#{api_version}/tenants", :headers => default_headers
     end
 

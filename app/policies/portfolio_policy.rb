@@ -1,12 +1,13 @@
 class PortfolioPolicy < ApplicationPolicy
   def create?
-    rbac_access.admin_check
+    rbac_access.create_access_check(Portfolio)
   end
 
-  alias destroy? create?
   alias copy? create?
-  alias share? create?
-  alias unshare? create?
+
+  def destroy?
+    rbac_access.destroy_access_check
+  end
 
   def show?
     rbac_access.read_access_check
@@ -15,6 +16,14 @@ class PortfolioPolicy < ApplicationPolicy
   def update?
     rbac_access.update_access_check
   end
+
+  alias share? update?
+  alias unshare? update?
+
+  # def set_approval?
+  #   # TODO: Add "Approval Administrator" check as &&
+  #   rbac_access.update_access_check
+  # end
 
   class Scope < Scope
     def resolve

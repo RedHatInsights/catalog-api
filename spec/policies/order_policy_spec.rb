@@ -6,7 +6,7 @@ describe OrderPolicy do
   let(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio2) }
   let(:portfolio) { create(:portfolio) }
   let(:portfolio2) { create(:portfolio) }
-  let(:user_context) { UserContext.new("current_request", "params", "controller_name") }
+  let(:user_context) { UserContext.new("current_request", "params") }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
   let(:subject) { described_class.new(user_context, order) }

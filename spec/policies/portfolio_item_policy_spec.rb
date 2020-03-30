@@ -1,7 +1,7 @@
 describe PortfolioItemPolicy do
   let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
   let(:portfolio) { create(:portfolio) }
-  let(:user_context) { UserContext.new("current_request", params, "controller_name") }
+  let(:user_context) { UserContext.new("current_request", params) }
   let(:params) { {} }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
@@ -46,6 +46,20 @@ describe PortfolioItemPolicy do
       expect(subject.update?).to eq(true)
     end
   end
+
+  # describe "#edit_survey?" do
+  #   it "delegates to the check for update permissions on the portfolio" do
+  #     expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+  #     expect(subject.edit_survey?).to eq(true)
+  #   end
+  # end
+
+  # describe "#set_approval?" do
+  #   it "delegates to the check for update permissions on the portfolio" do
+  #     expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+  #     expect(subject.set_approval?).to eq(true)
+  #   end
+  # end
 
   describe "#destroy?" do
     it "delegates to the check for update permissions on the portfolio" do
@@ -154,7 +168,7 @@ describe PortfolioItemPolicy do
     end
 
     context "when there are no parameters at all" do
-      let(:user_context) { UserContext.new("current_request", nil, "controller_name") }
+      let(:user_context) { UserContext.new("current_request", nil) }
 
       context "when destination reading is false" do
         let(:destination_read_check) { false }
@@ -194,11 +208,12 @@ describe PortfolioItemPolicy do
 
     it "returns a hash of user capabilities" do
       expect(subject.user_capabilities).to eq({
-        "index"   => true,
-        "create"  => true,
-        "update"  => true,
-        "destroy" => true,
-        "copy"    => true
+        "create"       => true,
+        "update"       => true,
+        "destroy"      => true,
+        "copy"         => true,
+        # "set_approval" => true,
+        # "edit_survey"  => true
       })
     end
   end

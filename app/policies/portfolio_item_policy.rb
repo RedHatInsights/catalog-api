@@ -27,6 +27,15 @@ class PortfolioItemPolicy < ApplicationPolicy
     end
   end
 
+  # def edit_survey?
+  #   rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+  # end
+
+  # def set_approval?
+  #   # TODO: Add "Approval Administrator" check as &&
+  #   rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+  # end
+
   private
 
   def can_read_and_update_destination?(destination_id)

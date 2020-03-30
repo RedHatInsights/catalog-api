@@ -1,5 +1,5 @@
 describe "v1.0 - Tagging API", :type => [:request, :v1] do
-  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true, :owner_scoped? => false) }
+  let(:access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true) }
   let(:rbac_aces) { instance_double(Catalog::RBAC::AccessControlEntries) }
 
   let!(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
@@ -7,19 +7,22 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
   let(:bad_portfolio_id) { portfolio.id + 1 }
   let(:bad_portfolio_item_id) { portfolio_item.id + 1 }
 
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[group]) }
+
   before do
     portfolio_item.tag_add("yay")
     portfolio.tag_add("a_tag")
 
-    allow(Insights::API::Common::RBAC::Access).to receive(:new).with('tags', 'read').and_return(access_obj)
-    allow(access_obj).to receive(:process).and_return(access_obj)
-    allow(access_obj).to receive(:owner_scoped?).and_return(false)
-
     allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(false)
     allow(Catalog::RBAC::AccessControlEntries).to receive(:new).and_return(rbac_aces)
+
+    allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+    allow(catalog_access).to receive(:process).and_return(catalog_access)
   end
 
   describe "GET /tags" do
+    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+
     it "returns a list of tags" do
       get "#{api_version}/tags", :headers => default_headers
 
