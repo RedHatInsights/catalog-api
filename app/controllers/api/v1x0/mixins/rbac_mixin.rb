@@ -1,5 +1,5 @@
 module Api
-  module V1
+  module V1x0
     module Mixins
       module RBACMixin
         VALID_RESOURCE_VERBS = %w[create read update delete order].freeze

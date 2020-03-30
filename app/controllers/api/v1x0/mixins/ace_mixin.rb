@@ -1,5 +1,5 @@
 module Api
-  module V1
+  module V1x0
     module Mixins
       module ACEMixin
         def ace_ids(permission, klass)
