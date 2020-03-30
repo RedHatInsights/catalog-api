@@ -7,7 +7,7 @@ class PortfolioItem < ApplicationRecord
   acts_as_tenant(:tenant)
   acts_as_taggable_on
 
-  default_scope -> { kept }
+  default_scope -> { kept.order(Arel.sql('LOWER(portfolio_items.name)')) }
 
   belongs_to :icon, :optional => true
   has_many :service_plans, :dependent => :destroy
