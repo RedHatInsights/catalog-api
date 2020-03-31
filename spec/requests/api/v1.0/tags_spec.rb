@@ -8,16 +8,23 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
   let(:bad_portfolio_item_id) { portfolio_item.id + 1 }
 
   let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[group]) }
+  let(:rbac_api) { instance_double(Insights::API::Common::RBAC::Service) }
+  let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
 
   before do
     portfolio_item.tag_add("yay")
     portfolio.tag_add("a_tag")
 
     allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(false)
-    allow(Catalog::RBAC::AccessControlEntries).to receive(:new).and_return(rbac_aces)
+    allow(Catalog::RBAC::AccessControlEntries).to receive(:new).with(["123-456"]).and_return(rbac_aces)
 
     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
     allow(catalog_access).to receive(:process).and_return(catalog_access)
+
+    allow(Insights::API::Common::RBAC::Service).to receive(:call).with(RBACApiClient::GroupApi).and_yield(rbac_api)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate)
+      .with(rbac_api, :list_groups, :scope => 'principal')
+      .and_return(group_list)
   end
 
   describe "GET /tags" do

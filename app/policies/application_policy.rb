@@ -48,10 +48,10 @@ class ApplicationPolicy
   end
 
   class Scope
-    attr_reader :user, :scope
+    attr_reader :user_context, :scope
 
-    def initialize(user, scope)
-      @user = user
+    def initialize(user_context, scope)
+      @user_context = user_context
       @scope = scope
     end
 

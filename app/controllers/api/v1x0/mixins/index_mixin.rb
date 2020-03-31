@@ -24,12 +24,12 @@ module Api
         def rbac_scope(relation, pre_authorized: false)
           return relation if pre_authorized
 
-          access_scopes = pundit_user.catalog_access.scopes(relation.model.table_name, 'read')
+          access_scopes = pundit_user.access.scopes(relation.model.table_name, 'read')
 
           if access_scopes.include?('admin')
             relation
           elsif access_scopes.include?('group')
-            ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', relation.model)
+            ids = Catalog::RBAC::AccessControlEntries.new(pundit_user.group_uuids).ace_ids('read', relation.model)
             relation.where(:id => ids)
           elsif access_scopes.include?('user')
             relation.by_owner

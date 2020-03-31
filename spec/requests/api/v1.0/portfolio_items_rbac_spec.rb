@@ -4,10 +4,16 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
   let!(:portfolio_item2) { create(:portfolio_item) }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
   let(:access_control_entries) { instance_double(Catalog::RBAC::AccessControlEntries) }
+  let(:rbac_api) { instance_double(Insights::API::Common::RBAC::Service) }
+  let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
 
   before do
+    allow(Insights::API::Common::RBAC::Service).to receive(:call).with(RBACApiClient::GroupApi).and_yield(rbac_api)
+    allow(Insights::API::Common::RBAC::Service).to receive(:paginate)
+      .with(rbac_api, :list_groups, :scope => 'principal')
+      .and_return(group_list)
     allow(Catalog::RBAC::Access).to receive(:new).and_return(rbac_access)
-    allow(Catalog::RBAC::AccessControlEntries).to receive(:new).and_return(access_control_entries)
+    allow(Catalog::RBAC::AccessControlEntries).to receive(:new).with(["123-456"]).and_return(access_control_entries)
     allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(false)
     allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
     allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
