@@ -1,4 +1,4 @@
-describe Catalog::ServicePlanReset, :type => [:current_forwardable, :topology] do
+describe Api::V1x0::Catalog::ServicePlanReset, :type => [:current_forwardable, :topology] do
   let(:subject) { described_class.new(service_plan.id) }
   let(:service_plan_orig) do
     TopologicalInventoryApiClient::ServicePlan.new(

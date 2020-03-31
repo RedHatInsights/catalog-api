@@ -1,10 +1,10 @@
-describe Catalog::ServicePlanCompare do
+describe Api::V1x0::Catalog::ServicePlanCompare do
   let(:subject) { described_class.new(service_plan.id) }
 
   let(:service_plan) { create(:service_plan) }
 
   before do
-    allow(Catalog::SurveyCompare).to receive(:changed?).with(service_plan).and_return(changed)
+    allow(::Catalog::SurveyCompare).to receive(:changed?).with(service_plan).and_return(changed)
   end
 
   describe "#process" do
@@ -12,7 +12,7 @@ describe Catalog::ServicePlanCompare do
       let(:changed) { true }
 
       it "raises a Catalog::InvalidSurvey error" do
-        expect { subject.process }.to raise_error(Catalog::InvalidSurvey, "Base survey does not match Topology")
+        expect { subject.process }.to raise_error(::Catalog::InvalidSurvey, "Base survey does not match Topology")
       end
     end
 

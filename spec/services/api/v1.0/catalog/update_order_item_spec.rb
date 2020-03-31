@@ -1,4 +1,4 @@
-describe Catalog::UpdateOrderItem, :type => :service do
+describe Api::V1x0::Catalog::UpdateOrderItem, :type => :service do
   let(:subject) { described_class.new(topic, task) }
   let(:topic) { Struct.new(:payload, :message).new(payload, "message") }
   let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => "321"}}) }

@@ -1,4 +1,4 @@
-describe Catalog::ImportServicePlans, :type => [:service, :topology, :current_forwardable] do
+describe Api::V1x0::Catalog::ImportServicePlans, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "1" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:subject) { described_class.new(portfolio_item.id) }

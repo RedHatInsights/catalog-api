@@ -1,4 +1,4 @@
-describe Catalog::UnshareResource, :type => :service do
+describe Api::V1x0::Catalog::UnshareResource, :type => :service do
   let(:portfolio) { create(:portfolio) }
   let(:uuid) { "123" }
   let(:group_validator) { instance_double(Insights::API::Common::RBAC::ValidateGroups) }

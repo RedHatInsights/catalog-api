@@ -12,7 +12,7 @@ module Api
           begin
             @to_portfolio = Portfolio.find(params[:portfolio_id] || @portfolio_item.portfolio_id)
           rescue ActiveRecord::RecordNotFound
-            raise Catalog::InvalidParameter, "Portfolio specified not found"
+            raise ::Catalog::InvalidParameter, "Portfolio specified not found"
           end
         end
 
@@ -49,7 +49,7 @@ module Api
         def new_name(name)
           portfolio_names = @to_portfolio.portfolio_items.pluck(:name)
           if portfolio_names.include?(name)
-            Catalog::NameAdjust.create_copy_name(name, portfolio_names)
+            ::Catalog::NameAdjust.create_copy_name(name, portfolio_names)
           else
             name
           end

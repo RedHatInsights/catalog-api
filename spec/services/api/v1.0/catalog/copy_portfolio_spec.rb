@@ -1,4 +1,4 @@
-describe Catalog::CopyPortfolio, :type => :service do
+describe Api::V1x0::Catalog::CopyPortfolio, :type => :service do
   let(:portfolio) { create(:portfolio, :icon => create(:icon)) }
   let!(:portfolio_item1) { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio) }

@@ -2,7 +2,7 @@ module Api
   module V1x0
     module Catalog
       class ServicePlanJson
-        include JsonSchemaReader
+        include ::Catalog::JsonSchemaReader
 
         def initialize(opts)
           if opts.key?(:service_plan_id)

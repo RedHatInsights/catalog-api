@@ -2,7 +2,7 @@ module Api
   module V1x0
     module Catalog
       class ServicePlans
-        include Catalog::JsonSchemaReader
+        include ::Catalog::JsonSchemaReader
 
         attr_reader :items
 

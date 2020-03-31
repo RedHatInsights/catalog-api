@@ -13,11 +13,11 @@ module Api
         def process
           @order = Order.find_by!(:id => @order_id)
           @order.order_items.each do |order_item|
-            raise Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
+            raise ::Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
 
-            if Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)
+            if ::Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)
               order_item.mark_failed("Order Item Failed: Base survey does not match Topology")
-              raise Catalog::InvalidSurvey, "Base survey does not match Topology"
+              raise ::Catalog::InvalidSurvey, "Base survey does not match Topology"
             end
 
             submit_order_item(order_item)

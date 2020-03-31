@@ -11,7 +11,7 @@ module Api
 
         def process
           names = @portfolio.portfolio_items.pluck(:name)
-          @next_name = Catalog::NameAdjust.create_copy_name(@item.name, names)
+          @next_name = ::Catalog::NameAdjust.create_copy_name(@item.name, names)
 
           self
         end

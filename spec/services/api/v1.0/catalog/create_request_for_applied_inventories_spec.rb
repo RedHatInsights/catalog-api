@@ -1,4 +1,4 @@
-describe Catalog::CreateRequestForAppliedInventories, :type => :service do
+describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :service do
   let(:subject) { described_class.new(order_item.order) }
   let(:service_plan_ref) { "991" }
   let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref) }

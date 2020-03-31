@@ -1,4 +1,4 @@
-describe Catalog::ServicePlanJson, :type => :service do
+describe Api::V1x0::Catalog::ServicePlanJson, :type => :service do
   let(:service_plan) { create(:service_plan) }
   let(:subject) { described_class.new(params).process.json }
   let(:portfolio_item) { service_plan.portfolio_item }

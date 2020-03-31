@@ -1,4 +1,4 @@
-describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
+describe Api::V1x0::Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
@@ -9,7 +9,7 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
   end
   let!(:service_plan) { create(:service_plan, :portfolio_item => portfolio_item, :base => valid_ddf) }
   let(:submit_order) { described_class.new(params) }
-  let(:validater) { instance_double(Catalog::ValidateSource) }
+  let(:validater) { instance_double(Api::V1x0::Catalog::ValidateSource) }
   let(:validity) { true }
   let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
 
@@ -34,7 +34,7 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
   include_context "uses an order item with raw service parameters set"
 
   before do
-    allow(Catalog::ValidateSource).to receive(:new).with(portfolio_item.service_offering_source_ref).and_return(validater)
+    allow(Api::V1x0::Catalog::ValidateSource).to receive(:new).with(portfolio_item.service_offering_source_ref).and_return(validater)
     allow(validater).to receive(:process).and_return(validater)
     allow(validater).to receive(:valid).and_return(validity)
 

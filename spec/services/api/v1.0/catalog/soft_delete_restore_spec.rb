@@ -1,4 +1,4 @@
-describe Catalog::SoftDeleteRestore, :type => :service do
+describe Api::V1x0::Catalog::SoftDeleteRestore, :type => :service do
   let(:portfolio_item) { create(:portfolio_item, :discarded_at => Time.current) }
 
   describe "#process" do

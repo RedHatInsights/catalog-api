@@ -1,4 +1,4 @@
-describe Catalog::TenantSettings do
+describe Api::V1x0::Catalog::TenantSettings do
   let(:tenant) { create(:tenant, :settings => { :default_workflow => "1" }) }
   let(:settings) { described_class.new(tenant).process }
 

@@ -32,7 +32,7 @@ module Api
             mark_canceled
           else
             @state = "Pending"
-            Catalog::OrderStateTransition.new(@order_item.order).process
+            ::Catalog::OrderStateTransition.new(@order_item.order).process
           end
         end
 
@@ -40,7 +40,7 @@ module Api
           @order_item.update_message("info", "Submitting Order #{@order_item.order_id} for provisioning ")
           Catalog::SubmitOrder.new(@order_item.order_id).process
           finalize_order
-        rescue Catalog::TopologyError => e
+        rescue ::Catalog::TopologyError => e
           Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
           @order_item.update_message("error", "Error Submitting Order #{@order_item.order_id}, #{e.message}")
         end
@@ -59,7 +59,7 @@ module Api
 
         def finalize_order
           @order_item.update(:state => @state)
-          Catalog::OrderStateTransition.new(@order_item.order).process
+          ::Catalog::OrderStateTransition.new(@order_item.order).process
         end
 
         def approved?

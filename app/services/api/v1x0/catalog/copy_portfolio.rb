@@ -20,7 +20,7 @@ module Api
 
         def make_copy
           @portfolio.dup.tap do |new_portfolio|
-            new_portfolio.name = @name || Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name))
+            new_portfolio.name = @name || ::Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name))
 
             duplicate_icon(@portfolio, new_portfolio) if @portfolio.icon_id.present?
 
@@ -32,7 +32,7 @@ module Api
 
         def copy_portfolio_items(portfolio_id)
           @portfolio.portfolio_items.each do |item|
-            Catalog::CopyPortfolioItem.new(:portfolio_item_id => item.id, :portfolio_id => portfolio_id).process
+            Api::V1x0::Catalog::CopyPortfolioItem.new(:portfolio_item_id => item.id, :portfolio_id => portfolio_id).process
           end
         end
       end

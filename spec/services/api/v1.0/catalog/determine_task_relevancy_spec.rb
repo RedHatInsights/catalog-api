@@ -1,4 +1,4 @@
-describe Catalog::DetermineTaskRelevancy, :type => :service do
+describe Api::V1x0::Catalog::DetermineTaskRelevancy, :type => :service do
   let(:subject) { described_class.new(topic) }
   let(:topic) do
     OpenStruct.new(
@@ -8,7 +8,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
   end
 
   let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
-  let(:order_state_transition) { instance_double(Catalog::OrderStateTransition) }
+  let(:order_state_transition) { instance_double(::Catalog::OrderStateTransition) }
 
   describe "#process" do
     context "when the state is running" do
@@ -51,10 +51,10 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
       context "when the task context has a key path of [:service_instance][:id]" do
         let(:payload_context) { {"service_instance" => {"id" => "321"}} }
-        let(:update_order_item) { instance_double("Catalog::UpdateOrderItem") }
+        let(:update_order_item) { instance_double("Api::V1x0::Catalog::UpdateOrderItem") }
 
         before do
-          allow(Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
+          allow(Api::V1x0::Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
           allow(update_order_item).to receive(:process)
         end
 
@@ -87,7 +87,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
       context "when the task context has a key path of [:applied_inventories]" do
         let(:payload_context) { {"applied_inventories" => ["1", "2"]} }
-        let(:create_approval_request) { instance_double("Catalog::CreateApprovalRequest") }
+        let(:create_approval_request) { instance_double("Api::V1x0::Catalog::CreateApprovalRequest") }
         let(:task) do
           TopologicalInventoryApiClient::Task.new(
             :id      => "123",
@@ -98,7 +98,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         end
 
         before do
-          allow(Catalog::CreateApprovalRequest).to receive(:new).with(task).and_return(create_approval_request)
+          allow(Api::V1x0::Catalog::CreateApprovalRequest).to receive(:new).with(task).and_return(create_approval_request)
           allow(create_approval_request).to receive(:process)
         end
 
@@ -173,6 +173,24 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             expect(progress_message.level).to eq("info")
             expect(progress_message.message).to match(/Task update/)
             expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+          end
+        end
+
+        context "when the service_instance_ref is present on the order_item but the external_url is nil" do
+          let(:status) { "error" }
+          let(:update_order_item) { instance_double("Api::V1x0::Catalog::UpdateOrderItem") }
+
+          before do
+            order_item.update(:service_instance_ref => "1")
+            order_item.reload
+
+            allow(Api::V1x0::Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
+            allow(update_order_item).to receive(:process)
+          end
+
+          it "updates the order_item" do
+            expect(update_order_item).to receive(:process)
+            subject.process
           end
         end
       end

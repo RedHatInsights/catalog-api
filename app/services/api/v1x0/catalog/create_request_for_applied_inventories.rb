@@ -10,7 +10,7 @@ module Api
         end
 
         def process
-          raise Catalog::InvalidSurvey, "Base survey does not match Topology" if Catalog::SurveyCompare.any_changed?(@item.portfolio_item.service_plans)
+          raise ::Catalog::InvalidSurvey, "Base survey does not match Topology" if ::Catalog::SurveyCompare.any_changed?(@item.portfolio_item.service_plans)
 
           send_request_to_compute_applied_inventories
 

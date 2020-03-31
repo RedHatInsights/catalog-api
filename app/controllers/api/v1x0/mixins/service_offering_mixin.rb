@@ -11,7 +11,7 @@ module Api
               order_item.mark_failed(archived_error_message)
             end
 
-            raise Catalog::ServiceOfferingArchived, archived_error_message
+            raise ::Catalog::ServiceOfferingArchived, archived_error_message
           end
         end
 

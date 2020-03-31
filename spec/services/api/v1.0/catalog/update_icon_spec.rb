@@ -1,4 +1,4 @@
-describe Catalog::UpdateIcon, :type => :service do
+describe Api::V1x0::Catalog::UpdateIcon, :type => :service do
   let(:subject) { described_class.new(icon.id, params) }
   let(:portfolio_item) { create(:portfolio_item) }
 

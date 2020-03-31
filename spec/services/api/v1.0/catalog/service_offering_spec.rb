@@ -1,4 +1,4 @@
-describe Catalog::ServiceOffering do
+describe Api::V1x0::Catalog::ServiceOffering do
   let(:subject) { described_class.new(order_item.order) }
 
   before do

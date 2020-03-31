@@ -1,4 +1,4 @@
-describe Catalog::SoftDelete, :type => :service do
+describe Api::V1x0::Catalog::SoftDelete, :type => :service do
   let(:portfolio_item) { create(:portfolio_item) }
 
   describe "#process" do

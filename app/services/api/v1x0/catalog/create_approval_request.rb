@@ -16,7 +16,7 @@ module Api
 
           @order.update(:state => "Approval Pending", :order_request_sent_at => Time.now.utc)
           self
-        rescue Catalog::ApprovalError => e
+        rescue ::Catalog::ApprovalError => e
           @order.order_items.first.mark_failed("Error while creating approval request")
           Rails.logger.error("Error putting in approval Request for #{order.id}: #{e.message}")
           raise
@@ -26,7 +26,7 @@ module Api
 
         def submit_approval_requests(order_item)
           response = Approval::Service.call(ApprovalApiClient::RequestApi) do |api|
-            api.create_request(Catalog::CreateRequestBodyFrom.new(@order, order_item, @task).process.result)
+            api.create_request(Api::V1x0::Catalog::CreateRequestBodyFrom.new(@order, order_item, @task).process.result)
           end
 
           order_item.approval_requests.create!(

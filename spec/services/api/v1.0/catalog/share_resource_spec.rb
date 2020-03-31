@@ -1,4 +1,4 @@
-describe Catalog::ShareResource, :type => :service do
+describe Api::V1x0::Catalog::ShareResource, :type => :service do
   let(:portfolio) { create(:portfolio) }
 
   let(:params) do

@@ -1,4 +1,4 @@
-describe Catalog::NotifyApprovalRequest do
+describe Api::V1x0::Catalog::NotifyApprovalRequest do
   let(:subject) { described_class.new(ref_id, payload['payload'], payload['message']) }
 
   describe "#process" do
@@ -11,7 +11,7 @@ describe Catalog::NotifyApprovalRequest do
       let(:approval_transition) { instance_double("Catalog::ApprovalTransition") }
 
       before do
-        allow(Catalog::ApprovalTransition).to receive(:new).with(order_item.id).and_return(approval_transition)
+        allow(Api::V1x0::Catalog::ApprovalTransition).to receive(:new).with(order_item.id).and_return(approval_transition)
         allow(approval_transition).to receive(:process)
         @return_value = subject.process
         approval_request.reload
@@ -38,7 +38,7 @@ describe Catalog::NotifyApprovalRequest do
         end
 
         it "returns the notify object" do
-          expect(@return_value.class).to eq(Catalog::NotifyApprovalRequest)
+          expect(@return_value.class).to eq(Api::V1x0::Catalog::NotifyApprovalRequest)
           expect(@return_value.notification_object).to eq(approval_request)
         end
       end
@@ -64,7 +64,7 @@ describe Catalog::NotifyApprovalRequest do
         end
 
         it "returns the notify object" do
-          expect(@return_value.class).to eq(Catalog::NotifyApprovalRequest)
+          expect(@return_value.class).to eq(Api::V1x0::Catalog::NotifyApprovalRequest)
           expect(@return_value.notification_object).to eq(approval_request)
         end
       end
@@ -90,7 +90,7 @@ describe Catalog::NotifyApprovalRequest do
         end
 
         it "returns the notify object" do
-          expect(@return_value.class).to eq(Catalog::NotifyApprovalRequest)
+          expect(@return_value.class).to eq(Api::V1x0::Catalog::NotifyApprovalRequest)
           expect(@return_value.notification_object).to eq(approval_request)
         end
       end

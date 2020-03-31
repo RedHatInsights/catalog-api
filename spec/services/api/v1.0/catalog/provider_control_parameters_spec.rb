@@ -1,4 +1,4 @@
-describe Catalog::ProviderControlParameters, :type => [:service, :topology, :current_forwardable] do
+describe Api::V1x0::Catalog::ProviderControlParameters, :type => [:service, :topology, :current_forwardable] do
   let(:source_id) { "1" }
   let(:params) { portfolio_item.id }
   let(:provider_control_parameters) { described_class.new(params) }

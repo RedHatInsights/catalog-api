@@ -1,4 +1,4 @@
-describe Catalog::ValidateSource do
+describe Api::V1x0::Catalog::ValidateSource do
   let(:tenant) { create(:tenant) }
   let(:portfolio_item) { create(:portfolio_item, :tenant_id => tenant.id, :service_offering_source_ref => "17") }
   let(:response_headers) { {"Content-Type" => 'application/json'} }

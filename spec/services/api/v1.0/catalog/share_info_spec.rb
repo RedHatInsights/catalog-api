@@ -1,4 +1,4 @@
-describe Catalog::ShareInfo, :type => :service do
+describe Api::V1x0::Catalog::ShareInfo, :type => :service do
   let(:portfolio) { create(:portfolio) }
   let(:user_context) { instance_double(UserContext, :group_names => group_names) }
   let(:params) { {:object => portfolio, :user_context => user_context} }

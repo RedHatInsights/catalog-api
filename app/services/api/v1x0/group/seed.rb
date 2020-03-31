@@ -12,8 +12,8 @@ module Api
 
         def validate(tenant)
           account_number = Insights::API::Common::Request.current.identity['identity']['account_number']
-          raise Catalog::NotAuthorized if account_number != tenant.external_tenant
-          raise Catalog::NotAuthorized unless @request.user.org_admin?
+          raise ::Catalog::NotAuthorized if account_number != tenant.external_tenant
+          raise ::Catalog::NotAuthorized unless @request.user.org_admin?
 
           true
         end

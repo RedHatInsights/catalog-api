@@ -8,7 +8,7 @@ module Api
         def role_check(role)
           return unless Insights::API::Common::RBAC::Access.enabled?
 
-          raise Catalog::NotAuthorized unless Insights::API::Common::RBAC::Roles.assigned_role?(role)
+          raise ::Catalog::NotAuthorized unless Insights::API::Common::RBAC::Roles.assigned_role?(role)
         end
       end
     end

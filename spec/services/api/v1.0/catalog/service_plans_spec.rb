@@ -1,4 +1,4 @@
-describe Catalog::ServicePlans, :type => [:service, :topology, :current_forwardable] do
+describe Api::V1x0::Catalog::ServicePlans, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:params) { portfolio_item.id }

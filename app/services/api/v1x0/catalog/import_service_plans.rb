@@ -27,7 +27,7 @@ module Api
         private
 
         def check_conflict
-          raise Catalog::ConflictError, "Service Plan already exists for PortfolioItem: #{@portfolio_item.id}" if @portfolio_item.service_plans.any?
+          raise ::Catalog::ConflictError, "Service Plan already exists for PortfolioItem: #{@portfolio_item.id}" if @portfolio_item.service_plans.any?
         end
 
         def clear_service_plans

@@ -2,7 +2,7 @@ module Api
   module V1x0
     module Catalog
       class ProviderControlParameters
-        include Catalog::JsonSchemaReader
+        include ::Catalog::JsonSchemaReader
 
         attr_reader :data
 

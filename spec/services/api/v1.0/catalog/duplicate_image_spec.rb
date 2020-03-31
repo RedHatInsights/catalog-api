@@ -1,4 +1,4 @@
-describe Catalog::DuplicateImage, :type => :service do
+describe Api::V1x0::Catalog::DuplicateImage, :type => :service do
   let(:subject) { described_class.new(new_image) }
 
   shared_examples_for "#process when there is not a duplicate image" do

@@ -9,7 +9,7 @@ module Api
         end
 
         def process
-          raise Catalog::InvalidSurvey, "Base survey does not match Topology" if survey_changed?
+          raise ::Catalog::InvalidSurvey, "Base survey does not match Topology" if survey_changed?
 
           self
         end
@@ -17,7 +17,7 @@ module Api
         private
 
         def survey_changed?
-          Catalog::SurveyCompare.changed?(@service_plan)
+          ::Catalog::SurveyCompare.changed?(@service_plan)
         end
       end
     end

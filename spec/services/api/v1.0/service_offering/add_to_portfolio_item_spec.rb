@@ -1,4 +1,4 @@
-describe ServiceOffering::AddToPortfolioItem, :type => [:service, :topology] do
+describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :topology] do
   include ServiceOfferingHelper
   let(:service_offering_ref) { "1" }
   let(:subject) { described_class.new(params) }

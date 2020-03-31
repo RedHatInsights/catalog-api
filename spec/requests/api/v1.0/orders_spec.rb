@@ -10,7 +10,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   end
 
   describe "#submit_order" do
-    let(:service_offering_service) { instance_double("Catalog::ServiceOffering") }
+    let(:service_offering_service) { instance_double("Api::V1x0::Catalog::ServiceOffering") }
     subject { post "#{api_version}/orders/#{order.id}/submit_order", :headers => default_headers }
 
     before do
@@ -25,7 +25,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
 
       before do |example|
-        allow(Catalog::CreateRequestForAppliedInventories).to receive(:new).with(order).and_return(svc_object)
+        allow(Api::V1x0::Catalog::CreateRequestForAppliedInventories).to receive(:new).with(order).and_return(svc_object)
         allow(svc_object).to receive(:process).and_return(svc_object)
         allow(svc_object).to receive(:order).and_return(order)
         subject unless example.metadata[:subject_inside]
@@ -86,7 +86,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       let!(:service_plan) { create(:service_plan, :portfolio_item => order.order_items.first.portfolio_item) }
 
       before do |example|
-        allow(Catalog::SurveyCompare).to receive(:any_changed?).with(order.order_items.first.portfolio_item.service_plans).and_return(true)
+        allow(::Catalog::SurveyCompare).to receive(:any_changed?).with(order.order_items.first.portfolio_item.service_plans).and_return(true)
 
         subject unless example.metadata[:subject_inside]
       end

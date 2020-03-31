@@ -19,7 +19,7 @@ module Api
           end
 
           self
-        rescue Catalog::ApprovalError => e
+        rescue ::Catalog::ApprovalError => e
           Rails.logger.error("Approval error while canceling order: #{e.message}")
           raise_uncancelable_error
         end
@@ -37,7 +37,7 @@ module Api
         def raise_uncancelable_error
           error_message = "Order #{@order.id} is not cancelable in its current state: #{@order.state}"
           Rails.logger.error(error_message)
-          raise Catalog::OrderUncancelable, error_message
+          raise ::Catalog::OrderUncancelable, error_message
         end
       end
     end
