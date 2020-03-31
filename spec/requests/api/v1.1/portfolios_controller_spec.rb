@@ -79,6 +79,24 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
         expect(json['data'].first['metadata']).to have_key('user_capabilities')
       end
     end
+
+    context "with sort_by" do
+      let!(:new_portfolio) { create(:portfolio, :owner => "a very new owner") }
+
+      it "sorts when specified" do
+        get "#{api_version}/portfolios?sort_by=owner", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 2
+        expect(json["data"].first["owner"]).to eq new_portfolio.owner
+      end
+
+      it "does not sort when specified" do
+        get "#{api_version}/portfolios", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 2
+        expect(json["data"].first["owner"]).not_to eq new_portfolio.owner
+      end
+    end
   end
 
   describe "POST /portfolios #create" do
