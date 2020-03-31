@@ -17,7 +17,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
   before do
     allow(Insights::API::Common::RBAC::Access).to receive(:enabled?).and_return(rbac_enabled)
-    allow(user_context).to receive(:catalog_access).and_return(catalog_access)
+    allow(user_context).to receive(:access).and_return(catalog_access)
   end
 
   shared_examples_for "permission checking" do |method, arguments, verb|

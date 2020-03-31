@@ -4,7 +4,7 @@ describe UserContext, [:type => :current_forwardble] do
     described_class.new(current_request, "params")
   end
 
-  describe "#catalog_access" do
+  describe "#access" do
     let(:insights_access) { instance_double(Insights::API::Common::RBAC::Access) }
 
     before do
@@ -15,8 +15,7 @@ describe UserContext, [:type => :current_forwardble] do
     it "fetches a memoized access list from RBAC" do
       expect(Insights::API::Common::RBAC::Access).to receive(:new).with("").once
       expect(insights_access).to receive(:process).once
-      subject.catalog_access
-      subject.catalog_access
+      2.times { subject.access }
     end
   end
 

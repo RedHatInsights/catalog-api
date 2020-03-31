@@ -55,7 +55,7 @@ module Catalog
       end
 
       def access_object
-        @user_context.catalog_access
+        @user_context.access
       end
     end
   end

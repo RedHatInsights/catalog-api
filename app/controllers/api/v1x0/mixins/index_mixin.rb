@@ -24,7 +24,7 @@ module Api
         def rbac_scope(relation, pre_authorized: false)
           return relation if pre_authorized
 
-          access_scopes = pundit_user.catalog_access.scopes(relation.model.table_name, 'read')
+          access_scopes = pundit_user.access.scopes(relation.model.table_name, 'read')
 
           if access_scopes.include?('admin')
             relation
