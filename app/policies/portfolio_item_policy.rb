@@ -4,7 +4,8 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def create?
-    rbac_access.resource_check('update', @record.id, Portfolio)
+    portfolio_id = @record.class == Portfolio ? @record.id : @record.portfolio_id
+    rbac_access.resource_check('update', portfolio_id, Portfolio)
   end
 
   def update?
@@ -16,7 +17,7 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def copy?
-    destination_id = @user.params[:portfolio_id] || @record.portfolio_id
+    destination_id = @user.try(:params).try(:dig, :portfolio_id) || @record.portfolio_id
 
     if destination_id == @record.portfolio_id
       can_read_and_update_destination?(destination_id)
@@ -25,6 +26,15 @@ class PortfolioItemPolicy < ApplicationPolicy
         can_read_and_update_destination?(destination_id)
     end
   end
+
+  # def edit_survey?
+  #   rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+  # end
+
+  # def set_approval?
+  #   # TODO: Add "Approval Administrator" check as &&
+  #   rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+  # end
 
   private
 
@@ -38,7 +48,7 @@ class PortfolioItemPolicy < ApplicationPolicy
       if catalog_administrator?
         scope.all
       else
-        ids = Catalog::RBAC::AccessControlEntries.new.ace_ids('read', Portfolio)
+        ids = Catalog::RBAC::AccessControlEntries.new(@user_context.group_uuids).ace_ids('read', Portfolio)
         scope.where(:portfolio_id => ids)
       end
     end

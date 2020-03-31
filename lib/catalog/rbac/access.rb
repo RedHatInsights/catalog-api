@@ -1,8 +1,9 @@
 module Catalog
   module RBAC
     class Access
-      def initialize(user)
-        @user = user
+      def initialize(user_context, record)
+        @user_context = user_context
+        @record = record
       end
 
       def update_access_check
@@ -13,55 +14,48 @@ module Catalog
         resource_check('read')
       end
 
-      def create_access_check
-        permission_check('create')
+      def create_access_check(klass)
+        permission_check('create', klass)
       end
 
       def destroy_access_check
         resource_check('delete')
       end
 
-      def admin_check
+      def resource_check(verb, id = @record.id, klass = @record.class)
         return true unless rbac_enabled?
 
-        catalog_admin?
+        scopes = access_object.scopes(@record.class.table_name, verb)
+        if scopes.include?("admin")
+          true
+        elsif scopes.include?("group")
+          ids = access_id_list(verb, klass)
+          klass.try(:supports_access_control?) ? ids.include?(id.to_s) : true
+        elsif scopes.include?("user")
+          @record.owner == @user_context.user.user.username
+        else
+          Rails.logger.error("Error in resource checking for verb: #{verb}, id: #{id}, klass: #{klass}")
+          Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{scopes}")
+          false
+        end
       end
 
-      def resource_check(verb, id = @user.params[:id], klass = @user.controller_name.classify.constantize)
-        return true unless rbac_enabled?
-        return true if catalog_admin?
-
-        return false unless access_object(@user.controller_name.classify.constantize.table_name, verb).accessible?
-        ids = access_id_list(verb, klass)
-        return false if klass.try(:supports_access_control?) && ids.exclude?(id.to_s)
-
-        true
-      end
-
-      def permission_check(verb, klass = @user.controller_name.classify.constantize)
-        return true unless rbac_enabled?
-
-        return false unless access_object(klass.table_name, verb).accessible?
-
-        true
+      def permission_check(verb, klass = @record.class)
+        rbac_enabled? ? access_object.accessible?(klass.table_name, verb) : true
       end
 
       private
 
       def rbac_enabled?
-        Insights::API::Common::RBAC::Access.enabled?
-      end
-
-      def catalog_admin?
-        Catalog::RBAC::Role.catalog_administrator?
+        @user_context.rbac_enabled?
       end
 
       def access_id_list(verb, klass)
-        Catalog::RBAC::AccessControlEntries.new.ace_ids(verb, klass)
+        Catalog::RBAC::AccessControlEntries.new(@user_context.group_uuids).ace_ids(verb, klass)
       end
 
-      def access_object(table_name, verb)
-        Insights::API::Common::RBAC::Access.new(table_name, verb).process
+      def access_object
+        @user_context.access
       end
     end
   end

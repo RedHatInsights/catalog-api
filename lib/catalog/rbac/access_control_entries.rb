@@ -1,10 +1,8 @@
 module Catalog
   module RBAC
     class AccessControlEntries
-      def initialize
-        @my_group_uuids = Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-          Insights::API::Common::RBAC::Service.paginate(api, :list_groups, :scope => 'principal').collect(&:uuid)
-        end
+      def initialize(group_uuids)
+        @group_uuids = group_uuids
       end
 
       def ace_ids(permission, klass)
@@ -13,7 +11,7 @@ module Catalog
             :name => permission
           },
           :access_control_entries => {
-            :group_uuid   => @my_group_uuids,
+            :group_uuid   => @group_uuids,
             :aceable_type => klass.to_s
           }
         ).collect { |ace| ace.aceable_id.to_s }

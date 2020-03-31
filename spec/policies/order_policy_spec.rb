@@ -6,13 +6,13 @@ describe OrderPolicy do
   let(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio2) }
   let(:portfolio) { create(:portfolio) }
   let(:portfolio2) { create(:portfolio) }
-  let(:user_context) { UserContext.new("current_request", "params", "controller_name") }
+  let(:user_context) { UserContext.new("current_request", "params") }
   let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
   let(:subject) { described_class.new(user_context, order) }
 
   before do
-    allow(Catalog::RBAC::Access).to receive(:new).with(user_context).and_return(rbac_access)
+    allow(Catalog::RBAC::Access).to receive(:new).with(user_context, order).and_return(rbac_access)
   end
 
   describe "#show?" do

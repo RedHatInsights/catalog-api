@@ -7,7 +7,7 @@ class Portfolio < ApplicationRecord
 
   acts_as_tenant(:tenant)
   acts_as_taggable_on
-  default_scope -> { kept }
+  default_scope -> { kept.order(Arel.sql('LOWER(portfolios.name)')) }
   belongs_to :icon, :optional => true
 
   validates :name, :presence => true, :uniqueness => { :scope => %i(tenant_id discarded_at) }
@@ -17,5 +17,14 @@ class Portfolio < ApplicationRecord
 
   def add_portfolio_item(portfolio_item)
     portfolio_items << portfolio_item
+  end
+
+  attribute :metadata, ActiveRecord::Type::Json.new
+
+  def metadata
+    user = UserContext.new(Insights::API::Common::Request.current!, nil)
+
+    {:user_capabilities => PortfolioPolicy.new(user, self).user_capabilities,
+     :shared            => self.access_control_entries.any?}
   end
 end

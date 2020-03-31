@@ -30,6 +30,8 @@ module Catalog
       elsif @task.context.has_key_path?(:applied_inventories)
         Rails.logger.info("Creating approval request for task")
         Catalog::CreateApprovalRequest.new(@task).process
+      elsif order_item.service_instance_ref.present? && order_item.external_url.nil?
+        Catalog::UpdateOrderItem.new(@topic, @task).process
       else
         Rails.logger.info("Incoming task has no current relevant delegation")
       end

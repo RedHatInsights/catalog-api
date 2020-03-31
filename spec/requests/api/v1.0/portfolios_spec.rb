@@ -1,3 +1,4 @@
+require 'securerandom'
 describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   around do |example|
     bypass_rbac do
@@ -9,6 +10,7 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   let!(:portfolio_item)  { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)     { portfolio.id }
+  let(:bad_portfolio_id) { portfolio.id + 1}
 
   describe "GET /portfolios/:portfolio_id" do
     before do
@@ -311,11 +313,15 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
 
     context 'share_info' do
       include_context "sharing_objects"
-      let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT} }
       it "portfolio" do
         with_modified_env :APP_NAME => app_name do
           allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-          allow(Insights::API::Common::RBAC::Service).to receive(:paginate).with(api_instance, :list_groups, pagination_options).and_return(groups)
+          allow(Insights::API::Common::RBAC::Service).to receive(:paginate) do |api_instance, method, options|
+            expect(method).to eq(:list_groups)
+            expect(options[:limit]).to eq(Catalog::ShareInfo::MAX_GROUPS_LIMIT)
+            expect(options[:uuid]).to match_array(group_uuids) if options.key?(:uuid)
+            groups
+          end
           ace1
           ace2
           ace3
@@ -435,6 +441,14 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
         end
       end
 
+      context 'bad portfolio' do
+        let(:params) { {:name => tag_name} }
+        it 'returns 404' do
+          post "#{api_version}/portfolios/#{bad_portfolio_id}/tag", :headers => default_headers, :params => tag_params
+          expect(response).to have_http_status(404)
+        end
+      end
+
       let(:endpoint) { "tag" }
       it_behaves_like "bad_tags"
       it_behaves_like "good_tags"
@@ -465,82 +479,6 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       let(:endpoint) { "untag" }
       it_behaves_like "bad_tags"
       it_behaves_like "good_tags"
-    end
-  end
-
-  describe "#share" do
-    let(:params) do
-      {:group_uuids => ["group_uuids"], :permissions => ["read"]}
-    end
-    let(:share_resource) { instance_double(Catalog::ShareResource) }
-    let(:options) do
-      {
-        :object => portfolio,
-        :permissions => ["read"],
-        :group_uuids => ["group_uuids"]
-      }
-    end
-
-    subject do
-      post "#{api_version}/portfolios/#{portfolio.id}/share", :params => params, :headers => default_headers
-    end
-
-    before do
-      allow(Catalog::ShareResource).to receive(:new).and_return(share_resource)
-      allow(share_resource).to receive(:process)
-    end
-
-    it_behaves_like "action that tests authorization", :share?, Portfolio
-
-    it "shares the resource" do
-      expect(Catalog::ShareResource).to receive(:new).with(options)
-      expect(share_resource).to receive(:process)
-
-      subject
-    end
-
-    it "returns a 204" do
-      subject
-
-      expect(response).to have_http_status(:no_content)
-    end
-  end
-
-  describe "#unshare" do
-    let(:params) do
-      {:group_uuids => ["group_uuids"], :permissions => ["read"]}
-    end
-    let(:unshare_resource) { instance_double(Catalog::UnshareResource) }
-    let(:options) do
-      {
-        :object => portfolio,
-        :permissions => ["read"],
-        :group_uuids => ["group_uuids"]
-      }
-    end
-
-    subject do
-      post "#{api_version}/portfolios/#{portfolio.id}/unshare", :params => params, :headers => default_headers
-    end
-
-    before do
-      allow(Catalog::UnshareResource).to receive(:new).and_return(unshare_resource)
-      allow(unshare_resource).to receive(:process)
-    end
-
-    it_behaves_like "action that tests authorization", :unshare?, Portfolio
-
-    it "unshares the resource" do
-      expect(Catalog::UnshareResource).to receive(:new).with(options)
-      expect(unshare_resource).to receive(:process)
-
-      subject
-    end
-
-    it "returns a 204" do
-      subject
-
-      expect(response).to have_http_status(:no_content)
     end
   end
 end

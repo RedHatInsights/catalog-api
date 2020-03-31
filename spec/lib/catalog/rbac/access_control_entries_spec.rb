@@ -1,30 +1,6 @@
-describe Catalog::RBAC::AccessControlEntries, :type => [:current_forwardable] do
-  around do |example|
-    with_modified_env(:RBAC_URL => "http://rbac.example.com") do
-      example.call
-    end
-  end
-
+describe Catalog::RBAC::AccessControlEntries do
   describe "#ace_ids" do
-    let(:group_pagination) do
-      RBACApiClient::GroupPagination.new(
-        :meta  => pagination_meta,
-        :links => pagination_links,
-        :data  => group_list
-      )
-    end
-    let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
-    let(:pagination_links) { RBACApiClient::PaginationLinks.new }
-    let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
-
-    before do
-      stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal")
-        .to_return(
-          :status  => 200,
-          :body    => group_pagination.to_json,
-          :headers => default_headers
-        )
-    end
+    subject { described_class.new(["123-456"]) }
 
     context "when access control entries exist that match the given parameters" do
       before do

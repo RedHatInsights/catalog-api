@@ -1,6 +1,5 @@
 class ApplicationPolicy
-  include Api::V1::Mixins::ACEMixin
-  include Api::V1::Mixins::RBACMixin
+  include Api::V1x0::Mixins::ACEMixin
 
   attr_reader :user, :record
 
@@ -33,26 +32,31 @@ class ApplicationPolicy
     false
   end
 
+  def user_capabilities
+    capabilities = {}
+    (self.class.instance_methods(false) - [:user_capabilities, :index?]).each do |method|
+      capabilities[method.to_s.delete_suffix('?')] = self.send(method)
+    end
+
+    capabilities
+  end
+
   private
 
   def rbac_access
-    @rbac_access ||= Catalog::RBAC::Access.new(@user)
+    @rbac_access ||= Catalog::RBAC::Access.new(@user, @record)
   end
 
   class Scope
-    attr_reader :user, :scope
+    attr_reader :user_context, :scope
 
-    def initialize(user, scope)
-      @user = user
+    def initialize(user_context, scope)
+      @user_context = user_context
       @scope = scope
     end
 
     def resolve
       scope.all # Override in sub-policy scope for now
-    end
-
-    def rbac_access
-      @rbac_access ||= Catalog::RBAC::Access.new(@user)
     end
 
     private

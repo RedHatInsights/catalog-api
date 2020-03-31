@@ -1,7 +1,5 @@
 module Catalog
   class UpdateOrderItem
-    class ServiceInstanceWithoutExternalUrl < StandardError; end
-
     def initialize(topic, task)
       @payload = topic.payload
       @message = topic.message
@@ -31,14 +29,12 @@ module Catalog
 
     def fetch_external_url
       TopologicalInventory.call do |api_instance|
-        @service_instance_id = @task.context[:service_instance][:id]
-        service_instance = api_instance.show_service_instance(@service_instance_id)
-        raise ServiceInstanceWithoutExternalUrl if service_instance.external_url.nil?
+        service_instance = api_instance.show_service_instance(service_instance_id)
+        if service_instance.external_url.nil?
+          Rails.logger.warn("Could not find an external url on service instance (id: #{service_instance_id}) attached to task_id: #{@payload["task_id"]}")
+        end
         service_instance.external_url
       end
-    rescue ServiceInstanceWithoutExternalUrl
-      Rails.logger.error("Could not find an external url on service instance (id: #{@service_instance_id}) attached to task_id: #{@payload["task_id"]}")
-      nil
     end
 
     def mark_item_based_on_status
@@ -46,15 +42,24 @@ module Catalog
       when "ok"
         case @payload["state"]
         when "completed"
-          @order_item.mark_completed("Order Item Complete", :external_url => fetch_external_url)
+          @order_item.mark_completed("Order Item Complete", :external_url         => fetch_external_url,
+                                                            :service_instance_ref => service_instance_id)
         when "running"
           @order_item.update_message("info", "Order Item being processed with context: #{@payload["context"]}")
         end
       when "error"
-        @order_item.mark_failed("Order Item Failed", :external_url => fetch_external_url)
+        if @order_item.service_instance_ref
+          @order_item.update!(:external_url => fetch_external_url)
+        else
+          @order_item.mark_failed("Order Item Failed", :service_instance_ref => service_instance_id)
+        end
       else
         # Do nothing for now, only other case is "warn"
       end
+    end
+
+    def service_instance_id
+      @service_instance_id ||= @task.context.dig(:service_instance, :id) || @order_item.service_instance_ref
     end
   end
 end

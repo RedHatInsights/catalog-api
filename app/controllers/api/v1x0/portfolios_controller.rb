@@ -1,7 +1,7 @@
 module Api
-  module V1
+  module V1x0
     class PortfoliosController < ApplicationController
-      include Api::V1::Mixins::IndexMixin
+      include Api::V1x0::Mixins::IndexMixin
 
       def index
         if params[:tag_id]
