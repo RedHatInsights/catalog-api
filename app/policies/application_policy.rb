@@ -56,8 +56,6 @@ class ApplicationPolicy
     end
 
     def resolve
-      access_scopes = @user_context.access.scopes(scope.table_name, 'read')
-
       if access_scopes.include?('admin')
         scope.all
       elsif access_scopes.include?('group')
@@ -70,6 +68,12 @@ class ApplicationPolicy
         Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{access_scopes}")
         raise Catalog::NotAuthorized, "Not Authorized for #{scope.table_name}"
       end
+    end
+
+    private
+
+    def access_scopes
+      @access_scopes ||= @user_context.access.scopes(scope.table_name, 'read')
     end
   end
 end
