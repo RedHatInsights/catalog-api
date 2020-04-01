@@ -6,6 +6,7 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
   let(:access_control_entries) { instance_double(Catalog::RBAC::AccessControlEntries) }
   let(:rbac_api) { instance_double(Insights::API::Common::RBAC::Service) }
   let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[group]) }
 
   before do
     allow(Insights::API::Common::RBAC::Service).to receive(:call).with(RBACApiClient::GroupApi).and_yield(rbac_api)
@@ -14,10 +15,12 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
       .and_return(group_list)
     allow(Catalog::RBAC::Access).to receive(:new).and_return(rbac_access)
     allow(Catalog::RBAC::AccessControlEntries).to receive(:new).with(["123-456"]).and_return(access_control_entries)
-    allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(false)
     allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
     allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
     allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+
+    allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+    allow(catalog_access).to receive(:process).and_return(catalog_access)
   end
 
   describe "GET /portfolio_items" do
