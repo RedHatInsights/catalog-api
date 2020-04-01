@@ -9,9 +9,7 @@ describe PortfolioPolicy::Scope, :type => [:service] do
     let(:portfolio) { create(:portfolio) }
 
     around do |example|
-      with_modified_env(:RBAC_URL => "http://rbac") do
-        Insights::API::Common::Request.with_request(default_request) { example.call }
-      end
+      Insights::API::Common::Request.with_request(default_request) { example.call }
     end
 
     before do
