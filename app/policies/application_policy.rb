@@ -56,13 +56,13 @@ class ApplicationPolicy
     end
 
     def resolve
-      scope.all # Override in sub-policy scope for now
+      scope.all
     end
 
     private
 
-    def catalog_administrator?
-      Catalog::RBAC::Role.catalog_administrator?
+    def access_scopes
+      @access_scopes ||= @user_context.access.scopes(scope.table_name, 'read')
     end
   end
 end

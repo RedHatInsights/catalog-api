@@ -20,6 +20,6 @@ module RequestSpecHelper
   end
 
   def catalog_admin_role
-    Catalog::RBAC::Role::ADMINISTRATOR_ROLE_NAME
+    'Catalog Administrator'
   end
 end

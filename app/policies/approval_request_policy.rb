@@ -1,0 +1,2 @@
+class ApprovalRequestPolicy < ApplicationPolicy
+end
