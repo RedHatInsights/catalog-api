@@ -1,0 +1,2 @@
+class ProgressMessagePolicy < ApplicationPolicy
+end

@@ -45,11 +45,17 @@ class PortfolioItemPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      if catalog_administrator?
+      if access_scopes.include?('admin')
         scope.all
-      else
+      elsif access_scopes.include?('group')
         ids = Catalog::RBAC::AccessControlEntries.new(@user_context.group_uuids).ace_ids('read', Portfolio)
         scope.where(:portfolio_id => ids)
+      elsif access_scopes.include?('user')
+        scope.by_owner
+      else
+        Rails.logger.error("Error in scope search for #{scope.table_name}")
+        Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{access_scopes}")
+        raise Catalog::NotAuthorized, "Not Authorized for #{scope.table_name}"
       end
     end
   end

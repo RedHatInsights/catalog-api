@@ -10,4 +10,18 @@ class OrderPolicy < ApplicationPolicy
 
     order_items_check.all?
   end
+
+  class Scope < Scope
+    def resolve
+      if access_scopes.include?('admin')
+        scope.all
+      elsif access_scopes.include?('user')
+        scope.by_owner
+      else
+        Rails.logger.error("Error in scope search for #{scope.table_name}")
+        Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{access_scopes}")
+        raise Catalog::NotAuthorized, "Not Authorized for #{scope.table_name}"
+      end
+    end
+  end
 end
