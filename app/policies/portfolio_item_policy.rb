@@ -45,8 +45,6 @@ class PortfolioItemPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      access_scopes = @user_context.access.scopes(scope.table_name, 'read')
-
       if access_scopes.include?('admin')
         scope.all
       elsif access_scopes.include?('group')
