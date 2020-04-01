@@ -1,0 +1,2 @@
+class TenantPolicy < ApplicationPolicy
+end
