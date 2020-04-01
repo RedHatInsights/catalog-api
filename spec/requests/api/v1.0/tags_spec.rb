@@ -15,7 +15,6 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
     portfolio_item.tag_add("yay")
     portfolio.tag_add("a_tag")
 
-    allow(Catalog::RBAC::Role).to receive(:catalog_administrator?).and_return(false)
     allow(Catalog::RBAC::AccessControlEntries).to receive(:new).with(["123-456"]).and_return(rbac_aces)
 
     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)

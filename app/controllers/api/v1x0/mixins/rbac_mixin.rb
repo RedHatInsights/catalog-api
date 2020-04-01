@@ -10,10 +10,6 @@ module Api
 
           raise Catalog::NotAuthorized unless Insights::API::Common::RBAC::Roles.assigned_role?(role)
         end
-
-        def catalog_administrator?
-          Insights::API::Common::RBAC::Roles.assigned_role?(ADMINISTRATOR_ROLE_NAME)
-        end
       end
     end
   end
