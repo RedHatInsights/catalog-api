@@ -198,7 +198,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
         subject unless example.metadata[:subject_inside]
       end
 
-      it_behaves_like "action that tests authorization", :create?, Portfolio
+      it_behaves_like "action that tests authorization", :create?, PortfolioItem
 
       it "returns not found when topology doesn't have the service_offering_ref" do
         expect(response).to have_http_status(:service_unavailable)
@@ -213,7 +213,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
         subject unless example.metadata[:subject_inside]
       end
 
-      it_behaves_like "action that tests authorization", :create?, Portfolio
+      it_behaves_like "action that tests authorization", :create?, PortfolioItem
 
       it "returns the new portfolio item when topology has the service_offering_ref" do
         expect(response).to have_http_status(:ok)
