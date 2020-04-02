@@ -18,8 +18,15 @@ class PortfolioItem < ApplicationRecord
   attribute :metadata, ActiveRecord::Type::Json.new
 
   def metadata
-    user = UserContext.new(Insights::API::Common::Request.current!, nil)
+    {:user_capabilities => user_capabilities}
+  end
 
-    {:user_capabilities => PortfolioItemPolicy.new(user, self).user_capabilities}
+  private
+
+  def user_capabilities
+    return nil if Thread.current[:user].nil?
+
+    user = Thread.current[:user]
+    PortfolioItemPolicy.new(user, self).user_capabilities
   end
 end
