@@ -2,6 +2,7 @@ class PortfolioItem < ApplicationRecord
   include OwnerField
   include Discard::Model
   include Catalog::DiscardRestore
+  include Catalog::UserCapabilities
   destroy_dependencies :service_plans
 
   acts_as_tenant(:tenant)
@@ -14,8 +15,6 @@ class PortfolioItem < ApplicationRecord
   belongs_to :portfolio
   validates :service_offering_ref, :name, :presence => true
   validates :favorite_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
-
-  attribute :metadata, ActiveRecord::Type::Json.new
 
   def metadata
     {:user_capabilities => user_capabilities}

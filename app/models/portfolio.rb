@@ -3,6 +3,8 @@ class Portfolio < ApplicationRecord
   include Discard::Model
   include Catalog::DiscardRestore
   include Aceable
+  include Catalog::UserCapabilities
+
   destroy_dependencies :portfolio_items
 
   acts_as_tenant(:tenant)
@@ -18,8 +20,6 @@ class Portfolio < ApplicationRecord
   def add_portfolio_item(portfolio_item)
     portfolio_items << portfolio_item
   end
-
-  attribute :metadata, ActiveRecord::Type::Json.new
 
   def metadata
     {:user_capabilities => user_capabilities,
