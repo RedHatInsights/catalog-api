@@ -3,6 +3,8 @@ class Portfolio < ApplicationRecord
   include Discard::Model
   include Catalog::DiscardRestore
   include Aceable
+  include Catalog::UserCapabilities
+
   destroy_dependencies :portfolio_items
 
   acts_as_tenant(:tenant)
@@ -19,12 +21,8 @@ class Portfolio < ApplicationRecord
     portfolio_items << portfolio_item
   end
 
-  attribute :metadata, ActiveRecord::Type::Json.new
-
   def metadata
-    user = UserContext.new(Insights::API::Common::Request.current!, nil)
-
-    {:user_capabilities => PortfolioPolicy.new(user, self).user_capabilities,
+    {:user_capabilities => user_capabilities,
      :shared            => self.access_control_entries.any?}
   end
 end
