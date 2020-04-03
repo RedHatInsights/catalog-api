@@ -20,13 +20,4 @@ class PortfolioItem < ApplicationRecord
   def metadata
     {:user_capabilities => user_capabilities}
   end
-
-  private
-
-  def user_capabilities
-    return nil if Thread.current[:user].nil?
-
-    user = Thread.current[:user]
-    PortfolioItemPolicy.new(user, self).user_capabilities
-  end
 end
