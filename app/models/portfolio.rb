@@ -23,8 +23,8 @@ class Portfolio < ApplicationRecord
 
   def metadata
     {:user_capabilities        => user_capabilities,
-     :groups_shared_count      => self.access_control_entries.collect(&:group_uuid).uniq.count,
-     :approval_processes_count => self.tags.select { |t| t.name == "workflows" && t.namespace == "approval"}.count,
+     :groups_shared_count      => access_control_entries.select(:group_uuid).distinct.count,
+     :approval_processes_count => tags.where(:name => "workflows", :namespace => "approval").count,
      :product_count            => self.portfolio_items.count}
   end
 end
