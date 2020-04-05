@@ -16,6 +16,9 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
   describe "GET /portfolios/:portfolio_id #show" do
     before do
       create(:access_control_entry, :has_read_permission, :aceable_id => portfolio_id, :group_uuid => "456-123")
+      create(:access_control_entry, :has_update_permission, :aceable_id => portfolio_id, :group_uuid => "456-123")
+      portfolio.tag_add('workflows', :namespace => 'approval', :value => '1')
+      portfolio.tag_add('workflows', :namespace => 'approval', :value => '2')
       get "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers
     end
 
@@ -43,8 +46,16 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
         )
       end
 
-      it "returns shared status" do
-        expect(json['metadata']['shared']).to be_truthy
+      it "returns shared group count" do
+        expect(json['metadata']['groups_shared_count']).to eq(1)
+      end
+
+      it "check approval_processes_count" do
+        expect(json['metadata']['approval_processes_count']).to eq(2)
+      end
+
+      it "check product_count" do
+        expect(json['metadata']['product_count']).to eq(1)
       end
     end
 

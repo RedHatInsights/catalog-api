@@ -22,7 +22,9 @@ class Portfolio < ApplicationRecord
   end
 
   def metadata
-    {:user_capabilities => user_capabilities,
-     :shared            => self.access_control_entries.any?}
+    {:user_capabilities        => user_capabilities,
+     :groups_shared_count      => self.access_control_entries.collect(&:group_uuid).uniq.count,
+     :approval_processes_count => self.tags.select { |t| t.name == "workflows" && t.namespace == "approval"}.count,
+     :product_count            => self.portfolio_items.count}
   end
 end
