@@ -22,9 +22,18 @@ class Portfolio < ApplicationRecord
   end
 
   def metadata
-    {:user_capabilities        => user_capabilities,
-     :groups_shared_count      => access_control_entries.select(:group_uuid).distinct.count,
+    x = {:user_capabilities        => user_capabilities}
+    if ENV['IGNORE_EXTRAS'] == 'true'
+      x
+    else
+      x.merge(extras)
+    end
+  end
+
+  def extras
+    {:groups_shared_count      => access_control_entries.select(:group_uuid).distinct.count,
      :approval_processes_count => tags.where(:name => "workflows", :namespace => "approval").count,
      :product_count            => self.portfolio_items.count}
   end
+
 end
