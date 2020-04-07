@@ -3,7 +3,7 @@ class Portfolio < ApplicationRecord
   include Discard::Model
   include Catalog::DiscardRestore
   include Aceable
-  include Catalog::UserCapabilities
+  include UserCapabilities
 
   destroy_dependencies :portfolio_items
 
