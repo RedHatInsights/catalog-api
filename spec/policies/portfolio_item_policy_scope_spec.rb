@@ -61,7 +61,7 @@ describe PortfolioItemPolicy::Scope, :type => [:service] do
       let(:scopes) { %w[user] }
 
       it "returns the set limited by the portfolio items within the owner group" do
-        expect(subject.resolve.to_a).to eq([portfolio_item1, portfolio_item2])
+        expect(subject.resolve.to_a).to match_array([portfolio_item1, portfolio_item2])
       end
 
 
