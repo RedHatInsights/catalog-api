@@ -2,7 +2,7 @@ class PortfolioItem < ApplicationRecord
   include OwnerField
   include Discard::Model
   include Catalog::DiscardRestore
-  include Catalog::UserCapabilities
+  include UserCapabilities
   destroy_dependencies :service_plans
 
   acts_as_tenant(:tenant)
