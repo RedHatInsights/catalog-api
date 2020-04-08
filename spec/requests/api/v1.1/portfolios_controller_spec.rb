@@ -184,7 +184,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
         subject
 
         expect(response).to have_http_status(:bad_request)
-        expect(first_error_detail).to match(/OpenAPIParser::InvalidUUIDForm/)
+        expect(first_error_detail).to match(/OpenAPIParser::InvalidUUIDFormat/)
       end
     end
   end
@@ -234,7 +234,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
         subject
 
         expect(response).to have_http_status(:bad_request)
-        expect(first_error_detail).to match(/OpenAPIParser::InvalidUUIDForm/)
+        expect(first_error_detail).to match(/OpenAPIParser::InvalidUUIDFormat/)
       end
     end
   end
