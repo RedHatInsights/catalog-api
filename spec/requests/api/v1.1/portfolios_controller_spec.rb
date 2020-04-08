@@ -226,5 +226,16 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
 
       expect(response).to have_http_status(:no_content)
     end
+
+    context "bad group uuid" do
+      let(:group_uuid) { "fred" }
+
+      it "returns a 400" do
+        subject
+
+        expect(response).to have_http_status(:bad_request)
+        expect(first_error_detail).to match(/OpenAPIParser::InvalidUUIDForm/)
+      end
+    end
   end
 end
