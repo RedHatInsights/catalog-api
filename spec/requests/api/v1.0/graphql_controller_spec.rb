@@ -1,34 +1,24 @@
-describe "v1.0 - GraphQL", :type => [:request, :v1] do
-  around do |example|
-    bypass_rbac do
-      example.call
-    end
+describe "v1.0 - Portfolios Read Access RBAC API", :type => [:request, :v1] do
+  let!(:portfolio1) { create(:portfolio) }
+  let(:graphql_query) { '{ portfolios { id name } }' }
+  let(:graphql_body) { { 'query' => graphql_query } }
+
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+
+  before do
+    allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+    allow(catalog_access).to receive(:process).and_return(catalog_access)
   end
 
-  let!(:portfolio_a) { create(:portfolio, :description => 'test a desc', :name => "test_a", :owner => "234") }
-  let!(:portfolio_b) { create(:portfolio, :description => 'test b desc', :name => "test_b", :owner => "123") }
+  describe "GET /portfolios" do
+    context "via graphql" do
+      let(:graphql_query) { "{ portfolios(id: #{portfolio1.id}) { id name } }" }
 
-  let(:graphql_portfolio_query) { { "query" => "{ portfolios { id name } }" } }
-
-  def result_portfolios(response_body)
-    JSON.parse(response_body).fetch_path("data", "portfolios")
-  end
-
-  context "different graphql queries" do
-    before do
-      post("#{api_version}/graphql", :headers => default_headers, :params => graphql_portfolio_query)
-    end
-
-    it "querying portfolios return portfolio ids" do
-      expect(response.status).to eq(200)
-      result_portfolio_ids = result_portfolios(response.body).collect { |pf| pf["id"].to_i }
-      expect(result_portfolio_ids).to match_array([portfolio_a.id, portfolio_b.id])
-    end
-
-    it "querying portfolios return portfolio names" do
-      expect(response.status).to eq(200)
-      result_portfolio_names = result_portfolios(response.body).collect { |pf| pf["name"] }
-      expect(result_portfolio_names).to match_array([portfolio_a.name, portfolio_b.name])
+      it 'ok' do
+        post "#{api_version}/graphql", :headers => default_headers, :params => graphql_body
+        expect(response).to have_http_status(:ok)
+        expect(json['data']['portfolios'][0]['name']).to eq(portfolio1.name)
+      end
     end
   end
 end
