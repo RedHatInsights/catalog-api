@@ -16,6 +16,8 @@ module Catalog
         .where(:permission_id => permission_ids, :access_control_entry_id => access_control_entry_id)
         .destroy_all
 
+      @object&.update_statistics
+
       self
     end
   end

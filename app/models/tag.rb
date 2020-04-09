@@ -9,6 +9,9 @@ class Tag < ApplicationRecord
   has_many :portfolio_item_tags, :dependent => :destroy
   has_many :portfolio_items, :through => :portfolio_item_tags
 
+  after_create    { update_portfolio_stats }
+  after_destroy   { update_portfolio_stats }
+
   def to_tag_string
     "/#{namespace}/#{name}".tap { |string| string << "=#{value}" if value.present? }
   end
@@ -32,5 +35,11 @@ class Tag < ApplicationRecord
 
     # FIXME: Doesn't exist on topo - but blows up when there are nil values in the db.
     tag_params.transform_values { |e| e || "" }
+  end
+
+  private
+
+  def update_portfolio_stats
+    portfolios.each(&:update_statistics)
   end
 end

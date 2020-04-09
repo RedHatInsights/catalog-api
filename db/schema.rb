@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_17_202326) do
+ActiveRecord::Schema.define(version: 2020_04_06_122000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -169,6 +169,7 @@ ActiveRecord::Schema.define(version: 2020_03_17_202326) do
     t.datetime "discarded_at"
     t.string "owner"
     t.bigint "icon_id"
+    t.jsonb "statistics", default: {}
     t.index ["discarded_at"], name: "index_portfolios_on_discarded_at"
     t.index ["tenant_id"], name: "index_portfolios_on_tenant_id"
   end

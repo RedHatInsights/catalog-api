@@ -14,6 +14,9 @@ module Catalog
                                                    :aceable    => @object)
         ace.add_new_permissions(@permissions)
       end
+
+      @object&.update_statistics
+
       self
     end
   end

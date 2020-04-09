@@ -10,6 +10,11 @@ class PortfolioItem < ApplicationRecord
 
   default_scope -> { kept.order(Arel.sql('LOWER(portfolio_items.name)')) }
 
+  after_create    { update_portfolio_stats }
+  after_discard   { update_portfolio_stats }
+  after_undiscard { update_portfolio_stats }
+  after_destroy   { update_portfolio_stats }
+
   belongs_to :icon, :optional => true
   has_many :service_plans, :dependent => :destroy
   belongs_to :portfolio
@@ -18,5 +23,11 @@ class PortfolioItem < ApplicationRecord
 
   def metadata
     {:user_capabilities => user_capabilities}
+  end
+
+  private
+
+  def update_portfolio_stats
+    portfolio&.update_statistics
   end
 end
