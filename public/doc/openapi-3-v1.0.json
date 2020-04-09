@@ -3366,8 +3366,7 @@
           "order_item_id": {
             "type": "string",
             "title": "Order Item ID",
-            "readOnly": true,
-            "format": "uuid"
+            "readOnly": true
           }
         }
       },
