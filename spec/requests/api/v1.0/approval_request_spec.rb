@@ -1,10 +1,4 @@
 describe "v1.0 - ApprovalRequestRequests", :type => [:request, :v1] do
-  around do |example|
-    bypass_rbac do
-      example.call
-    end
-  end
-
   let!(:approval_request) { create(:approval_request) }
 
   it "lists progress messages" do

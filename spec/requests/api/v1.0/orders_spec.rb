@@ -1,14 +1,14 @@
 describe "v1.0 - OrderRequests", :type => [:request, :v1] do
-  around do |example|
-    bypass_rbac do
-      example.call
-    end
-  end
-
   let!(:order) { create(:order) }
   let!(:order_item) { create(:order_item, :order => order) }
   let!(:order2) { create(:order) }
   let!(:order_item2) { create(:order_item, :order => order2) }
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+  before do
+     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+     allow(catalog_access).to receive(:process).and_return(catalog_access)
+     allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
+  end
 
   describe "#submit_order" do
     let(:service_offering_service) { instance_double("Catalog::ServiceOffering") }

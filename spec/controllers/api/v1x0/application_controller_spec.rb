@@ -1,14 +1,14 @@
 RSpec.describe ApplicationController, :type => [:request, :v1] do
   let(:portfolio) { create(:portfolio, :name => 'tenant_portfolio', :description => 'tenant desc', :owner => 'wilma') }
   let(:portfolio_id) { portfolio.id }
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+  before do
+     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+     allow(catalog_access).to receive(:process).and_return(catalog_access)
+     allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
+  end
 
   context "with tenancy enforcement" do
-    around do |example|
-      bypass_rbac do
-        example.call
-      end
-    end
-
     it "get /portfolios with tenant" do
       get("#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers)
       expect(response.status).to eq(200)
@@ -41,12 +41,6 @@ RSpec.describe ApplicationController, :type => [:request, :v1] do
   end
 
   context "with entitlement enforcement" do
-    around do |example|
-      bypass_rbac do
-        example.call
-      end
-    end
-
     let(:false_hash) do
       false_hash = default_user_hash
       false_hash["entitlements"]["ansible"]["is_entitled"] = false
