@@ -2,7 +2,9 @@ describe "OpenAPI stuff" do
   include RandomWordsSpecHelper
 
   PARSER_ATTRS = %w[readOnly nullable enum].freeze
-  SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags tags images icons service_plans access_control_entries access_control_permissions permissions].freeze
+  SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags
+                   portfolio_item_tags tags images icons service_plans access_control_entries
+                   access_control_permissions permissions ancillary_metadata].freeze
 
   let(:rails_routes) do
     Rails.application.routes.routes.each_with_object([]) do |route, array|

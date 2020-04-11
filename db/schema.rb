@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_17_202326) do
+ActiveRecord::Schema.define(version: 2020_04_24_122000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,15 @@ ActiveRecord::Schema.define(version: 2020_03_17_202326) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "access_control_entry_id", "permission_id"], name: "index_tenant_ace_permissions_on_ace_id_and_permission_id"
+  end
+
+  create_table "ancillary_metadata", force: :cascade do |t|
+    t.string "resource_type"
+    t.bigint "resource_id"
+    t.jsonb "statistics", default: "{}"
+    t.bigint "tenant_id"
+    t.datetime "updated_at", null: false
+    t.index ["resource_type", "resource_id"], name: "index_ancillary_metadata_on_resource_type_and_resource_id"
   end
 
   create_table "approval_requests", force: :cascade do |t|
