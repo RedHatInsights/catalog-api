@@ -33,4 +33,10 @@ class Tag < ApplicationRecord
     # FIXME: Doesn't exist on topo - but blows up when there are nil values in the db.
     tag_params.transform_values { |e| e || "" }
   end
+
+  private
+
+  def update_portfolio_stats
+    portfolios.each(&:update_metadata)
+  end
 end

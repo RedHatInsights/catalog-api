@@ -19,4 +19,10 @@ class PortfolioItem < ApplicationRecord
   def metadata
     {:user_capabilities => user_capabilities}
   end
+
+  private
+
+  def update_portfolio_stats
+    portfolio&.update_metadata
+  end
 end
