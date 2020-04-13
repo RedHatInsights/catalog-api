@@ -17,21 +17,21 @@ class ApplicationController < ActionController::API
   def with_current_request
     Insights::API::Common::Request.with_request(request) do |current|
       Rails.logger.info("Request started #{request.original_url}")
-      if current.required_auth?
-        raise Insights::API::Common::EntitlementError, "User not Entitled" unless check_entitled(current.entitlement)
+      UserContext.with_user_context(UserContext.new(current, params)) do |user_context|
+        if current.required_auth?
+          raise Insights::API::Common::EntitlementError, "User not Entitled" unless check_entitled(current.entitlement)
 
-        Thread.current[:user] = UserContext.new(Insights::API::Common::Request.current!, params)
-        ActsAsTenant.with_tenant(current_tenant(current)) { yield.tap { Rails.logger.info("Request ended #{request.original_url}") } }
-      else
-        ActsAsTenant.without_tenant { yield.tap {Rails.logger.info("Request ended #{request.original_url}")} }
+          Thread.current[:user] = UserContext.new(Insights::API::Common::Request.current!, params)
+          ActsAsTenant.with_tenant(current_tenant(current)) { yield.tap { Rails.logger.info("Request ended #{request.original_url}") } }
+        else
+          ActsAsTenant.without_tenant { yield.tap {Rails.logger.info("Request ended #{request.original_url}")} }
+        end
       end
     end
   rescue Insights::API::Common::EntitlementError => e
     json_response({:errors => e.message}, :forbidden)
   rescue Insights::API::Common::IdentityError => e
     json_response({:errors => e.message}, :unauthorized)
-  ensure
-    Thread.current[:user] = nil
   end
 
   def current_tenant(request)
@@ -45,6 +45,6 @@ class ApplicationController < ActionController::API
   end
 
   def pundit_user
-    Thread.current[:user]
+    UserContext.current_user_context
   end
 end

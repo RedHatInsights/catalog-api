@@ -19,6 +19,26 @@ describe UserContext, [:type => :current_forwardble] do
     end
   end
 
+  describe ".with_user_context" do
+    it "uses the given user" do
+      expect(Thread.current[:user_context]).to be_nil
+      UserContext.with_user_context(subject) do
+        expect(Thread.current[:user_context]).not_to be_nil
+      end
+      expect(Thread.current[:user_context]).to be_nil
+    end
+  end
+
+  describe ".current_user_context" do
+    it "uses the given user" do
+      expect(UserContext.current_user_context).to be_nil
+      UserContext.with_user_context(subject) do
+        expect(UserContext.current_user_context).not_to be_nil
+      end
+      expect(UserContext.current_user_context).to be_nil
+    end
+  end
+
   describe "#rbac_enabled?" do
     before do
       allow(Insights::API::Common::RBAC::Access).to receive(:enabled?).and_return(true)
