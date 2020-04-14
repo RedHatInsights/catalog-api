@@ -7,7 +7,6 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
   before do
      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
      allow(catalog_access).to receive(:process).and_return(catalog_access)
-     allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
   end
 
   describe "#submit_order" do
