@@ -15,6 +15,6 @@ module UserCapabilities
   end
 
   def user_context
-    UserContext::current_user_context
+    UserContext.current_user_context
   end
 end

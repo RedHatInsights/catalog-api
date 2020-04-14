@@ -21,7 +21,6 @@ class ApplicationController < ActionController::API
         if current.required_auth?
           raise Insights::API::Common::EntitlementError, "User not Entitled" unless check_entitled(current.entitlement)
 
-          Thread.current[:user] = UserContext.new(Insights::API::Common::Request.current!, params)
           ActsAsTenant.with_tenant(current_tenant(current)) { yield.tap { Rails.logger.info("Request ended #{request.original_url}") } }
         else
           ActsAsTenant.without_tenant { yield.tap {Rails.logger.info("Request ended #{request.original_url}")} }
