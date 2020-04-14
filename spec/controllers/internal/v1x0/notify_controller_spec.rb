@@ -1,10 +1,4 @@
 describe Internal::V1x0::NotifyController, :type => [:request, :v1_internal] do
-  around do |example|
-    bypass_rbac do
-      example.call
-    end
-  end
-
   describe "POST /notify/approval_request/:id" do
     let!(:approval_request) { create(:approval_request, :approval_request_ref => "123") }
     let(:approval_transition) { instance_double("Catalog::UpdateOrderItem") }

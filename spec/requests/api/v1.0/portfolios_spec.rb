@@ -1,16 +1,16 @@
 require 'securerandom'
 describe "v1.0 - Portfolios API", :type => [:request, :v1] do
-  around do |example|
-    bypass_rbac do
-      example.call
-    end
-  end
-
   let!(:portfolio)       { create(:portfolio) }
   let!(:portfolio_item)  { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)     { portfolio.id }
   let(:bad_portfolio_id) { portfolio.id + 1}
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+  before do
+     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+     allow(catalog_access).to receive(:process).and_return(catalog_access)
+     allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
+  end
 
   describe "GET /portfolios/:portfolio_id" do
     before do

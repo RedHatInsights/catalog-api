@@ -1,10 +1,4 @@
 describe "v1.0 - ProgressMessageRequests", :type => [:request, :v1] do
-  around do |example|
-    bypass_rbac do
-      example.call
-    end
-  end
-
   let(:order) { create(:order) }
   let!(:order_item) { create(:order_item, :order_id => order.id, :portfolio_item_id => portfolio_item.id) }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => "123") }
