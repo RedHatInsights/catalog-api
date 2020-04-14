@@ -15,10 +15,6 @@ module RequestSpecHelper
     json['errors'][0]['detail']
   end
 
-  def bypass_rbac
-    with_modified_env(:BYPASS_RBAC => 'true') { yield }
-  end
-
   def catalog_admin_role
     'Catalog Administrator'
   end
