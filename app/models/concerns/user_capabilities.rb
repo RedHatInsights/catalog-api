@@ -15,6 +15,6 @@ module UserCapabilities
   end
 
   def user_context
-    Thread.current[:user]
+    UserContext.current_user_context
   end
 end
