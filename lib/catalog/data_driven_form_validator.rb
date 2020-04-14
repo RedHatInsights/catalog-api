@@ -6,16 +6,26 @@ module Catalog
                     plain-text
                     radio
                     select-field
+                    select
                     sub-form
                     switch-field
+                    switch
                     tab-item
                     tabs
                     text-field
                     textarea-field
+                    textarea
                     time-picker
                     wizard].freeze
 
-    VALIDATORS = %i[exact-length-validator
+    VALIDATORS = %i[exact-length
+                    max-length
+                    min-items
+                    min-length
+                    pattern
+                    required
+                    url
+                    exact-length-validator
                     max-length-validator
                     max-number-value
                     min-items-validator
@@ -65,7 +75,7 @@ module Catalog
 
           # validator types that require other fields in the validator
           case validator[:type]
-          when "min-length-validator", "max-length-validator", "exact-length-validator"
+          when "min-length-validator", "max-length-validator", "exact-length-validator", "min-length", "max-length", "exact-length"
             raise Catalog::InvalidSurvey, "Validator type #{validator[:type]} requires a `threshold` key" if validator[:threshold].nil?
           when "min-number-value", "max-number-value"
             raise Catalog::InvalidSurvey, "Validator type #{validator[:type]} requires a `value` key" if validator[:value].nil?
@@ -75,7 +85,7 @@ module Catalog
 
       def check_options(schema_fields)
         schema_fields.map do |field|
-          next unless field[:component] == "select-field"
+          next unless field[:component] == "select-field" || field[:component] == "select" 
 
           # the options must contain label and value keys
           field[:options].each do |option|
