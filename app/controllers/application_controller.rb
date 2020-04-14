@@ -24,6 +24,14 @@ class ApplicationController < ActionController::API
         ActsAsTenant.with_tenant(current_tenant(current)) { yield.tap { Rails.logger.info("Request ended #{request.original_url}") } }
       else
         ActsAsTenant.without_tenant { yield.tap {Rails.logger.info("Request ended #{request.original_url}")} }
+      UserContext.with_user_context(UserContext.new(current, params)) do |user_context|
+        if current.required_auth?
+          raise Insights::API::Common::EntitlementError, "User not Entitled" unless check_entitled(current.entitlement)
+
+          ActsAsTenant.with_tenant(current_tenant(current)) { yield.tap { Rails.logger.info("Request ended #{request.original_url}") } }
+        else
+          ActsAsTenant.without_tenant { yield.tap {Rails.logger.info("Request ended #{request.original_url}")} }
+        end
       end
     end
   rescue Insights::API::Common::EntitlementError => e
@@ -45,6 +53,6 @@ class ApplicationController < ActionController::API
   end
 
   def pundit_user
-    Thread.current[:user]
+    UserContext.current_user_context
   end
 end
