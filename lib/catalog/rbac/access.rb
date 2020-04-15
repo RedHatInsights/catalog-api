@@ -32,7 +32,7 @@ module Catalog
           ids = access_id_list(verb, klass)
           klass.try(:supports_access_control?) ? ids.include?(id.to_s) : true
         elsif scopes.include?("user")
-          @record.owner == @user_context.user.user.username
+          @record.owner == @user_context.request.user.username
         else
           Rails.logger.error("Error in resource checking for verb: #{verb}, id: #{id}, klass: #{klass}")
           Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{scopes}")
