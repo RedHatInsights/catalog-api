@@ -1,10 +1,11 @@
 describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
-  around do |example|
-    bypass_rbac do
-      with_modified_env(:APPROVAL_URL => "http://approval.example.com") { example.call }
-    end
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+  before do
+     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+     allow(catalog_access).to receive(:process).and_return(catalog_access)
+     allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
+     allow(catalog_access).to receive(:accessible?).with("portfolios", "read").and_return(true)
   end
-
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
   let(:order) { create(:order) }

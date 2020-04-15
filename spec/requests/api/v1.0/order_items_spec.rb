@@ -1,9 +1,4 @@
 describe "v1.0 - OrderItemsRequests", :type => [:request, :v1] do
-  around do |example|
-    bypass_rbac do
-      example.call
-    end
-  end
   let(:service_plans_instance) { instance_double(Catalog::ServicePlans, :items => [OpenStruct.new(:id => "1")]) }
 
   before do

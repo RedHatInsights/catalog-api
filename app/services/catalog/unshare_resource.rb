@@ -9,12 +9,13 @@ module Catalog
     def process
       Insights::API::Common::RBAC::ValidateGroups.new(@group_uuids).process
 
-      AccessControlEntry
-        .joins(:permissions)
-        .where(:group_uuid  => @group_uuids,
-               :aceable     => @object,
-               :permissions => {:name => @permissions})
+      permission_ids = Permission.where(:name => @permissions).pluck(:id)
+      access_control_entry_id = AccessControlEntry.where(:group_uuid => @group_uuids, :aceable => @object).first.id
+
+      AccessControlPermission
+        .where(:permission_id => permission_ids, :access_control_entry_id => access_control_entry_id)
         .destroy_all
+
       self
     end
   end
