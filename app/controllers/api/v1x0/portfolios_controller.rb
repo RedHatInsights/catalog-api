@@ -73,7 +73,7 @@ module Api
 
       def share_info
         portfolio = Portfolio.find(params.require(:portfolio_id))
-        options = {:object => portfolio}
+        options = {:object => portfolio, :user_context => pundit_user}
         render :json => Catalog::ShareInfo.new(options).process.result
       end
 

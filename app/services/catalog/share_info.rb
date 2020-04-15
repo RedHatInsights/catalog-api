@@ -6,6 +6,7 @@ module Catalog
 
     def initialize(options)
       @object = options[:object]
+      @user_context = options[:user_context]
     end
 
     def process
@@ -15,7 +16,7 @@ module Catalog
         ace.group_uuid
       end
 
-      group_names = fetch_group_names(uuids.uniq)
+      group_names = @user_context.group_names(uuids)
       @result = group_permissions.each_with_object([]) do |(uuid, permissions), memo|
         next if permissions.empty?
 
@@ -27,17 +28,6 @@ module Catalog
       end
 
       self
-    end
-
-    private
-
-    def fetch_group_names(uuids)
-      opts = {:limit => MAX_GROUPS_LIMIT, :uuid => uuids}
-      Insights::API::Common::RBAC::Service.call(RBACApiClient::GroupApi) do |api|
-        Insights::API::Common::RBAC::Service.paginate(api, :list_groups, opts).each_with_object({}) do |group, memo|
-          memo[group.uuid] = group.name
-        end
-      end
     end
   end
 end
