@@ -1,6 +1,4 @@
 class ApplicationPolicy
-  include Api::V1x0::Mixins::ACEMixin
-
   attr_reader :user, :record
 
   def initialize(user, record)
