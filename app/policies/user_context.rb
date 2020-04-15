@@ -1,8 +1,8 @@
 class UserContext
-  attr_reader :user, :params
+  attr_reader :request, :params
 
-  def initialize(user, params)
-    @user = user
+  def initialize(request, params)
+    @request = request
     @params = params
   end
 
