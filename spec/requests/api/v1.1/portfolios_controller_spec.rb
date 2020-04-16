@@ -11,6 +11,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     allow(rbac_access).to receive(:update_access_check).and_return(true)
     allow(rbac_access).to receive(:create_access_check).and_return(true)
     allow(rbac_access).to receive(:destroy_access_check).and_return(true)
+    allow(rbac_access).to receive(:admin_access_check).with("portfolios", "update").and_return(true)
   end
 
   describe "GET /portfolios/:portfolio_id #show" do
