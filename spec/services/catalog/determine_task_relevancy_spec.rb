@@ -14,14 +14,20 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
     context "when the state is running" do
       let(:state) { "running" }
       let(:status) { "ok" }
-      let(:payload_context) { nil }
+      let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
 
       it "updates the item with a progress message" do
         subject.process
         progress_message = ProgressMessage.last
         expect(progress_message.level).to eq("info")
-        expect(progress_message.message).to match(/Task update/)
+        expect(progress_message.message).to match(/Order Item being processed with context.*external_url/)
         expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+      end
+
+      it "sets the external_url from the payload" do
+        subject.process
+        order_item.reload
+        expect(order_item.external_url).to eq "external_url"
       end
     end
 
@@ -154,24 +160,6 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             expect(progress_message.level).to eq("info")
             expect(progress_message.message).to match(/Task update/)
             expect(progress_message.order_item_id).to eq(order_item.id.to_s)
-          end
-        end
-
-        context "when the service_instance_ref is present on the order_item but the external_url is nil" do
-          let(:status) { "error" }
-          let(:update_order_item) { instance_double("Catalog::UpdateOrderItem") }
-
-          before do
-            order_item.update(:service_instance_ref => "1")
-            order_item.reload
-
-            allow(Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
-            allow(update_order_item).to receive(:process)
-          end
-
-          it "updates the order_item" do
-            expect(update_order_item).to receive(:process)
-            subject.process
           end
         end
       end
