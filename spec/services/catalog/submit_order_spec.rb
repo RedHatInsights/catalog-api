@@ -22,15 +22,6 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
     )
   end
 
-  let(:service_plan_show_response) do
-    TopologicalInventoryApiClient::ServicePlan.new(
-      :name               => "Plan A",
-      :id                 => "1",
-      :description        => "Plan A",
-      :create_json_schema => {:schema => {:fields => [{:name => "var1"}, {:name => "var2"}]}}
-    )
-  end
-
   let(:topo_service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
   let(:service_plan_response) { topo_service_plan_response }
 
