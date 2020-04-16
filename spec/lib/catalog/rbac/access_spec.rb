@@ -186,4 +186,38 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   describe "#destroy_access_check" do
     it_behaves_like "resource checking", :destroy_access_check, [], "delete", PortfolioItem, :has_delete_permission
   end
+
+  describe "#admin_access_check" do
+    context "when RBAC is enabled" do
+      let(:rbac_enabled) { true }
+
+      before do
+        allow(catalog_access).to receive(:scopes).with("portfolios", "update").and_return(scopes)
+      end
+
+      context "when the user has admin scopes for the specified object" do
+        let(:scopes) { ["admin"] }
+
+        it "returns true" do
+          expect(subject.admin_access_check("portfolios", "update")).to eq(true)
+        end
+      end
+
+      context "when the user does not have admin scopes for the specified object" do
+        let(:scopes) { ["group"] }
+
+        it "returns false" do
+          expect(subject.admin_access_check("portfolios", "update")).to eq(false)
+        end
+      end
+    end
+
+    context "when RBAC is not enabled" do
+      let(:rbac_enabled) { false }
+
+      it "returns true" do
+        expect(subject.admin_access_check("portfolios", "update")).to eq(true)
+      end
+    end
+  end
 end

@@ -40,6 +40,13 @@ module Catalog
         end
       end
 
+      def admin_access_check(table_name, verb)
+        return true unless rbac_enabled?
+
+        scopes = access_object.scopes(table_name, verb)
+        scopes.include?("admin")
+      end
+
       def permission_check(verb, klass = @record.class)
         rbac_enabled? ? access_object.accessible?(klass.table_name, verb) : true
       end
