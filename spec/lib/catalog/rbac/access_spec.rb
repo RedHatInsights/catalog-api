@@ -4,6 +4,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
   let(:subject) { described_class.new(user_context, portfolio_item) }
   let(:portfolio_item) { create(:portfolio_item, :id => "321") }
+  let(:order) { create(:order, :id => "456") }
+  let(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
 
   around do |example|
     with_modified_env(:RBAC_URL => "http://rbac.example.com") do
@@ -18,6 +20,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   before do
     allow(Insights::API::Common::RBAC::Access).to receive(:enabled?).and_return(rbac_enabled)
     allow(user_context).to receive(:access).and_return(catalog_access)
+    allow(user_context).to receive(:group_uuids).and_return(["123-456"])
   end
 
   shared_examples_for "permission checking" do |method, arguments, verb|
@@ -59,31 +62,11 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       let(:rbac_enabled) { true }
 
       before do
-        allow(catalog_access).to receive(:scopes).with("portfolio_items", verb).and_return(scopes)
+        allow(catalog_access).to receive(:scopes).with(aceable_type.table_name, verb).and_return(scopes)
       end
 
       context "when the user is in the group scope" do
         let(:scopes) { %w[group user] }
-
-        let(:group_pagination) do
-          RBACApiClient::GroupPagination.new(
-            :meta  => pagination_meta,
-            :links => pagination_links,
-            :data  => group_list
-          )
-        end
-        let(:group_list) { [RBACApiClient::GroupOut.new(:name => "group", :uuid => "123-456")] }
-        let(:pagination_meta) { RBACApiClient::PaginationMeta.new(:count => 1) }
-        let(:pagination_links) { RBACApiClient::PaginationLinks.new }
-
-        before do
-          stub_request(:get, "http://rbac.example.com/api/rbac/v1/groups/?limit=10&offset=0&scope=principal")
-            .to_return(
-              :status  => 200,
-              :body    => group_pagination.to_json,
-              :headers => default_headers
-            )
-        end
 
         before do
           allow(aceable_type).to receive(:try).with(:supports_access_control?).and_return(supports_access_control?)
@@ -134,6 +117,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         context "when the username does not match the record owner" do
           before do
             allow(portfolio_item).to receive(:owner).and_return("notjdoe")
+            allow(order).to receive(:owner).and_return("notjdoe")
           end
 
           it "returns false" do
@@ -183,6 +167,12 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
   describe "#resource_check" do
     it_behaves_like "resource checking", :resource_check, ["read", "321", Portfolio], "read", Portfolio, :has_read_permission
+  end
+
+  describe "#resource_check for order" do
+    let(:subject) { described_class.new(user_context, order) }
+
+    it_behaves_like "resource checking", :resource_check, ["order", "321", Portfolio], "order", Portfolio, :has_order_permission
   end
 
   describe "#update_access_check" do

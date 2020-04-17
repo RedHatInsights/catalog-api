@@ -12,4 +12,8 @@ FactoryBot.define do
   trait :has_delete_permission do
     permission { Permission.find_or_create_by(:name => 'delete') }
   end
+
+  trait :has_order_permission do
+    permission { Permission.find_or_create_by(:name => 'order') }
+  end
 end
