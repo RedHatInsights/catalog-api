@@ -1,6 +1,6 @@
 require 'securerandom'
 describe "v1.0 - Portfolios API", :type => [:request, :v1] do
-  let!(:portfolio)       { create(:portfolio) }
+   let!(:portfolio)       { create(:portfolio) }
   let!(:portfolio_item)  { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)     { portfolio.id }
@@ -328,23 +328,23 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
     end
 
     context 'share_info' do
-      include_context "sharing_objects"
-      it "portfolio" do
-        with_modified_env :APP_NAME => app_name do
-          allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-          allow(Insights::API::Common::RBAC::Service).to receive(:paginate) do |api_instance, method, options|
-            expect(method).to eq(:list_groups)
-            expect(options[:limit]).to eq(Api::V1x0::Catalog::ShareInfo::MAX_GROUPS_LIMIT)
-            expect(options[:uuid]).to match_array(group_uuids) if options.key?(:uuid)
-            groups
-          end
-          ace1
-          ace2
-          ace3
-          get "#{api_version}/portfolios/#{shared_portfolio.id}/share_info", :headers => default_headers
-          expect(response).to have_http_status(200)
-          expect(json.pluck('group_uuid')).to match_array(group_uuids)
-        end
+      let(:portfolio) { create(:portfolio) }
+      let(:uuid) { "123" }
+      let(:group_names) { {"123" => "group_name"} }
+
+      let(:share_info) { instance_double(Api::V1x0::Catalog::ShareInfo, :result => result) }
+      let(:result) { [:group_name => "group_name", :group_uuid => "123", :permissions => %w[read update]] }
+
+      before do
+        allow(Api::V1x0::Catalog::ShareInfo).to receive(:new).with(:object => portfolio, :user_context => an_instance_of(UserContext)).and_return(share_info)
+        allow(share_info).to receive(:process).and_return(share_info)
+      end
+
+      it "returns the sharing information" do
+        get "#{api_version}/portfolios/#{portfolio.id}/share_info", :headers => default_headers
+        expect(json.pluck('group_uuid')).to match_array(["123"])
+        expect(json.pluck('group_name')).to match_array(["group_name"])
+        expect(json.pluck('permissions')).to match_array([%w[read update]])
       end
     end
 

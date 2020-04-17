@@ -8,7 +8,7 @@ describe Api::V1x0::Catalog::DetermineTaskRelevancy, :type => :service do
   end
 
   let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
-  let(:order_state_transition) { instance_double(::Catalog::OrderStateTransition) }
+  let(:order_state_transition) { instance_double(Catalog::OrderStateTransition) }
 
   describe "#process" do
     context "when the state is running" do
@@ -173,24 +173,6 @@ describe Api::V1x0::Catalog::DetermineTaskRelevancy, :type => :service do
             expect(progress_message.level).to eq("info")
             expect(progress_message.message).to match(/Task update/)
             expect(progress_message.order_item_id).to eq(order_item.id.to_s)
-          end
-        end
-
-        context "when the service_instance_ref is present on the order_item but the external_url is nil" do
-          let(:status) { "error" }
-          let(:update_order_item) { instance_double("Api::V1x0::Catalog::UpdateOrderItem") }
-
-          before do
-            order_item.update(:service_instance_ref => "1")
-            order_item.reload
-
-            allow(Api::V1x0::Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
-            allow(update_order_item).to receive(:process)
-          end
-
-          it "updates the order_item" do
-            expect(update_order_item).to receive(:process)
-            subject.process
           end
         end
       end

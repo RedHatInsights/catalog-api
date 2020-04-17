@@ -28,13 +28,27 @@ module Api
 
         def delegate_task
           if @task.context.has_key_path?(:service_instance)
-            Catalog::UpdateOrderItem.new(@topic, @task).process
+            UpdateOrderItem.new(@topic, @task).process
           elsif @task.context.has_key_path?(:applied_inventories)
             Rails.logger.info("Creating approval request for task")
-            Catalog::CreateApprovalRequest.new(@task).process
+            CreateApprovalRequest.new(@task).process
           else
             Rails.logger.info("Incoming task has no current relevant delegation")
           end
+        end
+
+        def order_item
+          @order_item ||= OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
+        end
+
+        def add_task_update_message
+          message = "Task update. State: #{@task.state}. Status: #{@task.status}. Context: #{@task.context}"
+          @task.status == "error" ? add_update_message(:error, message) : add_update_message(:info, message)
+        end
+
+        def add_update_message(state, message)
+          order_item.update_message(state, message)
+          Rails.logger.send(state, message)
         end
       end
     end
