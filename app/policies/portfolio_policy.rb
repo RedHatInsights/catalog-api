@@ -17,8 +17,11 @@ class PortfolioPolicy < ApplicationPolicy
     rbac_access.update_access_check
   end
 
-  alias share? update?
-  alias unshare? update?
+  def share?
+    rbac_access.admin_access_check("portfolios", "update")
+  end
+
+  alias unshare? share?
 
   # def set_approval?
   #   # TODO: Add "Approval Administrator" check as &&
