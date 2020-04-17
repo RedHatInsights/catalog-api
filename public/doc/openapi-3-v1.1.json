@@ -2665,19 +2665,19 @@
     },
     "responses": {
       "BadRequest": {
-        "description": "The entity being created does not have either all the required parameters specified or the parameter value is invalid."
+        "$ref": "#/components/schemas/ApiErrorCollection"
       },
       "Conflict": {
-        "description": "The request could not be completed due to a conflict with the current state of the resource."
+        "$ref": "#/components/schemas/ApiErrorCollection"
       },
       "Forbidden": {
-        "description": "The caller is forbidden to perform the action."
+        "$ref": "#/components/schemas/ApiErrorCollection"
       },
       "NotModified": {
-        "description": " The entity has not changed since the last GET request"
+        "$ref": "#/components/schemas/ApiErrorCollection"
       },
       "Unauthorized": {
-        "description": "The caller is not authorized to access this resource."
+        "$ref": "#/components/schemas/ApiErrorCollection"
       }
     },
     "requestBodies": {
@@ -3663,6 +3663,35 @@
             }
           }
         }
+      },
+      "ApiError": {
+	      "type": "object",
+	      "description": "API Error",
+	      "properties": {
+		      "status": {
+			      "type": "string",
+			      "description": "HTTP status code",
+			      "example": "400"
+		      },
+		      "details": {
+			      "type": "string",
+			      "description": "Error details",
+			      "example": "Bad Request"
+		      }
+	      }
+      },
+      "ApiErrorCollection": {
+	      "type": "object",
+	      "description": "API Error collection",
+	      "properties": {
+		      "errors": {
+			      "type": "array",
+			      "description": "Error list from the API query",
+			      "items": {
+				      "$ref": "#/components/schemas/ApiError"
+			      }
+		      }
+	      }
       }
     }
   }
