@@ -14,7 +14,9 @@
   },
   "security": [
     {
-      "BasicAuth": []
+      "BasicAuth": [
+
+      ]
     }
   ],
   "tags": [
@@ -2759,7 +2761,9 @@
       },
       "CreatePortfolioItem": {
         "type": "object",
-        "required": ["portfolio_id"],
+        "required": [
+          "portfolio_id"
+        ],
         "properties": {
           "portfolio_id": {
             "type": "string",
@@ -3665,33 +3669,33 @@
         }
       },
       "ApiError": {
-	      "type": "object",
-	      "description": "API Error",
-	      "properties": {
-		      "status": {
-			      "type": "string",
-			      "description": "HTTP status code",
-			      "example": "400"
-		      },
-		      "details": {
-			      "type": "string",
-			      "description": "Error details",
-			      "example": "Bad Request"
-		      }
-	      }
+        "type": "object",
+        "description": "API Error",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "HTTP status code",
+            "example": "400"
+          },
+          "details": {
+            "type": "string",
+            "description": "Error details",
+            "example": "Bad Request"
+          }
+        }
       },
       "ApiErrorCollection": {
-	      "type": "object",
-	      "description": "API Error collection",
-	      "properties": {
-		      "errors": {
-			      "type": "array",
-			      "description": "Error list from the API query",
-			      "items": {
-				      "$ref": "#/components/schemas/ApiError"
-			      }
-		      }
-	      }
+        "type": "object",
+        "description": "API Error collection",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "description": "Error list from the API query",
+            "items": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
       }
     }
   }
