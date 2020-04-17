@@ -16,13 +16,6 @@ describe PortfolioPolicy do
     end
   end
 
-  shared_examples "a policy action that requires update access" do |method|
-    it "delegates to the rbac access update check" do
-      expect(rbac_access).to receive(:update_access_check).and_return(true)
-      expect(subject.send(method)).to eq(true)
-    end
-  end
-
   describe "#show?" do
     it "delegates to the rbac access read check" do
       expect(rbac_access).to receive(:read_access_check).and_return(true)
@@ -50,9 +43,19 @@ describe PortfolioPolicy do
     end
   end
 
-  [:update?, :share?, :unshare?].each do |method|
+  describe "#update?" do
+    it "delegates to the rbac access update check" do
+      expect(rbac_access).to receive(:update_access_check).and_return(true)
+      expect(subject.update?).to eq(true)
+    end
+  end
+
+  [:share?, :unshare?].each do |method|
     describe "##{method}" do
-      it_behaves_like "a policy action that requires update access", method
+      it "delegates to the rbac access update check" do
+        expect(rbac_access).to receive(:admin_access_check).with("portfolios", "update").and_return(true)
+        expect(subject.send(method)).to eq(true)
+      end
     end
   end
 
@@ -62,6 +65,7 @@ describe PortfolioPolicy do
       allow(rbac_access).to receive(:create_access_check).and_return(true)
       allow(rbac_access).to receive(:destroy_access_check).and_return(true)
       allow(rbac_access).to receive(:update_access_check).and_return(true)
+      allow(rbac_access).to receive(:admin_access_check).with("portfolios", "update").and_return(true)
     end
 
     it "returns a hash of user capabilities" do
