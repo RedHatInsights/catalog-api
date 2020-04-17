@@ -1,5 +1,6 @@
 describe UserContext, [:type => :current_forwardble] do
   let(:current_request) { Insights::API::Common::Request.new(default_request) }
+  let(:app_filter) { "catalog,approval" }
   subject do
     described_class.new(current_request, "params")
   end
@@ -8,12 +9,12 @@ describe UserContext, [:type => :current_forwardble] do
     let(:insights_access) { instance_double(Insights::API::Common::RBAC::Access) }
 
     before do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(insights_access)
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).with(app_filter).and_return(insights_access)
       allow(insights_access).to receive(:process).and_return(insights_access)
     end
 
     it "fetches a memoized access list from RBAC" do
-      expect(Insights::API::Common::RBAC::Access).to receive(:new).with("").once
+      expect(Insights::API::Common::RBAC::Access).to receive(:new).with(app_filter).once
       expect(insights_access).to receive(:process).once
       2.times { subject.access }
     end

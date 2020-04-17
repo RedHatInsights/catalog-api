@@ -7,9 +7,7 @@ class UserContext
   end
 
   def access
-    #TODO: Change argument to 'catalog,approval' once we can pass in a list
-
-    @access ||= Insights::API::Common::RBAC::Access.new("").process
+    @access ||= Insights::API::Common::RBAC::Access.new("catalog,approval").process
   end
 
   def rbac_enabled?
