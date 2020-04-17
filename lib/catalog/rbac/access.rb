@@ -34,7 +34,7 @@ module Catalog
         elsif scopes.include?("user")
           @record.owner == @user_context.user.user.username
         else
-          Rails.logger.error("Error in resource checking for verb: #{verb}, id: #{id}, klass: #{klass}")
+          Rails.logger.error("Error in resource checking for verb: #{verb}, object id: #{id}, object class: #{@record.class}, class to check scopes against: #{klass}")
           Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{scopes}")
           false
         end
