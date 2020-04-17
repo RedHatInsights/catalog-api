@@ -6,6 +6,7 @@ RSpec.describe ApplicationController, :type => [:request, :v1] do
      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
      allow(catalog_access).to receive(:process).and_return(catalog_access)
      allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
+     allow(catalog_access).to receive(:admin_scope?).with("portfolios", "update").and_return(true)
   end
 
   context "with tenancy enforcement" do
