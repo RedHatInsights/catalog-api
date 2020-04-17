@@ -25,7 +25,7 @@ module Catalog
       def resource_check(verb, id = @record.id, klass = @record.class)
         return true unless rbac_enabled?
 
-        scopes = access_object.scopes(@record.class.table_name, verb)
+        scopes = access_object.scopes(klass.table_name, verb)
         if scopes.include?("admin")
           true
         elsif scopes.include?("group")
@@ -34,7 +34,7 @@ module Catalog
         elsif scopes.include?("user")
           @record.owner == @user_context.request.user.username
         else
-          Rails.logger.error("Error in resource checking for verb: #{verb}, id: #{id}, klass: #{klass}")
+          Rails.logger.error("Error in resource checking for verb: #{verb}, object id: #{id}, object class: #{@record.class}, class to check scopes against: #{klass}")
           Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{scopes}")
           false
         end

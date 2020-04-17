@@ -8,6 +8,10 @@ FactoryBot.define do
       access_control_permissions { [create(:access_control_permission, :has_update_permission)] }
     end
 
+    trait :has_order_permission do
+      access_control_permissions { [create(:access_control_permission, :has_order_permission)] }
+    end
+
     trait :has_read_permission do
       access_control_permissions { [create(:access_control_permission, :has_read_permission)] }
     end
