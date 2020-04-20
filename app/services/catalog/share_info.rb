@@ -18,7 +18,7 @@ module Catalog
       group_names = fetch_group_names(uuids.uniq)
       @result = group_permissions.each_with_object([]) do |(uuid, permissions), memo|
         if group_names.key?(uuid)
-          memo << { :group_name => group_names[uuid], :group_uuid => uuid, :permissions => permissions }
+          memo << { :group_name => group_names[uuid], :group_uuid => uuid, :permissions => permissions } if permissions.any?
         else
           Rails.logger.warn("Skipping group UUID: #{uuid} since its missing from RBAC service")
         end

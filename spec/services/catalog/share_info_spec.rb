@@ -18,7 +18,6 @@ describe Catalog::ShareInfo, :type => :service do
       expect(options[:uuid]).to match_array(uuids) if options.key?(:uuid)
       [group1]
     end
-    create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
   end
 
   let(:subject) { described_class.new(params) }
@@ -34,6 +33,9 @@ describe Catalog::ShareInfo, :type => :service do
   end
 
   context "when all group uuids exist" do
+    before do
+      create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
+    end
     it_behaves_like "#process"
   end
 
@@ -41,9 +43,21 @@ describe Catalog::ShareInfo, :type => :service do
     let(:uuids) { [group1.uuid, 'non-existent'] }
     let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT, :uuid => uuids} }
     before do
+      create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
       create(:access_control_entry, :has_update_permission, :group_uuid => "non-existent", :aceable => portfolio)
     end
 
     it_behaves_like "#process"
+  end
+
+  context "empty permissions" do
+    let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT, :uuid => uuids} }
+    before do
+      create(:access_control_entry, :has_no_permission, :group_uuid => group1.uuid, :aceable => portfolio)
+    end
+    it "returns an empty array" do
+      info = subject.process.result
+      expect(info.count).to eq(0)
+    end
   end
 end

@@ -20,6 +20,10 @@ FactoryBot.define do
       access_control_permissions { [create(:access_control_permission, :has_delete_permission)] }
     end
 
+    trait :has_no_permission do
+      access_control_permissions { [] }
+    end
+
     trait :has_read_and_update_permission do
       access_control_permissions do
         [
