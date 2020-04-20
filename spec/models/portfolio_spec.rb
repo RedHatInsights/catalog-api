@@ -87,4 +87,10 @@ describe Portfolio do
       expect(Portfolio.pluck(:name)).to eq(%w[aa Ad bb Bc])
     end
   end
+
+  context ".policy_class" do
+    it "is PortfolioPolicy" do
+      expect(Portfolio.policy_class).to eq(PortfolioPolicy)
+    end
+  end
 end
