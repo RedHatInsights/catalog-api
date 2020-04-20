@@ -14,12 +14,6 @@ describe Catalog::AddToOrder, :type => :service do
                                      'provider_control_parameters' => {'age' => 50})
   end
 
-  let(:invalid_params) do
-    ActionController::Parameters.new('order_id'          => order.id,
-                                     'portfolio_item_id' => portfolio_item.id,
-                                     'count'             => 1)
-  end
-
   let(:subject) { described_class.new(params).process }
 
   let(:request) { default_request }
