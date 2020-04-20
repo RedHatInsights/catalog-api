@@ -24,7 +24,7 @@ describe Catalog::ShareInfo, :type => :service do
 
   let(:subject) { described_class.new(params) }
 
-  shared_examples_for "#process" do
+  shared_examples_for "#process that has permissions" do
     it "gets the correct group name, group uuid, and permissions" do
       info = subject.process.result
       expect(info.count).to eq(1)
@@ -40,7 +40,7 @@ describe Catalog::ShareInfo, :type => :service do
         create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
       end
 
-      it_behaves_like "#process"
+      it_behaves_like "#process that has permissions"
     end
 
     context "when only some group uuids exist" do
@@ -51,7 +51,7 @@ describe Catalog::ShareInfo, :type => :service do
         create(:access_control_entry, :has_update_permission, :group_uuid => "non-existent", :aceable => portfolio)
       end
 
-      it_behaves_like "#process"
+      it_behaves_like "#process that has permissions"
     end
 
     context "when there are no permissions for the access control entry" do
@@ -70,17 +70,11 @@ describe Catalog::ShareInfo, :type => :service do
       let(:group_list) { [group1, group2] }
 
       before do
-        create(:access_control_entry, :group_uuid => group1.uuid, :aceable => portfolio)
-        create(:access_control_entry, :has_update_permission, :group_uuid => group2.uuid, :aceable => portfolio)
+        create(:access_control_entry, :group_uuid => group2.uuid, :aceable => portfolio)
+        create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
       end
 
-      it "returns the permissions for the group with permissions" do
-        share_info = subject.process.result
-        expect(share_info.count).to eq(1)
-        expect(share_info[0][:group_name]).to eq(group2.name)
-        expect(share_info[0][:group_uuid]).to eq(group2.uuid)
-        expect(share_info[0][:permissions]).to match_array(["update"])
-      end
+      it_behaves_like "#process that has permissions"
     end
   end
 end
