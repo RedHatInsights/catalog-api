@@ -24,5 +24,11 @@ describe Catalog::RBAC::AccessControlEntries do
         expect(subject.ace_ids('read', Portfolio)).to eq([])
       end
     end
+
+    context "only portfolio supports aces" do
+      it "raises an exception" do
+        expect { subject.ace_ids('read', PortfolioItem) }.to raise_exception(ArgumentError)
+      end
+    end
   end
 end

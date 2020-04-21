@@ -6,6 +6,7 @@ module Catalog
       end
 
       def ace_ids(permission, klass)
+        raise ArgumentError, "#{klass} doesn't support access control" unless klass.try(:supports_access_control?)
         AccessControlEntry.joins(:permissions).where(
           :permissions            => {
             :name => permission
