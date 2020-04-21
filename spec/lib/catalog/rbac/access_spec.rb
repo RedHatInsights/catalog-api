@@ -67,25 +67,23 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       context "when the user is in the group scope" do
         let(:scopes) { %w[group user] }
 
-        context "when the class supports access control" do
-          before do
-            create(:access_control_entry, permission_under_test, :aceable_id => aceable_id, :aceable_type => aceable_type)
+        before do
+          create(:access_control_entry, permission_under_test, :aceable_id => aceable_id, :aceable_type => aceable_type)
+        end
+
+        context "when the ids exclude the given id" do
+          let(:aceable_id) { "456" }
+
+          it "returns false" do
+            expect(subject.send(method, *arguments)).to eq(false)
           end
+        end
 
-          context "when the ids exclude the given id" do
-            let(:aceable_id) { "456" }
+        context "when the ids include the given id" do
+          let(:aceable_id) { portfolio.id }
 
-            it "returns false" do
-              expect(subject.send(method, *arguments)).to eq(false)
-            end
-          end
-
-          context "when the ids include the given id" do
-            let(:aceable_id) { portfolio.id }
-
-            it "returns true" do
-              expect(subject.send(method, *arguments)).to eq(true)
-            end
+          it "returns true" do
+            expect(subject.send(method, *arguments)).to eq(true)
           end
         end
       end
