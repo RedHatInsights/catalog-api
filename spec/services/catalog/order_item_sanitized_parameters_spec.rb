@@ -97,5 +97,15 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
         expect(subject.process.sanitized_parameters).to eq({})
       end
     end
+
+    context "exception handling" do
+      let(:service_plan_ref) { "777" }
+      it "raises StandardError" do
+        stub_request(:get, topological_url("service_plans/777"))
+          .to_raise(StandardError)
+        expect(Rails.logger).to receive(:error).once
+        expect { subject.process.sanitized_parameters }.to raise_exception(StandardError)
+      end
+    end
   end
 end

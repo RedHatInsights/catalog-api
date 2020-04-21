@@ -164,5 +164,17 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         end
       end
     end
+
+    context "exception handling" do
+      let(:state) { "running" }
+      let(:status) { "ok" }
+      let(:payload_context) { nil }
+
+      it "raises StandardError" do
+        allow(TopologicalInventoryApiClient::Task).to receive(:new).and_raise(StandardError)
+        expect(Rails.logger).to receive(:error).once
+        expect { subject.process }.to raise_exception(StandardError)
+      end
+    end
   end
 end
