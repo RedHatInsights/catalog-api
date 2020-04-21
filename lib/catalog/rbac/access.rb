@@ -29,8 +29,7 @@ module Catalog
         if scopes.include?("admin")
           true
         elsif scopes.include?("group")
-          ids = access_id_list(verb, klass)
-          klass.try(:supports_access_control?) ? ids.include?(id.to_s) : true
+          klass.try(:supports_access_control?) ? access_id_list(verb, klass).include?(id.to_s) : true
         elsif scopes.include?("user")
           @record.owner == @user_context.request.user.username
         else

@@ -8,10 +8,8 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   let(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
 
   around do |example|
-    with_modified_env(:RBAC_URL => "http://rbac.example.com") do
-      Insights::API::Common::Request.with_request(current_request) do
-        example.call
-      end
+    Insights::API::Common::Request.with_request(current_request) do
+      example.call
     end
   end
 
@@ -68,13 +66,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       context "when the user is in the group scope" do
         let(:scopes) { %w[group user] }
 
-        before do
-          allow(aceable_type).to receive(:try).with(:supports_access_control?).and_return(supports_access_control?)
-        end
-
         context "when the class supports access control" do
-          let(:supports_access_control?) { true }
-
           before do
             create(:access_control_entry, permission_under_test, :aceable_id => aceable_id, :aceable_type => aceable_type)
           end
@@ -93,14 +85,6 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
             it "returns true" do
               expect(subject.send(method, *arguments)).to eq(true)
             end
-          end
-        end
-
-        context "when the class does not support access control" do
-          let(:supports_access_control?) { false }
-
-          it "returns true" do
-            expect(subject.send(method, *arguments)).to eq(true)
           end
         end
       end
@@ -175,16 +159,23 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
     it_behaves_like "resource checking", :resource_check, ["order", "321", Portfolio], "order", Portfolio, :has_order_permission
   end
 
-  describe "#update_access_check" do
-    it_behaves_like "resource checking", :update_access_check, [], "update", PortfolioItem, :has_update_permission
-  end
+  describe "helper methods" do
+    let(:subject) { described_class.new(user_context, portfolio_item) }
+    let(:rbac_enabled) { true }
+    it "#update_access_check" do
+      expect(subject).to receive(:resource_check).with('update')
+      subject.update_access_check
+    end
 
-  describe "#read_access_check" do
-    it_behaves_like "resource checking", :read_access_check, [], "read", PortfolioItem, :has_read_permission
-  end
+    it "#read_access_check" do
+      expect(subject).to receive(:resource_check).with('read')
+      subject.read_access_check
+    end
 
-  describe "#destroy_access_check" do
-    it_behaves_like "resource checking", :destroy_access_check, [], "delete", PortfolioItem, :has_delete_permission
+    it "#destroy_access_check" do
+      expect(subject).to receive(:resource_check).with('delete')
+      subject.destroy_access_check
+    end
   end
 
   describe "#admin_access_check" do

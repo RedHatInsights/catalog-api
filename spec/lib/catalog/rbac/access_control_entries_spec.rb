@@ -17,7 +17,6 @@ describe Catalog::RBAC::AccessControlEntries do
     context "when access control entries do not exist that match the given parameters" do
       before do
         create(:access_control_entry, :has_update_permission, :aceable_id => "123")
-        create(:access_control_entry, :has_read_permission, :aceable_id => "456", :aceable_type => "PortfolioItem")
         create(:access_control_entry, :has_read_permission, :aceable_id => "789", :group_uuid => "456-123")
       end
 
