@@ -2,8 +2,9 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   let(:current_request) { Insights::API::Common::Request.new(default_request) }
   let(:user_context) { UserContext.new(current_request, nil) }
 
-  let(:subject) { described_class.new(user_context, portfolio_item) }
-  let(:portfolio_item) { create(:portfolio_item, :id => "321") }
+  let(:subject) { described_class.new(user_context, portfolio) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
+  let(:portfolio) { create(:portfolio, :id => "321") }
   let(:order) { create(:order, :id => "456") }
   let(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
 
@@ -26,7 +27,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       let(:rbac_enabled) { true }
 
       before do
-        allow(catalog_access).to receive(:accessible?).with("portfolio_items", verb).and_return(accessible)
+        allow(catalog_access).to receive(:accessible?).with("portfolios", verb).and_return(accessible)
       end
 
       context "when the object is accessible" do
@@ -80,7 +81,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
           end
 
           context "when the ids include the given id" do
-            let(:aceable_id) { "321" }
+            let(:aceable_id) { portfolio.id }
 
             it "returns true" do
               expect(subject.send(method, *arguments)).to eq(true)
@@ -100,7 +101,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
         context "when the username does not match the record owner" do
           before do
-            allow(portfolio_item).to receive(:owner).and_return("notjdoe")
+            allow(portfolio).to receive(:owner).and_return("notjdoe")
             allow(order).to receive(:owner).and_return("notjdoe")
           end
 
@@ -142,11 +143,11 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   end
 
   describe "#create_access_check" do
-    it_behaves_like "permission checking", :create_access_check, [PortfolioItem], "create"
+    it_behaves_like "permission checking", :create_access_check, [Portfolio], "create"
   end
 
   describe "#permission_check" do
-    it_behaves_like "permission checking", :permission_check, ["verb", PortfolioItem], "verb"
+    it_behaves_like "permission checking", :permission_check, ["verb", Portfolio], "verb"
   end
 
   describe "#resource_check" do
@@ -159,23 +160,16 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
     it_behaves_like "resource checking", :resource_check, ["order", "321", Portfolio], "order", Portfolio, :has_order_permission
   end
 
-  describe "helper methods" do
-    let(:subject) { described_class.new(user_context, portfolio_item) }
-    let(:rbac_enabled) { true }
-    it "#update_access_check" do
-      expect(subject).to receive(:resource_check).with('update')
-      subject.update_access_check
-    end
+  describe "#update_access_check" do
+    it_behaves_like "resource checking", :update_access_check, [], "update", Portfolio, :has_update_permission
+  end
 
-    it "#read_access_check" do
-      expect(subject).to receive(:resource_check).with('read')
-      subject.read_access_check
-    end
+  describe "#read_access_check" do
+    it_behaves_like "resource checking", :read_access_check, [], "read", Portfolio, :has_read_permission
+  end
 
-    it "#destroy_access_check" do
-      expect(subject).to receive(:resource_check).with('delete')
-      subject.destroy_access_check
-    end
+  describe "#destroy_access_check" do
+    it_behaves_like "resource checking", :destroy_access_check, [], "delete", Portfolio, :has_delete_permission
   end
 
   describe "#admin_access_check" do
