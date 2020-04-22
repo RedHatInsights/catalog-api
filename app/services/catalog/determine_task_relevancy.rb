@@ -13,7 +13,7 @@ module Catalog
       )
 
       add_task_update_message
-      delegate_task if @task.state == "completed"
+      delegate_task if %w(completed running).include?(@task.state)
       order_item.mark_failed if @task.status == "error"
 
       self
@@ -25,13 +25,11 @@ module Catalog
     private
 
     def delegate_task
-      if @task.context.has_key_path?(:service_instance, :id)
+      if @task.context.has_key_path?(:service_instance)
         Catalog::UpdateOrderItem.new(@topic, @task).process
       elsif @task.context.has_key_path?(:applied_inventories)
         Rails.logger.info("Creating approval request for task")
         Catalog::CreateApprovalRequest.new(@task).process
-      elsif order_item.service_instance_ref.present? && order_item.external_url.nil?
-        Catalog::UpdateOrderItem.new(@topic, @task).process
       else
         Rails.logger.info("Incoming task has no current relevant delegation")
       end
