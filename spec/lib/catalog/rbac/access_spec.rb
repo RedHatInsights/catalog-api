@@ -2,16 +2,15 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   let(:current_request) { Insights::API::Common::Request.new(default_request) }
   let(:user_context) { UserContext.new(current_request, nil) }
 
-  let(:subject) { described_class.new(user_context, portfolio_item) }
-  let(:portfolio_item) { create(:portfolio_item, :id => "321") }
+  let(:subject) { described_class.new(user_context, portfolio) }
+  let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
+  let(:portfolio) { create(:portfolio, :id => "321") }
   let(:order) { create(:order, :id => "456") }
   let(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
 
   around do |example|
-    with_modified_env(:RBAC_URL => "http://rbac.example.com") do
-      Insights::API::Common::Request.with_request(current_request) do
-        example.call
-      end
+    Insights::API::Common::Request.with_request(current_request) do
+      example.call
     end
   end
 
@@ -28,7 +27,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       let(:rbac_enabled) { true }
 
       before do
-        allow(catalog_access).to receive(:accessible?).with("portfolio_items", verb).and_return(accessible)
+        allow(catalog_access).to receive(:accessible?).with("portfolios", verb).and_return(accessible)
       end
 
       context "when the object is accessible" do
@@ -69,35 +68,19 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         let(:scopes) { %w[group user] }
 
         before do
-          allow(aceable_type).to receive(:try).with(:supports_access_control?).and_return(supports_access_control?)
+          create(:access_control_entry, permission_under_test, :aceable_id => aceable_id, :aceable_type => aceable_type)
         end
 
-        context "when the class supports access control" do
-          let(:supports_access_control?) { true }
+        context "when the ids exclude the given id" do
+          let(:aceable_id) { "456" }
 
-          before do
-            create(:access_control_entry, permission_under_test, :aceable_id => aceable_id, :aceable_type => aceable_type)
-          end
-
-          context "when the ids exclude the given id" do
-            let(:aceable_id) { "456" }
-
-            it "returns false" do
-              expect(subject.send(method, *arguments)).to eq(false)
-            end
-          end
-
-          context "when the ids include the given id" do
-            let(:aceable_id) { "321" }
-
-            it "returns true" do
-              expect(subject.send(method, *arguments)).to eq(true)
-            end
+          it "returns false" do
+            expect(subject.send(method, *arguments)).to eq(false)
           end
         end
 
-        context "when the class does not support access control" do
-          let(:supports_access_control?) { false }
+        context "when the ids include the given id" do
+          let(:aceable_id) { portfolio.id }
 
           it "returns true" do
             expect(subject.send(method, *arguments)).to eq(true)
@@ -116,7 +99,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
 
         context "when the username does not match the record owner" do
           before do
-            allow(portfolio_item).to receive(:owner).and_return("notjdoe")
+            allow(portfolio).to receive(:owner).and_return("notjdoe")
             allow(order).to receive(:owner).and_return("notjdoe")
           end
 
@@ -158,11 +141,11 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   end
 
   describe "#create_access_check" do
-    it_behaves_like "permission checking", :create_access_check, [PortfolioItem], "create"
+    it_behaves_like "permission checking", :create_access_check, [Portfolio], "create"
   end
 
   describe "#permission_check" do
-    it_behaves_like "permission checking", :permission_check, ["verb", PortfolioItem], "verb"
+    it_behaves_like "permission checking", :permission_check, ["verb", Portfolio], "verb"
   end
 
   describe "#resource_check" do
@@ -176,15 +159,15 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
   end
 
   describe "#update_access_check" do
-    it_behaves_like "resource checking", :update_access_check, [], "update", PortfolioItem, :has_update_permission
+    it_behaves_like "resource checking", :update_access_check, [], "update", Portfolio, :has_update_permission
   end
 
   describe "#read_access_check" do
-    it_behaves_like "resource checking", :read_access_check, [], "read", PortfolioItem, :has_read_permission
+    it_behaves_like "resource checking", :read_access_check, [], "read", Portfolio, :has_read_permission
   end
 
   describe "#destroy_access_check" do
-    it_behaves_like "resource checking", :destroy_access_check, [], "delete", PortfolioItem, :has_delete_permission
+    it_behaves_like "resource checking", :destroy_access_check, [], "delete", Portfolio, :has_delete_permission
   end
 
   describe "#admin_access_check" do
