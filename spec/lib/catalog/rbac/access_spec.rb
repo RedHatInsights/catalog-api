@@ -220,4 +220,58 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       end
     end
   end
+
+  describe "#approval_workflow_check" do
+    context "when RBAC is enabled" do
+      let(:rbac_enabled) { true }
+
+      let(:read_scope) { %w[admin] }
+      let(:link_scope) { %w[admin] }
+      let(:unlink_scope) { %w[admin] }
+
+      before do
+        allow(catalog_access).to receive(:scopes).with("workflows", "read").and_return(read_scope)
+        allow(catalog_access).to receive(:scopes).with("workflows", "link").and_return(link_scope)
+        allow(catalog_access).to receive(:scopes).with("workflows", "unlink").and_return(unlink_scope)
+      end
+
+      context "when the user has admin scopes for read, link, and unlink" do
+        it "returns true" do
+          expect(subject.approval_workflow_check).to eq(true)
+        end
+      end
+
+      context "when the user does not have admin scopes for read" do
+        let(:read_scope) { [] }
+
+        it "returns false" do
+          expect(subject.approval_workflow_check).to eq(false)
+        end
+      end
+
+      context "when the user does not have admin scopes for link" do
+        let(:link_scope) { [] }
+
+        it "returns false" do
+          expect(subject.approval_workflow_check).to eq(false)
+        end
+      end
+
+      context "when the user does not have admin scopes for unlink" do
+        let(:unlink_scope) { [] }
+
+        it "returns false" do
+          expect(subject.approval_workflow_check).to eq(false)
+        end
+      end
+    end
+
+    context "when RBAC is not enabled" do
+      let(:rbac_enabled) { false }
+
+      it "returns true" do
+        expect(subject.admin_access_check("portfolios", "update")).to eq(true)
+      end
+    end
+  end
 end

@@ -50,6 +50,19 @@ module Catalog
         rbac_enabled? ? access_object.accessible?(klass.table_name, verb) : true
       end
 
+      def approval_workflow_check
+        return true unless rbac_enabled?
+
+        read_scopes = access_object.scopes("workflows", "read")
+        link_scopes = access_object.scopes("workflows", "link")
+        unlink_scopes = access_object.scopes("workflows", "unlink")
+
+        admin_scopes = [read_scopes, link_scopes, unlink_scopes].collect do |scope|
+          scope.include?("admin")
+        end
+        admin_scopes.all?
+      end
+
       private
 
       def rbac_enabled?
