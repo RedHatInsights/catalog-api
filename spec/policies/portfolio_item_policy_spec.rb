@@ -47,12 +47,12 @@ describe PortfolioItemPolicy do
     end
   end
 
-  # describe "#edit_survey?" do
-  #   it "delegates to the check for update permissions on the portfolio" do
-  #     expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
-  #     expect(subject.edit_survey?).to eq(true)
-  #   end
-  # end
+  describe "#edit_survey?" do
+    it "delegates to the check for update permissions on the portfolio" do
+      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+      expect(subject.edit_survey?).to eq(true)
+    end
+  end
 
   describe "#set_approval?" do
     let(:resource_check) { true }
@@ -241,7 +241,7 @@ describe PortfolioItemPolicy do
         "destroy"      => true,
         "copy"         => true,
         "set_approval" => true,
-        # "edit_survey"  => true
+        "edit_survey"  => true
       })
     end
   end

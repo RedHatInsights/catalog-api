@@ -27,9 +27,9 @@ class PortfolioItemPolicy < ApplicationPolicy
     end
   end
 
-  # def edit_survey?
-  #   rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
-  # end
+  def edit_survey?
+    rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+  end
 
   def set_approval?
     rbac_access.resource_check('update', @record.portfolio_id, Portfolio) &&
