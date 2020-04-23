@@ -57,10 +57,9 @@ module Catalog
         link_scopes = access_object.scopes("workflows", "link")
         unlink_scopes = access_object.scopes("workflows", "unlink")
 
-        admin_scopes = [read_scopes, link_scopes, unlink_scopes].collect do |scope|
+        [read_scopes, link_scopes, unlink_scopes].all? do |scope|
           scope.include?("admin")
         end
-        admin_scopes.all?
       end
 
       private
