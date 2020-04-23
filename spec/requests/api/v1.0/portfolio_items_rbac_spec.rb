@@ -18,6 +18,7 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
     allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
     allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
     allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+    allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
 
     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
     allow(catalog_access).to receive(:process).and_return(catalog_access)
