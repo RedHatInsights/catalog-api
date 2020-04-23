@@ -53,13 +53,9 @@ module Catalog
       def approval_workflow_check
         return true unless rbac_enabled?
 
-        read_scopes = access_object.scopes("workflows", "read")
-        link_scopes = access_object.scopes("workflows", "link")
-        unlink_scopes = access_object.scopes("workflows", "unlink")
-
-        [read_scopes, link_scopes, unlink_scopes].all? do |scope|
-          scope.include?("admin")
-        end
+        access_object.accessible?("workflows", "read", "approval") &&
+          access_object.accessible?("workflows", "link", "approval") &&
+          access_object.accessible?("workflows", "unlink", "approval")
       end
 
       private
