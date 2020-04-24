@@ -12,19 +12,19 @@ describe ApplicationPolicy do
   end
 
   it "#create?" do
-    expect(subject.show?).to be_falsey
+    expect(subject.create?).to be_falsey
   end
 
   it "#new?" do
-    expect(subject.show?).to be_falsey
+    expect(subject.new?).to be_falsey
   end
 
   it "#update?" do
-    expect(subject.show?).to be_falsey
+    expect(subject.update?).to be_falsey
   end
 
   it "#edit?" do
-    expect(subject.show?).to be_falsey
+    expect(subject.edit?).to be_falsey
   end
 
   it "#destroy?" do
