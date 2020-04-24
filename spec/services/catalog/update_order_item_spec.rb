@@ -35,7 +35,7 @@ describe Catalog::UpdateOrderItem, :type => :service do
 
         context "when the state is completed" do
           let(:state) { "completed" }
-          shared_examples_for "#process when it all goes well" do
+          context "#process when it all goes well" do
             it "creates a progress message about the payload" do
               subject.process
               latest_progress_message = ProgressMessage.second_to_last
