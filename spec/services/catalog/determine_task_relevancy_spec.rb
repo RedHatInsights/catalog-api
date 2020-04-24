@@ -58,17 +58,30 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           allow(update_order_item).to receive(:process)
         end
 
-        it "updates the item with a progress message" do
-          subject.process
-          progress_message = ProgressMessage.last
-          expect(progress_message.level).to eq("info")
-          expect(progress_message.message).to match(/Task update. State: completed/)
-          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+        context "success scenario" do
+          before do
+            allow(update_order_item).to receive(:process)
+          end
+          it "updates the item with a progress message" do
+            subject.process
+            progress_message = ProgressMessage.last
+            expect(progress_message.level).to eq("info")
+            expect(progress_message.message).to match(/Task update. State: completed/)
+            expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+          end
+
+          it "delegates to updating the order item" do
+            expect(update_order_item).to receive(:process)
+            subject.process
+          end
         end
 
-        it "delegates to updating the order item" do
-          expect(update_order_item).to receive(:process)
-          subject.process
+        context "error scenario" do
+          it "raises StandardError" do
+            allow(update_order_item).to receive(:process).and_raise(StandardError)
+            expect(Rails.logger).to receive(:error).once
+            expect { subject.process }.to raise_exception(StandardError)
+          end
         end
       end
 
