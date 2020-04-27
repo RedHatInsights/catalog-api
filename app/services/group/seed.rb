@@ -16,10 +16,6 @@ module Group
       true
     end
 
-    def external_tenant
-      @request.tenant
-    end
-
     def code(status)
       @status = status
     end
@@ -39,6 +35,10 @@ module Group
     end
 
     private
+
+    def external_tenant
+      @request.tenant
+    end
 
     def run_seeding
       seeded = Insights::API::Common::RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
