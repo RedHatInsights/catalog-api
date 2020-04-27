@@ -5,6 +5,11 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
      allow(catalog_access).to receive(:process).and_return(catalog_access)
      allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
      allow(catalog_access).to receive(:accessible?).with("portfolios", "read").and_return(true)
+
+     #TODO: Remove this call as it is stubbing out for user_capabilities,
+     # which should not be getting called on this version of the API
+     # When common gem gets updated, this can be removed.
+     allow(catalog_access).to receive(:accessible?).and_return(true)
   end
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }

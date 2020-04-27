@@ -49,6 +49,14 @@ module Catalog
         rbac_enabled? ? access_object.accessible?(klass.table_name, verb) : true
       end
 
+      def approval_workflow_check
+        return true unless rbac_enabled?
+
+        access_object.accessible?("workflows", "read", "approval") &&
+          access_object.accessible?("workflows", "link", "approval") &&
+          access_object.accessible?("workflows", "unlink", "approval")
+      end
+
       private
 
       def rbac_enabled?
