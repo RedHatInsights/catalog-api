@@ -1,5 +1,5 @@
 module V1Helper
   def api_version
-    "/api/v1.0"
+    File.join('/', ENV['PATH_PREFIX'], ENV['APP_NAME'], 'v1.0')
   end
 end

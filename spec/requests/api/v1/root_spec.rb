@@ -7,7 +7,7 @@ describe "v1 - root", :type => [:request, :v1x1] do
   end
 
   it "handles redirects correctly" do
-    get("/api/v1/openapi.json")
+    get("/api/catalog/v1/openapi.json")
 
     expect(response.status).to eq(302)
     expect(response.headers["Location"]).to eq("#{api_version}/openapi.json")
