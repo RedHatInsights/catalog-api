@@ -6,8 +6,6 @@ module Api
       def index
         if params[:portfolio_id]
           collection(Portfolio.find(params.require(:portfolio_id)).portfolio_items)
-        elsif params[:tag_id]
-          collection(Tag.find(params.require(:tag_id)).portfolio_items)
         else
           authorize(PortfolioItem)
           collection(PortfolioItem.all)

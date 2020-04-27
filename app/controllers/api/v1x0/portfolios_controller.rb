@@ -4,11 +4,7 @@ module Api
       include Api::V1x0::Mixins::IndexMixin
 
       def index
-        if params[:tag_id]
-          collection(Tag.find(params.require(:tag_id)).portfolios)
-        else
-          collection(Portfolio.all)
-        end
+        collection(Portfolio.all)
       end
 
       def create
