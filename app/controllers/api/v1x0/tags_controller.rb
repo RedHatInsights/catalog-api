@@ -24,12 +24,6 @@ module Api
         end
       end
 
-      def show
-        tag = Tag.find(params.require(:id))
-
-        render :json => tag
-      end
-
       private
 
       def instance_link(instance)
