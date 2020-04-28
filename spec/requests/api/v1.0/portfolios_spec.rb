@@ -317,6 +317,16 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       end
     end
 
+    context 'length restrictions' do
+      let(:invalid_attributes) { { :name => 'a'*65, :description => 'rspec 1 description' } }
+      before { post "#{api_version}/portfolios", :params => invalid_attributes, :headers => default_headers }
+
+      it 'returns status code 400' do
+        expect(response).to have_http_status(400)
+        expect(first_error_detail).to match(/is longer than max length/)
+      end
+    end
+
     context 'share_info' do
       let(:portfolio) { create(:portfolio) }
       let(:uuid) { "123" }

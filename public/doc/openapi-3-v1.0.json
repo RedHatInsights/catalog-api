@@ -14,7 +14,9 @@
   },
   "security": [
     {
-      "BasicAuth": []
+      "BasicAuth": [
+
+      ]
     }
   ],
   "tags": [
@@ -2838,7 +2840,9 @@
           "name": {
             "type": "string",
             "title": "Name",
-            "example": "Sample Portfolio"
+            "example": "Sample Portfolio",
+            "minLength": 1,
+            "maxLength": 64
           },
           "description": {
             "type": "string",
@@ -2881,7 +2885,9 @@
       },
       "CreatePortfolioItem": {
         "type": "object",
-        "required": ["portfolio_id"],
+        "required": [
+          "portfolio_id"
+        ],
         "properties": {
           "portfolio_id": {
             "type": "string",
