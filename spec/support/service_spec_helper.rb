@@ -16,19 +16,10 @@ module ServiceSpecHelper
     ClimateControl.modify(options, &block)
   end
 
-  def default_headers
-    { 'x-rh-identity'            => encoded_user_hash,
-      'x-rh-insights-request-id' => 'gobbledygook' }
-  end
-
   def modified_headers(user_hash, request_id = nil)
     hashed = user_hash.stringify_keys
     { 'x-rh-identity'            => Base64.strict_encode64(hashed.to_json),
       'x-rh-insights-request-id' => request_id }
-  end
-
-  def original_url
-    "http://whatever.com"
   end
 
   def topological_url(partial_path, api_version = "v2.0")
@@ -47,10 +38,6 @@ module ServiceSpecHelper
     url_string = "http://sources.example.com"
     url = URI.join(url_string, "api/", "sources/", "#{api_version}/", "#{partial_path}")
     url.to_s
-  end
-
-  def default_request
-    { :headers => default_headers, :original_url => original_url }
   end
 
   def modified_request(user_hash, request_id = 'gobbledygook')
