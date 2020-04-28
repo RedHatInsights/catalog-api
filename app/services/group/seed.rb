@@ -16,10 +16,6 @@ module Group
       true
     end
 
-    def tenant
-      @request.tenant
-    end
-
     def code(status)
       @status = status
     end
@@ -40,16 +36,20 @@ module Group
 
     private
 
+    def external_tenant
+      @request.tenant
+    end
+
     def run_seeding
       seeded = Insights::API::Common::RBAC::Seed.new(Rails.root.join('data', 'rbac_catalog_seed.yml')).process
       if seeded
-        RbacSeed.create!(:external_tenant => @request.tenant)
+        RbacSeed.create!(:external_tenant => external_tenant)
         code(200)
       end
     end
 
     def mark_as_seeded
-      RbacSeed.find_or_create_by(:external_tenant => @request.tenant) if @seeded.data.present?
+      RbacSeed.find_or_create_by(:external_tenant => external_tenant) if @seeded.data.present?
     end
 
     def add_user_to_catalog_admin_group
