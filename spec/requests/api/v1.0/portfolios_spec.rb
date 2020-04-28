@@ -496,5 +496,22 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       it_behaves_like "bad_tags"
       it_behaves_like "good_tags"
     end
+
+    context "GET /portfolios/{id}/tags" do
+      let(:tag_name) { 'Gnocchi' }
+      let(:tag_ns) { 'Charkie' }
+      let(:tag_value) { 'Hundley' }
+      let!(:tag) { Tag.create!(:name => tag_name, :namespace => tag_ns, :value => tag_value, :tenant => portfolio.tenant) }
+
+      before do
+        portfolio.tag_add(tag_name, {:namespace => tag_ns, :value => tag_value})
+      end
+
+      it "fetches the tag from the portfolio" do
+        get "#{api_version}/portfolios/#{portfolio.id}/tags", :headers => default_headers
+        expect(response).to have_http_status(200)
+        expect(json['data'].first['tag']).to eq(tag.to_tag_string)
+      end
+    end
   end
 end
