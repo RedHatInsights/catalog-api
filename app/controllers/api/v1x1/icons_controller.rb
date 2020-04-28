@@ -1,3 +1,4 @@
+require 'api/v1x1/catalog'
 module Api
   module V1x1
     class IconsController < ApplicationController

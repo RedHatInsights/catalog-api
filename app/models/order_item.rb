@@ -1,7 +1,7 @@
 class OrderItem < ApplicationRecord
   include OwnerField
   include Discard::Model
-  include Catalog::DiscardRestore
+  include Api::V1x0::Catalog::DiscardRestore
   destroy_dependencies :progress_messages
 
   acts_as_tenant(:tenant)
@@ -52,7 +52,7 @@ class OrderItem < ApplicationRecord
     # Store the API accessible parameters with protected field values masked
     self.service_parameters_raw = self[:service_parameters]
 
-    self[:service_parameters] = Catalog::OrderItemSanitizedParameters.new(:order_item => self).process.sanitized_parameters
+    self[:service_parameters] = Api::V1x0::Catalog::OrderItemSanitizedParameters.new(:order_item => self).process.sanitized_parameters
   end
 
   def service_parameters_raw=(val)
@@ -62,7 +62,7 @@ class OrderItem < ApplicationRecord
   end
 
   def parameters_contain_sanitized_values?(val)
-    val.to_s.include?("\"#{Catalog::OrderItemSanitizedParameters::MASKED_VALUE}\"")
+    val.to_s.include?("\"#{Api::V1x0::Catalog::OrderItemSanitizedParameters::MASKED_VALUE}\"")
   end
 
   def mark_item(msg, level: "info", **opts)
