@@ -31,6 +31,18 @@ describe Catalog::CreateIcon, :type => :service do
       it_behaves_like "#process icon after being created"
     end
 
+    context "when there is no header" do
+      let(:image_params) { {:content => form_upload_test_image("no_header_miq_logo.svg")} }
+
+      it "creates a new image record" do
+        expect(subject.process.icon.image_id).to_not eq base_image.id
+      end
+
+      it "has the correct svg extension" do
+        expect(subject.process.icon.image.extension).to eq('SVG')
+      end
+    end
+
     context "when there is an image record" do
       let(:image_params) { {:content => form_upload_test_image("ocp_logo_dupe.svg")} }
 
