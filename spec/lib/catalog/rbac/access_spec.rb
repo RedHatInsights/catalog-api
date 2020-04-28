@@ -257,4 +257,38 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
       end
     end
   end
+
+  describe "#admin_access_check" do
+    context "when RBAC is enabled" do
+      let(:rbac_enabled) { true }
+
+      before do
+        allow(catalog_access).to receive(:admin_scope?).with("portfolios", "update").and_return(admin_scope)
+      end
+
+      context "when the user has admin scopes for the specified object" do
+        let(:admin_scope) { true }
+
+        it "returns true" do
+          expect(subject.admin_access_check("portfolios", "update")).to eq(true)
+        end
+      end
+
+      context "when the user does not have admin scopes for the specified object" do
+        let(:admin_scope) { false }
+
+        it "returns false" do
+          expect(subject.admin_access_check("portfolios", "update")).to eq(false)
+        end
+      end
+    end
+
+    context "when RBAC is not enabled" do
+      let(:rbac_enabled) { false }
+
+      it "returns true" do
+        expect(subject.admin_access_check("portfolios", "update")).to eq(true)
+      end
+    end
+  end
 end
