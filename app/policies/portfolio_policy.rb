@@ -23,10 +23,9 @@ class PortfolioPolicy < ApplicationPolicy
 
   alias unshare? share?
 
-  # def set_approval?
-  #   # TODO: Add "Approval Administrator" check as &&
-  #   rbac_access.update_access_check
-  # end
+  def set_approval?
+    rbac_access.update_access_check && rbac_access.approval_workflow_check
+  end
 
   class Scope < Scope
     def resolve

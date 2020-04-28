@@ -8,7 +8,7 @@ module Api
       def overlay
         {
           "^.*$" => {
-            "base_query" => lambda do |model_class, _ctx|
+            "base_query" => lambda do |model_class, _args, _ctx|
               Insights::API::Common::RBAC::Access.enabled? ? rbac_scope(model_class.all) : model_class
             end
           }

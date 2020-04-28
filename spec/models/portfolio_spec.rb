@@ -9,6 +9,14 @@ describe Portfolio do
 
   it_behaves_like "aceable"
 
+  context "length restrictions" do
+    it "raises validation error" do
+      expect do
+        Portfolio.create!(:name => 'a'*65, :tenant => tenant1, :description => 'abc', :owner => 'fred')
+      end.to raise_error(ActiveRecord::RecordInvalid, /Name is too long/)
+    end
+  end
+
   context "when setting portfolio fields" do
     it "fails validation with a non %w(true false) value" do
       portfolio.enabled = "tralse"
@@ -85,6 +93,12 @@ describe Portfolio do
       %w[aa bb Bc Ad].each { |name| create(:portfolio, :name => name) }
 
       expect(Portfolio.pluck(:name)).to eq(%w[aa Ad bb Bc])
+    end
+  end
+
+  context ".policy_class" do
+    it "is PortfolioPolicy" do
+      expect(Portfolio.policy_class).to eq(PortfolioPolicy)
     end
   end
 end

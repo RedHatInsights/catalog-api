@@ -47,19 +47,44 @@ describe PortfolioItemPolicy do
     end
   end
 
-  # describe "#edit_survey?" do
-  #   it "delegates to the check for update permissions on the portfolio" do
-  #     expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
-  #     expect(subject.edit_survey?).to eq(true)
-  #   end
-  # end
+  describe "#edit_survey?" do
+    it "delegates to the check for update permissions on the portfolio" do
+      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+      expect(subject.edit_survey?).to eq(true)
+    end
+  end
 
-  # describe "#set_approval?" do
-  #   it "delegates to the check for update permissions on the portfolio" do
-  #     expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
-  #     expect(subject.set_approval?).to eq(true)
-  #   end
-  # end
+  describe "#set_approval?" do
+    let(:resource_check) { true }
+    let(:approval_workflow_check) { true }
+
+    before do
+      allow(rbac_access).to receive(:resource_check).with("update", portfolio.id, Portfolio).and_return(resource_check)
+      allow(rbac_access).to receive(:approval_workflow_check).and_return(approval_workflow_check)
+    end
+
+    context "when the resource check is false" do
+      let(:resource_check) { false }
+
+      it "returns false" do
+        expect(subject.set_approval?).to eq(false)
+      end
+    end
+
+    context "when the approval workflow check is false" do
+      let(:approval_workflow_check) { false }
+
+      it "returns false" do
+        expect(subject.set_approval?).to eq(false)
+      end
+    end
+
+    context "when the resource check and the approval workflow check are true" do
+      it "returns true" do
+        expect(subject.set_approval?).to eq(true)
+      end
+    end
+  end
 
   describe "#destroy?" do
     it "delegates to the check for update permissions on the portfolio" do
@@ -204,6 +229,9 @@ describe PortfolioItemPolicy do
 
       # Other half of Copy
       allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+
+      # Set approval
+      allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
     end
 
     it "returns a hash of user capabilities" do
@@ -212,8 +240,8 @@ describe PortfolioItemPolicy do
         "update"       => true,
         "destroy"      => true,
         "copy"         => true,
-        # "set_approval" => true,
-        # "edit_survey"  => true
+        "set_approval" => true,
+        "edit_survey"  => true
       })
     end
   end

@@ -42,7 +42,7 @@ module Catalog
         @plan = api.show_service_plan(service_plan_ref.to_s)
       end
       @plan.create_json_schema
-    rescue TopologicalInventoryApiClient::ApiError => e
+    rescue Catalog::TopologyError => e
       Rails.logger.error("DefaultApi->show_service_plan #{e.message}")
       raise
     end

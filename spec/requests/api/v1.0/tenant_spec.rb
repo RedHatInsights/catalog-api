@@ -36,16 +36,31 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
     before do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
       allow(catalog_access).to receive(:process).and_return(catalog_access)
-      get "#{api_version}/tenants", :headers => default_headers
     end
 
-    it 'returns status code 200' do
-      expect(response).to have_http_status(200)
+    context "all tenants" do
+      before do
+        get "#{api_version}/tenants", :headers => default_headers
+      end
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'returns all scoped tenants' do
+        expect(json["data"].first['external_tenant']).to eq tenant.external_tenant
+        expect(json["data"].first['id']).to eq tenant.id.to_s
+      end
     end
 
-    it 'returns all scoped tenants' do
-      expect(json["data"].first['external_tenant']).to eq tenant.external_tenant
-      expect(json["data"].first['id']).to eq tenant.id.to_s
+    context "specific tenant" do
+      before do
+        get "#{api_version}/tenants/#{tenant.id}", :headers => default_headers
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+        expect(json['external_tenant']).to eq(tenant.external_tenant)
+      end
     end
   end
 

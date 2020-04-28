@@ -14,7 +14,9 @@
   },
   "security": [
     {
-      "BasicAuth": []
+      "BasicAuth": [
+
+      ]
     }
   ],
   "tags": [
@@ -145,7 +147,7 @@
         "description": "Adds a portfolio.",
         "responses": {
           "200": {
-            "description": "Succesfully added the new portfolio.",
+            "description": "Successfully added the new portfolio.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2274,7 +2276,7 @@
         },
         "responses": {
           "200": {
-            "description": "Succesfully added the new setting.",
+            "description": "Successfully added the new setting.",
             "content": {
               "application/json": {
                 "example": "{ \n  \"default_workflow\": \"2\" \n} \n"
@@ -2838,7 +2840,9 @@
           "name": {
             "type": "string",
             "title": "Name",
-            "example": "Sample Portfolio"
+            "example": "Sample Portfolio",
+            "minLength": 1,
+            "maxLength": 64
           },
           "description": {
             "type": "string",
@@ -2881,7 +2885,9 @@
       },
       "CreatePortfolioItem": {
         "type": "object",
-        "required": ["portfolio_id"],
+        "required": [
+          "portfolio_id"
+        ],
         "properties": {
           "portfolio_id": {
             "type": "string",

@@ -10,10 +10,10 @@ describe Catalog::CopyPortfolioItem, :type => :service do
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
       it "makes a copy of the portfolio_item" do
-        new = copy_portfolio_item.new_portfolio_item
+        copied_portfolio = copy_portfolio_item.new_portfolio_item
 
-        expect(new.description).to eq portfolio_item.description
-        expect(new.owner).to eq portfolio_item.owner
+        expect(copied_portfolio.description).to eq portfolio_item.description
+        expect(copied_portfolio.owner).to eq portfolio_item.owner
       end
 
       it "modifies the name with 'Copy of'" do
@@ -23,15 +23,15 @@ describe Catalog::CopyPortfolioItem, :type => :service do
 
     context "when copying into a different portfolio" do
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio2.id } }
-      let(:new) { copy_portfolio_item.new_portfolio_item }
+      let(:copied_portfolio) { copy_portfolio_item.new_portfolio_item }
 
       it "makes a complete copy of the portfolio_item" do
-        expect(new.description).to eq portfolio_item.description
-        expect(new.owner).to eq portfolio_item.owner
+        expect(copied_portfolio.description).to eq portfolio_item.description
+        expect(copied_portfolio.owner).to eq portfolio_item.owner
       end
 
       it "does not modify the name with 'Copy of'" do
-        expect(new.name).to eq portfolio_item.name
+        expect(copied_portfolio.name).to eq portfolio_item.name
       end
     end
 
@@ -44,14 +44,14 @@ describe Catalog::CopyPortfolioItem, :type => :service do
       end
 
       it "adds a (1) to the name if there is already a copy" do
-        new = copy_portfolio_item.new_portfolio_item
-        expect(new.name).to eq "Copy (1) of #{portfolio_item.name}"
+        copied_portfolio = copy_portfolio_item.new_portfolio_item
+        expect(copied_portfolio.name).to eq "Copy (1) of #{portfolio_item.name}"
       end
 
       it "increments the counter again when adding another" do
         another_portfolio_item.update(:name => "Copy (1) of #{portfolio_item.name}")
-        new = copy_portfolio_item.new_portfolio_item
-        expect(new.name).to eq "Copy (2) of #{portfolio_item.name}"
+        copied_portfolio = copy_portfolio_item.new_portfolio_item
+        expect(copied_portfolio.name).to eq "Copy (2) of #{portfolio_item.name}"
       end
     end
 
@@ -59,28 +59,52 @@ describe Catalog::CopyPortfolioItem, :type => :service do
       let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
       it "copies over the icon" do
-        new = copy_portfolio_item.new_portfolio_item
+        copied_portfolio_item = copy_portfolio_item.new_portfolio_item
 
-        expect(new.icon_id).not_to eq portfolio_item.icon_id
-        expect(new.icon.image_id).to eq portfolio_item.icon.image_id
-        expect(new.icon.restore_to).to eq new
+        expect(copied_portfolio_item.icon_id).not_to eq portfolio_item.icon_id
+        expect(copied_portfolio_item.icon.image_id).to eq portfolio_item.icon.image_id
+        expect(copied_portfolio_item.icon.restore_to).to eq copied_portfolio_item
       end
     end
 
     context "when the portfolio_item has service_plans" do
-      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
+      context "when the service_plan base match topology" do
+        let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
-      before do
-        portfolio_item.service_plans.create(
-          :base => JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")))
-        )
+        before do
+          allow(Catalog::SurveyCompare).to receive(:changed?).and_return(false)
+          allow(Catalog::DataDrivenFormValidator).to receive(:valid?).and_return(true)
+
+          portfolio_item.service_plans.create!(
+            :base     => {"schema" => {}},
+            :modified => {"schema" => {}}
+          )
+        end
+
+        it "copies over the service_plan" do
+          copied_portfolio_item = copy_portfolio_item.new_portfolio_item
+
+          expect(copied_portfolio_item.service_plans).not_to match_array portfolio_item.service_plans
+          expect(copied_portfolio_item.service_plans.first.base).to eq portfolio_item.service_plans.first.base
+        end
       end
 
-      it "copies over the service_plans" do
-        new = copy_portfolio_item.new_portfolio_item
+      context "when the service_plan base do not match topology" do
+        let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
-        expect(new.service_plans).not_to match_array portfolio_item.service_plans
-        expect(new.service_plans.first.base).to eq portfolio_item.service_plans.first.base
+        before do
+          allow(Catalog::SurveyCompare).to receive(:changed?).and_return(true)
+
+          portfolio_item.service_plans.create!(
+            :base     => {"schema" => {}},
+            :modified => {"schema" => {}}
+          )
+        end
+
+        it "fails the copy" do
+          expect { copy_portfolio_item }.to raise_exception(Catalog::InvalidSurvey)
+          expect(PortfolioItem.pluck(:name).select { |name| name.match?(/#{portfolio_item.name}/) }.count).to eq 1
+        end
       end
     end
   end

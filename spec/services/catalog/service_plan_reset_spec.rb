@@ -46,5 +46,15 @@ describe Catalog::ServicePlanReset, :type => [:current_forwardable, :topology] d
         expect(subject.process.status).to eq(:ok)
       end
     end
+
+    context "exception handling" do
+      let(:modified) { "modified" }
+      it "raises StandardError" do
+        stub_request(:get, topological_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
+          .to_raise(StandardError)
+        expect(Rails.logger).to receive(:error).twice
+        expect { subject.process }.to raise_exception(StandardError)
+      end
+    end
   end
 end

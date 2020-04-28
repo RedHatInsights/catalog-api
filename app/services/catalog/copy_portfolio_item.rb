@@ -15,7 +15,13 @@ module Catalog
     end
 
     def process
-      @new_portfolio_item = make_copy
+      PortfolioItem.transaction do
+        @new_portfolio_item = make_copy
+      rescue StandardError => e
+        Rails.logger.error("Failed to copy Portfolio Item #{@portfolio_item.id}: #{e.message}")
+        raise
+      end
+
       @to_portfolio.portfolio_items << @new_portfolio_item
 
       self

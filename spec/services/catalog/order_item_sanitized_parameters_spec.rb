@@ -70,6 +70,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
           end
 
           it "handles the exception and reraises a StandardError" do
+            expect(Rails.logger).to receive(:error).thrice
             expect { subject.process }.to raise_error(StandardError)
           end
         end

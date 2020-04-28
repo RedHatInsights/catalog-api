@@ -29,10 +29,9 @@ module Catalog
         if scopes.include?("admin")
           true
         elsif scopes.include?("group")
-          ids = access_id_list(verb, klass)
-          klass.try(:supports_access_control?) ? ids.include?(id.to_s) : true
+          access_id_list(verb, klass).include?(id.to_s)
         elsif scopes.include?("user")
-          @record.owner == @user_context.user.user.username
+          @record.owner == @user_context.request.user.username
         else
           Rails.logger.error("Error in resource checking for verb: #{verb}, object id: #{id}, object class: #{@record.class}, class to check scopes against: #{klass}")
           Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{scopes}")
@@ -48,6 +47,14 @@ module Catalog
 
       def permission_check(verb, klass = @record.class)
         rbac_enabled? ? access_object.accessible?(klass.table_name, verb) : true
+      end
+
+      def approval_workflow_check
+        return true unless rbac_enabled?
+
+        access_object.accessible?("workflows", "read", "approval") &&
+          access_object.accessible?("workflows", "link", "approval") &&
+          access_object.accessible?("workflows", "unlink", "approval")
       end
 
       private

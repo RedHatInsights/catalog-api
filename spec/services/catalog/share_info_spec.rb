@@ -1,80 +1,49 @@
 describe Catalog::ShareInfo, :type => :service do
   let(:portfolio) { create(:portfolio) }
-  let(:group1) { instance_double(RBACApiClient::GroupOut, :name => 'group1', :uuid => "123") }
-  let(:group2) { instance_double(RBACApiClient::GroupOut, :name => 'group2', :uuid => "321") }
-  let(:uuids) { [group1.uuid] }
-  let(:permissions) { ['read', 'update'] }
-  let(:rs_class) { class_double("Insights::API::Common::RBAC::Service").as_stubbed_const(:transfer_nested_constants => true) }
-  let(:api_instance) { double }
-  let(:principal_options) { {:scope=>"principal"} }
-  let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT, :uuid => [group1.uuid]} }
-  let(:group_list) { [group1] }
+  let(:user_context) { instance_double(UserContext, :group_names => group_names) }
+  let(:params) { {:object => portfolio, :user_context => user_context} }
 
-  let(:params) { { :object => portfolio } }
-
-  before do
-    allow(rs_class).to receive(:call).with(RBACApiClient::GroupApi).and_yield(api_instance)
-    allow(Insights::API::Common::RBAC::Service).to receive(:paginate) do |api_instance, method, options|
-      expect(method).to eq(:list_groups)
-      expect(options[:limit]).to eq(Catalog::ShareInfo::MAX_GROUPS_LIMIT)
-      expect(options[:uuid]).to match_array(uuids) if options.key?(:uuid)
-      group_list
-    end
-  end
-
-  let(:subject) { described_class.new(params) }
-
-  shared_examples_for "#process that has permissions" do
-    it "gets the correct group name, group uuid, and permissions" do
-      info = subject.process.result
-      expect(info.count).to eq(1)
-      expect(info[0][:group_name]).to eq(group1.name)
-      expect(info[0][:group_uuid]).to eq(group1.uuid)
-      expect(info[0][:permissions]).to match_array(permissions)
-    end
-  end
+  subject { described_class.new(params) }
 
   describe "#process" do
-    context "when all group uuids exist" do
+    let(:uuid) { "123" }
+
+    context "when there are existing permissions" do
       before do
-        create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
+        create(:access_control_entry, :has_read_and_update_permission, :group_uuid => uuid, :aceable => portfolio)
       end
 
-      it_behaves_like "#process that has permissions"
+      context "when the group uuids match with group names" do
+        let(:group_names) { {"123" => "group_name"} }
+
+        it "returns the sharing information" do
+          result = subject.process.result
+          expect(result).to match_array([:group_name => "group_name", :group_uuid => "123", :permissions => match_array(%w[read update])])
+        end
+      end
+
+      context "when the group uuids do not match with group names" do
+        let(:group_names) { {"1234" => "group_name"} }
+
+        it "returns the (empty) sharing information" do
+          result = subject.process.result
+          expect(result).to match_array([])
+        end
+
+        it "logs a warning message" do
+          expect(Rails.logger).to receive(:warn).with(/Skipping group UUID/)
+          subject.process
+        end
+      end
     end
 
-    context "when only some group uuids exist" do
-      let(:uuids) { [group1.uuid, 'non-existent'] }
-      let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT, :uuid => uuids} }
-      before do
-        create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
-        create(:access_control_entry, :has_update_permission, :group_uuid => "non-existent", :aceable => portfolio)
+    context "when there are no existing permissions" do
+      let(:group_names) { {"123" => "group_name"} }
+
+      it "returns the (empty) sharing information" do
+        result = subject.process.result
+        expect(result).to match_array([])
       end
-
-      it_behaves_like "#process that has permissions"
-    end
-
-    context "when there are no permissions for the access control entry" do
-      before do
-        create(:access_control_entry, :group_uuid => group1.uuid, :aceable => portfolio)
-      end
-
-      it "returns an empty array" do
-        expect(subject.process.result.count).to eq(0)
-      end
-    end
-
-    context "when there are no permissions for one access control entry but permissions for another" do
-      let(:uuids) { [group1.uuid, group2.uuid] }
-      let(:pagination_options) { {:limit => Catalog::ShareInfo::MAX_GROUPS_LIMIT, :uuid => uuids} }
-      let(:group_list) { [group1, group2] }
-
-      before do
-        create(:access_control_entry, :group_uuid => group2.uuid, :aceable => portfolio)
-        create(:access_control_entry, :has_read_and_update_permission, :group_uuid => group1.uuid, :aceable => portfolio)
-      end
-
-      it_behaves_like "#process that has permissions"
     end
   end
 end

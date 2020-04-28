@@ -29,33 +29,13 @@ describe Catalog::UpdateOrderItem, :type => :service do
     end
 
     context "when the order item is findable" do
-      let(:service_instance) { TopologicalInventoryApiClient::ServiceInstance.new(:external_url => external_url) }
-      let(:external_url) { "external url" }
       let(:topology_task_ref) { "123" }
-
-      before do
-        stub_request(:get, topological_url("service_instances/321")).to_return(
-          :status  => 200,
-          :body    => service_instance.to_json,
-          :headers => default_headers
-        )
-      end
-
       context "when the status of the task is ok" do
         let(:status) { "ok" }
 
         context "when the state is completed" do
           let(:state) { "completed" }
-
-          before do
-            stub_request(:get, topological_url("service_instances/321")).to_return(
-              :status  => 200,
-              :body    => service_instance.to_json,
-              :headers => default_headers
-            )
-          end
-
-          shared_examples_for "#process when it all goes well" do
+          context "#process when it all goes well" do
             it "creates a progress message about the payload" do
               subject.process
               latest_progress_message = ProgressMessage.second_to_last
@@ -91,32 +71,11 @@ describe Catalog::UpdateOrderItem, :type => :service do
               expect(order.state).to eq("Completed")
             end
           end
-
-          context "when the service instance has an external url" do
-            it_behaves_like "#process when it all goes well"
-
-            it "updates the order item with the external url" do
-              subject.process
-              item.reload
-              expect(item.external_url).to eq("external url")
-            end
-          end
-
-          context "when the service instance does not have an external url" do
-            let(:external_url) { nil }
-
-            it_behaves_like "#process when it all goes well"
-
-            it "sets the external_url to nil" do
-              subject.process
-              item.reload
-              expect(item.external_url).to eq(nil)
-            end
-          end
         end
 
         context "when the state is running" do
           let(:state) { "running" }
+          let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:url => "http://tower.com/job/3"}}) }
 
           it "creates multiple progress messages" do
             subject.process
@@ -125,6 +84,12 @@ describe Catalog::UpdateOrderItem, :type => :service do
             expect(context_progress_message.level).to eq("info")
             expect(payload_progress_message.message).to eq("Task update message received with payload: #{payload}")
             expect(context_progress_message.message).to eq("Order Item being processed with context: payloadcontext")
+          end
+
+          it "sets the external url from the payload" do
+            subject.process
+            item.reload
+            expect(item.external_url).to eq("http://tower.com/job/3")
           end
         end
       end
@@ -172,23 +137,6 @@ describe Catalog::UpdateOrderItem, :type => :service do
           subject.process
           order.reload
           expect(order.state).to eq("Failed")
-        end
-      end
-
-      context "when the item had been marked failed before and the task does not have a service instance id" do
-        let(:status) { "error" }
-        let(:state) { "bar" }
-        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {}) }
-
-        before do
-          item.update(:service_instance_ref => "321")
-          item.reload
-        end
-
-        it "sets the external url" do
-          subject.process
-          item.reload
-          expect(item.external_url).to eq("external url")
         end
       end
 
