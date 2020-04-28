@@ -2712,7 +2712,9 @@
           "name": {
             "type": "string",
             "title": "Name",
-            "example": "Sample Portfolio"
+            "example": "Sample Portfolio",
+            "minLength": 1,
+            "maxLength": 64
           },
           "description": {
             "type": "string",
