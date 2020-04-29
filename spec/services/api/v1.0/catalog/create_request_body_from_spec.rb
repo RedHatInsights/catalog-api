@@ -8,9 +8,6 @@ describe Api::V1x0::Catalog::CreateRequestBodyFrom, :type => [:service, :current
     let(:sanitize_service_instance) { instance_double(Api::V1x0::Catalog::OrderItemSanitizedParameters, :sanitized_parameters => {:a => 1}) }
     let(:local_tag_service_instance) { instance_double(Api::V1x0::Tags::CollectLocalOrderResources, :tag_resources => ["a"]) }
     let(:remote_tag_service_instance) { instance_double(Api::V1x0::Tags::Topology::RemoteInventory, :tag_resources => ["b"]) }
-    let(:service_offering_response) do
-      TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true}, :source_id => "333", :name => "test-platform-name")
-    end
     let(:source_response) do
       SourcesApiClient::Source.new(:name => 'the platform')
     end
