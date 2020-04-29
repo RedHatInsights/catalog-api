@@ -101,4 +101,33 @@ describe Portfolio do
       expect(Portfolio.policy_class).to eq(PortfolioPolicy)
     end
   end
+
+  context "tags" do
+    let(:options) { { :namespace => 'test', :value => '1' } }
+    let(:name) { 'fred' }
+    before do
+      portfolio.tag_add(name, options)
+    end
+
+    it "#tag_list" do
+      expect(portfolio.tag_list).to match_array([name])
+    end
+
+    it "#taggings" do
+      expect(portfolio.taggings.first).to include(:name => name)
+    end
+
+    it "#tag_remove" do
+      portfolio.tag_remove(name, options)
+      expect(portfolio.tag_list).to be_empty
+    end
+
+    it ".tagged_with" do
+      expect(Portfolio.tagged_with(name, options).first.id). to eq(portfolio.id)
+    end
+
+    it ".taggable?" do
+      expect(Portfolio.taggable?).to be_truthy
+    end
+  end
 end
