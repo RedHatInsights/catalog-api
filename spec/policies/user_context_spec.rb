@@ -23,7 +23,8 @@ describe UserContext, [:type => :current_forwardble] do
   describe ".with_user_context" do
     it "uses the given user" do
       expect(Thread.current[:user_context]).to be_nil
-      UserContext.with_user_context(subject) do
+      UserContext.with_user_context(subject) do |uc|
+        expect(uc).to eq(subject)
         expect(Thread.current[:user_context]).not_to be_nil
       end
       expect(Thread.current[:user_context]).to be_nil
