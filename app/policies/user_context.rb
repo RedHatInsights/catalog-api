@@ -46,7 +46,7 @@ class UserContext
   def self.with_user_context(user_context)
     saved_user_context   = Thread.current[:user_context]
     self.current_user_context = user_context
-    yield
+    yield current_user_context
   ensure
     Thread.current[:user_context] = saved_user_context
   end
