@@ -38,6 +38,7 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
           "destroy"      => true,
           "update"       => true,
           "edit_survey"  => true,
+          "show"         => true,
           "set_approval" => true
         )
       end
