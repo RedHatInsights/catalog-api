@@ -14,8 +14,10 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
   end
 
   describe "GET /portfolio_items/:portfolio_item_id #show" do
-    before do
-      get "#{api_version}/portfolio_items/#{portfolio_item_id}", :headers => default_headers
+    subject { get "#{api_version}/portfolio_items/#{portfolio_item_id}", :headers => default_headers }
+
+    before do |example|
+      subject unless example.metadata[:subject_inside]
     end
 
     context 'the portfolio_item exists' do
@@ -42,6 +44,8 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
           "set_approval" => true
         )
       end
+
+       it_behaves_like "action that tests authorization", :show?, PortfolioItem
     end
 
     context 'the portfolio_item does not exist' do
