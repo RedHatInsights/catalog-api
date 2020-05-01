@@ -132,7 +132,6 @@ describe Portfolio do
   end
 
   describe "#copy_name" do
-
     it "calls create_copy_name" do
       expect(Catalog::NameAdjust).to receive(:create_copy_name).with(portfolio.name, [portfolio.name], 64)
       portfolio.copy_name
