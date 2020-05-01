@@ -5,6 +5,8 @@ class Portfolio < ApplicationRecord
   include Aceable
   include UserCapabilities
 
+  MAX_NAME_LENGTH = 64
+
   destroy_dependencies :portfolio_items
 
   acts_as_tenant(:tenant)
@@ -12,13 +14,17 @@ class Portfolio < ApplicationRecord
   default_scope -> { kept.order(Arel.sql('LOWER(portfolios.name)')) }
   belongs_to :icon, :optional => true
 
-  validates :name, :presence => true, :length => {:maximum => 64}, :uniqueness => { :scope => %i(tenant_id discarded_at) }
+  validates :name, :presence => true, :length => {:maximum => MAX_NAME_LENGTH}, :uniqueness => { :scope => %i(tenant_id discarded_at) }
   validates :enabled_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
 
   has_many :portfolio_items, :dependent => :destroy
 
   def add_portfolio_item(portfolio_item)
     portfolio_items << portfolio_item
+  end
+
+  def copy_name
+    Catalog::NameAdjust.create_copy_name(name, Portfolio.all.pluck(:name), MAX_NAME_LENGTH)
   end
 
   def metadata
