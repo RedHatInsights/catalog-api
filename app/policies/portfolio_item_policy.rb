@@ -12,6 +12,10 @@ class PortfolioItemPolicy < ApplicationPolicy
     rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
   end
 
+  def show?
+    rbac_access.resource_check('read', @record.portfolio_id, Portfolio)
+  end
+
   def destroy?
     rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
   end

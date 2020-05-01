@@ -2,6 +2,7 @@ module Api
   module V1x0
     class PortfolioItemsController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
+      include Api::V1x0::Mixins::ShowMixin
 
       def index
         if params[:portfolio_id]
@@ -27,10 +28,6 @@ module Api
         portfolio_item.update!(params_for_update)
 
         render :json => portfolio_item
-      end
-
-      def show
-        render :json => PortfolioItem.find(params.require(:id))
       end
 
       def destroy
