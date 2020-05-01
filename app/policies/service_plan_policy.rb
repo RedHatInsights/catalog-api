@@ -4,8 +4,14 @@ class ServicePlanPolicy < ApplicationPolicy
   end
 
   def update_modified?
-    rbac_access.resource_check("update", @record.portfolio_item.portfolio_id, Portfolio)
+    update_portfolio_check
   end
 
   alias reset? update_modified?
+
+  private
+
+  def portfolio_id
+    @record.portfolio_item.portfolio_id
+  end
 end
