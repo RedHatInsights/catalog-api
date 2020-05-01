@@ -2,10 +2,11 @@ module Catalog
   class NameAdjust
     COPY_REGEX = '^Copy (\(\d\) )?of'.freeze
 
-    def self.create_copy_name(original_name, names)
+    def self.create_copy_name(original_name, names, max_length = nil)
       original_name.sub!(COPY_REGEX, '')
       names.select! { |name| name.match("#{COPY_REGEX} #{original_name}") }
-      copy_name(original_name, names).truncate(64)
+      copied_name = copy_name(original_name, names)
+      max_length ? copied_name.truncate(max_length) : copied_name
     end
 
     class << self
