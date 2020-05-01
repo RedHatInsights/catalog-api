@@ -23,10 +23,6 @@ class Portfolio < ApplicationRecord
     portfolio_items << portfolio_item
   end
 
-  def copy_name
-    Catalog::NameAdjust.create_copy_name(name, Portfolio.all.pluck(:name), MAX_NAME_LENGTH)
-  end
-
   def metadata
     {:user_capabilities => user_capabilities,
      :shared            => self.access_control_entries.any?}
