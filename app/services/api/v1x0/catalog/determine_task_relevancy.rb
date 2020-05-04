@@ -27,9 +27,9 @@ module Api
         private
 
         def delegate_task
-          if @task.context.has_key_path?(:service_instance)
+          if @task.context&.has_key_path?(:service_instance)
             UpdateOrderItem.new(@topic, @task).process
-          elsif @task.context.has_key_path?(:applied_inventories)
+          elsif @task.context&.has_key_path?(:applied_inventories)
             Rails.logger.info("Creating approval request for task")
             CreateApprovalRequest.new(@task).process
           else
