@@ -14,6 +14,9 @@ module Api
       end
 
       def create
+        portfolio = PortfolioItem.find(params.require(:portfolio_item_id)).portfolio
+        authorize(portfolio, :policy_class => ServicePlanPolicy)
+
         svc = Catalog::ImportServicePlans.new(params.require(:portfolio_item_id))
         render :json => svc.process.json
       end
@@ -41,12 +44,15 @@ module Api
 
       def update_modified
         plan = ServicePlan.find(params.require(:service_plan_id))
+        authorize(plan)
         plan.update!(:modified => params.require(:modified))
 
         render :json => plan.modified
       end
 
       def reset
+        service_plan = ServicePlan.find(params.require(:service_plan_id))
+        authorize(service_plan)
         status = Catalog::ServicePlanReset.new(params.require(:service_plan_id)).process.status
         head status
       end

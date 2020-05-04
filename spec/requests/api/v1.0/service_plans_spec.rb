@@ -122,8 +122,12 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
 
   describe "#create" do
     context "when there is not a service_plan for the portfolio_item specified" do
-      before do
+      subject do
         post "#{api_version}/service_plans", :headers => default_headers, :params => {:portfolio_item_id => portfolio_item_without_service_plan.id.to_s}
+      end
+
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
 
       it "pulls in the service plans" do
@@ -137,6 +141,8 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
       it "returns the base schema in the :create_json_schema field" do
         expect(json.first["create_json_schema"]).to eq JSON.parse(modified_schema)
       end
+
+      it_behaves_like "action that tests authorization", :create?, ServicePlan
     end
 
     context "when a service_plan already exists for the portfolio_item specified" do
@@ -219,8 +225,12 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
   end
 
   describe "#update_modified" do
-    before do
+    subject do
       patch "#{api_version}/service_plans/#{service_plan.id}/modified", :headers => default_headers, :params => params
+    end
+
+    before do |example|
+      subject unless example.metadata[:subject_inside]
     end
 
     context "when patching the modified schema with a valid schema" do
@@ -233,6 +243,8 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
       it "returns the newly modified schema from the service_plan" do
         expect(json).to eq params[:modified]
       end
+
+      it_behaves_like "action that tests authorization", :update_modified?, ServicePlan
     end
 
     context "when patching in a bad schema" do
@@ -251,30 +263,38 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
       it "fails validation" do
         expect(first_error_detail).to match(/Catalog::InvalidSurvey/)
       end
+
+      it_behaves_like "action that tests authorization", :update_modified?, ServicePlan
     end
   end
 
   describe "#reset" do
+    subject { post "#{api_version}/service_plans/#{service_plan.id}/reset", :headers => default_headers }
+
     context "when there is a modified schema" do
-      before do
-        post "#{api_version}/service_plans/#{service_plan.id}/reset", :headers => default_headers
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
 
       it "returns a 200" do
         expect(response).to have_http_status :ok
       end
+
+      it_behaves_like "action that tests authorization", :reset?, ServicePlan
     end
 
     context "when there is not a modified schema" do
-      before do
+      before do |example|
         service_plan.update!(:modified => nil)
+
+        subject unless example.metadata[:subject_inside]
       end
 
       it "returns a 204" do
-        post "#{api_version}/service_plans/#{service_plan.id}/reset", :headers => default_headers
-
         expect(response).to have_http_status :no_content
       end
+
+      it_behaves_like "action that tests authorization", :reset?, ServicePlan
     end
   end
 end
