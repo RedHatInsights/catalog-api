@@ -20,7 +20,7 @@ module Api
 
         def make_copy
           @portfolio.dup.tap do |new_portfolio|
-            new_portfolio.name = @name || ::Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name))
+            new_portfolio.name = @name || ::Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name), Portfolio::MAX_NAME_LENGTH)
 
             duplicate_icon(@portfolio, new_portfolio) if @portfolio.icon_id.present?
 
