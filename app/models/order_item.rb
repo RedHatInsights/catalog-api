@@ -5,7 +5,7 @@ class OrderItem < ApplicationRecord
   destroy_dependencies :progress_messages
   attribute :state, :string, :default => 'Created'
   validates_inclusion_of :state,
-    :in => ["Created", "Approval Pending", "Ordered", "Failed", "Completed", "Approved", "Denied", "Canceled"].freeze,
+    :in => ["Approval Pending", "Approved", "Canceled", "Completed", "Created", "Denied", "Failed", "Ordered"].freeze,
     :message => "state %{value} is not included in the list"
 
   acts_as_tenant(:tenant)
