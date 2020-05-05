@@ -126,5 +126,18 @@ describe Api::V1x0::Catalog::ApprovalTransition do
         expect(msg.message).to eq "Error Submitting Order #{order.id}, #{topo_ex.message}"
       end
     end
+
+    context "when the approval fails" do
+      before do
+        approval.update(:state => "error")
+      end
+
+      it "fails the order" do
+        order_item_transition.process
+        msg = order_item.progress_messages.last
+        expect(msg.level).to eq "error"
+        expect(msg.message).to eq "Order #{order.id} has approval errors"
+      end
+    end
   end
 end

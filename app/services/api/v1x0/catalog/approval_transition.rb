@@ -30,6 +30,9 @@ module Api
           elsif canceled?
             @state = "Canceled"
             mark_canceled
+          elsif error?
+            @state = "Failed"
+            mark_errored
           else
             @state = "Pending"
             ::Catalog::OrderStateTransition.new(@order_item.order).process
@@ -57,6 +60,12 @@ module Api
           Rails.logger.info("Order #{@order_item.order_id} has been denied")
         end
 
+        def mark_errored
+          finalize_order
+          @order_item.update_message("error", "Order #{@order_item.order_id} has approval errors")
+          Rails.logger.error("Order #{@order_item.order_id} has failed")
+        end
+
         def finalize_order
           @order_item.update(:state => @state)
           ::Catalog::OrderStateTransition.new(@order_item.order).process
@@ -72,6 +81,10 @@ module Api
 
         def canceled?
           @approvals.present? && @approvals.any? { |req| req.state == "canceled" }
+        end
+
+        def error?
+          @approvals.present? && @approvals.any? { |req| req.state == "error" }
         end
       end
     end
