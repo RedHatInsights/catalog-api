@@ -14,20 +14,32 @@ describe Api::V1x0::Catalog::DetermineTaskRelevancy, :type => :service do
     context "when the state is running" do
       let(:state) { "running" }
       let(:status) { "ok" }
-      let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
 
-      it "updates the item with a progress message" do
-        subject.process
-        progress_message = ProgressMessage.last
-        expect(progress_message.level).to eq("info")
-        expect(progress_message.message).to match(/Order Item being processed with context.*external_url/)
-        expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+      context "with payload" do
+        let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
+
+        it "updates the item with a progress message" do
+          subject.process
+          progress_message = ProgressMessage.last
+          expect(progress_message.level).to eq("info")
+          expect(progress_message.message).to match(/Order Item being processed with context.*external_url/)
+          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+        end
+
+        it "sets the external_url from the payload" do
+          subject.process
+          order_item.reload
+          expect(order_item.external_url).to eq "external_url"
+        end
       end
 
-      it "sets the external_url from the payload" do
-        subject.process
-        order_item.reload
-        expect(order_item.external_url).to eq "external_url"
+      context "without payload" do
+        let(:payload_context) { nil }
+
+        it "logs a message" do
+          expect(Rails.logger).to receive(:info).twice
+          subject.process
+        end
       end
     end
 
