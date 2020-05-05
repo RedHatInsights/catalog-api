@@ -3,6 +3,10 @@ class OrderItem < ApplicationRecord
   include Discard::Model
   include Api::V1x0::Catalog::DiscardRestore
   destroy_dependencies :progress_messages
+  attribute :state, :string, :default => 'Created'
+  validates_inclusion_of :state,
+    :in => ["Created", "Approval Pending", "Ordered", "Failed", "Completed", "Approved", "Denied", "Canceled"].freeze,
+    :message => "state %{value} is not included in the list"
 
   acts_as_tenant(:tenant)
 
