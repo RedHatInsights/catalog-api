@@ -4,12 +4,11 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def create?
-    portfolio_id = @record.class == Portfolio ? @record.id : @record.portfolio_id
-    rbac_access.resource_check('update', portfolio_id, Portfolio)
+    update_portfolio_check
   end
 
   def update?
-    rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+    update_portfolio_check
   end
 
   def show?
@@ -17,7 +16,7 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def destroy?
-    rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+    update_portfolio_check
   end
 
   def copy?
@@ -32,11 +31,11 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def edit_survey?
-    rbac_access.resource_check('update', @record.portfolio_id, Portfolio)
+    update_portfolio_check
   end
 
   def set_approval?
-    rbac_access.resource_check('update', @record.portfolio_id, Portfolio) &&
+    update_portfolio_check &&
       rbac_access.approval_workflow_check
   end
 
@@ -45,6 +44,10 @@ class PortfolioItemPolicy < ApplicationPolicy
   def can_read_and_update_destination?(destination_id)
     rbac_access.resource_check('read', destination_id, Portfolio) &&
       rbac_access.resource_check('update', destination_id, Portfolio)
+  end
+
+  def portfolio_id
+    @record.class == Portfolio ? @record.id : @record.portfolio_id
   end
 
   class Scope < Scope
