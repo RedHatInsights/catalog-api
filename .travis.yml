@@ -4,6 +4,7 @@ sudo: false
 cache: bundler
 rvm:
 - 2.5.5
+- 2.6.6
 addons:
   postgresql: '10'
 env:
