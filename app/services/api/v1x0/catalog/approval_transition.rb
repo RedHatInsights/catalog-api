@@ -89,7 +89,7 @@ module Api
 
         def reasons
           return "" unless @approvals.present?
-          @approvals.collect(&:reason).compact.join('.')
+          @approvals.collect(&:reason).compact.join('. ')
         end
       end
     end
