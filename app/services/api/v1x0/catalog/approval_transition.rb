@@ -62,8 +62,8 @@ module Api
 
         def mark_errored
           finalize_order
-          @order_item.update_message("error", "Order #{@order_item.order_id} has approval errors")
-          Rails.logger.error("Order #{@order_item.order_id} has failed")
+          @order_item.update_message("error", "Order #{@order_item.order_id} has approval errors. #{reasons}")
+          Rails.logger.error("Order #{@order_item.order_id} has failed. #{reasons}")
         end
 
         def finalize_order
@@ -85,6 +85,11 @@ module Api
 
         def error?
           @approvals.present? && @approvals.any? { |req| req.state == "error" }
+        end
+
+        def reasons
+          return "" unless @approvals.present?
+          @approvals.collect(&:reason).compact.join('.')
         end
       end
     end
