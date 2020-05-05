@@ -3181,9 +3181,10 @@
               "undecided",
               "approved",
               "denied",
-              "canceled"
+              "canceled",
+              "error"
             ],
-            "description": "The state of the approval request (approved, denied, undecided, canceled)",
+            "description": "The state of the approval request (approved, denied, undecided, canceled, error)",
             "readOnly": true
           }
         }
