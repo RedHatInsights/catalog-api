@@ -8,9 +8,28 @@ describe Internal::V1x0::NotifyController, :type => [:request, :v1_internal] do
       allow(approval_transition).to receive(:process)
     end
 
-    it "returns a 200" do
-      post "#{api_version}/notify/approval_request/123", :headers => default_headers, :params => {:payload => {:decision => "approved", :request_id => "123"}, :message => "request_finished"}
-      expect(response.status).to eq(200)
+    context "approved decision" do
+      let(:params) do
+        { :payload => {:decision => "approved", :request_id => "123"},
+          :message => 'request_finished' }
+      end
+
+      it "returns a 200" do
+        post "#{api_version}/notify/approval_request/123", :headers => default_headers, :params => params
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context "error decision" do
+      let(:params) do
+        { :payload => {:decision => "error", :reason => "Failed to send email", :request_id => "123"},
+          :message => 'request_finished' }
+      end
+
+      it "returns a 200" do
+        post "#{api_version}/notify/approval_request/123", :headers => default_headers, :params => params
+        expect(response.status).to eq(200)
+      end
     end
   end
 
