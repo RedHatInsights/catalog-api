@@ -123,6 +123,11 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
 
         expect(response).to have_http_status(:forbidden)
       end
+
+      it "uses a custom message" do
+        post "#{api_version}/portfolios", :headers => default_headers, :params => valid_attributes
+        expect(first_error_detail).to eq("You are not authorized to create this portfolio")
+      end
     end
   end
 
@@ -145,6 +150,11 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
       it 'fails updating a portfolio' do
         patch "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
         expect(response).to have_http_status(:forbidden)
+      end
+
+      it "uses a custom message" do
+        patch "#{api_version}/portfolios/#{portfolio1.id}", :headers => default_headers, :params => updated_attributes
+        expect(first_error_detail).to eq("You are not authorized to update this portfolio")
       end
     end
   end
