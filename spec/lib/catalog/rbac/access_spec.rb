@@ -121,7 +121,7 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         let(:scopes) { [] }
 
         it "logs messages" do
-          expect(Rails.logger).to receive(:error).twice
+          expect(Rails.logger).to receive(:debug).twice
           subject.send(method, *arguments)
         end
 
