@@ -1,5 +1,5 @@
 module Api
-  module V1x0
+  module V1x1
     module Catalog
       class PortfolioItemOrderable
         attr_reader :result

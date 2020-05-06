@@ -1,4 +1,4 @@
-describe Api::V1x0::Catalog::PortfolioItemOrderable, :type => [:service, :current_forwardable, :topology, :sources] do
+describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :current_forwardable, :topology, :sources] do
   let(:subject) { described_class.new(portfolio_item) }
   let(:service_offering_ref) { '998' }
   let(:service_offering_source_ref) { '999' }
