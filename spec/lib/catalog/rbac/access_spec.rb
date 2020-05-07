@@ -121,8 +121,10 @@ describe Catalog::RBAC::Access, :type => [:current_forwardable] do
         let(:scopes) { [] }
 
         it "logs messages" do
-          expect(Rails.logger).to receive(:debug).thrice
+          allow(Rails.logger).to receive(:debug)
           subject.send(method, *arguments)
+
+          expect(Rails.logger).to have_received(:debug).with(/Scope does not include admin, group, or user/)
         end
 
         it "returns false" do
