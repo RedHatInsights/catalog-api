@@ -31,7 +31,7 @@ module Catalog
     config.autoload_paths += config.eager_load_paths
 
     config.autoload_paths << Rails.root.join('lib').to_s
-
+    config.log_level = (ENV['RAILS_LOG_LEVEL'] || 'debug').downcase.to_sym
     Insights::API::Common::Logging.activate(config)
     Insights::API::Common::Metrics.activate(config, "catalog_api")
   end
