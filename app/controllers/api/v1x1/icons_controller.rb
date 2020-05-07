@@ -2,7 +2,7 @@ require 'api/v1x1/catalog'
 module Api
   module V1x1
     class IconsController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Api::V1x1::Mixins::IndexMixin
 
       # Due to the fact form-data is getting uploaded and isn't supported by openapi_parser
       skip_before_action :validate_request, :only => %i[create]
