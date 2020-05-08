@@ -9,9 +9,10 @@ module Api
       end
 
       def create
-        authorize(Portfolio)
+        portfolio = authorize(Portfolio.new(writeable_params_for_create))
 
-        portfolio = Portfolio.create!(writeable_params_for_create)
+        portfolio.save!
+        portfolio.reload
         render :json => portfolio
       end
 
