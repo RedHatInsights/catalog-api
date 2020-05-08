@@ -12,7 +12,6 @@ module Api
         portfolio = authorize(Portfolio.new(writeable_params_for_create))
 
         portfolio.save!
-        portfolio.reload
         render :json => portfolio
       end
 
