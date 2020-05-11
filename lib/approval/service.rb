@@ -1,4 +1,4 @@
-require 'approval-api-client-ruby'
+require 'insights-approval-api-client'
 
 module Approval
   class Service

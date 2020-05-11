@@ -28,7 +28,7 @@ module ServiceSpecHelper
     url.to_s
   end
 
-  def approval_url(partial_path, api_version = "v1.0")
+  def approval_url(partial_path, api_version = "v1.2")
     url_string = "http://approval.example.com"
     url = URI.join(url_string, "api/", "approval/", "#{api_version}/", "#{partial_path}")
     url.to_s
