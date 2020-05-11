@@ -1,4 +1,5 @@
 module ServiceSpecHelper
+  DEFAULT_APPROVAL_API_VERSION = "v1.2"
   RSpec.configure do |config|
     config.around(:example, :type => :service) do |example|
       default_tenant = Tenant.first_or_create!(:external_tenant => default_account_number)
@@ -28,7 +29,7 @@ module ServiceSpecHelper
     url.to_s
   end
 
-  def approval_url(partial_path, api_version = "v1.2")
+  def approval_url(partial_path, api_version = DEFAULT_APPROVAL_API_VERSION)
     url_string = "http://approval.example.com"
     url = URI.join(url_string, "api/", "approval/", "#{api_version}/", "#{partial_path}")
     url.to_s
