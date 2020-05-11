@@ -1,6 +1,8 @@
 if ENV['CI']
   require 'simplecov'
-  SimpleCov.start
+  SimpleCov.start do
+    track_files '{app,lib}/**/*.rb'
+  end
 end
 
 ENV['RAILS_ENV'] ||= 'test'
