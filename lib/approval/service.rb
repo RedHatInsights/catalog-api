@@ -1,5 +1,3 @@
-require 'insights-approval-api-client'
-
 module Approval
   class Service
     def self.call(klass)
