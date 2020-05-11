@@ -43,5 +43,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'topological_inventory-api-client', '~> 2.0'
 
-gem 'approval-api-client-ruby', :git => 'https://github.com/RedHatInsights/approval-api-client-ruby', :branch => "master"
+gem 'insights-approval-api-client', '~> 1.2'
 gem 'rbac-api-client', :git => "https://github.com/RedHatInsights/insights-rbac-api-client-ruby", :branch => "master"
