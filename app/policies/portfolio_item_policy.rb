@@ -60,8 +60,8 @@ class PortfolioItemPolicy < ApplicationPolicy
       elsif access_scopes.include?('user')
         scope.by_owner
       else
-        Rails.logger.error("Error in scope search for #{scope.table_name}")
-        Rails.logger.error("Scope does not include admin, group, or user. List of scopes: #{access_scopes}")
+        Rails.logger.debug("Scope search for #{scope.table_name}")
+        Rails.logger.debug("Scope does not include admin, group, or user. List of scopes: #{access_scopes}")
         raise Catalog::NotAuthorized, "Not Authorized for #{scope.table_name}"
       end
     end
