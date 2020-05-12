@@ -33,5 +33,20 @@ module Api
       class UpdateOrderItem                     < Api::V1x0::Catalog::UpdateOrderItem; end
       class ValidateSource                      < Api::V1x0::Catalog::ValidateSource; end
     end
+
+    module Group
+      class Seed < Api::V1x0::Group::Seed; end
+    end
+
+    module ServiceOffering
+      class AddToPortfolioItem < Api::V1x0::ServiceOffering::AddToPortfolioItem; end
+    end
+
+    module Tags
+      class CollectLocalOrderResources < Api::V1x0::Tags::CollectLocalOrderResources; end
+      module Topology
+        class RemoteInventory < Api::V1x0::Tags::Topology::RemoteInventory; end
+      end
+    end
   end
 end
