@@ -103,6 +103,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -303,6 +306,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -604,6 +610,9 @@
             "$ref": "#/components/parameters/QueryFilter"
           },
           {
+            "$ref": "#/components/parameters/QuerySortBy"
+          },
+          {
             "$ref": "#/components/parameters/ID"
           }
         ],
@@ -834,6 +843,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -1160,6 +1172,9 @@
             "$ref": "#/components/parameters/QueryFilter"
           },
           {
+            "$ref": "#/components/parameters/QuerySortBy"
+          },
+          {
             "$ref": "#/components/parameters/ID"
           }
         ],
@@ -1297,6 +1312,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -1429,6 +1447,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -1675,6 +1696,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -1830,6 +1854,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -1875,6 +1902,9 @@
           },
           {
             "$ref": "#/components/parameters/QueryFilter"
+          },
+          {
+            "$ref": "#/components/parameters/QuerySortBy"
           }
         ],
         "responses": {
@@ -2663,6 +2693,15 @@
         "schema": {
           "type": "object"
         }
+      },
+      "QuerySortBy": {
+        "in": "query",
+        "name": "sort_by",
+        "description": "Field to sort collection by.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "responses": {
@@ -3181,9 +3220,10 @@
               "undecided",
               "approved",
               "denied",
-              "canceled"
+              "canceled",
+              "error"
             ],
-            "description": "The state of the approval request (approved, denied, undecided, canceled)",
+            "description": "The state of the approval request (approved, denied, undecided, canceled, error)",
             "readOnly": true
           }
         }

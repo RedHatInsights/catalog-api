@@ -15,7 +15,7 @@ describe "v1.0 - Settings API", :type => [:request, :v1] do
       end
 
       it 'returns the json schema as well' do
-        expect(json["schema"]).to eq JSON.parse(Catalog::TenantSettings.new(tenant).send(:schema))
+        expect(json["schema"]).to eq JSON.parse(Api::V1x0::Catalog::TenantSettings.new(tenant).send(:schema))
       end
     end
 

@@ -1,6 +1,6 @@
 class ApprovalRequest < ApplicationRecord
   acts_as_tenant(:tenant)
-  enum :state => [:undecided, :approved, :denied, :canceled]
+  enum :state => [:undecided, :approved, :denied, :canceled, :error]
 
   belongs_to :order_item
 

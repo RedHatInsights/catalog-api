@@ -23,10 +23,10 @@ describe OrderPolicy do
   end
 
   describe "#submit_order?" do
-    let(:service_offering) { instance_double(Catalog::ServiceOffering) }
+    let(:service_offering) { instance_double(Api::V1x0::Catalog::ServiceOffering) }
 
     before do
-      allow(Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering)
+      allow(Api::V1x0::Catalog::ServiceOffering).to receive(:new).with(order).and_return(service_offering)
       allow(service_offering).to receive(:process).and_return(service_offering)
       allow(rbac_access).to receive(:resource_check).with('order', portfolio.id, Portfolio).and_return(order_check)
       allow(rbac_access).to receive(:resource_check).with('order', portfolio2.id, Portfolio).and_return(order_check2)

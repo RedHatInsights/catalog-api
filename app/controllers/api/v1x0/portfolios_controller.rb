@@ -2,15 +2,16 @@ module Api
   module V1x0
     class PortfoliosController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
+      include Api::V1x0::Mixins::ShowMixin
 
       def index
         collection(Portfolio.all)
       end
 
       def create
-        authorize(Portfolio)
+        portfolio = authorize(Portfolio.new(writeable_params_for_create))
 
-        portfolio = Portfolio.create!(writeable_params_for_create)
+        portfolio.save!
         render :json => portfolio
       end
 
@@ -19,13 +20,6 @@ module Api
         authorize(portfolio)
 
         portfolio.update!(params_for_update)
-
-        render :json => portfolio
-      end
-
-      def show
-        portfolio = Portfolio.find(params.require(:id))
-        authorize(portfolio)
 
         render :json => portfolio
       end

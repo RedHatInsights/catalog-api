@@ -41,6 +41,10 @@ class ApplicationPolicy
 
   private
 
+  def update_portfolio_check
+    rbac_access.resource_check("update", portfolio_id, Portfolio)
+  end
+
   def rbac_access
     @rbac_access ||= Catalog::RBAC::Access.new(@user, @record)
   end

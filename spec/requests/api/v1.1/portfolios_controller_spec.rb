@@ -79,6 +79,24 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
         expect(json['data'].first['metadata']).to have_key('user_capabilities')
       end
     end
+
+    context "with sort_by" do
+      let!(:new_portfolio) { create(:portfolio, :owner => "a very new owner") }
+
+      it "sorts when specified" do
+        get "#{api_version}/portfolios?sort_by=owner", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 2
+        expect(json["data"].first["owner"]).to eq new_portfolio.owner
+      end
+
+      it "does not sort when specified" do
+        get "#{api_version}/portfolios", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 2
+        expect(json["data"].first["owner"]).not_to eq new_portfolio.owner
+      end
+    end
   end
 
   describe "POST /portfolios #create" do
@@ -147,7 +165,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     let(:params) do
       {:group_uuids => [group_uuid], :permissions => ["read"]}
     end
-    let(:share_resource) { instance_double(Catalog::ShareResource) }
+    let(:share_resource) { instance_double(Api::V1x0::Catalog::ShareResource) }
     let(:options) do
       {
         :object => portfolio,
@@ -161,14 +179,14 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     end
 
     before do
-      allow(Catalog::ShareResource).to receive(:new).and_return(share_resource)
+      allow(Api::V1x0::Catalog::ShareResource).to receive(:new).and_return(share_resource)
       allow(share_resource).to receive(:process)
     end
 
     it_behaves_like "action that tests authorization", :share?, Portfolio
 
     it "shares the resource" do
-      expect(Catalog::ShareResource).to receive(:new).with(options)
+      expect(Api::V1x0::Catalog::ShareResource).to receive(:new).with(options)
       expect(share_resource).to receive(:process)
 
       subject
@@ -197,7 +215,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     let(:params) do
       {:group_uuids => [group_uuid], :permissions => ["read"]}
     end
-    let(:unshare_resource) { instance_double(Catalog::UnshareResource) }
+    let(:unshare_resource) { instance_double(Api::V1x0::Catalog::UnshareResource) }
     let(:options) do
       {
         :object => portfolio,
@@ -211,14 +229,14 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     end
 
     before do
-      allow(Catalog::UnshareResource).to receive(:new).and_return(unshare_resource)
+      allow(Api::V1x0::Catalog::UnshareResource).to receive(:new).and_return(unshare_resource)
       allow(unshare_resource).to receive(:process)
     end
 
     it_behaves_like "action that tests authorization", :unshare?, Portfolio
 
     it "unshares the resource" do
-      expect(Catalog::UnshareResource).to receive(:new).with(options)
+      expect(Api::V1x0::Catalog::UnshareResource).to receive(:new).with(options)
       expect(unshare_resource).to receive(:process)
 
       subject

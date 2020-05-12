@@ -5,13 +5,13 @@ module Api
         private
 
         def service_offering_check
-          service_offering_service = Catalog::ServiceOffering.new(@order).process
+          service_offering_service = Api::V1x0::Catalog::ServiceOffering.new(@order).process
           if service_offering_service.archived
             @order.order_items.each do |order_item|
               order_item.mark_failed(archived_error_message)
             end
 
-            raise Catalog::ServiceOfferingArchived, archived_error_message
+            raise ::Catalog::ServiceOfferingArchived, archived_error_message
           end
         end
 

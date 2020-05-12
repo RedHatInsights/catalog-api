@@ -3,7 +3,10 @@ module Api
     module Mixins
       module ShowMixin
         def show
-          render json: model.find(params.require(:id))
+          instance = model.find(params.require(:id))
+          authorize(instance)
+
+          render :json => instance
         end
       end
     end

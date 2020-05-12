@@ -10,16 +10,16 @@ RSpec.describe ApplicationController, :type => [:request, :v1x1] do
   end
 
   context "with api version v1" do
-    it "get api/v1/portfolios with tenant" do
-      get("/api/v1/portfolios/#{portfolio_id}", :headers => default_headers)
+    it "get api/catalog/v1/portfolios with tenant" do
+      get("/api/catalog/v1/portfolios/#{portfolio_id}", :headers => default_headers)
       expect(response.status).to eq(302)
       expect(response.headers["Location"]).to eq "#{api_version}/portfolios/#{portfolio_id}"
     end
 
-    it "get api/v1/portfolios without tenant" do
+    it "get api/catalog/v1/portfolios without tenant" do
       headers = { "CONTENT_TYPE" => "application/json" }
 
-      get("/api/v1/portfolios/#{portfolio_id}", :headers => headers)
+      get("/api/catalog/v1/portfolios/#{portfolio_id}", :headers => headers)
       expect(response.status).to eq(302)
       expect(response.headers["Location"]).to eq "#{api_version}/portfolios/#{portfolio_id}"
     end

@@ -93,6 +93,13 @@ describe PortfolioItemPolicy do
     end
   end
 
+  describe "#show?" do
+    it "delegates to the check for read permissions on the portfolio" do
+      expect(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+      expect(subject.show?).to eq(true)
+    end
+  end
+
   describe "#copy?" do
     let(:source_read_check) { true }
     let(:destination_read_check) { true }
@@ -241,6 +248,7 @@ describe PortfolioItemPolicy do
         "destroy"      => true,
         "copy"         => true,
         "set_approval" => true,
+        "show"         => true,
         "edit_survey"  => true
       })
     end

@@ -3,16 +3,10 @@ module Api
     class OrdersController < ApplicationController
       include Api::V1x0::Mixins::IndexMixin
       include Api::V1x0::Mixins::ServiceOfferingMixin
+      include Api::V1x0::Mixins::ShowMixin
 
       def index
         collection(Order.all)
-      end
-
-      def show
-        order = Order.find(params.require(:id))
-        authorize(order)
-
-        render :json => order
       end
 
       def create

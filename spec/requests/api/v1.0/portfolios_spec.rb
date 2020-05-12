@@ -1,6 +1,6 @@
 require 'securerandom'
 describe "v1.0 - Portfolios API", :type => [:request, :v1] do
-  let!(:portfolio)       { create(:portfolio) }
+   let!(:portfolio)       { create(:portfolio) }
   let!(:portfolio_item)  { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
   let(:portfolio_id)     { portfolio.id }
@@ -332,11 +332,11 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
       let(:uuid) { "123" }
       let(:group_names) { {"123" => "group_name"} }
 
-      let(:share_info) { instance_double(Catalog::ShareInfo, :result => result) }
+      let(:share_info) { instance_double(Api::V1x0::Catalog::ShareInfo, :result => result) }
       let(:result) { [:group_name => "group_name", :group_uuid => "123", :permissions => %w[read update]] }
 
       before do
-        allow(Catalog::ShareInfo).to receive(:new).with(:object => portfolio, :user_context => an_instance_of(UserContext)).and_return(share_info)
+        allow(Api::V1x0::Catalog::ShareInfo).to receive(:new).with(:object => portfolio, :user_context => an_instance_of(UserContext)).and_return(share_info)
         allow(share_info).to receive(:process).and_return(share_info)
       end
 

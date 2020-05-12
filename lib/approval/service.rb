@@ -1,5 +1,3 @@
-require 'approval-api-client-ruby'
-
 module Approval
   class Service
     def self.call(klass)
