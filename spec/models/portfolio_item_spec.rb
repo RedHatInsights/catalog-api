@@ -57,4 +57,14 @@ describe PortfolioItem do
       end.to raise_error(ActiveRecord::RecordInvalid, /Name is too long/)
     end
   end
+
+  context "callbacks" do
+    before { expect(subject).to receive(:update_portfolio_stats) }
+
+    %i[create destroy discard undiscard].each do |kind|
+      it "calls update_portfolio_stats on #{kind}" do
+        subject.run_callbacks kind
+      end
+    end
+  end
 end

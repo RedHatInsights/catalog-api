@@ -130,4 +130,52 @@ describe Portfolio do
       expect(Portfolio.taggable?).to be_truthy
     end
   end
+
+  context 'callbacks' do
+    before { subject.run_callbacks :create }
+
+    it 'adds limited keys to metadata' do
+      expect(subject.metadata.keys).to_not include(AncillaryMetadata::NON_METADATA_ATTRIBUTES)
+    end
+
+    it 'adds staticsitcs' do
+      expect(subject.metadata['statistics']).to include(
+        'portfolio_items'    => 0,
+        'shared_groups'      => 0
+      )
+    end
+  end
+
+  describe '#update_metadata' do
+    context 'ancillary_metadata instance does not exist' do
+      it 'creates ancillary_metadata instance but does not save it' do
+        expect(subject).to receive(:build_ancillary_metadata).and_call_original
+        expect(subject).to receive(:update_ancillary_metadata)
+
+        subject.update_metadata
+        expect(subject.ancillary_metadata.persisted?).to be false
+      end
+    end
+
+    context 'with an existing portfolio instance' do
+      subject { portfolio }
+
+      it 'updates and saves ancillary_metadata' do
+        expect(subject).to receive(:update_ancillary_metadata)
+        expect(subject.ancillary_metadata).to receive(:save!)
+
+        subject.update_metadata
+      end
+
+      context 'ancillary_metadata instance was destroyed' do
+        before { subject.destroy }
+
+        it 'returns without updating ancillary_metadata' do
+          expect(subject).to_not receive(:update_ancillary_metadata)
+
+          portfolio.update_metadata
+        end
+      end
+    end
+  end
 end

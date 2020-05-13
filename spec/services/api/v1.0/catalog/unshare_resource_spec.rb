@@ -40,6 +40,15 @@ describe Api::V1x0::Catalog::UnshareResource, :type => :service do
         portfolio.reload
         expect(portfolio.access_control_entries.last.permissions.collect(&:name)).to match_array(%w[read update])
       end
+
+      it "updates portfolio metadata" do
+        portfolio.update_metadata
+        expect(portfolio.metadata["statistics"]).to include("shared_groups" => 2)
+        expect(portfolio).to receive(:update_metadata).and_call_original
+
+        subject.process
+        expect(portfolio.metadata["statistics"]).to include("shared_groups" => 0)
+      end
     end
 
     context "when permissions are only 1 of the existing permissions" do
