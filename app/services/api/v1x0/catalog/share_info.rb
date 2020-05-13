@@ -2,7 +2,6 @@ module Api
   module V1x0
     module Catalog
       class ShareInfo
-        require 'rbac-api-client'
         attr_reader :result
         MAX_GROUPS_LIMIT = 500
 
