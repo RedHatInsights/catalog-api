@@ -89,14 +89,14 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
         get "#{api_version}/portfolios?sort_by=owner", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 2
-        expect(json['data'].collect { |item| item['owner'] }). to match(owners_list)
+        expect(json['data'].collect { |item| item['owner'] }).to match(owners_list)
       end
 
       it "by default sorts based on portfolio name" do
         get "#{api_version}/portfolios", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 2
-        expect(json['data'].collect { |item| item['name'] }). to match(default_names_list)
+        expect(json['data'].collect { |item| item['name'] }).to match(default_names_list)
       end
     end
   end
