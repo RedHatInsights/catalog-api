@@ -82,19 +82,21 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
 
     context "with sort_by" do
       let!(:new_portfolio) { create(:portfolio, :owner => "a very new owner") }
+      let(:default_names_list) { [portfolio.name, new_portfolio.name].sort }
+      let(:owners_list) { [portfolio.owner, new_portfolio.owner].sort }
 
-      it "sorts when specified" do
+      it "sorts by owner when specified" do
         get "#{api_version}/portfolios?sort_by=owner", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 2
-        expect(json["data"].first["owner"]).to eq new_portfolio.owner
+        expect(json['data'].collect { |item| item['owner'] }).to match(owners_list)
       end
 
-      it "does not sort when specified" do
+      it "by default sorts based on portfolio name" do
         get "#{api_version}/portfolios", :headers => default_headers
 
         expect(json["meta"]["count"]).to eq 2
-        expect(json["data"].first["owner"]).not_to eq new_portfolio.owner
+        expect(json['data'].collect { |item| item['name'] }).to match(default_names_list)
       end
     end
   end
