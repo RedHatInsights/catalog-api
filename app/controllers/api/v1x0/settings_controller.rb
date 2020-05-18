@@ -1,34 +1,33 @@
 module Api
   module V1x0
     class SettingsController < ApplicationController
-      include Api::V1x0::Mixins::RBACMixin
-
       skip_before_action :validate_primary_collection_id
 
-      before_action do
-        role_check("Catalog Administrator")
-      end
-
       def index
+        authorize(tenant, :show?)
         settings = Catalog::TenantSettings.new(tenant)
         render :json => settings.process.response
       end
 
       def show
+        authorize(tenant, :show?)
         render :json => { params.require(:id) => setting(params.require(:id)) }
       end
 
       def create
+        authorize(tenant, :update?)
         tenant.add_setting(params.require(:name), params.require(:value))
         render :json => { params[:name] => setting(params[:name]) }
       end
 
       def update
+        authorize(tenant, :update?)
         tenant.update_setting(params.require(:id), params.require(:value))
         render :json => { params[:id] => setting(params[:id]) }
       end
 
       def destroy
+        authorize(tenant, :update?)
         tenant.delete_setting(params.require(:id))
         head :no_content
       end

@@ -30,14 +30,16 @@ describe "v1.0 - Group Seed API", :type => [:request, :v1] do
     end
   end
 
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+
+  before do
+    allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+    allow(catalog_access).to receive(:process).and_return(catalog_access)
+    allow(catalog_access).to receive(:accessible?).with("tenants", "read").and_return(true)
+    allow(catalog_access).to receive(:accessible?).with("tenants", "update").and_return(true)
+  end
+
   describe 'GET /tenants' do
-    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
-
-    before do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
-      allow(catalog_access).to receive(:process).and_return(catalog_access)
-    end
-
     context "all tenants" do
       before do
         get "#{api_version}/tenants", :headers => default_headers
