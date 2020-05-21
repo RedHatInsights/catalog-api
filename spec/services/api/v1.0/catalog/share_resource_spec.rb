@@ -30,9 +30,8 @@ describe Api::V1x0::Catalog::ShareResource, :type => :service do
     end
 
     it "updates portfolio metadata" do
-      expect(portfolio).to receive(:update_metadata).and_call_original
+      expect(portfolio).to receive(:update_metadata)
       subject.process
-      expect(portfolio.metadata["statistics"]).to include("shared_groups" => 1)
     end
   end
 end

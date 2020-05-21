@@ -25,7 +25,7 @@ class Portfolio < ApplicationRecord
   end
 
   def metadata
-    ancillary_metadata.metadata_attributes.merge(:user_capabilities => user_capabilities)
+    ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities)
   end
 
   private
@@ -36,8 +36,8 @@ class Portfolio < ApplicationRecord
 
   def statistics_metadata
     {
-      'portfolio_items'    => portfolio_items.count,
-      'shared_groups'      => access_control_entries.count { |ace| ace.permissions.present? }
+      'portfolio_items' => portfolio_items.count,
+      'shared_groups'   => access_control_entries.count { |ace| ace.permissions.present? }
     }
   end
 end

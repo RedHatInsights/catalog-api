@@ -17,7 +17,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
 
   describe "GET /portfolios/:portfolio_id #show" do
     before do
-      create(:access_control_entry, :has_read_permission, :aceable_id => portfolio_id, :group_uuid => "456-123")
+      create(:access_control_entry, :has_read_permission, :aceable => portfolio, :group_uuid => "456-123")
       portfolio.update_metadata
       get "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers
     end
@@ -48,7 +48,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
       end
 
       it "returns shared status" do
-        expect(json.dig('metadata', 'statistics', 'shared_groups')).to eql(1)
+        expect(json.dig('metadata', 'statistics')).to include('shared_groups' => 1)
       end
     end
 

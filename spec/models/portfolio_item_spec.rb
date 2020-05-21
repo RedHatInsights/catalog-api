@@ -59,10 +59,13 @@ describe PortfolioItem do
   end
 
   context "callbacks" do
-    before { expect(subject).to receive(:update_portfolio_stats) }
+    let(:portfolio) { build(:portfolio) }
+    subject! { create(:portfolio_item, :portfolio => portfolio) }
 
     %i[create destroy discard undiscard].each do |kind|
       it "calls update_portfolio_stats on #{kind}" do
+        expect(portfolio).to receive(:update_metadata)
+
         subject.run_callbacks kind
       end
     end

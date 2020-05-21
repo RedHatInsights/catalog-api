@@ -42,12 +42,9 @@ describe Api::V1x0::Catalog::UnshareResource, :type => :service do
       end
 
       it "updates portfolio metadata" do
-        portfolio.update_metadata
-        expect(portfolio.metadata["statistics"]).to include("shared_groups" => 2)
-        expect(portfolio).to receive(:update_metadata).and_call_original
+        expect(portfolio).to receive(:update_metadata)
 
         subject.process
-        expect(portfolio.metadata["statistics"]).to include("shared_groups" => 0)
       end
     end
 

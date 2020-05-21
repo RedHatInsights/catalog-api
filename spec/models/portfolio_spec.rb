@@ -2,9 +2,9 @@ require "models/concerns/aceable_shared"
 describe Portfolio do
   let(:tenant1)           { create(:tenant, :external_tenant => "1") }
   let(:tenant2)           { create(:tenant, :external_tenant => "2") }
-  let(:portfolio)         { create(:portfolio, :tenant_id => tenant1.id) }
+  let(:portfolio)         { create(:portfolio, :tenant => tenant1) }
   let(:portfolio_id)      { portfolio.id }
-  let!(:portfolio_item)   { create(:portfolio_item, :portfolio_id => portfolio.id, :tenant_id => tenant1.id) }
+  let!(:portfolio_item)   { create(:portfolio_item, :portfolio => portfolio, :tenant => tenant1) }
   let(:portfolio_item_id) { portfolio_item.id }
 
   it_behaves_like "aceable"
@@ -175,6 +175,47 @@ describe Portfolio do
 
           portfolio.update_metadata
         end
+      end
+    end
+  end
+
+  describe '#metadata' do
+    subject { create(:portfolio) }
+    before { subject.run_callbacks :create }
+
+    it 'adds staticsitcs' do
+      expect(subject.metadata.keys).to match_array(%w[statistics updated_at user_capabilities])
+    end
+
+    context 'with two portfolio items' do
+      before do
+        2.times { create(:portfolio_item, :portfolio => subject) }
+      end
+
+      it 'returns statistics with portfolio_items value of 2' do
+        expect(subject.metadata['statistics']['portfolio_items']).to be(2)
+      end
+    end
+
+    context 'with an access_control_entry with permissions' do
+      before do
+        create(:access_control_entry, :has_read_permission, :aceable => subject)
+        subject.update_metadata
+      end
+
+      it 'returns statistics with shared_groups value of 1' do
+        expect(subject.metadata['statistics']['shared_groups']).to be(1)
+      end
+    end
+
+    context 'with an access_control_entry without permissions' do
+      before do
+        create(:access_control_entry, :aceable => subject)
+        subject.update_metadata
+      end
+
+      it 'returns statistics with shared_groups value of zero' do
+        expect(subject.metadata['statistics']['shared_groups']).to be_zero
       end
     end
   end
