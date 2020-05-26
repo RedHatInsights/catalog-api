@@ -5,6 +5,8 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a9e6e5c7feb376381c5f/test_coverage)](https://codeclimate.com/github/RedHatInsights/catalog-api/test_coverage)
 [![Security](https://hakiri.io/github/RedHatInsights/catalog-api/master.svg)](https://hakiri.io/github/RedHatInsights/catalog-api/master)
 
+[![Build history for master branch](https://buildstats.info/travisci/chart/RedHatInsights/catalog-api?branch=master&includeBuildsFromPullRequest=false&buildCount=50)](https://travis-ci.org/RedHatInsights/catalog-api/branches)
+
 ## OpenAPI for Rails 5
 
 This is a project to provide OpenAPI support inside the [Ruby on Rails](http://rubyonrails.org/) framework.
@@ -104,33 +106,6 @@ SPANDX_CONFIG=/path/to/catalog-api/config/spandx.config.js bash /path/to/insight
 
    Using this URL which connects to the insights proxy running in the docker container
    https://ci.foo.redhat.com:1337/ansible/catalog
-
-
-## Order Debugging
-### Rake command
-
-**rake order:list**
-
-List Orders and asscoiated objects (order_items and progress messages)
-
-Optional parameters:
-
-```
-- LIMIT  - Orders listed in reverse order.  (Default = 1)
-- TENANT - External Tenant Reference.
-- OWNER  - (Owner name
-- ID(S)  - Comma separated list of Order ID(s)
-  (Note: ID list overrides limit field.)
-```
-
-Examples:
-
-```
-rake order:list TENANT=12345
-rake order:list OWNER=testuser
-rake order:list IDS=1,2,3
-rake order:list TENANT=12345 OWNER=testuser LIMIT=10
-```
 
 ## License
 

@@ -30,6 +30,7 @@ module Catalog
     # Disabling eagerload in production in favor of autoload
     config.autoload_paths += config.eager_load_paths
 
+    config.autoload_paths << Rails.root.join('app').to_s
     config.autoload_paths << Rails.root.join('lib').to_s
     config.log_level = (ENV['RAILS_LOG_LEVEL'] || 'debug').downcase.to_sym
     Insights::API::Common::Logging.activate(config)
