@@ -10,12 +10,12 @@ module Api
       end
 
       def show
-        authorize(tenant, :show?)
+        authorize(tenant)
         render :json => { params.require(:id) => setting(params.require(:id)) }
       end
 
       def create
-        authorize(tenant, :update?)
+        authorize(tenant)
         tenant.add_setting(params.require(:name), params.require(:value))
         render :json => { params[:name] => setting(params[:name]) }
       end
