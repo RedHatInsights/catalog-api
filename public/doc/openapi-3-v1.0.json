@@ -3016,7 +3016,9 @@
           "name": {
             "type": "string",
             "title": "Name",
-            "example": "Name of the portfolio item"
+            "example": "Name of the portfolio item",
+            "minLength": 1,
+            "maxLength": 512
           },
           "description": {
             "type": "string",
