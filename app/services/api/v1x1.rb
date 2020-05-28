@@ -1,3 +1,4 @@
+require 'services/api/v1x0'
 module Api
   module V1x1
     module Catalog

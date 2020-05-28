@@ -1,3 +1,4 @@
+require 'services/api/v1x1'
 module Api
   module V1x1
     class RootController < ApplicationController
