@@ -2886,7 +2886,6 @@
         "properties": {
           "restore_key": {
             "type": "string",
-            "readOnly": true,
             "title": "Restore Key",
             "example": "3c1d765c1453916143e517bfc27b57ace3da693c"
           }
@@ -3133,7 +3132,8 @@
           "order_id": {
             "type": "string",
             "title": "Order ID",
-            "description": "The Order that the OrderItem belongs to."
+            "description": "The Order that the OrderItem belongs to.",
+            "readOnly": true
           },
           "created_at": {
             "type": "string",
@@ -3169,7 +3169,8 @@
           "external_url": {
             "type": "string",
             "title": "External url",
-            "description": "The external url of the service instance used with relation to this order item"
+            "description": "The external url of the service instance used with relation to this order item",
+            "readOnly": true
           },
           "insights_request_id": {
             "type": "string",
