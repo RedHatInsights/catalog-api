@@ -14,8 +14,4 @@ module RequestSpecHelper
   def first_error_detail
     json['errors'][0]['detail']
   end
-
-  def catalog_admin_role
-    'Catalog Administrator'
-  end
 end
