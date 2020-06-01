@@ -1,6 +1,9 @@
 describe "OpenAPI stuff" do
   include RandomWordsSpecHelper
+
+  PARSER_ATTRS = %w[readOnly nullable enum].freeze
   SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags portfolio_item_tags tags images icons service_plans access_control_entries access_control_permissions permissions].freeze
+
   let(:rails_routes) do
     Rails.application.routes.routes.each_with_object([]) do |route, array|
       r = ActionDispatch::Routing::RouteWrapper.new(route)
@@ -89,7 +92,6 @@ describe "OpenAPI stuff" do
 
   %w[1.0 1.1].each do |version|
     describe "Openapi schema attributes" do
-      PARSER_ATTRS = %w[readOnly nullable enum].freeze
       context "correctly configured" do
         ActiveRecord::Base.connection.tables.each do |table|
           next if SKIP_TABLES.include?(table)
