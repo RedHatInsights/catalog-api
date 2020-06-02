@@ -10,12 +10,6 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
      allow(catalog_access).to receive(:process).and_return(catalog_access)
      allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
-
-     #TODO: Remove these calls as it is stubbing out for user_capabilities,
-     # which should not be getting called on this version of the API
-     # When common gem gets updated, these can be removed.
-     allow(catalog_access).to receive(:admin_scope?).with("portfolios", "update").and_return(true)
-     allow(catalog_access).to receive(:accessible?).and_return(true)
   end
 
   describe "GET /portfolios/:portfolio_id" do
