@@ -45,6 +45,19 @@ describe Api::V1x0::Catalog::ServicePlanReset, :type => [:current_forwardable, :
       it "sets the status to a 200" do
         expect(subject.process.status).to eq(:ok)
       end
+
+      it "sets the reimported service plan with updated attributes" do
+        expect(subject.process.reimported_service_plan).to eq([{
+          "create_json_schema"  => {"schema"=>{}},
+          "description"         => "A Service Plan",
+          "id"                  => (service_plan.id + 1).to_s,
+          "imported"            => true,
+          "modified"            => false,
+          "name"                => "The Plan",
+          "portfolio_item_id"   => portfolio_item.id.to_s,
+          "service_offering_id" => portfolio_item.service_offering_ref.to_s
+        }])
+      end
     end
 
     context "exception handling" do

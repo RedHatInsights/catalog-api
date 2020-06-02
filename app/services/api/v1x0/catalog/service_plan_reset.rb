@@ -3,6 +3,7 @@ module Api
     module Catalog
       class ServicePlanReset
         attr_reader :status
+        attr_reader :reimported_service_plan
 
         def initialize(service_plan_id)
           @plan = ServicePlan.find(service_plan_id)
@@ -25,7 +26,7 @@ module Api
         private
 
         def reimport_from_topo
-          Catalog::ImportServicePlans.new(@plan.portfolio_item_id, :force_reset => true).process
+          @reimported_service_plan = Catalog::ImportServicePlans.new(@plan.portfolio_item_id, :force_reset => true).process.json
         end
       end
     end
