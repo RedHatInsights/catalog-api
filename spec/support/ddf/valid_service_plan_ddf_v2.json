@@ -1,0 +1,66 @@
+
+{
+  "schema": {
+    "fields": [
+      {
+        "name": "v2-validators",
+        "label": "V2 validators",
+        "validate": [
+          {
+            "type": "required"
+          },
+          {
+            "type": "min-length",
+            "threshold": 0
+          },
+          {
+            "type": "max-length",
+            "threshold": 255
+          },
+          {
+            "type": "exact-length",
+            "threshold": 50
+          },
+          {
+            "type": "pattern",
+            "pattern": "^foo?.bar$"
+          },
+          {
+            "type": "url",
+            "protocol": "https"
+          }
+        ],
+        "component": "text-field",
+        "isRequired": true
+      },
+      {
+        "name": "v2-select",
+        "label": "V2 select",
+        "options": [
+          {
+            "label": "Test Approval",
+            "value": "Test Approval"
+          }
+        ],
+        "validate": [
+          {
+            "type": "required-validator"
+          }
+        ],
+        "component": "select",
+        "isRequired": true
+      },
+      {
+        "name": "v2-textarea",
+        "component": "textarea",
+        "label": "V2 textarea",
+        "isRequired": true
+      },
+      {
+        "component": "switch",
+        "label": "V2 switch",
+        "name": "v2-switch"
+      }
+    ]
+  }
+}
