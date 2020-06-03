@@ -12,7 +12,7 @@ describe Portfolio do
   context "length restrictions" do
     it "raises validation error" do
       expect do
-        Portfolio.create!(:name => 'a'*65, :tenant => tenant1, :description => 'abc', :owner => 'fred')
+        Portfolio.create!(:name => 'a'*513, :tenant => tenant1, :description => 'abc', :owner => 'fred')
       end.to raise_error(ActiveRecord::RecordInvalid, /Name is too long/)
     end
   end
