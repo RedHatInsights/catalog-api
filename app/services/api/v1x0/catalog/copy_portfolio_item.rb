@@ -49,7 +49,7 @@ module Api
         def new_name(name)
           portfolio_names = @to_portfolio.portfolio_items.pluck(:name)
           if portfolio_names.include?(name)
-            ::Catalog::NameAdjust.create_copy_name(name, portfolio_names)
+            ::Catalog::NameAdjust.create_copy_name(name, portfolio_names, PortfolioItem::MAX_NAME_LENGTH)
           else
             name
           end

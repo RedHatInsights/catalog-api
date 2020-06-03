@@ -49,4 +49,12 @@ describe PortfolioItem do
       expect(PortfolioItem.policy_class).to eq(PortfolioItemPolicy)
     end
   end
+
+  context "length restrictions" do
+    it "raises validation error" do
+      expect do
+        PortfolioItem.create!(:name => 'a'*513, :description => 'abc', :owner => 'fred')
+      end.to raise_error(ActiveRecord::RecordInvalid, /Name is too long/)
+    end
+  end
 end
