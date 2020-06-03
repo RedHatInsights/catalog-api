@@ -5,7 +5,7 @@ class Portfolio < ApplicationRecord
   include Aceable
   include UserCapabilities
 
-  MAX_NAME_LENGTH = 64
+  MAX_NAME_LENGTH = 512
 
   destroy_dependencies :portfolio_items
 

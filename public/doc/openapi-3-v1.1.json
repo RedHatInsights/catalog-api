@@ -2753,7 +2753,7 @@
             "title": "Name",
             "example": "Sample Portfolio",
             "minLength": 1,
-            "maxLength": 64
+            "maxLength": 512
           },
           "description": {
             "type": "string",
