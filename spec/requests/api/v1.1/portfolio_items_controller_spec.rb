@@ -15,8 +15,11 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
 
   describe "GET /portfolio_items/:portfolio_item_id #show" do
     subject { get "#{api_version}/portfolio_items/#{portfolio_item_id}", :headers => default_headers }
+    let(:portfolio_item_orderable) { instance_double(Api::V1x1::Catalog::PortfolioItemOrderable, :result => true) }
 
     before do |example|
+      allow(Api::V1x1::Catalog::PortfolioItemOrderable).to receive(:new).with(portfolio_item).and_return(portfolio_item_orderable)
+      allow(portfolio_item_orderable).to receive(:process).and_return(portfolio_item_orderable)
       subject unless example.metadata[:subject_inside]
     end
 
@@ -43,6 +46,7 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
           "show"         => true,
           "set_approval" => true
         )
+        expect(json["metadata"]["orderable"]).to eq(true)
       end
 
        it_behaves_like "action that tests authorization", :show?, PortfolioItem
