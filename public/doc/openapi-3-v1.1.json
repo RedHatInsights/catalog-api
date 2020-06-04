@@ -2530,7 +2530,7 @@
         ],
         "summary": "Reset Service Plan Modified schema",
         "operationId": "resetServicePlanModified",
-        "description": "Resets the Service Plan's Modified schema",
+        "description": "Resets the Service Plan's Modified schema and returns the new one if it has been reset",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -2538,7 +2538,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Modified schema for service_plan has been reset"
+            "description": "Modified schema for service_plan has been reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicePlan"
+                  }
+                }
+              }
+            }
           },
           "204": {
             "description": "No modified schema present for service_plan."
