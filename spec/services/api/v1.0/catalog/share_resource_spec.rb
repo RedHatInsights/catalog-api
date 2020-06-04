@@ -28,5 +28,10 @@ describe Api::V1x0::Catalog::ShareResource, :type => :service do
       portfolio.reload
       expect(portfolio.access_control_entries.first.permissions.count).to eq(2)
     end
+
+    it "updates portfolio metadata" do
+      expect(portfolio).to receive(:update_metadata)
+      subject.process
+    end
   end
 end

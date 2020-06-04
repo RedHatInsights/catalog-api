@@ -2,11 +2,13 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :to
   include ServiceOfferingHelper
   let(:service_offering_ref) { "1" }
   let(:subject) { described_class.new(params) }
+  let(:portfolio) { create(:portfolio) }
   let(:params) do
     {
       :name                 => "Frank",
       :description          => "Franks Description",
-      :service_offering_ref => service_offering_ref
+      :service_offering_ref => service_offering_ref,
+      :portfolio            => portfolio
     }
   end
 
@@ -63,7 +65,12 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :to
       end
 
       context "when there are no user provided params" do
-        let(:params) { {:service_offering_ref => service_offering_ref} }
+        let(:params) do
+          {
+            :service_offering_ref => service_offering_ref,
+            :portfolio            => portfolio
+          }
+        end
 
         it "uses the given name, description, and icon " do
           result = subject.process

@@ -4,6 +4,7 @@ class Portfolio < ApplicationRecord
   include Api::V1x0::Catalog::DiscardRestore
   include Aceable
   include UserCapabilities
+  include Metadata::Ancillary
 
   MAX_NAME_LENGTH = 512
 
@@ -24,7 +25,19 @@ class Portfolio < ApplicationRecord
   end
 
   def metadata
-    {:user_capabilities => user_capabilities,
-     :shared            => self.access_control_entries.any?}
+    ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities)
+  end
+
+  private
+
+  def update_ancillary_metadata
+    ancillary_metadata.statistics = statistics_metadata
+  end
+
+  def statistics_metadata
+    {
+      'portfolio_items' => portfolio_items.count,
+      'shared_groups'   => access_control_entries.count { |ace| ace.permissions.present? }
+    }
   end
 end

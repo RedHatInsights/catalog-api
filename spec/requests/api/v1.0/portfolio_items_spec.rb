@@ -18,7 +18,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
                             :description                 => "default description",
                             :long_description            => "longer than description",
                             :distributor                 => "Distributor CO",
-                            :portfolio_id                => portfolio_id)
+                            :portfolio                   => portfolio)
   end
   let(:portfolio_item_id)    { portfolio_item.id.to_s }
   let(:topo_ex)              { Catalog::TopologyError.new("kaboom") }
