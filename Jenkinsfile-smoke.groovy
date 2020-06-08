@@ -10,7 +10,7 @@ if (env.CHANGE_ID) {
         ocDeployerBuilderPath: "catalog/catalog-api",
         ocDeployerComponentPath: "catalog/catalog-api",
         ocDeployerServiceSets: "catalog,topological-inventory,sources,approval,platform-mq",
-        iqePlugins: ["iqe-self-service-portal-plugin"],
+        iqePlugins: ["self_service_portal"],
         pytestMarker: "catalog_api_smoke",
         // local settings file
         configFileCredentialsId: "catalog-config",
