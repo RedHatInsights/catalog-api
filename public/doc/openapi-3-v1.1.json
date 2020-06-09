@@ -2530,7 +2530,7 @@
         ],
         "summary": "Reset Service Plan Modified schema",
         "operationId": "resetServicePlanModified",
-        "description": "Resets the Service Plan's Modified schema",
+        "description": "Resets the Service Plan's Modified schema and returns the new one if it has been reset",
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
@@ -2538,7 +2538,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Modified schema for service_plan has been reset"
+            "description": "Modified schema for service_plan has been reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServicePlan"
+                  }
+                }
+              }
+            }
           },
           "204": {
             "description": "No modified schema present for service_plan."
@@ -2753,7 +2763,7 @@
             "title": "Name",
             "example": "Sample Portfolio",
             "minLength": 1,
-            "maxLength": 64
+            "maxLength": 512
           },
           "description": {
             "type": "string",
@@ -2886,7 +2896,6 @@
         "properties": {
           "restore_key": {
             "type": "string",
-            "readOnly": true,
             "title": "Restore Key",
             "example": "3c1d765c1453916143e517bfc27b57ace3da693c"
           }
@@ -2933,7 +2942,9 @@
           "name": {
             "type": "string",
             "title": "Name",
-            "example": "Name of the portfolio item"
+            "example": "Name of the portfolio item",
+            "minLength": 1,
+            "maxLength": 512
           },
           "description": {
             "type": "string",
@@ -3133,7 +3144,8 @@
           "order_id": {
             "type": "string",
             "title": "Order ID",
-            "description": "The Order that the OrderItem belongs to."
+            "description": "The Order that the OrderItem belongs to.",
+            "readOnly": true
           },
           "created_at": {
             "type": "string",
@@ -3169,7 +3181,8 @@
           "external_url": {
             "type": "string",
             "title": "External url",
-            "description": "The external url of the service instance used with relation to this order item"
+            "description": "The external url of the service instance used with relation to this order item",
+            "readOnly": true
           },
           "insights_request_id": {
             "type": "string",

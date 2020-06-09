@@ -1,9 +1,15 @@
 describe "v1.0 - Settings API", :type => [:request, :v1] do
   let!(:tenant) { create(:tenant) }
   let(:retreived_tenant) { Tenant.find(tenant.id) }
+  let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
 
   context "when the user is a catalog admin" do
-    before { allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(true) }
+    before do
+     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+     allow(catalog_access).to receive(:process).and_return(catalog_access)
+     allow(catalog_access).to receive(:accessible?).with("tenants", "update").and_return(true)
+     allow(catalog_access).to receive(:accessible?).with("tenants", "read").and_return(true)
+    end
 
     describe "#index" do
       before { get "#{api_version}/settings", :headers => default_headers }
@@ -89,7 +95,11 @@ describe "v1.0 - Settings API", :type => [:request, :v1] do
   end
 
   context "when the user is not a catalog admin" do
-    before { allow(Insights::API::Common::RBAC::Roles).to receive(:assigned_role?).with(catalog_admin_role).and_return(false) }
+    before do
+     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+     allow(catalog_access).to receive(:process).and_return(catalog_access)
+     allow(catalog_access).to receive(:accessible?).with("tenants", "read").and_return(false)
+    end
 
     it "does not allow any operations" do
       get "#{api_version}/settings", :headers => default_headers

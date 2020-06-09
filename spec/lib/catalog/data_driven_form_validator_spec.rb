@@ -1,6 +1,7 @@
 describe Catalog::DataDrivenFormValidator do
   let(:subject) { described_class.valid?(ddf) }
   let(:ddf_file) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json")) }
+  let(:ddfv2_file) { File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf_v2.json")) }
 
   shared_examples_for "fails validation" do
     it "blows up" do
@@ -11,6 +12,13 @@ describe Catalog::DataDrivenFormValidator do
   describe "#valid?" do
     context "when given valid DDF JSON" do
       let(:ddf) { ddf_file }
+      it "validates successfully" do
+        expect(subject).to eq true
+      end
+    end
+
+    context "when given valid DDFv2 JSON" do
+      let(:ddf) { ddfv2_file }
       it "validates successfully" do
         expect(subject).to eq true
       end

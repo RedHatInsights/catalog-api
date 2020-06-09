@@ -1,3 +1,4 @@
+require 'services/api/v1x0'
 module Api
   module V1x1
     module Catalog
@@ -20,7 +21,6 @@ module Api
       class ServiceOffering                     < Api::V1x0::Catalog::ServiceOffering; end
       class ServicePlanCompare                  < Api::V1x0::Catalog::ServicePlanCompare; end
       class ServicePlanJson                     < Api::V1x0::Catalog::ServicePlanJson; end
-      class ServicePlanReset                    < Api::V1x0::Catalog::ServicePlanReset; end
       class ServicePlans                        < Api::V1x0::Catalog::ServicePlans; end
       class ShareInfo                           < Api::V1x0::Catalog::ShareInfo; end
       class ShareResource                       < Api::V1x0::Catalog::ShareResource; end

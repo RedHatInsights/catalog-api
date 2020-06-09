@@ -49,4 +49,25 @@ describe PortfolioItem do
       expect(PortfolioItem.policy_class).to eq(PortfolioItemPolicy)
     end
   end
+
+  context "length restrictions" do
+    it "raises validation error" do
+      expect do
+        PortfolioItem.create!(:name => 'a'*513, :description => 'abc', :owner => 'fred')
+      end.to raise_error(ActiveRecord::RecordInvalid, /Name is too long/)
+    end
+  end
+
+  context "callbacks" do
+    let(:portfolio) { build(:portfolio) }
+    subject! { create(:portfolio_item, :portfolio => portfolio) }
+
+    %i[create destroy discard undiscard].each do |kind|
+      it "calls update_portfolio_stats on #{kind}" do
+        expect(portfolio).to receive(:update_metadata)
+
+        subject.run_callbacks kind
+      end
+    end
+  end
 end

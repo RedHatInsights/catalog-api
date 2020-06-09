@@ -1,3 +1,4 @@
+require 'services/api/v1x1'
 module Api
   module V1x1
     class RootController < ApplicationController
@@ -14,7 +15,6 @@ module Api
     class PortfoliosController                < Api::V1x0::PortfoliosController; end
     class ProgressMessagesController          < Api::V1x0::ProgressMessagesController; end
     class ProviderControlParametersController < Api::V1x0::ProviderControlParametersController; end
-    class ServicePlansController              < Api::V1x0::ServicePlansController; end
     class SettingsController                  < Api::V1x0::SettingsController; end
     class TagsController                      < Api::V1x0::TagsController; end
     class TenantsController                   < Api::V1x0::TenantsController; end

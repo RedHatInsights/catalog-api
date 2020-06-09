@@ -28,5 +28,10 @@ FactoryBot.define do
         ]
       end
     end
+
+    after :create do |access_control_entry|
+      access_control_entry.aceable ||= create(:portfolio)
+      access_control_entry.aceable.reload
+    end
   end
 end

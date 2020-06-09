@@ -8,11 +8,15 @@ module Api
       end
 
       def show
-        render :json => Tenant.scoped_tenants.find(params.require(:id))
+        tenant = Tenant.scoped_tenants.find(params.require(:id))
+        authorize(tenant)
+        render :json => tenant
       end
 
       def seed
-        seeded = Group::Seed.new(Tenant.scoped_tenants.find(params.require(:tenant_id))).process
+        tenant = Tenant.scoped_tenants.find(params.require(:tenant_id))
+        authorize(tenant, :update?)
+        seeded = Group::Seed.new(tenant).process
         json_response(nil, seeded.status)
       end
     end
