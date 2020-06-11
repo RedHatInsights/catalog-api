@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_24_122000) do
+ActiveRecord::Schema.define(version: 2020_06_10_185514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,24 @@ ActiveRecord::Schema.define(version: 2020_04_24_122000) do
     t.string "service_instance_ref"
     t.index ["discarded_at"], name: "index_order_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
+  end
+
+  create_table "order_process_tags", id: :serial, force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.bigint "order_process_id", null: false
+    t.datetime "last_seen_at"
+    t.index ["last_seen_at"], name: "index_order_process_tags_on_last_seen_at"
+    t.index ["order_process_id", "tag_id"], name: "uniq_index_on_order_process_id_tag_id", unique: true
+    t.index ["order_process_id"], name: "index_cluster_tags_on_order_process_id"
+    t.index ["tag_id"], name: "index_order_process_tags_on_tag_id"
+  end
+
+  create_table "order_processes", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.bigint "tenant_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "orders", force: :cascade do |t|
@@ -236,6 +254,8 @@ ActiveRecord::Schema.define(version: 2020_04_24_122000) do
     t.index ["external_tenant"], name: "index_tenants_on_external_tenant"
   end
 
+  add_foreign_key "order_process_tags", "order_processes", on_delete: :cascade
+  add_foreign_key "order_process_tags", "tags", on_delete: :cascade
   add_foreign_key "portfolio_item_tags", "portfolio_items", on_delete: :cascade
   add_foreign_key "portfolio_item_tags", "tags", on_delete: :cascade
   add_foreign_key "portfolio_tags", "portfolios", on_delete: :cascade
