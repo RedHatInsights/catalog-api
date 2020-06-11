@@ -9,6 +9,9 @@ class Tag < ApplicationRecord
   has_many :portfolio_item_tags, :dependent => :destroy
   has_many :portfolio_items, :through => :portfolio_item_tags
 
+  has_many :order_process_tags, :dependent => :destroy
+  has_many :order_processes, :through => :order_process_tags
+
   def to_tag_string
     "/#{namespace}/#{name}".tap { |string| string << "=#{value}" if value.present? }
   end
