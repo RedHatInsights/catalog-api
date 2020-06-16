@@ -20,8 +20,8 @@ class OrderProcessPolicy < ApplicationPolicy
       if access_scopes.include?('admin')
         scope.all
       else
-        Rails.logger.debug("Scope search for #{scope.table_name}")
-        raise Catalog::NotAuthorized, "Not Authorized for #{scope.table_name}"
+        Rails.logger.debug("Scope search for #{scope.table_name.humanize}")
+        raise Catalog::NotAuthorized, "Not Authorized for #{scope.table_name.humanize}"
       end
     end
   end

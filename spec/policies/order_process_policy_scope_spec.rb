@@ -26,7 +26,7 @@ describe OrderProcessPolicy::Scope, :type => [:service] do
       let(:scopes) { %w[group user] }
 
       it "raises an error" do
-        expect { subject.resolve }.to raise_error(Catalog::NotAuthorized, "Not Authorized for order_processes")
+        expect { subject.resolve }.to raise_error(Catalog::NotAuthorized, "Not Authorized for Order processes")
       end
     end
   end

@@ -38,11 +38,14 @@ describe OrderProcessPolicy do
   end
 
   describe "#user_capabilities" do
+    before do
+      allow(rbac_access).to receive(:read_access_check).and_return(true)
+      allow(rbac_access).to receive(:create_access_check).with(OrderProcess).and_return(true)
+      allow(rbac_access).to receive(:destroy_access_check).and_return(true)
+      allow(rbac_access).to receive(:update_access_check).and_return(true)
+    end
+
     it "returns user capabilities" do
-      expect(rbac_access).to receive(:read_access_check).and_return(true)
-      expect(rbac_access).to receive(:create_access_check).with(OrderProcess).and_return(true)
-      expect(rbac_access).to receive(:destroy_access_check).and_return(true)
-      expect(rbac_access).to receive(:update_access_check).and_return(true)
       expect(subject.user_capabilities).to eq(
         "create"  => true,
         "destroy" => true,
