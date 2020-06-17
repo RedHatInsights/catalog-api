@@ -1,4 +1,4 @@
-describe "v1 - root", :type => [:request, :v1x1] do
+describe "v1 - root", :type => [:request, :v1x2] do
   it "#openapi.json" do
     get("#{api_version}/openapi.json")
 

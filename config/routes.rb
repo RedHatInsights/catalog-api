@@ -9,10 +9,11 @@ Rails.application.routes.draw do
     prefix = File.join(ENV["PATH_PREFIX"], ENV["APP_NAME"]).gsub(/^\/+|\/+$/, "")
   end
   scope :as => :api, :module => "api", :path => prefix do
-    routing_helper.redirect_major_version("v1.1", prefix)
+    routing_helper.redirect_major_version("v1.2", prefix)
 
     draw(:v1x0)
     draw(:v1x1)
+    draw(:v1x2)
   end
   draw(:public)
   draw(:v1x0_internal)
