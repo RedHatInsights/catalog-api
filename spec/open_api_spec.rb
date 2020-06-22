@@ -92,7 +92,7 @@ describe "OpenAPI stuff" do
     end
   end
 
-  %w[1.0 1.1].each do |version|
+  %w[1.0 1.1 1.2].each do |version|
     describe "Openapi schema attributes" do
       context "correctly configured" do
         ActiveRecord::Base.connection.tables.each do |table|
