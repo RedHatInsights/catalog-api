@@ -933,7 +933,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ShowPortfolioItem"
+                  "$ref": "#/components/schemas/PortfolioItem"
                 }
               }
             }
@@ -2927,7 +2927,7 @@
           }
         }
       },
-      "ShowPortfolioItem": {
+      "PortfolioItem": {
         "type": "object",
         "properties": {
           "id": {
@@ -3038,135 +3038,7 @@
             "type": "object",
             "title": "Metadata",
             "description": "JSON Metadata about the portfolio item",
-            "readOnly": true,
-            "example": {
-              "user_capabilities": {
-                "create": true,
-                "update": true,
-                "delete": false
-              },
-              "orderable": true
-            }
-          }
-        }
-      },
-      "PortfolioItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
             "readOnly": true
-          },
-          "favorite": {
-            "type": "boolean",
-            "title": "Favorite",
-            "example": "Definition of a favorite portfolio item"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "example": "Name of the portfolio item"
-          },
-          "description": {
-            "type": "string",
-            "title": "Description",
-            "example": "Description of a portfolio item",
-            "nullable": true
-          },
-          "orphan": {
-            "type": "boolean",
-            "readOnly": true,
-            "title": "Orphan",
-            "example": "Boolean if an associated catalog item no longer exists"
-          },
-          "state": {
-            "type": "string",
-            "readOnly": true,
-            "title": "State",
-            "example": "The current state of a portfolio item"
-          },
-          "long_description": {
-            "type": "string",
-            "title": "Long Description",
-            "example": "The longer description of a portfolio item",
-            "nullable": true
-          },
-          "distributor": {
-            "type": "string",
-            "title": "Distributor",
-            "example": "The name of the provider for this Item",
-            "nullable": true
-          },
-          "documentation_url": {
-            "type": "string",
-            "title": "Documentation URL",
-            "example": "The URL for documentation of the portfolio item",
-            "nullable": true
-          },
-          "support_url": {
-            "type": "string",
-            "title": "Support URL",
-            "example": "The URL for finding support for the portfolio item",
-            "nullable": true
-          },
-          "owner": {
-            "type": "string",
-            "title": "Owner",
-            "example": "jdoe",
-            "readOnly": true
-          },
-          "service_offering_source_ref": {
-            "type": "string",
-            "title": "Service Offering Source Ref",
-            "description": "The source reference this product was created from",
-            "readOnly": true,
-            "example": "20"
-          },
-          "service_offering_type": {
-            "type": "string",
-            "title": "Service Offering Type",
-            "description": "The service offering type stored by the Topology Service",
-            "readOnly": true,
-            "example": "job_template"
-          },
-          "portfolio_id": {
-            "type": "string",
-            "title": "Portfolio ID",
-            "description": "ID of a parent portfolio",
-            "readOnly": true,
-            "example": "1"
-          },
-          "icon_id": {
-            "type": "string",
-            "title": "Icon ID",
-            "description": "The Portfolio Item Icon ID",
-            "readOnly": true,
-            "example": "1"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created at",
-            "readOnly": true
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Updated at",
-            "readOnly": true
-          },
-          "metadata": {
-            "type": "object",
-            "title": "Metadata",
-            "description": "JSON Metadata about the portfolio item",
-            "readOnly": true,
-            "example": {
-              "user_capabilities": {
-                "create": true,
-                "update": true,
-                "delete": false
-              }
-            }
           }
         }
       },
