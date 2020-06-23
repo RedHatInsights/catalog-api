@@ -3039,15 +3039,13 @@
             "title": "Metadata",
             "description": "JSON Metadata about the portfolio item",
             "readOnly": true,
-            "properties": {
+            "example": {
               "user_capabilities": {
-                "type": "object",
-                "description": "A list of permissions that the current user has access to on this portfolio item"
+                "create": true,
+                "update": true,
+                "delete": false
               },
-              "orderable": {
-                "type": "boolean",
-                "description": "Whether or not this portfolio item is currently in an orderable state"
-              }
+              "orderable": true
             }
           }
         }
@@ -3162,10 +3160,11 @@
             "title": "Metadata",
             "description": "JSON Metadata about the portfolio item",
             "readOnly": true,
-            "properties": {
+            "example": {
               "user_capabilities": {
-                "type": "object",
-                "description": "A list of permissions that the current user has access to on this portfolio item"
+                "create": true,
+                "update": true,
+                "delete": false
               }
             }
           }
