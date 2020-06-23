@@ -3,7 +3,7 @@ describe "OpenAPI stuff" do
 
   PARSER_ATTRS = %w[readOnly nullable enum].freeze
   SKIP_TABLES = %w[tenants schema_migrations ar_internal_metadata rbac_seeds portfolio_tags
-                   portfolio_item_tags tags images icons service_plans access_control_entries
+                   portfolio_item_tags order_process_tags tags order_processes images icons service_plans access_control_entries
                    access_control_permissions permissions ancillary_metadata].freeze
 
   let(:rails_routes) do
@@ -92,7 +92,7 @@ describe "OpenAPI stuff" do
     end
   end
 
-  %w[1.0 1.1].each do |version|
+  %w[1.0 1.1 1.2].each do |version|
     describe "Openapi schema attributes" do
       context "correctly configured" do
         ActiveRecord::Base.connection.tables.each do |table|

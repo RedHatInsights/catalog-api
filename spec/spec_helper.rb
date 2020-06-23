@@ -34,6 +34,7 @@ RSpec.configure do |config|
   # Version tracking for specs
   config.include V1Helper, :type => :v1
   config.include V1x1Helper, :type => :v1x1
+  config.include V1x2Helper, :type => :v1x2
   config.include V1InternalHelper, :type => :v1_internal
   # ------------------------ #
 
