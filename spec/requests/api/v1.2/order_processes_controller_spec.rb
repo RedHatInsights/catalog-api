@@ -1,4 +1,4 @@
-describe "v1.2 - OrderProcesses", :type => [:request, :v1x2] do
+describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
   let!(:order_process)    { create(:order_process) }
   let!(:order_process_id) { order_process.id }
   let(:rbac_access)       { instance_double(Catalog::RBAC::Access) }

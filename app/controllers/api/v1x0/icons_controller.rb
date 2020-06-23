@@ -1,7 +1,7 @@
 module Api
   module V1x0
     class IconsController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Mixins::IndexMixin
 
       # Due to the fact form-data is getting uploaded and isn't supported by openapi_parser
       skip_before_action :validate_request, :only => %i[create update]

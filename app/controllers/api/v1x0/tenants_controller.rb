@@ -1,7 +1,7 @@
 module Api
   module V1x0
     class TenantsController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Mixins::IndexMixin
 
       def index
         collection(Tenant.scoped_tenants)

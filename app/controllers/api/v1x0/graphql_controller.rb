@@ -3,7 +3,7 @@ require "insights/api/common/graphql"
 module Api
   module V1x0
     class GraphqlController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Mixins::IndexMixin
 
       def overlay
         {

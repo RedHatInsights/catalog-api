@@ -1,7 +1,7 @@
 module Api
   module V1x0
     class ServicePlansController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
+      include Mixins::IndexMixin
 
       def index
         portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
