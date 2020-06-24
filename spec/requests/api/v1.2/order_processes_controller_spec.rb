@@ -114,40 +114,7 @@ describe "v1.2 - OrderProcesses", :type => [:request, :v1x2] do
     end
   end
 
-  describe "tags" do
-    let(:name) { 'Gnocchi' }
-    let(:params) do
-      [{:tag => Tag.new(:name => name, :namespace => "default").to_tag_string}]
-    end
-
-    context "GET /order_processes/:id/tags" do
-      it "lists tags for the order process" do
-        post "#{api_version}/order_processes/#{order_process_id}/tag", :headers => default_headers, :params => params
-        get "#{api_version}/order_processes/#{order_process_id}/tags", :headers => default_headers
-
-        expect(response).to have_http_status(200)
-        expect(json['data'].count).to eq 1
-        expect(json['data'].first['tag']).to eq Tag.new(:name => name, :namespace => "default").to_tag_string
-      end
-    end
-
-    context "POST /order_processes/:id/tag" do
-      it "adds tags for the order process" do
-        post "#{api_version}/order_processes/#{order_process_id}/tag", :headers => default_headers, :params => params
-
-        expect(response).to have_http_status(201)
-        expect(json.first['tag']).to eq Tag.new(:name => name, :namespace => "default").to_tag_string
-      end
-    end
-
-    context "POST /order_processes/:id/untag" do
-      it "removes the tag from the order process" do
-        post "#{api_version}/order_processes/#{order_process_id}/tag", :headers => default_headers, :params => params
-        post "#{api_version}/order_processes/#{order_process_id}/untag", :headers => default_headers, :params => params
-
-        expect(response).to have_http_status(204)
-        expect(order_process.tags).to be_empty
-      end
-    end
+  it_behaves_like "controller that supports tagging endpoints" do
+    let(:object_instance) { order_process }
   end
 end
