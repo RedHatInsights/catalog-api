@@ -1,4 +1,4 @@
-require 'services/api/v1x1'
+require 'services/api/v1x2'
 require 'controllers/api/v1x1'
 
 module Api
