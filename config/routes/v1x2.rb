@@ -38,7 +38,9 @@ namespace :v1x2, :path => "v1.2" do
     post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
   end
   resources :icons, :only => [:create, :destroy]
-  resources :order_processes, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable]
+  resources :order_processes, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable] do
+    post :pre, :action => 'pre', :controller => 'order_processes'
+  end
   resources :settings
   resources :tags, :only => [:index]
   resources :tenants, :only => [:index, :show] do

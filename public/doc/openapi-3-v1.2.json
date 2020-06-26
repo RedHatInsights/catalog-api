@@ -2762,6 +2762,58 @@
         }
       }
     },
+    "/order_processes/{id}/pre": {
+      "post": {
+        "tags": [
+          "OrderProcess"
+        ],
+        "summary": "Add Pre product for Order Process",
+        "operationId": "addOrderProcessPre",
+        "description": "Adds a 'pre' product to an Order Process object",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "'Pre' product successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderProcess"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "OrderProcess or PortfolioItem Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderProcessPortfolioItemId"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/order_processes/{id}/tag": {
       "post": {
         "tags": [
@@ -3237,6 +3289,16 @@
             "type": "string",
             "title": "Restore Key",
             "example": "3c1d765c1453916143e517bfc27b57ace3da693c"
+          }
+        }
+      },
+      "OrderProcessPortfolioItemId": {
+        "type": "object",
+        "properties": {
+          "portfolio_item_id": {
+            "type": "string",
+            "title": "Portfolio Item Id",
+            "example": "1234"
           }
         }
       },
@@ -3994,6 +4056,11 @@
             "type": "string",
             "format": "date-time",
             "title": "Updated at",
+            "readOnly": true
+          },
+          "pre_id": {
+            "type": "string",
+            "description": "The ID of the portfolio item associated to the 'pre' step",
             "readOnly": true
           },
           "metadata": {

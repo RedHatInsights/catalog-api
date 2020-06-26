@@ -107,6 +107,47 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
   end
 
+  describe "POST /order_processes/:id/pre #pre" do
+    let(:valid_attributes) { {:portfolio_item_id => pre_portfolio_item_id} }
+
+    subject do
+      post "#{api_version}/order_processes/#{order_process_id}/pre", :headers => default_headers, :params => valid_attributes
+    end
+
+    context "with valid attributes" do
+      let!(:pre_portfolio_item) { create(:portfolio_item) }
+      let(:pre_portfolio_item_id) { pre_portfolio_item.id.to_s }
+
+      it "updates an OrderProcess" do
+        subject
+        expect(response).to have_http_status(200)
+        expect(json["pre_id"]).to eq(pre_portfolio_item.id.to_s)
+        updated_order_process = OrderProcess.find(order_process_id)
+        expect(updated_order_process.pre).to eq(pre_portfolio_item)
+      end
+
+      context "with no update permission" do
+        before do
+          allow(rbac_access).to receive(:update_access_check).and_return(false)
+        end
+
+        it "returns 403" do
+          subject
+          expect(response).to have_http_status(403)
+        end
+      end
+    end
+
+    context "when no portfolio item exists with the given id" do
+      let(:pre_portfolio_item_id) { "1234" }
+
+      it "returns a 404" do
+        subject
+        expect(response).to have_http_status(404)
+      end
+    end
+  end
+
   describe "DELETE /order_processes #destroy" do
     it "allows to delete order process" do
       delete "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers
