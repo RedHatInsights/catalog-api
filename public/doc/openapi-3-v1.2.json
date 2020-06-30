@@ -2763,7 +2763,7 @@
       }
     },
     "/order_processes/{id}/pre": {
-      "post": {
+      "patch": {
         "tags": [
           "OrderProcess"
         ],
@@ -2781,10 +2781,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrderProcess"
-                  }
+                  "$ref": "#/components/schemas/OrderProcess"
                 }
               }
             }

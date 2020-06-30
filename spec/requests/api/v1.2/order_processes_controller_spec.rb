@@ -107,11 +107,11 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
   end
 
-  describe "POST /order_processes/:id/pre #pre" do
+  describe "PATCH /order_processes/:id/pre #pre" do
     let(:valid_attributes) { {:portfolio_item_id => pre_portfolio_item_id} }
 
     subject do
-      post "#{api_version}/order_processes/#{order_process_id}/pre", :headers => default_headers, :params => valid_attributes
+      patch "#{api_version}/order_processes/#{order_process_id}/pre", :headers => default_headers, :params => valid_attributes
     end
 
     context "with valid attributes" do

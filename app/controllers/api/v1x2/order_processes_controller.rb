@@ -33,12 +33,12 @@ module Api
         head :no_content
       end
 
-      def pre
+      def update_pre
         order_process = OrderProcess.find(params.require(:order_process_id))
         authorize(order_process, :update?)
 
         pre_portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        order_process.update(:pre => pre_portfolio_item)
+        order_process.update!(:pre => pre_portfolio_item)
 
         render :json => order_process
       end
