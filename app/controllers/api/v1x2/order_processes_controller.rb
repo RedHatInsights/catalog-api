@@ -37,8 +37,9 @@ module Api
         order_process = OrderProcess.find(params.require(:order_process_id))
         authorize(order_process, :update?)
 
-        pre_portfolio_item = PortfolioItem.find(params.require(:portfolio_item_id))
-        order_process.update!(:pre => pre_portfolio_item)
+        order_process = Catalog::OrderProcessAssociator.new(
+          order_process, params.require(:portfolio_item_id), :pre
+        ).process.order_process
 
         render :json => order_process
       end

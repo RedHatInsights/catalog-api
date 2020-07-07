@@ -64,10 +64,13 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
   describe "POST /order_processes #create" do
     let(:valid_attributes) { {:name => 'itsm_process', :description => "ITSM's OrderProcess"} }
 
+    subject do
+      post "#{api_version}/order_processes", :headers => default_headers, :params => valid_attributes
+    end
+
     context "with valid attributes" do
       it "creates an OrderProcess" do
-        post "#{api_version}/order_processes", :headers => default_headers, :params => valid_attributes
-
+        subject
         expect(response).to have_http_status(200)
       end
     end
@@ -76,20 +79,25 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
       it "returns 403" do
         allow(rbac_access).to receive(:create_access_check).and_return(false)
 
-        post "#{api_version}/order_processes", :headers => default_headers, :params => valid_attributes
+        subject
 
         expect(response).to have_http_status(403)
       end
     end
+
+    it_behaves_like "action that tests authorization", :create?, OrderProcess
   end
 
   describe "PATCH /order_processes/:id #update" do
     let(:valid_attributes) { {:name => 'itsm_process', :description => "ITSM's OrderProcess"} }
 
+    subject do
+      patch "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers, :params => valid_attributes
+    end
+
     context "with valid attributes" do
       it "updates an OrderProcess" do
-        patch "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers, :params => valid_attributes
-
+        subject
         expect(response).to have_http_status(200)
         updated_order_process = OrderProcess.find(order_process_id)
         expect(updated_order_process).to have_attributes(valid_attributes)
@@ -100,14 +108,19 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
       it "returns 403" do
         allow(rbac_access).to receive(:update_access_check).and_return(false)
 
-        patch "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers, :params => valid_attributes
+        subject
 
         expect(response).to have_http_status(403)
       end
     end
+
+    it_behaves_like "action that tests authorization", :update?, OrderProcess
   end
 
   describe "PATCH /order_processes/:id/pre #pre" do
+    let(:order_process_associator) { instance_double(Api::V1x2::Catalog::OrderProcessAssociator) }
+    let!(:pre_portfolio_item) { create(:portfolio_item) }
+    let(:pre_portfolio_item_id) { pre_portfolio_item.id.to_s }
     let(:valid_attributes) { {:portfolio_item_id => pre_portfolio_item_id} }
 
     subject do
@@ -115,15 +128,24 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
 
     context "with valid attributes" do
-      let!(:pre_portfolio_item) { create(:portfolio_item) }
-      let(:pre_portfolio_item_id) { pre_portfolio_item.id.to_s }
 
-      it "updates an OrderProcess" do
+      before do
+        allow(Api::V1x2::Catalog::OrderProcessAssociator).to receive(:new)
+          .with(order_process, pre_portfolio_item_id, :pre)
+          .and_return(order_process_associator)
+        allow(order_process_associator).to receive(:process).and_return(order_process_associator)
+        allow(order_process_associator).to receive(:order_process).and_return(order_process)
+      end
+
+      it "delegates to the order process associator" do
+        expect(order_process_associator).to receive(:process)
+        expect(order_process_associator).to receive(:order_process)
+        subject
+      end
+
+      it "returns a 200" do
         subject
         expect(response).to have_http_status(200)
-        expect(json["pre_id"]).to eq(pre_portfolio_item.id.to_s)
-        updated_order_process = OrderProcess.find(order_process_id)
-        expect(updated_order_process.pre).to eq(pre_portfolio_item)
       end
 
       context "with no update permission" do
@@ -138,21 +160,29 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
       end
     end
 
-    context "when no portfolio item exists with the given id" do
-      let(:pre_portfolio_item_id) { "1234" }
+    context "when the order process does not exist" do
+      subject do
+        patch "#{api_version}/order_processes/#{order_process_id + 1}/pre", :headers => default_headers
+      end
 
       it "returns a 404" do
         subject
         expect(response).to have_http_status(404)
       end
     end
+
+    it_behaves_like "action that tests authorization", :update?, OrderProcess
   end
 
   describe "DELETE /order_processes #destroy" do
+    subject { delete "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers }
+
     it "allows to delete order process" do
-      delete "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers
+      subject
       expect(response).to have_http_status(204)
     end
+
+    it_behaves_like "action that tests authorization", :destroy?, OrderProcess
   end
 
   it_behaves_like "controller that supports tagging endpoints" do
