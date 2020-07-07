@@ -22,5 +22,14 @@ describe Api::V1x2::Catalog::OrderProcessAssociator do
         expect(updated_process.before_portfolio_item).to eq(portfolio_item)
       end
     end
+
+    context "when the association is :after_portfolio_item" do
+      let(:association) { :after_portfolio_item }
+
+      it "updates the order process 'after_portfolio_item' step" do
+        updated_process = subject.process.order_process
+        expect(updated_process.after_portfolio_item).to eq(portfolio_item)
+      end
+    end
   end
 end

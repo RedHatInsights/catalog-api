@@ -2811,6 +2811,55 @@
         }
       }
     },
+    "/order_processes/{id}/after_portfolio_item": {
+      "patch": {
+        "tags": [
+          "OrderProcess"
+        ],
+        "summary": "Adds an 'after' product for an Order Process",
+        "operationId": "addOrderProcessAfterItem",
+        "description": "Defines the product that will be executed after ordering when using this Order Process",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "'After' product successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProcess"
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "OrderProcess or PortfolioItem Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderProcessPortfolioItemId"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/order_processes/{id}/tag": {
       "post": {
         "tags": [
@@ -4058,6 +4107,11 @@
           "before_portfolio_item_id": {
             "type": "string",
             "description": "The ID of the portfolio item associated to the 'before' step",
+            "readOnly": true
+          },
+          "after_portfolio_item_id": {
+            "type": "string",
+            "description": "The ID of the portfolio item associated to the 'after' step",
             "readOnly": true
           },
           "metadata": {

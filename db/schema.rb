@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(version: 2020_07_09_201525) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "before_portfolio_item_id"
+    t.integer "after_portfolio_item_id"
   end
 
   create_table "orders", force: :cascade do |t|

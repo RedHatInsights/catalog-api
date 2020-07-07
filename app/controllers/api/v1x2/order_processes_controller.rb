@@ -34,14 +34,26 @@ module Api
       end
 
       def update_before_portfolio_item
+        order_process = update_association(:before_portfolio_item)
+
+        render :json => order_process
+      end
+
+      def update_after_portfolio_item
+        order_process = update_association(:after_portfolio_item)
+
+        render :json => order_process
+      end
+
+      private
+
+      def update_association(association)
         order_process = OrderProcess.find(params.require(:order_process_id))
         authorize(order_process, :update?)
 
-        order_process = Catalog::OrderProcessAssociator.new(
-          order_process, params.require(:portfolio_item_id), :before_portfolio_item
+        Catalog::OrderProcessAssociator.new(
+          order_process, params.require(:portfolio_item_id), association
         ).process.order_process
-
-        render :json => order_process
       end
     end
   end

@@ -173,6 +173,62 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     it_behaves_like "action that tests authorization", :update?, OrderProcess
   end
 
+  describe "PATCH /order_processes/:id/after_portfolio_item #after_portfolio_item" do
+    let(:order_process_associator) { instance_double(Api::V1x2::Catalog::OrderProcessAssociator) }
+    let!(:after_portfolio_item) { create(:portfolio_item) }
+    let(:after_portfolio_item_id) { after_portfolio_item.id.to_s }
+    let(:valid_attributes) { {:portfolio_item_id => after_portfolio_item_id} }
+
+    subject do
+      patch "#{api_version}/order_processes/#{order_process_id}/after_portfolio_item", :headers => default_headers, :params => valid_attributes
+    end
+
+    context "with valid attributes" do
+      before do
+        allow(Api::V1x2::Catalog::OrderProcessAssociator).to receive(:new)
+          .with(order_process, after_portfolio_item_id, :after_portfolio_item)
+          .and_return(order_process_associator)
+        allow(order_process_associator).to receive(:process).and_return(order_process_associator)
+        allow(order_process_associator).to receive(:order_process).and_return(order_process)
+      end
+
+      it "delegates to the order process associator" do
+        expect(order_process_associator).to receive(:process)
+        expect(order_process_associator).to receive(:order_process)
+        subject
+      end
+
+      it "returns a 200" do
+        subject
+        expect(response).to have_http_status(200)
+      end
+
+      context "with no update permission" do
+        before do
+          allow(rbac_access).to receive(:update_access_check).and_return(false)
+        end
+
+        it "returns 403" do
+          subject
+          expect(response).to have_http_status(403)
+        end
+      end
+    end
+
+    context "when the order process does not exist" do
+      subject do
+        patch "#{api_version}/order_processes/#{order_process_id + 1}/after_portfolio_item", :headers => default_headers
+      end
+
+      it "returns a 404" do
+        subject
+        expect(response).to have_http_status(404)
+      end
+    end
+
+    it_behaves_like "action that tests authorization", :update?, OrderProcess
+  end
+
   describe "DELETE /order_processes #destroy" do
     subject { delete "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers }
 
