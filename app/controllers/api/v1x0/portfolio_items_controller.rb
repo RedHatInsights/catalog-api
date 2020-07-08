@@ -1,8 +1,8 @@
 module Api
   module V1x0
     class PortfolioItemsController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
-      include Api::V1x0::Mixins::ShowMixin
+      include Mixins::IndexMixin
+      include Mixins::ShowMixin
 
       def index
         if params[:portfolio_id]

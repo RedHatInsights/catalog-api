@@ -3,7 +3,7 @@ require 'services/api/v1x1'
 module Api
   module V1x1
     class ServicePlansController < Api::V1x0::ServicePlansController
-      include Api::V1x1::Mixins::IndexMixin
+      include Mixins::IndexMixin
 
       def reset
         service_plan = ServicePlan.find(params.require(:service_plan_id))

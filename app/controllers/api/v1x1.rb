@@ -18,6 +18,6 @@ module Api
     class TagsController                      < Api::V1x0::TagsController; end
     class TenantsController                   < Api::V1x0::TenantsController; end
 
-    extend_each_subclass Api::V1x1::Mixins::IndexMixin
+    extend_each_subclass Mixins::IndexMixin
   end
 end

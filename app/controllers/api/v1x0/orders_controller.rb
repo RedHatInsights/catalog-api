@@ -1,9 +1,9 @@
 module Api
   module V1x0
     class OrdersController < ApplicationController
-      include Api::V1x0::Mixins::IndexMixin
-      include Api::V1x0::Mixins::ServiceOfferingMixin
-      include Api::V1x0::Mixins::ShowMixin
+      include Mixins::IndexMixin
+      include Mixins::ServiceOfferingMixin
+      include Mixins::ShowMixin
 
       def index
         collection(Order.all)
