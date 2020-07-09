@@ -33,12 +33,12 @@ module Api
         head :no_content
       end
 
-      def update_pre
+      def update_before_portfolio_item
         order_process = OrderProcess.find(params.require(:order_process_id))
         authorize(order_process, :update?)
 
         order_process = Catalog::OrderProcessAssociator.new(
-          order_process, params.require(:portfolio_item_id), :pre
+          order_process, params.require(:portfolio_item_id), :before_portfolio_item
         ).process.order_process
 
         render :json => order_process

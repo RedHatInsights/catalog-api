@@ -39,7 +39,7 @@ namespace :v1x2, :path => "v1.2" do
   end
   resources :icons, :only => [:create, :destroy]
   resources :order_processes, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable] do
-    patch :pre, :to => 'order_processes#update_pre'
+    patch :before_portfolio_item, :to => 'order_processes#update_before_portfolio_item'
   end
   resources :settings
   resources :tags, :only => [:index]

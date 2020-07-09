@@ -7,19 +7,19 @@ describe Api::V1x2::Catalog::OrderProcessAssociator do
 
     context "when the portfolio item cannot be found" do
       subject { described_class.new(order_process, portfolio_item.id + 1, association) }
-      let(:association) { :pre }
+      let(:association) { :before_portfolio_item }
 
       it "raises an error" do
         expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
-    context "when the association is :pre" do
-      let(:association) { :pre }
+    context "when the association is :before_portfolio_item" do
+      let(:association) { :before_portfolio_item }
 
-      it "updates the order process 'pre' step" do
+      it "updates the order process 'before_portfolio_item' step" do
         updated_process = subject.process.order_process
-        expect(updated_process.pre).to eq(portfolio_item)
+        expect(updated_process.before_portfolio_item).to eq(portfolio_item)
       end
     end
   end

@@ -117,21 +117,20 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     it_behaves_like "action that tests authorization", :update?, OrderProcess
   end
 
-  describe "PATCH /order_processes/:id/pre #pre" do
+  describe "PATCH /order_processes/:id/before_portfolio_item #before_portfolio_item" do
     let(:order_process_associator) { instance_double(Api::V1x2::Catalog::OrderProcessAssociator) }
-    let!(:pre_portfolio_item) { create(:portfolio_item) }
-    let(:pre_portfolio_item_id) { pre_portfolio_item.id.to_s }
-    let(:valid_attributes) { {:portfolio_item_id => pre_portfolio_item_id} }
+    let!(:before_portfolio_item) { create(:portfolio_item) }
+    let(:before_portfolio_item_id) { before_portfolio_item.id.to_s }
+    let(:valid_attributes) { {:portfolio_item_id => before_portfolio_item_id} }
 
     subject do
-      patch "#{api_version}/order_processes/#{order_process_id}/pre", :headers => default_headers, :params => valid_attributes
+      patch "#{api_version}/order_processes/#{order_process_id}/before_portfolio_item", :headers => default_headers, :params => valid_attributes
     end
 
     context "with valid attributes" do
-
       before do
         allow(Api::V1x2::Catalog::OrderProcessAssociator).to receive(:new)
-          .with(order_process, pre_portfolio_item_id, :pre)
+          .with(order_process, before_portfolio_item_id, :before_portfolio_item)
           .and_return(order_process_associator)
         allow(order_process_associator).to receive(:process).and_return(order_process_associator)
         allow(order_process_associator).to receive(:order_process).and_return(order_process)
@@ -162,7 +161,7 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
 
     context "when the order process does not exist" do
       subject do
-        patch "#{api_version}/order_processes/#{order_process_id + 1}/pre", :headers => default_headers
+        patch "#{api_version}/order_processes/#{order_process_id + 1}/before_portfolio_item", :headers => default_headers
       end
 
       it "returns a 404" do
