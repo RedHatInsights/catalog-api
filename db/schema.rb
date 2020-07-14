@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_10_185514) do
+ActiveRecord::Schema.define(version: 2020_07_07_095138) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -95,8 +95,8 @@ ActiveRecord::Schema.define(version: 2020_06_10_185514) do
     t.bigint "portfolio_item_id"
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
-    t.string "owner"
     t.jsonb "context"
+    t.string "owner"
     t.string "external_url"
     t.string "insights_request_id"
     t.datetime "discarded_at"
@@ -122,6 +122,7 @@ ActiveRecord::Schema.define(version: 2020_06_10_185514) do
     t.bigint "tenant_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "before_portfolio_item_id"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -167,9 +168,9 @@ ActiveRecord::Schema.define(version: 2020_06_10_185514) do
     t.string "distributor"
     t.string "documentation_url"
     t.string "support_url"
-    t.string "service_offering_icon_ref"
     t.datetime "discarded_at"
     t.string "owner"
+    t.string "service_offering_icon_ref"
     t.string "service_offering_type"
     t.bigint "icon_id"
     t.index ["discarded_at"], name: "index_portfolio_items_on_discarded_at"

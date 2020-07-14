@@ -3,6 +3,9 @@ class OrderProcess < ApplicationRecord
   acts_as_tenant(:tenant)
   acts_as_taggable_on
 
+  belongs_to :before_portfolio_item, :class_name => 'PortfolioItem'
+  # belongs_to :after_portfolio_item, :class_name => 'PortfolioItem'
+
   def metadata
     {:user_capabilities => user_capabilities}
   end
