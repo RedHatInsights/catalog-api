@@ -3,6 +3,8 @@ describe OrderProcess do
   let(:tenant2) { create(:tenant, :external_tenant => "2") }
   let!(:order_process1) { create(:order_process, :tenant => tenant1) }
 
+  it { is_expected.to have_many(:tag_links) }
+
   it ".taggable?" do
     expect(OrderProcess.taggable?).to be_truthy
   end
