@@ -23,6 +23,22 @@ describe OrderProcessPolicy do
     end
   end
 
+  # TODO: update to use correct access check after rbac is changed
+  describe "#link?" do
+    it "returns true" do
+      expect(rbac_access).to receive(:update_access_check).and_return(true)
+      expect(subject.link?).to eq(true)
+    end
+  end
+
+  # TODO: update to use correct access check after rbac is changed
+  describe "#unlink?" do
+    it "returns true" do
+      expect(rbac_access).to receive(:update_access_check).and_return(true)
+      expect(subject.unlink?).to eq(true)
+    end
+  end
+
   describe "#update?" do
     it "returns true" do
       expect(rbac_access).to receive(:update_access_check).and_return(true)
@@ -49,7 +65,9 @@ describe OrderProcessPolicy do
       expect(subject.user_capabilities).to eq(
         "create"  => true,
         "destroy" => true,
+        "link"    => true,
         "show"    => true,
+        "unlink"  => true,
         "update"  => true
       )
     end

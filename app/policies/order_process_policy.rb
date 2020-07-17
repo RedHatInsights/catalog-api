@@ -11,6 +11,16 @@ class OrderProcessPolicy < ApplicationPolicy
     rbac_access.update_access_check
   end
 
+  # TODO: use corrent access check after rbac is updated
+  def link?
+    rbac_access.update_access_check
+  end
+
+  # TODO: use corrent access check after rbac is updated
+  def unlink?
+    rbac_access.update_access_check
+  end
+
   def destroy?
     rbac_access.destroy_access_check
   end
