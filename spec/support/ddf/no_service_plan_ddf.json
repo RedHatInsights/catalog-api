@@ -2,7 +2,7 @@
   "schema": 
   {"fields": [
     {"name": "empty-service-plan", 
-     "label": "This product requires no user input and is fully configured by the system.\nClick submit to order this item.", 
+     "label": "This product requires no user input and is fully configured by the system. Click submit to order this item.", 
      "component": "plain-text"
     }
   ]
