@@ -2860,6 +2860,55 @@
         }
       }
     },
+    "/order_processes/{id}/remove_association": {
+      "post": {
+        "tags": [
+          "OrderProcess"
+        ],
+        "summary": "Removes the 'before' and/or 'after' product(s) for an Order Process",
+        "operationId": "removeOrderProcessAssociation",
+        "description": "Removes the association to the product(s) defined in the 'before' and/or 'after' that would be executed when using this Order Process",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Product(s) successfully removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProcess"
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "OrderProcess Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderProcessAssociationsToRemove"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/order_processes/{id}/tag": {
       "post": {
         "tags": [
@@ -3345,6 +3394,23 @@
             "type": "string",
             "title": "Portfolio Item Id",
             "example": "1234"
+          }
+        }
+      },
+      "OrderProcessAssociationsToRemove": {
+        "type": "object",
+        "properties": {
+          "associations_to_remove": {
+            "type": "array",
+            "title": "Association(s) to remove",
+            "items": {
+              "type": "string",
+              "enum": [
+                "before",
+                "after"
+              ]
+            },
+            "example": ["before", "after"]
           }
         }
       },
