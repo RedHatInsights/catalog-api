@@ -9,6 +9,8 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     allow(rbac_access).to receive(:update_access_check).and_return(true)
     allow(rbac_access).to receive(:create_access_check).and_return(true)
     allow(rbac_access).to receive(:destroy_access_check).and_return(true)
+    allow(rbac_access).to receive(:link_access_check).and_return(true)
+    allow(rbac_access).to receive(:unlink_access_check).and_return(true)
   end
 
   describe "GET /order_processes/:id #show" do
