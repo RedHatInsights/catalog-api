@@ -229,6 +229,48 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     it_behaves_like "action that tests authorization", :update?, OrderProcess
   end
 
+  describe "POST /order_process/:id/remove_association #remove_association" do
+    let(:remove_association_params) { {:associations_to_remove => ["before"]} }
+    subject do
+      post "#{api_version}/order_processes/#{order_process_id}/remove_association",
+           :headers => default_headers,
+           :params  => remove_association_params
+    end
+
+    context "when the order process exists" do
+      let(:order_process_dissociator) { instance_double(Api::V1x2::Catalog::OrderProcessDissociator) }
+
+      before do
+        allow(Api::V1x2::Catalog::OrderProcessDissociator).to receive(:new)
+          .with(order_process, ["before"]).and_return(order_process_dissociator)
+        allow(order_process_dissociator).to receive(:process).and_return(order_process_dissociator)
+        allow(order_process_dissociator).to receive(:order_process).and_return(order_process)
+      end
+
+      it "delegates to the order process dissociator service" do
+        expect(order_process_dissociator).to receive(:process)
+        expect(order_process_dissociator).to receive(:order_process)
+        subject
+      end
+
+      it "returns a 200" do
+        subject
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context "when the order process does not exist" do
+      let(:order_process_id) { order_process.id + 1 }
+
+      it "returns a 404" do
+        subject
+        expect(response).to have_http_status(404)
+      end
+    end
+
+    it_behaves_like "action that tests authorization", :update?, OrderProcess
+  end
+
   describe "DELETE /order_processes #destroy" do
     subject { delete "#{api_version}/order_processes/#{order_process_id}", :headers => default_headers }
 

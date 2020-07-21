@@ -45,6 +45,18 @@ module Api
         render :json => order_process
       end
 
+      def remove_association
+        order_process = OrderProcess.find(params.require(:order_process_id))
+        authorize(order_process, :update?)
+
+        order_process = Catalog::OrderProcessDissociator.new(
+          order_process,
+          params.require(:associations_to_remove)
+        ).process.order_process
+
+        render :json => order_process
+      end
+
       private
 
       def update_association(association)

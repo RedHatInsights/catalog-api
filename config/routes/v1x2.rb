@@ -41,6 +41,7 @@ namespace :v1x2, :path => "v1.2" do
   resources :order_processes, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable] do
     patch :before_portfolio_item, :to => 'order_processes#update_before_portfolio_item'
     patch :after_portfolio_item, :to => 'order_processes#update_after_portfolio_item'
+    post  :remove_association, :to => 'order_processes#remove_association'
   end
   resources :settings
   resources :tags, :only => [:index]
