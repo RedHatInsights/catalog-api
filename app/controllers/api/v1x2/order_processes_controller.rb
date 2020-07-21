@@ -32,6 +32,41 @@ module Api
 
         head :no_content
       end
+
+      def update_before_portfolio_item
+        order_process = update_association(:before_portfolio_item)
+
+        render :json => order_process
+      end
+
+      def update_after_portfolio_item
+        order_process = update_association(:after_portfolio_item)
+
+        render :json => order_process
+      end
+
+      def remove_association
+        order_process = OrderProcess.find(params.require(:order_process_id))
+        authorize(order_process, :update?)
+
+        order_process = Catalog::OrderProcessDissociator.new(
+          order_process,
+          params.require(:associations_to_remove)
+        ).process.order_process
+
+        render :json => order_process
+      end
+
+      private
+
+      def update_association(association)
+        order_process = OrderProcess.find(params.require(:order_process_id))
+        authorize(order_process, :update?)
+
+        Catalog::OrderProcessAssociator.new(
+          order_process, params.require(:portfolio_item_id), association
+        ).process.order_process
+      end
     end
   end
 end
