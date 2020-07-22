@@ -5,7 +5,7 @@ module Api
       include Mixins::ShowMixin
 
       def index
-        relation = for_resource_object? ? Catalog::GetLinksOfOrderProcess.new(params).process.order_processes : OrderProcess.all
+        relation = for_resource_object? ? Catalog::GetLinkedOrderProcess.new(params).process.order_processes : OrderProcess.all
 
         collection(relation)
       end

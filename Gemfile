@@ -24,7 +24,6 @@ end
 
 gem 'dhasher'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
-gem 'faraday', '>= 0.17.0'
 gem 'insights-api-common', '~> 4.0'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.2'

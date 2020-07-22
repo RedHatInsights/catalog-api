@@ -6,10 +6,7 @@ module Catalog
   class NotAuthorized < StandardError; end
   class OrderUncancelable < StandardError; end
   class RBACError < StandardError; end
-  class NetworkError < StandardError; end
-  class TimedOutError < StandardError; end
   class ServiceOfferingArchived < StandardError; end
-  class InvalidTag < StandardError; end
   class SourcesError < StandardError; end
   class TopologyError < StandardError; end
 end

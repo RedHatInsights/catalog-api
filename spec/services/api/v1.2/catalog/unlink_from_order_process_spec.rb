@@ -64,24 +64,15 @@ describe Api::V1x2::Catalog::UnlinkFromOrderProcess, :type => [:service] do
     let(:app_name) { 'topology' }
     let(:env_not_set) { /TOPOLOGICAL_INVENTORY_URL is not set/ }
 
-    context 'credentials' do
-      let(:object_type) { 'Credential' }
-      let(:url)         { "http://localhost/api/topological-inventory/v2.0/credentials/#{object_id}/untag" }
-
-      it_behaves_like "#test_remote_process"
-      it_behaves_like "remote services test exceptions", :post
-    end
-
     context 'ServiceInventory' do
       let(:object_type) { 'ServiceInventory' }
       let(:url)         { "http://localhost/api/topological-inventory/v2.0/service_inventories/#{object_id}/untag" }
 
       it_behaves_like "#test_remote_process"
-      it_behaves_like "remote services test exceptions", :post
     end
   end
 
-  describe 'sources' do
+  xdescribe 'sources' do
     let(:object_id) { '123' }
     let(:app_name) { 'sources' }
     let(:env_not_set) { /SOURCES_URL is not set/ }
@@ -91,7 +82,6 @@ describe Api::V1x2::Catalog::UnlinkFromOrderProcess, :type => [:service] do
       let(:url)         { "http://localhost/api/sources/v1.0/sources/#{object_id}/untag" }
 
       it_behaves_like "#test_remote_process"
-      it_behaves_like "remote services test exceptions", :post
     end
   end
 end
