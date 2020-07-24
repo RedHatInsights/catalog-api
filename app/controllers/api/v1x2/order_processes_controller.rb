@@ -69,7 +69,7 @@ module Api
 
       def update_association(association)
         order_process = OrderProcess.find(params.require(:order_process_id))
-        authorize(order_process, :update?)
+        authorize(order_process, "update?")
 
         Catalog::OrderProcessAssociator.new(
           order_process, params.require(:portfolio_item_id), association
