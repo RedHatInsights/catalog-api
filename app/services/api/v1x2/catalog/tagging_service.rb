@@ -30,36 +30,21 @@ module Api
           @app_name == "catalog" && CATALOG_OBJECT_TYPES.include?(@object_type)
         end
 
-        def call_tagging_service(klass)
-          catalog_object_type? ? call_local_service(klass) : call_remote_service(klass, tags)
+        def call_tagging_service
+          catalog_object_type? ? call_local_service : call_remote_service(tags)
         end
 
-        def call_local_service(klass)
-          method = api_method_name(klass, false)
-          object.send(method, TAG_NAME, :namespace => TAG_NAMESPACE, :value => @order_process.id)
+        def call_local_service
+          object.send(api_method_name, TAG_NAME, :namespace => TAG_NAMESPACE, :value => @order_process.id)
         end
 
         def object
           @object_type.classify.constantize.find(@object_id)
         end
 
-        def call_remote_service(klass, options = {:limit => QUERY_LIMIT})
+        def call_remote_service(options = {:limit => QUERY_LIMIT})
           REMOTE_SERVICES[@app_name].call do |api|
-            method = api_method_name(klass)
-            api.send(method, @object_id, options)
-          end
-        end
-
-        def api_method_name(klass, remote = true)
-          case klass.name
-          when "Api::V1x2::Catalog::GetLinkedOrderProcess"
-            remote ? "list_#{@object_type.underscore}_tags" : "tags"
-          when "Api::V1x2::Catalog::LinkToOrderProcess"
-            remote ? "tag_#{@object_type.underscore}" : "tag_add"
-          when "Api::V1x2::Catalog::UnlinkFromOrderProcess"
-            remote ? "untag_#{@object_type.underscore}" : "tag_remove"
-          else
-            raise ::Catalog::InvalidParameter, "No #{klass} found for tagging service"
+            api.send(api_method_name, @object_id, options)
           end
         end
 

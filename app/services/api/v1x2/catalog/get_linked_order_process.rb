@@ -17,9 +17,13 @@ module Api
           if catalog_object_type?
             object.tags.collect(&:to_tag_string)
           else
-            response = call_remote_service(self.class)
+            response = call_remote_service
             response.data.collect(&:tag)
           end
+        end
+
+        def api_method_name
+          catalog_object_type? ? "tags" : "list_#{@object_type.underscore}_tags"
         end
       end
     end

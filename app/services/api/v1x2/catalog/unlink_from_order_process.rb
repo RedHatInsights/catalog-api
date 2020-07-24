@@ -11,9 +11,15 @@ module Api
 
         def process
           TagLink.where(tag_link).delete_all
-          call_tagging_service(self.class)
+          call_tagging_service
 
           self
+        end
+
+        private
+
+        def api_method_name
+          catalog_object_type? ? "tag_remove" : "untag_#{@object_type.underscore}"
         end
       end
     end

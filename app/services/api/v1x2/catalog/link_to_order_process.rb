@@ -11,9 +11,15 @@ module Api
 
         def process
           TagLink.find_or_create_by!(tag_link)
-          call_tagging_service(self.class)
+          call_tagging_service
 
           self
+        end
+
+        private
+
+        def api_method_name
+          catalog_object_type? ? "tag_add" : "tag_#{@object_type.underscore}"
         end
       end
     end
