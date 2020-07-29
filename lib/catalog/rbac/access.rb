@@ -22,6 +22,14 @@ module Catalog
         resource_check('delete')
       end
 
+      def link_access_check
+        resource_check('link')
+      end
+
+      def unlink_access_check
+        resource_check('unlink')
+      end
+
       def resource_check(verb, id = @record.id, klass = @record.class)
         return true unless rbac_enabled?
 

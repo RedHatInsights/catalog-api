@@ -5,7 +5,9 @@ module Api
       include Mixins::ShowMixin
 
       def index
-        collection(OrderProcess.all)
+        relation = for_resource_object? ? Catalog::GetLinkedOrderProcess.new(params).process.order_processes : OrderProcess.all
+
+        collection(relation)
       end
 
       def create
@@ -13,6 +15,24 @@ module Api
         order_process.save!
 
         render :json => order_process
+      end
+
+      def link
+        order_process = OrderProcess.find(params.require(:id))
+        authorize(order_process)
+
+        Catalog::LinkToOrderProcess.new(params).process
+
+        head :no_content
+      end
+
+      def unlink
+        order_process = OrderProcess.find(params.require(:id))
+        authorize(order_process)
+
+        Catalog::UnlinkFromOrderProcess.new(params).process
+
+        head :no_content
       end
 
       def update
@@ -61,11 +81,21 @@ module Api
 
       def update_association(association)
         order_process = OrderProcess.find(params.require(:order_process_id))
-        authorize(order_process, :update?)
+        authorize(order_process, "update?")
 
         Catalog::OrderProcessAssociator.new(
           order_process, params.require(:portfolio_item_id), association
         ).process.order_process
+      end
+
+      def for_resource_object?
+        raise ::Catalog::InvalidParameter, "Invalid resource object params: #{resource_params}" unless resource_params.length.zero? || resource_params.length == 3
+
+        !!(resource_params[:app_name] && resource_params[:object_id] && resource_params[:object_type])
+      end
+
+      def resource_params
+        params.permit(:object_type, :object_id, :app_name).to_h
       end
     end
   end

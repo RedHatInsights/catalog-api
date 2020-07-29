@@ -43,6 +43,10 @@ namespace :v1x2, :path => "v1.2" do
     patch :after_portfolio_item, :to => 'order_processes#update_after_portfolio_item'
     post  :remove_association, :to => 'order_processes#remove_association'
   end
+
+  post '/order_processes/:id/link', :to => "order_processes#link", :as => 'link'
+  post '/order_processes/:id/unlink', :to => "order_processes#unlink", :as => 'unlink'
+
   resources :settings
   resources :tags, :only => [:index]
   resources :tenants, :only => [:index, :show] do
