@@ -11,9 +11,9 @@ RSpec.shared_context "tag links of an order process with parameters set" do
 
   let(:test_env) do
     {
-      :TOPOLOGICAL_INVENTORY_URL => 'http://localhost',
-      :CATALOG_URL               => 'http://localhost',
-      :SOURCES_URL               => 'http://localhost'
+      :TOPOLOGICAL_INVENTORY_URL => 'http://topology.example.com',
+      :CATALOG_URL               => 'http://catalog.example.com',
+      :SOURCES_URL               => 'http://sources.example.com'
     }
   end
 

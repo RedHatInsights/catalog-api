@@ -24,8 +24,6 @@ describe Api::V1x2::Catalog::UnlinkFromOrderProcess, :type => [:service] do
 
   shared_examples_for '#test_remote_process' do
     it 'unlinks a remote tag' do
-      stub_request(:post, url).to_return(:status => http_status, :body => order_process_tags.to_json, :headers => headers)
-
       with_modified_env test_env do
         TagLink.create(:order_process_id => order_process.id.to_s,
                        :object_type      => object_type,
@@ -62,24 +60,31 @@ describe Api::V1x2::Catalog::UnlinkFromOrderProcess, :type => [:service] do
   describe 'topology' do
     let(:object_id) { '123' }
     let(:app_name) { 'topology' }
-    let(:env_not_set) { /TOPOLOGICAL_INVENTORY_URL is not set/ }
+
+    before do
+      stub_request(:post, url).to_return(:status => http_status, :body => order_process_tags.to_json, :headers => headers)
+    end
 
     context 'ServiceInventory' do
       let(:object_type) { 'ServiceInventory' }
-      let(:url)         { "http://localhost/api/topological-inventory/v2.0/service_inventories/#{object_id}/untag" }
+      let(:url)         { "http://topology.example.com/api/topological-inventory/v2.0/service_inventories/#{object_id}/untag" }
 
       it_behaves_like "#test_remote_process"
     end
   end
 
+  # TODO: enable following tests when sources service supports tagging
   xdescribe 'sources' do
     let(:object_id) { '123' }
     let(:app_name) { 'sources' }
-    let(:env_not_set) { /SOURCES_URL is not set/ }
+
+    before do
+      stub_request(:post, url).to_return(:status => http_status, :body => order_process_tags.to_json, :headers => headers)
+    end
 
     context 'source' do
       let(:object_type) { 'Source' }
-      let(:url)         { "http://localhost/api/sources/v1.0/sources/#{object_id}/untag" }
+      let(:url)         { "http://sources.example.com/api/sources/v1.0/sources/#{object_id}/untag" }
 
       it_behaves_like "#test_remote_process"
     end
