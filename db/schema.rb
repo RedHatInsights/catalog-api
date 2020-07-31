@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_09_201525) do
+ActiveRecord::Schema.define(version: 2020_07_31_045804) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -95,13 +95,15 @@ ActiveRecord::Schema.define(version: 2020_07_09_201525) do
     t.bigint "portfolio_item_id"
     t.jsonb "service_parameters"
     t.jsonb "provider_control_parameters"
-    t.jsonb "context"
     t.string "owner"
+    t.jsonb "context"
     t.string "external_url"
     t.string "insights_request_id"
     t.datetime "discarded_at"
     t.jsonb "service_parameters_raw"
     t.string "service_instance_ref"
+    t.integer "process_sequence"
+    t.string "process_scope"
     t.index ["discarded_at"], name: "index_order_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end

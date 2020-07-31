@@ -3817,6 +3817,20 @@
             "example": "364498f142194beba576833d7303abe5",
             "description": "The insights request id can be used to collect log data for this order item as its processed by the system",
             "readOnly": true
+          },
+          "process_sequence": {
+            "type": "integer",
+            "title": "Sequence of when the order item is ran",
+            "example": 1,
+            "description": "The sequence that this order item is ran relative to the other order items within the order.",
+            "readOnly": true
+          },
+          "process_scope": {
+            "type": "string",
+            "title": "Scope of when the order item is ran",
+            "example": "before",
+            "description": "Denotes the scope in which the order item will run for the order it belongs to. It can be 'before', 'after', or 'applicable'",
+            "readOnly": true
           }
         }
       },
