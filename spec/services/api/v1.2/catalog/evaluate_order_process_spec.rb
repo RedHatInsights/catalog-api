@@ -27,19 +27,19 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
     context "when there is 1 existing tag on the portfolio_item" do
       let(:before_params) do
         {
-            :order_id          => order.id,
-            :portfolio_item_id => before_portfolio_item.id,
-            :process_sequence  => 1,
-            :process_scope     => "before"
+          :order_id          => order.id,
+          :portfolio_item_id => before_portfolio_item.id,
+          :process_sequence  => 1,
+          :process_scope     => "before"
         }
       end
 
       let(:after_params) do
         {
-            :order_id          => order.id,
-            :portfolio_item_id => after_portfolio_item.id,
-            :process_sequence  => 3,
-            :process_scope     => "after"
+          :order_id          => order.id,
+          :portfolio_item_id => after_portfolio_item.id,
+          :process_sequence  => 3,
+          :process_scope     => "after"
         }
       end
       let(:before_portfolio_item) { create(:portfolio_item) }

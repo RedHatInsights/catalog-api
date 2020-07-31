@@ -5,8 +5,8 @@ describe "v1.2 - OrdersCotnroller", :type => [:request, :controller, :v1x2] do
   let!(:order_item2) { create(:order_item, :order => order2) }
   let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
   before do
-     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
-     allow(catalog_access).to receive(:process).and_return(catalog_access)
+    allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+    allow(catalog_access).to receive(:process).and_return(catalog_access)
   end
 
   describe "#submit_order" do

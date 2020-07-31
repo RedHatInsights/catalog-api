@@ -60,4 +60,3 @@ describe Api::V1x2::Catalog::CreateRequestForAppliedInventories, :type => :servi
     end
   end
 end
-
