@@ -1,5 +1,5 @@
 describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
-  let!(:order_process)    { create(:order_process) }
+  let!(:order_process)    { create(:order_process, :name => "OrderProcess_abc") }
   let!(:order_process_id) { order_process.id }
   let(:rbac_access)       { instance_double(Catalog::RBAC::Access) }
 
@@ -53,15 +53,24 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
   describe "GET /order_processes #index" do
     let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
 
-    it 'returns 200' do
+    before do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
       allow(catalog_access).to receive(:process).and_return(catalog_access)
+    end
 
-      get "#{api_version}/order_processes", :headers => default_headers
+    it 'returns 200' do
+      get "#{api_version}/order_processes?limit=50&offset=0&filter[name][contains_i]=abc", :headers => default_headers
 
       expect(response).to have_http_status(200)
       expect(json['data'].size).to eq(1)
       expect(json['data'].first['metadata']).to have_key('user_capabilities')
+    end
+
+    it 'returns empty array when filtering out' do
+      get "#{api_version}/order_processes?limit=50&offset=0&filter[name][contains_i]=cde", :headers => default_headers
+
+      expect(response).to have_http_status(200)
+      expect(json['data'].size).to eq(0)
     end
   end
 

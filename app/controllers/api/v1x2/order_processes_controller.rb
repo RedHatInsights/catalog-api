@@ -95,7 +95,7 @@ module Api
       end
 
       def resource_params
-        params.permit(:object_type, :object_id, :app_name).to_h
+        @resource_params ||= params.slice(:object_type, :object_id, :app_name).to_unsafe_h
       end
     end
   end
