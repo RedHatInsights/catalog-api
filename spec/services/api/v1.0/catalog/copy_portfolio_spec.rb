@@ -51,5 +51,25 @@ describe Api::V1x0::Catalog::CopyPortfolio, :type => :service do
         expect(new_portfolio.name).to eq "Copy (2) of #{portfolio.name}"
       end
     end
+
+    context "with exception during copy" do
+      let(:copy_portfolio) { described_class.new(:portfolio_id => portfolio.id) }
+      let(:error)          { ::Catalog::OrderUncancelable }
+
+      before do
+        allow(copy_portfolio).to receive(:copy_portfolio_items).and_raise(error)
+        expect { copy_portfolio.process }.to raise_error(error)
+      end
+
+      it 'does not create a new portfolio' do
+        expect(copy_portfolio.new_portfolio).to eq(nil)
+      end
+
+      it 'removes all partial data' do
+        expect(Icon.count).to eq(1)
+        expect(Portfolio.count).to eq(2)
+        expect(PortfolioItem.count).to eq(3)
+      end
+    end
   end
 end
