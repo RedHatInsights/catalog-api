@@ -1,5 +1,5 @@
 describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
-  let!(:order_process)    { create(:order_process) }
+  let!(:order_process)    { create(:order_process, :name => "OrderProcess_abc") }
   let!(:order_process_id) { order_process.id }
   let(:rbac_access)       { instance_double(Catalog::RBAC::Access) }
 
@@ -9,6 +9,8 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     allow(rbac_access).to receive(:update_access_check).and_return(true)
     allow(rbac_access).to receive(:create_access_check).and_return(true)
     allow(rbac_access).to receive(:destroy_access_check).and_return(true)
+    allow(rbac_access).to receive(:link_access_check).and_return(true)
+    allow(rbac_access).to receive(:unlink_access_check).and_return(true)
   end
 
   describe "GET /order_processes/:id #show" do
@@ -28,7 +30,9 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
         expect(json['metadata']).to have_key('user_capabilities')
         expect(json['metadata']['user_capabilities']).to eq(
           "create"  => true,
+          "link"    => true,
           "show"    => true,
+          "unlink"  => true,
           "update"  => true,
           "destroy" => true
         )
@@ -49,15 +53,24 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
   describe "GET /order_processes #index" do
     let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
 
-    it 'returns 200' do
+    before do
       allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
       allow(catalog_access).to receive(:process).and_return(catalog_access)
+    end
 
-      get "#{api_version}/order_processes", :headers => default_headers
+    it 'returns 200' do
+      get "#{api_version}/order_processes?limit=50&offset=0&filter[name][contains_i]=abc", :headers => default_headers
 
       expect(response).to have_http_status(200)
       expect(json['data'].size).to eq(1)
       expect(json['data'].first['metadata']).to have_key('user_capabilities')
+    end
+
+    it 'returns empty array when filtering out' do
+      get "#{api_version}/order_processes?limit=50&offset=0&filter[name][contains_i]=cde", :headers => default_headers
+
+      expect(response).to have_http_status(200)
+      expect(json['data'].size).to eq(0)
     end
   end
 
@@ -280,6 +293,153 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
 
     it_behaves_like "action that tests authorization", :destroy?, OrderProcess
+  end
+
+  describe "POST /order_processes/:id/link #link" do
+    context "when object type is PortfolioItem" do
+      let(:portfolio_item) { create(:portfolio_item) }
+      let(:tag_attrs) { {:object_type => 'PortfolioItem', :app_name => 'catalog', :object_id => portfolio_item.id.to_s} }
+
+      it "returns 204" do
+        post "#{api_version}/order_processes/#{order_process_id}/link", :headers => default_headers, :params => tag_attrs
+        expect(response).to have_http_status(204)
+
+        expect(TagLink.count).to eq(1)
+        expect(TagLink.first).to have_attributes(:order_process_id => order_process.id,
+                                                 :app_name         => "catalog",
+                                                 :object_type      => "PortfolioItem",
+                                                 :tag_name         => "/catalog/order_processes=#{order_process_id}")
+
+        expect(portfolio_item.tags.count).to eq(1)
+        expect(portfolio_item.tags.first).to have_attributes(:name      => "order_processes",
+                                                             :value     => order_process.id.to_s,
+                                                             :namespace => "catalog")
+      end
+    end
+
+    context "when object type is ServiceInventory" do
+      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology', :object_id => "123"} }
+      let(:link_tag_svc) { instance_double("Api::V1x2::Catalog::LinkToOrderProcess") }
+
+      it "returns 204" do
+        allow(Api::V1x2::Catalog::LinkToOrderProcess).to receive(:new).and_return(link_tag_svc)
+        allow(link_tag_svc).to receive(:process).and_return(link_tag_svc)
+
+        post "#{api_version}/order_processes/#{order_process_id}/link", :headers => default_headers, :params => tag_attrs
+
+        expect(response).to have_http_status(204)
+      end
+    end
+
+    context "when object type is Source" do
+      let(:tag_attrs) { {:object_type => 'Source', :app_name => 'sources', :object_id => "123"} }
+      let(:link_tag_svc) { instance_double("Api::V1x2::Catalog::LinkToOrderProcess") }
+
+      it "returns 204" do
+        allow(Api::V1x2::Catalog::LinkToOrderProcess).to receive(:new).and_return(link_tag_svc)
+        allow(link_tag_svc).to receive(:process).and_return(link_tag_svc)
+
+        post "#{api_version}/order_processes/#{order_process_id}/link", :headers => default_headers, :params => tag_attrs
+
+        expect(response).to have_http_status(204)
+      end
+    end
+  end
+
+  describe "POST /order_processes/:id/unlink #unlink" do
+    context "when object type is Portfolio" do
+      let(:portfolio) { create(:portfolio) }
+      let(:tag_attrs) { {:object_type => 'Portfolio', :app_name => 'catalog', :object_id => portfolio.id.to_s} }
+
+      it "returns 204" do
+        post "#{api_version}/order_processes/#{order_process_id}/link", :headers => default_headers, :params => tag_attrs
+
+        expect(TagLink.count).to eq(1)
+        expect(TagLink.first).to have_attributes(:order_process_id => order_process.id,
+                                                 :app_name         => "catalog",
+                                                 :object_type      => "Portfolio",
+                                                 :tag_name         => "/catalog/order_processes=#{order_process_id}")
+
+        expect(portfolio.tags.count).to eq(1)
+        expect(portfolio.tags.first).to have_attributes(:name      => "order_processes",
+                                                        :value     => order_process.id.to_s,
+                                                        :namespace => "catalog")
+
+        post "#{api_version}/order_processes/#{order_process_id}/unlink", :headers => default_headers, :params => tag_attrs
+        portfolio.reload
+
+        expect(response).to have_http_status(204)
+
+        expect(TagLink.count).to eq(0)
+        expect(portfolio.tags.count).to eq(0)
+      end
+    end
+
+    context "when object type is ServiceInventory" do
+      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology', :object_id => "123"} }
+      let(:unlink_tag_svc) { instance_double("Api::V1x2::Catalog::UnlinkFromOrderProcess") }
+
+      it "returns 204" do
+        allow(Api::V1x2::Catalog::UnlinkFromOrderProcess).to receive(:new).and_return(unlink_tag_svc)
+        allow(unlink_tag_svc).to receive(:process).and_return(unlink_tag_svc)
+
+        post "#{api_version}/order_processes/#{order_process_id}/unlink", :headers => default_headers, :params => tag_attrs
+        expect(response).to have_http_status(204)
+      end
+    end
+  end
+
+  describe "GET /order_processes #link_tags" do
+    let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+
+    before do
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+      allow(catalog_access).to receive(:process).and_return(catalog_access)
+    end
+
+    context "when app is catalog" do
+      let(:portfolio) { create(:portfolio) }
+      let(:tag_attrs) { {:object_type => 'Portfolio', :app_name => 'catalog', :object_id => portfolio.id.to_s} }
+
+      it 'returns 200' do
+        post "#{api_version}/order_processes/#{order_process_id}/link", :headers => default_headers, :params => tag_attrs
+
+        get "#{api_version}/order_processes", :headers => default_headers, :params => tag_attrs
+
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context "when app is topology" do
+      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology', :object_id => "123"} }
+      let(:get_tag_svc) { instance_double("Api::V1x2::Catalog::GetLinkedOrderProcess") }
+
+      it "returns 200" do
+        allow(Api::V1x2::Catalog::GetLinkedOrderProcess).to receive(:new).and_return(get_tag_svc)
+        allow(get_tag_svc).to receive(:process).and_return(get_tag_svc)
+        allow(get_tag_svc).to receive(:order_processes).and_return(OrderProcess.all)
+
+        get "#{api_version}/order_processes", :headers => default_headers, :params => tag_attrs
+
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context "when resource params is invalid" do
+      let(:bad_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology'} }
+      let(:get_tag_svc) { instance_double("Api::V1x2::Catalog::GetLinkedOrderProcess") }
+
+      it "raises an error" do
+        allow(Api::V1x2::Catalog::GetLinkedOrderProcess).to receive(:new).and_return(get_tag_svc)
+        allow(get_tag_svc).to receive(:process).and_return(get_tag_svc)
+        allow(get_tag_svc).to receive(:order_processes).and_return(OrderProcess.all)
+
+        get "#{api_version}/order_processes", :headers => default_headers, :params => bad_attrs
+
+        expect(response).to have_http_status(400)
+        expect(response.body).to match(/Catalog::InvalidParameter: Invalid resource object params/)
+      end
+    end
   end
 
   it_behaves_like "controller that supports tagging endpoints" do

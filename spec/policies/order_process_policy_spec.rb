@@ -23,6 +23,20 @@ describe OrderProcessPolicy do
     end
   end
 
+  describe "#link?" do
+    it "returns true" do
+      expect(rbac_access).to receive(:link_access_check).and_return(true)
+      expect(subject.link?).to eq(true)
+    end
+  end
+
+  describe "#unlink?" do
+    it "returns true" do
+      expect(rbac_access).to receive(:unlink_access_check).and_return(true)
+      expect(subject.unlink?).to eq(true)
+    end
+  end
+
   describe "#update?" do
     it "returns true" do
       expect(rbac_access).to receive(:update_access_check).and_return(true)
@@ -43,13 +57,17 @@ describe OrderProcessPolicy do
       allow(rbac_access).to receive(:create_access_check).with(OrderProcess).and_return(true)
       allow(rbac_access).to receive(:destroy_access_check).and_return(true)
       allow(rbac_access).to receive(:update_access_check).and_return(true)
+      allow(rbac_access).to receive(:link_access_check).and_return(true)
+      allow(rbac_access).to receive(:unlink_access_check).and_return(true)
     end
 
     it "returns user capabilities" do
       expect(subject.user_capabilities).to eq(
         "create"  => true,
         "destroy" => true,
+        "link"    => true,
         "show"    => true,
+        "unlink"  => true,
         "update"  => true
       )
     end

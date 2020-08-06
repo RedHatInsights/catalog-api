@@ -11,6 +11,14 @@ class OrderProcessPolicy < ApplicationPolicy
     rbac_access.update_access_check
   end
 
+  def link?
+    rbac_access.link_access_check
+  end
+
+  def unlink?
+    rbac_access.unlink_access_check
+  end
+
   def destroy?
     rbac_access.destroy_access_check
   end

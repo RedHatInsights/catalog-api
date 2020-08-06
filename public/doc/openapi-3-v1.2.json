@@ -2576,8 +2576,17 @@
         ],
         "summary": "List OrderProcesses",
         "operationId": "listOrderProcesses",
-        "description": "Gets a list of order processes.",
+        "description": "Gets a list of order processes. Optionally select order processes linked to a resource object whose app_name, object_type and object_id are specified by query parameters.",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/ApplicationName"
+          },
+          {
+            "$ref": "#/components/parameters/ObjectId"
+          },
+          {
+            "$ref": "#/components/parameters/ObjectType"
+          },
           {
             "$ref": "#/components/parameters/QueryLimit"
           },
@@ -3050,6 +3059,84 @@
           }
         }
       }
+    },
+    "/order_processes/{id}/link": {
+      "post": {
+        "tags": [
+          "OrderProcess"
+        ],
+        "summary": "Links a tag to an order process",
+        "operationId": "linkTagToOrderProcess",
+        "description": "Links a tag to an order process",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tags successfully linked"
+            },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+            },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+            },
+          "404": {
+            "description": "OrderProcess Not Found."
+            }
+          },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceObject"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/order_processes/{id}/unlink": {
+      "post": {
+        "tags": [
+          "OrderProcess"
+        ],
+        "summary": "Unlinks a tag from an order process",
+        "operationId": "unlinkTagFromOrderProcess",
+        "description": "Unlinks a tag from an order process",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tags successfully unlinked"
+            },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+            },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+            },
+          "404": {
+            "description": "OrderProcess Not Found."
+            }
+          },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceObject"
+              }
+            }
+          },
+          "required": true
+        }
+      }
     }
   },
   "servers": [
@@ -3194,6 +3281,33 @@
         "in": "query",
         "name": "sort_by",
         "description": "Field to sort collection by.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ApplicationName": {
+        "in": "query",
+        "name": "app_name",
+        "description": "Name of the application.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ObjectId": {
+        "in": "query",
+        "name": "object_id",
+        "description": "Id of the resource object.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ObjectType": {
+        "in": "query",
+        "name": "object_type",
+        "description": "Type of the resource object.",
         "required": false,
         "schema": {
           "type": "string"
@@ -4328,6 +4442,35 @@
             "items": {
               "$ref": "#/components/schemas/ApiError"
             }
+          }
+        }
+      },
+      "ResourceObject": {
+         "type": "object",
+         "description": "Resource object definition",
+         "required": [
+          "object_type",
+          "app_name",
+          "object_id"
+         ],
+         "properties": {
+          "object_type": {
+            "type": "string",
+            "title": "Object type",
+            "description": "Object type",
+            "example": "PortfolioItem"
+          },
+          "app_name": {
+            "type": "string",
+            "title": "App name",
+            "description": "Name of the application that the object belongs to",
+            "example": "catalog"
+          },
+          "object_id": {
+            "type": "string",
+            "title": "Object ID",
+            "description": "ID of the object",
+            "example": "123"
           }
         }
       }

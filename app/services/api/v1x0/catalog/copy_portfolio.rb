@@ -19,14 +19,16 @@ module Api
         private
 
         def make_copy
-          @portfolio.dup.tap do |new_portfolio|
-            new_portfolio.name = @name || ::Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name), Portfolio::MAX_NAME_LENGTH)
+          Portfolio.transaction do
+            @portfolio.dup.tap do |new_portfolio|
+              new_portfolio.name = @name || ::Catalog::NameAdjust.create_copy_name(@portfolio.name, Portfolio.all.pluck(:name), Portfolio::MAX_NAME_LENGTH)
 
-            duplicate_icon(@portfolio, new_portfolio) if @portfolio.icon_id.present?
+              duplicate_icon(@portfolio, new_portfolio) if @portfolio.icon_id.present?
 
-            new_portfolio.save!
+              new_portfolio.save!
 
-            copy_portfolio_items(new_portfolio.id)
+              copy_portfolio_items(new_portfolio.id)
+            end
           end
         end
 
