@@ -1,11 +1,12 @@
 describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
   before do
-     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
-     allow(catalog_access).to receive(:process).and_return(catalog_access)
-     allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
-     allow(catalog_access).to receive(:accessible?).with("portfolios", "read").and_return(true)
+    allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+    allow(catalog_access).to receive(:process).and_return(catalog_access)
+    allow(catalog_access).to receive(:accessible?).with("portfolios", "create").and_return(true)
+    allow(catalog_access).to receive(:accessible?).with("portfolios", "read").and_return(true)
   end
+
   let(:service_offering_ref) { "998" }
   let(:service_offering_source_ref) { "568" }
   let(:order) { create(:order) }
@@ -409,7 +410,17 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     end
   end
 
-  it_behaves_like "controller that supports tagging endpoints" do
-    let(:object_instance) { portfolio_item }
+  context "tagging endpoints" do
+    let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
+
+    before do
+      allow(Catalog::RBAC::Access).to receive(:new).and_return(rbac_access)
+      allow(rbac_access).to receive(:resource_check).with("update", portfolio.id, Portfolio).and_return(true)
+      allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
+    end
+
+    it_behaves_like "controller that supports tagging endpoints" do
+      let(:object_instance) { portfolio_item }
+    end
   end
 end

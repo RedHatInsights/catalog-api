@@ -20,6 +20,12 @@ shared_examples_for "controller that supports tagging endpoints" do
         expect(json.first["tag"]).to eq Tag.new(params).to_tag_string
         expect(response).to have_http_status(201)
       end
+
+      subject { post "#{base_url}/tag", :headers => default_headers, :params => tag_params }
+
+      it_behaves_like "action that tests authorization", :tag?, nil do
+        let(:object_class) { object_instance.class }
+      end
     end
 
     shared_examples_for "bad_tags" do
@@ -113,7 +119,12 @@ shared_examples_for "controller that supports tagging endpoints" do
 
       let(:endpoint) { "untag" }
       it_behaves_like "bad_tags"
-      it_behaves_like "good_tags"
+
+      subject { post "#{base_url}/untag", :headers => default_headers, :params => params }
+
+      it_behaves_like "action that tests authorization", :untag?, nil do
+        let(:object_class) { object_instance.class }
+      end
     end
   end
 end

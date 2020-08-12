@@ -383,7 +383,17 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
     end
   end
 
-  it_behaves_like "controller that supports tagging endpoints" do
-    let(:object_instance) { portfolio }
+  context "tagging endpoints" do
+    let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
+
+    before do
+      allow(Catalog::RBAC::Access).to receive(:new).and_return(rbac_access)
+      allow(rbac_access).to receive(:update_access_check).and_return(true)
+      allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
+    end
+
+    it_behaves_like "controller that supports tagging endpoints" do
+      let(:object_instance) { portfolio }
+    end
   end
 end
