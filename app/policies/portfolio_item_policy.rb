@@ -39,6 +39,9 @@ class PortfolioItemPolicy < ApplicationPolicy
       rbac_access.approval_workflow_check
   end
 
+  alias tag? set_approval?
+  alias untag? set_approval?
+
   private
 
   def can_read_and_update_destination?(destination_id)
