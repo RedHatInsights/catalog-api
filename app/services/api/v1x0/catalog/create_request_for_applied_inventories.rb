@@ -24,7 +24,7 @@ module Api
           service_plan = TopologicalInventoryApiClient::AppliedInventoriesParametersServicePlan.new(
             :service_parameters => @item.service_parameters
           )
-          TopologicalInventory.call do |api|
+          TopologicalInventory::Service.call do |api|
             task_id = api.applied_inventories_for_service_offering(service_offering_ref, service_plan).task_id
 
             @item.update(:topology_task_ref => task_id)

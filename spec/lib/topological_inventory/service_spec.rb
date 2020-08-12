@@ -1,4 +1,4 @@
-describe TopologicalInventory, :type => [:topology, :current_forwardable] do
+describe TopologicalInventory::Service, :type => [:topology, :current_forwardable] do
   let(:topo_ex) { TopologicalInventoryApiClient::ApiError.new("kaboom") }
 
   it "raises TopologyError" do

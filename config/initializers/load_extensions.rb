@@ -1,5 +1,5 @@
 require 'exceptions'
-require 'topological_inventory'
+require 'topological_inventory/service'
 require 'dev_credentials'
 require 'more_core_extensions/all'
 require 'approval/service'
