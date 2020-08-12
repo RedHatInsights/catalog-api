@@ -35,7 +35,7 @@ namespace :v1x2, :path => "v1.2" do
     get :icon, :to => 'icons#raw_icon'
     get :next_name, :action => 'next_name', :controller => 'portfolio_items'
     post :copy, :action => 'copy', :controller => 'portfolio_items'
-    post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
+    post :undelete, :action => 'restore', :controller => 'portfolio_items'
   end
   resources :icons, :only => [:create, :destroy]
   resources :order_processes, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable] do

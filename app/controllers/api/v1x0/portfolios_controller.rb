@@ -36,6 +36,7 @@ module Api
 
       def restore
         portfolio = Portfolio.with_discarded.discarded.find(params.require(:portfolio_id))
+        authorize(portfolio)
         Catalog::SoftDeleteRestore.new(portfolio, params.require(:restore_key)).process
 
         render :json => portfolio

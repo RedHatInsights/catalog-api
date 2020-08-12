@@ -86,10 +86,12 @@ describe PortfolioItemPolicy do
     end
   end
 
-  describe "#destroy?" do
-    it "delegates to the check for update permissions on the portfolio" do
-      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
-      expect(subject.destroy?).to eq(true)
+  %i[destroy? restore?].each do |method|
+    describe "##{method}" do
+      it "delegates to the check for update permissions on the portfolio" do
+        expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+        expect(subject.send(method)).to eq(true)
+      end
     end
   end
 
@@ -246,6 +248,7 @@ describe PortfolioItemPolicy do
         "create"       => true,
         "update"       => true,
         "destroy"      => true,
+        "restore"      => true,
         "copy"         => true,
         "set_approval" => true,
         "show"         => true,

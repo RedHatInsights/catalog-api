@@ -108,12 +108,15 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   describe 'POST /portfolio_items/{portfolio_item_id}/undelete' do
     let(:undelete) { post "#{api_version}/portfolio_items/#{portfolio_item_id}/undelete", :params => { :restore_key => restore_key }, :headers => default_headers }
     let(:restore_key) { Digest::SHA1.hexdigest(portfolio_item.discarded_at.to_s) }
+    subject { undelete }
 
     context "when restoring a portfolio_item that has been discarded" do
-      before do
+      before do |example|
         portfolio_item.discard
-        undelete
+        subject unless example.metadata[:subject_inside]
       end
+
+      it_behaves_like "action that tests authorization", :restore?, PortfolioItem
 
       it "returns a 200" do
         expect(response).to have_http_status :ok
@@ -128,10 +131,12 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
     context 'when attempting to restore with the wrong restore_key' do
       let(:restore_key) { "MrMaliciousRestoreKey" }
 
-      before do
+      before do |example|
         portfolio_item.discard
-        undelete
+        subject unless example.metadata[:subject_inside]
       end
+
+      it_behaves_like "action that tests authorization", :restore?, PortfolioItem
 
       it "returns a 403" do
         expect(response).to have_http_status(:forbidden)

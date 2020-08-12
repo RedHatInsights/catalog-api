@@ -39,6 +39,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
           "copy"         => true,
           "create"       => true,
           "destroy"      => true,
+          "restore"      => true,
           "share"        => true,
           "show"         => true,
           "unshare"      => true,
