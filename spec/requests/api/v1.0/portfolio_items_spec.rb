@@ -106,9 +106,13 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
   end
 
   describe 'POST /portfolio_items/{portfolio_item_id}/undelete' do
-    let(:undelete) { post "#{api_version}/portfolio_items/#{portfolio_item_id}/undelete", :params => { :restore_key => restore_key }, :headers => default_headers }
+    let(:restore) do
+      post "#{api_version}/portfolio_items/#{portfolio_item_id}/undelete",
+           :params  => {:restore_key => restore_key},
+           :headers => default_headers
+    end
     let(:restore_key) { Digest::SHA1.hexdigest(portfolio_item.discarded_at.to_s) }
-    subject { undelete }
+    subject { restore }
 
     context "when restoring a portfolio_item that has been discarded" do
       before do |example|
@@ -122,7 +126,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
         expect(response).to have_http_status :ok
       end
 
-      it "returns the undeleted portfolio_item" do
+      it "returns the restored portfolio_item" do
         expect(json["id"]).to eq portfolio_item_id.to_s
         expect(json["name"]).to eq portfolio_item.name
       end
@@ -145,7 +149,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
 
     context 'when attempting to restore a portfolio_item that not been discarded' do
       it "returns a 404" do
-        undelete
+        restore
         expect(response).to have_http_status :not_found
       end
     end
