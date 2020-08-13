@@ -22,7 +22,7 @@ describe TopologicalInventory::EventListener do
     let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
     let(:payload) { {'id' => "123", "status" => "ok", "state" => "running", "context" => payload_context} }
     let(:event) { ManageIQ::Messaging::ReceivedMessage.new(nil, 'Task.update', payload, default_headers, nil, client) }
-  
+
     it 'adds a new progress message' do
       subject.subscribe
       progress_message = ProgressMessage.last
@@ -34,4 +34,3 @@ describe TopologicalInventory::EventListener do
     end
   end
 end
-  

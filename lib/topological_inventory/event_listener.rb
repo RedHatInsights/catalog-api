@@ -8,7 +8,7 @@ module TopologicalInventory
     end
 
     private
-  
+
     def process_event(event)
       Rails.logger.info("Kafka message #{event.message} received with payload: #{event.payload}")
 
@@ -18,4 +18,3 @@ module TopologicalInventory
     end
   end
 end
-  
