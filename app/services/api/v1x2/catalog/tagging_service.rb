@@ -6,8 +6,10 @@ module Api
         TAG_NAME = 'order_processes'.freeze
         QUERY_LIMIT = 1000
 
-        REMOTE_SERVICES = {"sources"  => ::Sources,
-                           "topology" => ::TopologicalInventory}.freeze
+        REMOTE_SERVICES = {
+          "sources"  => {:service_class => ::Sources, :tag_class => nil}, # nil -> ::SourcesApiClient::Tag when it is available
+          "topology" => {:service_class => ::TopologicalInventory::Service, :tag_class => ::TopologicalInventoryApiClient::Tag}
+        }.freeze
 
         CATALOG_OBJECT_TYPES = [Portfolio.name, PortfolioItem.name].freeze
 
@@ -43,13 +45,13 @@ module Api
         end
 
         def call_remote_service(options = {:limit => QUERY_LIMIT})
-          REMOTE_SERVICES[@app_name].call do |api|
+          REMOTE_SERVICES[@app_name][:service_class].call do |api|
             api.send(api_method_name, @object_id, options)
           end
         end
 
         def tags
-          api_tag_klass = "#{REMOTE_SERVICES[@app_name].name}ApiClient::Tag".classify.constantize
+          api_tag_klass = REMOTE_SERVICES[@app_name][:tag_class]
 
           [api_tag_klass.new(:tag => tag_content)]
         end

@@ -35,7 +35,7 @@ module Api
         private
 
         def submit_order_item(item)
-          TopologicalInventory.call do |api_instance|
+          TopologicalInventory::Service.call do |api_instance|
             result = api_instance.order_service_offering(item.portfolio_item.service_offering_ref, parameters(item))
             item.mark_ordered("Ordered", :topology_task_ref => result.task_id)
           end

@@ -15,7 +15,7 @@ module Api
           @imported = false
           @modified = false
 
-          TopologicalInventory.call do |api_instance|
+          TopologicalInventory::Service.call do |api_instance|
             service_offering = api_instance.show_service_offering(@reference)
 
             if service_offering.extra[:survey_enabled]
