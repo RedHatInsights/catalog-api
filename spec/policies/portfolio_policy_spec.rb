@@ -55,10 +55,12 @@ describe PortfolioPolicy do
     end
   end
 
-  describe "#destroy?" do
-    it "delegates to the rbac access destroy check" do
-      expect(rbac_access).to receive(:destroy_access_check).and_return(true)
-      expect(subject.destroy?).to eq(true)
+  %i[destroy? restore?].each do |method|
+    describe "##{method}" do
+      it "delegates to the rbac access destroy check" do
+        expect(rbac_access).to receive(:destroy_access_check).and_return(true)
+        expect(subject.send(method)).to eq(true)
+      end
     end
   end
 
@@ -99,6 +101,7 @@ describe PortfolioPolicy do
         "create"       => true,
         "update"       => true,
         "destroy"      => true,
+        "restore"      => true,
         "copy"         => true,
         "share"        => true,
         "unshare"      => true,

@@ -19,6 +19,8 @@ class PortfolioItemPolicy < ApplicationPolicy
     update_portfolio_check
   end
 
+  alias restore? destroy?
+
   def copy?
     destination_id = @user.try(:params).try(:dig, :portfolio_id) || @record.portfolio_id
 

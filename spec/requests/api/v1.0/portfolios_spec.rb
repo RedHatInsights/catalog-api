@@ -147,14 +147,18 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
   describe "GET /portfolios/:portfolio_id/undelete" do
     let(:restore_key) { Digest::SHA1.hexdigest(portfolio.discarded_at.to_s) }
     let(:params) { { :restore_key => restore_key } }
+    let(:restore) do
+      post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+    end
+    subject { restore }
 
     before do
       portfolio.discard
     end
 
     context "when restoring a portfolio" do
-      before do
-        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
 
       it "returns a 200" do
@@ -165,23 +169,26 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
         expect(json["id"]).to eq portfolio.id.to_s
         expect(json["name"]).to eq portfolio.name
       end
+
+      it_behaves_like "action that tests authorization", :restore?, Portfolio
     end
 
     context "when restoring a portfolio with the wrong restore key" do
       let(:restore_key) { "MrMaliciousRestoreKey" }
 
-      before do
-        portfolio.discard
-        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
 
       it "returns a 403" do
         expect(response).to have_http_status(:forbidden)
       end
+
+      it_behaves_like "action that tests authorization", :restore?, Portfolio
     end
 
     context "when restoring the portfolio_items fails" do
-      before do
+      before do |example|
         allow(Portfolio).to receive(:with_discarded).and_return(Portfolio)
         allow(Portfolio).to receive(:discarded).and_return(Portfolio)
         allow(Portfolio).to receive(:find).with(portfolio.id.to_s).and_return(portfolio)
@@ -189,28 +196,30 @@ describe "v1.0 - Portfolios API", :type => [:request, :v1] do
         allow(PortfolioItem).to receive(:with_discarded).and_return(PortfolioItem)
         allow(PortfolioItem).to receive(:discarded).and_return([portfolio_item])
         allow(portfolio_item).to receive(:undiscard).and_return(false)
+
+        subject unless example.metadata[:subject_inside]
       end
 
       it 'reports errors when undiscarding the child portfolio_items fails' do
-        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
-
         expect(response).to have_http_status(:bad_request)
       end
+
+      it_behaves_like "action that tests authorization", :restore?, Portfolio
     end
 
     context "when restoring a portfolio with portfolio_items that were discarded previously" do
       let!(:second_item) { create(:portfolio_item, :portfolio => portfolio, :discarded_at => 1.minute.ago) }
 
-      before do
-        portfolio.discard
+      before do |example|
+        subject unless example.metadata[:subject_inside]
       end
 
-      it "only undeletes the one that was discarded at the same time as the portfolio" do
-        post "#{api_version}/portfolios/#{portfolio_id}/undelete", :headers => default_headers, :params => params
-
+      it "only restores the one that was discarded at the same time as the portfolio" do
         second_item.reload
         expect(second_item.discarded?).to be_truthy
       end
+
+      it_behaves_like "action that tests authorization", :restore?, Portfolio
     end
   end
 

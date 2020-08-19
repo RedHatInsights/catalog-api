@@ -9,6 +9,8 @@ class PortfolioPolicy < ApplicationPolicy
     rbac_access.destroy_access_check
   end
 
+  alias restore? destroy?
+
   def show?
     rbac_access.read_access_check
   end

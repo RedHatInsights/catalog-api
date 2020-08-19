@@ -41,6 +41,7 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
           "copy"         => true,
           "create"       => true,
           "destroy"      => true,
+          "restore"      => true,
           "update"       => true,
           "edit_survey"  => true,
           "show"         => true,
