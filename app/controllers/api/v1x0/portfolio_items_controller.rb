@@ -47,8 +47,9 @@ module Api
         render :json => svc.process.new_portfolio_item
       end
 
-      def undestroy
+      def restore
         item = PortfolioItem.with_discarded.discarded.find(params.require(:portfolio_item_id))
+        authorize(item)
         Catalog::SoftDeleteRestore.new(item, params.require(:restore_key)).process
 
         render :json => item

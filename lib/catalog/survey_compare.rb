@@ -23,7 +23,7 @@ module Catalog
     end
 
     def topo_base
-      TopologicalInventory.call do |api_instance|
+      TopologicalInventory::Service.call do |api_instance|
         survey = api_instance.list_service_offering_service_plans(@reference)
         survey.data.first.create_json_schema.deep_stringify_keys
       end

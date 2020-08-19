@@ -39,11 +39,14 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
           "copy"         => true,
           "create"       => true,
           "destroy"      => true,
+          "restore"      => true,
           "share"        => true,
           "show"         => true,
           "unshare"      => true,
           "update"       => true,
-          "set_approval" => true
+          "set_approval" => true,
+          "tag"          => true,
+          "untag"        => true
         )
       end
 
@@ -271,5 +274,9 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
         expect(first_error_detail).to match(/OpenAPIParser::InvalidUUIDFormat/)
       end
     end
+  end
+
+  it_behaves_like "controller that supports tagging endpoints" do
+    let(:object_instance) { portfolio }
   end
 end

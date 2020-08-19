@@ -9,6 +9,8 @@ class PortfolioPolicy < ApplicationPolicy
     rbac_access.destroy_access_check
   end
 
+  alias restore? destroy?
+
   def show?
     rbac_access.read_access_check
   end
@@ -26,6 +28,9 @@ class PortfolioPolicy < ApplicationPolicy
   def set_approval?
     rbac_access.update_access_check && rbac_access.approval_workflow_check
   end
+
+  alias tag? set_approval?
+  alias untag? set_approval?
 
   class Scope < Scope
     def resolve

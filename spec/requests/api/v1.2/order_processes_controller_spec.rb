@@ -34,7 +34,9 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
           "show"    => true,
           "unlink"  => true,
           "update"  => true,
-          "destroy" => true
+          "destroy" => true,
+          "tag"     => true,
+          "untag"   => true
         )
       end
     end

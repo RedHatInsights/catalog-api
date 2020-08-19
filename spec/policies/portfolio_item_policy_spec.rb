@@ -54,42 +54,46 @@ describe PortfolioItemPolicy do
     end
   end
 
-  describe "#set_approval?" do
-    let(:resource_check) { true }
-    let(:approval_workflow_check) { true }
+  %i[set_approval? tag? untag?].each do |action|
+    describe "##{action}" do
+      let(:resource_check) { true }
+      let(:approval_workflow_check) { true }
 
-    before do
-      allow(rbac_access).to receive(:resource_check).with("update", portfolio.id, Portfolio).and_return(resource_check)
-      allow(rbac_access).to receive(:approval_workflow_check).and_return(approval_workflow_check)
-    end
-
-    context "when the resource check is false" do
-      let(:resource_check) { false }
-
-      it "returns false" do
-        expect(subject.set_approval?).to eq(false)
+      before do
+        allow(rbac_access).to receive(:resource_check).with("update", portfolio.id, Portfolio).and_return(resource_check)
+        allow(rbac_access).to receive(:approval_workflow_check).and_return(approval_workflow_check)
       end
-    end
 
-    context "when the approval workflow check is false" do
-      let(:approval_workflow_check) { false }
+      context "when the resource check is false" do
+        let(:resource_check) { false }
 
-      it "returns false" do
-        expect(subject.set_approval?).to eq(false)
+        it "returns false" do
+          expect(subject.send(action)).to eq(false)
+        end
       end
-    end
 
-    context "when the resource check and the approval workflow check are true" do
-      it "returns true" do
-        expect(subject.set_approval?).to eq(true)
+      context "when the approval workflow check is false" do
+        let(:approval_workflow_check) { false }
+
+        it "returns false" do
+          expect(subject.send(action)).to eq(false)
+        end
+      end
+
+      context "when the resource check and the approval workflow check are true" do
+        it "returns true" do
+          expect(subject.send(action)).to eq(true)
+        end
       end
     end
   end
 
-  describe "#destroy?" do
-    it "delegates to the check for update permissions on the portfolio" do
-      expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
-      expect(subject.destroy?).to eq(true)
+  %i[destroy? restore?].each do |method|
+    describe "##{method}" do
+      it "delegates to the check for update permissions on the portfolio" do
+        expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+        expect(subject.send(method)).to eq(true)
+      end
     end
   end
 
@@ -246,10 +250,13 @@ describe PortfolioItemPolicy do
         "create"       => true,
         "update"       => true,
         "destroy"      => true,
+        "restore"      => true,
         "copy"         => true,
         "set_approval" => true,
         "show"         => true,
-        "edit_survey"  => true
+        "edit_survey"  => true,
+        "tag"          => true,
+        "untag"        => true
       })
     end
   end

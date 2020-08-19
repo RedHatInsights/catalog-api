@@ -35,7 +35,7 @@ namespace :v1x1, :path => "v1.1" do
     get :icon, :to => 'icons#raw_icon'
     get :next_name, :action => 'next_name', :controller => 'portfolio_items'
     post :copy, :action => 'copy', :controller => 'portfolio_items'
-    post :undelete, :action => 'undestroy', :controller => 'portfolio_items'
+    post :undelete, :action => 'restore', :controller => 'portfolio_items'
   end
   resources :icons, :only => [:create, :destroy]
   resources :settings

@@ -41,10 +41,13 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
           "copy"         => true,
           "create"       => true,
           "destroy"      => true,
+          "restore"      => true,
           "update"       => true,
           "edit_survey"  => true,
           "show"         => true,
-          "set_approval" => true
+          "set_approval" => true,
+          "tag"          => true,
+          "untag"        => true
         )
         expect(json["metadata"]["orderable"]).to eq(true)
       end

@@ -23,42 +23,46 @@ describe PortfolioPolicy do
     end
   end
 
-  describe "#set_approval?" do
-    let(:update_access_check) { true }
-    let(:approval_workflow_check) { true }
+  %i[set_approval? tag? untag?].each do |action|
+    describe "##{action}" do
+      let(:update_access_check) { true }
+      let(:approval_workflow_check) { true }
 
-    before do
-      allow(rbac_access).to receive(:update_access_check).and_return(update_access_check)
-      allow(rbac_access).to receive(:approval_workflow_check).and_return(approval_workflow_check)
-    end
-
-    context "when the update check is false" do
-      let(:update_access_check) { false }
-
-      it "returns false" do
-        expect(subject.set_approval?).to eq(false)
+      before do
+        allow(rbac_access).to receive(:update_access_check).and_return(update_access_check)
+        allow(rbac_access).to receive(:approval_workflow_check).and_return(approval_workflow_check)
       end
-    end
 
-    context "when the approval workflow check is false" do
-      let(:approval_workflow_check) { false }
+      context "when the update check is false" do
+        let(:update_access_check) { false }
 
-      it "returns false" do
-        expect(subject.set_approval?).to eq(false)
+        it "returns false" do
+          expect(subject.send(action)).to eq(false)
+        end
       end
-    end
 
-    context "when the update check and the approval workflow check are true" do
-      it "returns true" do
-        expect(subject.set_approval?).to eq(true)
+      context "when the approval workflow check is false" do
+        let(:approval_workflow_check) { false }
+
+        it "returns false" do
+          expect(subject.send(action)).to eq(false)
+        end
+      end
+
+      context "when the update check and the approval workflow check are true" do
+        it "returns true" do
+          expect(subject.send(action)).to eq(true)
+        end
       end
     end
   end
 
-  describe "#destroy?" do
-    it "delegates to the rbac access destroy check" do
-      expect(rbac_access).to receive(:destroy_access_check).and_return(true)
-      expect(subject.destroy?).to eq(true)
+  %i[destroy? restore?].each do |method|
+    describe "##{method}" do
+      it "delegates to the rbac access destroy check" do
+        expect(rbac_access).to receive(:destroy_access_check).and_return(true)
+        expect(subject.send(method)).to eq(true)
+      end
     end
   end
 
@@ -99,11 +103,14 @@ describe PortfolioPolicy do
         "create"       => true,
         "update"       => true,
         "destroy"      => true,
+        "restore"      => true,
         "copy"         => true,
         "share"        => true,
         "unshare"      => true,
         "show"         => true,
-        "set_approval" => true
+        "set_approval" => true,
+        "tag"          => true,
+        "untag"        => true
       })
     end
   end

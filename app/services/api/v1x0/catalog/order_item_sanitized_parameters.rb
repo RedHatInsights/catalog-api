@@ -40,7 +40,7 @@ module Api
         end
 
         def service_plan_schema
-          TopologicalInventory.call do |api|
+          TopologicalInventory::Service.call do |api|
             @plan = api.show_service_plan(service_plan_ref.to_s)
           end
           @plan.create_json_schema
