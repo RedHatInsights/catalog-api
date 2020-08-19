@@ -3,6 +3,7 @@ module Api
     class TagsController < ApplicationController
       include Mixins::IndexMixin
       include Insights::API::Common::TaggingMethods
+      include TaggingMixin
 
       def index
         if params[:portfolio_id]

@@ -29,6 +29,9 @@ class PortfolioPolicy < ApplicationPolicy
     rbac_access.update_access_check && rbac_access.approval_workflow_check
   end
 
+  alias tag? set_approval?
+  alias untag? set_approval?
+
   class Scope < Scope
     def resolve
       if access_scopes.include?('admin')

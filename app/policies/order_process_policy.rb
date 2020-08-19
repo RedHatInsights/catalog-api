@@ -23,6 +23,9 @@ class OrderProcessPolicy < ApplicationPolicy
     rbac_access.destroy_access_check
   end
 
+  alias tag? link?
+  alias untag? unlink?
+
   class Scope < Scope
     def resolve
       if access_scopes.include?('admin')
