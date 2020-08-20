@@ -1,4 +1,4 @@
-describe Api::V1x0::Catalog::CreateApprovalRequest, :type => :service do
+describe Catalog::CreateApprovalRequest, :type => :service do
   let(:subject) { described_class.new(task) }
   let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123") }
 

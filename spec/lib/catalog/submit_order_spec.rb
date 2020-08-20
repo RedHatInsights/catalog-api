@@ -1,4 +1,4 @@
-describe Api::V1x0::Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }

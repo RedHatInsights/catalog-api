@@ -10,7 +10,7 @@ module Internal
         message = params.require(:message)
 
         ActsAsTenant.without_tenant do
-          Api::V1x0::Catalog::NotifyApprovalRequest.new(request_id, payload, message).process
+          Catalog::NotifyApprovalRequest.new(request_id, payload, message).process
         end
         json_response(nil)
       end
@@ -25,7 +25,7 @@ module Internal
 
         topic = OpenStruct.new(:payload => payload.merge("task_id" => task_id), :message => message)
         ActsAsTenant.without_tenant do
-          Api::V1x0::Catalog::DetermineTaskRelevancy.new(topic).process
+          Catalog::DetermineTaskRelevancy.new(topic).process
         end
 
         json_response(nil)
