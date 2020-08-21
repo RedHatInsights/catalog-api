@@ -19,13 +19,13 @@ describe Api::V1x2::Catalog::AddToOrderViaOrderProcess, :type => :service do
 
   let(:request) { default_request }
   let(:service_plans_instance) { instance_double(Api::V1x0::Catalog::ServicePlans) }
-  let(:order_item_sanitized_parameters) { instance_double(Api::V1x0::Catalog::OrderItemSanitizedParameters, :sanitized_parameters => {"name" => "fred"}) }
+  let(:order_item_sanitized_parameters) { instance_double(Catalog::OrderItemSanitizedParameters, :sanitized_parameters => {"name" => "fred"}) }
 
   before do
     allow(Api::V1x0::Catalog::ServicePlans).to receive(:new).and_return(service_plans_instance)
     allow(service_plans_instance).to receive(:process).and_return(service_plans_instance)
     allow(service_plans_instance).to receive(:items).and_return([OpenStruct.new(:id => "1")])
-    allow(Api::V1x0::Catalog::OrderItemSanitizedParameters).to receive(:new).with(:order_item => order_item).and_return(order_item_sanitized_parameters)
+    allow(Catalog::OrderItemSanitizedParameters).to receive(:new).with(:order_item => order_item).and_return(order_item_sanitized_parameters)
     allow(order_item_sanitized_parameters).to receive(:process).and_return(order_item_sanitized_parameters)
   end
 
