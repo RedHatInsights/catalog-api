@@ -10,8 +10,6 @@ module TopologicalInventory
     private
 
     def process_event(event)
-      Rails.logger.info("Kafka message #{event.message} received with payload: #{event.payload}")
-
       event.payload['task_id'] = event.payload.delete('id')
       topic = OpenStruct.new(:payload => event.payload, :message => event.message)
       Api::V1x0::Catalog::DetermineTaskRelevancy.new(topic).process

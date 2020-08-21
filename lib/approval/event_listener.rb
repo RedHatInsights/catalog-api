@@ -11,8 +11,6 @@ module Approval
     private
 
     def process_event(event)
-      Rails.logger.info("Kafka message #{event.message} received with payload: #{event.payload}")
-
       if event.message == EVENT_WORKFLOW_DELETED
         remove_approval_tag(event)
       else
