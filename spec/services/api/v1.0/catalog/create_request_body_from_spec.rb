@@ -5,7 +5,7 @@ describe Api::V1x0::Catalog::CreateRequestBodyFrom, :type => [:service, :current
   let(:task) { TopologicalInventoryApiClient::Task.new }
 
   describe "#process" do
-    let(:sanitize_service_instance) { instance_double(Api::V1x0::Catalog::OrderItemSanitizedParameters, :sanitized_parameters => {:a => 1}) }
+    let(:sanitize_service_instance) { instance_double(Catalog::OrderItemSanitizedParameters, :sanitized_parameters => {:a => 1}) }
     let(:local_tag_service_instance) { instance_double(Api::V1x0::Tags::CollectLocalOrderResources, :tag_resources => ["a"]) }
     let(:remote_tag_service_instance) { instance_double(Api::V1x0::Tags::Topology::RemoteInventory, :tag_resources => ["b"]) }
     let(:source_response) do
@@ -13,7 +13,7 @@ describe Api::V1x0::Catalog::CreateRequestBodyFrom, :type => [:service, :current
     end
 
     before do
-      allow(Api::V1x0::Catalog::OrderItemSanitizedParameters).to receive(:new).and_return(sanitize_service_instance)
+      allow(Catalog::OrderItemSanitizedParameters).to receive(:new).and_return(sanitize_service_instance)
       allow(sanitize_service_instance).to receive(:process).and_return(sanitize_service_instance)
       allow(Api::V1x0::Tags::CollectLocalOrderResources).to receive(:new).with(:order_id => order.id).and_return(local_tag_service_instance)
       allow(local_tag_service_instance).to receive(:process).and_return(local_tag_service_instance)

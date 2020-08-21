@@ -1,4 +1,4 @@
-describe Api::V1x0::Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :current_forwardable] do
   let(:subject) { described_class.new(params) }
   let(:params) { ActionController::Parameters.new('order_item_id' => order_item.id) }
 

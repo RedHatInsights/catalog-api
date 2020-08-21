@@ -29,7 +29,7 @@ module Approval
     end
 
     def update_approval_status(event)
-      Api::V1x0::Catalog::NotifyApprovalRequest.new(event.payload['request_id'], event.payload, event.message).process
+      Catalog::NotifyApprovalRequest.new(event.payload['request_id'], event.payload, event.message).process
     end
   end
 end

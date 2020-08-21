@@ -12,7 +12,7 @@ module TopologicalInventory
     def process_event(event)
       event.payload['task_id'] = event.payload.delete('id')
       topic = OpenStruct.new(:payload => event.payload, :message => event.message)
-      Api::V1x0::Catalog::DetermineTaskRelevancy.new(topic).process
+      Catalog::DetermineTaskRelevancy.new(topic).process
     end
   end
 end

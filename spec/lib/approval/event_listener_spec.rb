@@ -34,10 +34,10 @@ describe Approval::EventListener do
   context 'when event_type is request_finished' do
     let(:approval_request) { create(:approval_request, :has_tenant) }
     let(:payload) { {'request_id' => approval_request.approval_request_ref, 'decision' => 'denied', 'reason' => 'bad'} }
-    let(:event) { ManageIQ::Messaging::ReceivedMessage.new(nil, Api::V1x0::Catalog::NotifyApprovalRequest::EVENT_REQUEST_FINISHED, payload, default_headers, nil, client) }
+    let(:event) { ManageIQ::Messaging::ReceivedMessage.new(nil, Catalog::NotifyApprovalRequest::EVENT_REQUEST_FINISHED, payload, default_headers, nil, client) }
 
     it 'updates approval_request' do
-      expect(Api::V1x0::Catalog::ApprovalTransition).to receive(:new).and_return(instance_double(Api::V1x0::Catalog::ApprovalTransition, :process => nil))
+      expect(Catalog::ApprovalTransition).to receive(:new).and_return(instance_double(Catalog::ApprovalTransition, :process => nil))
 
       subject.subscribe
       approval_request.reload
