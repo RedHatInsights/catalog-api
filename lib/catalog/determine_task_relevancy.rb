@@ -6,7 +6,7 @@ module Catalog
 
     def process
       @task = TopologicalInventoryApiClient::Task.new(
-        :id      => @topic.payload["task_id"],
+        :id      => @topic.payload["task_id"].to_s,
         :state   => @topic.payload["state"],
         :status  => @topic.payload["status"],
         :context => @topic.payload["context"].try(&:with_indifferent_access)

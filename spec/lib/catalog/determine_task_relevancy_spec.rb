@@ -2,7 +2,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
   let(:subject) { described_class.new(topic) }
   let(:topic) do
     OpenStruct.new(
-      :payload => {"task_id" => "123", "status" => status, "state" => state, "context" => payload_context},
+      :payload => {"task_id" => 123, "status" => status, "state" => state, "context" => payload_context},
       :message => "message"
     )
   end
@@ -62,7 +62,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       let(:status) { "ok" }
 
       context "when the task context has a key path of [:service_instance][:id]" do
-        let(:payload_context) { {"service_instance" => {"id" => "321"}} }
+        let(:payload_context) { {"service_instance" => {"id" => 321}} }
         let(:update_order_item) { instance_double("Api::V1x0::Catalog::UpdateOrderItem") }
 
         before do
