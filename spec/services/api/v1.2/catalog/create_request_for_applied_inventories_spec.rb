@@ -1,14 +1,8 @@
-describe Api::V1x2::Catalog::CreateRequestForAppliedInventories, :type => :service do
+describe Api::V1x2::Catalog::CreateRequestForAppliedInventories, :type => [:service, :topology] do
   let(:subject) { described_class.new(order_item.order) }
   let(:service_plan_ref) { "991" }
   let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref, :process_scope => "applicable") }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
-
-  around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
-      example.call
-    end
-  end
 
   let(:topology_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "321") }
   let(:request_body) do
