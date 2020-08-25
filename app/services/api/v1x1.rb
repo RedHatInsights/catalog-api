@@ -7,7 +7,7 @@ module Api
       class CopyPortfolio                       < Api::V1x0::Catalog::CopyPortfolio; end
       class CopyPortfolioItem                   < Api::V1x0::Catalog::CopyPortfolioItem; end
       class CreateIcon                          < Api::V1x0::Catalog::CreateIcon; end
-      class CreateRequestForAppliedInventories  < Api::V1x0::Catalog::CreateRequestBodyFrom; end
+      class CreateRequestForAppliedInventories  < Api::V1x0::Catalog::CreateRequestForAppliedInventories; end
       class DuplicateImage                      < Api::V1x0::Catalog::DuplicateImage; end
       class ImportServicePlans                  < Api::V1x0::Catalog::ImportServicePlans; end
       class NextName                            < Api::V1x0::Catalog::NextName; end
