@@ -1,4 +1,4 @@
-describe Api::V1x0::Tags::Topology::RemoteInventory, :type => :service do
+describe Tags::Topology::RemoteInventory, :type => :service do
   let(:subject) { described_class.new(task) }
 
   before do

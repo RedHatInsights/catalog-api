@@ -1,4 +1,4 @@
-describe Api::V1x0::Tags::CollectLocalOrderResources do
+describe Tags::CollectLocalOrderResources do
   let(:order) { create(:order) }
 
   let(:order_item) { create(:order_item, :order => order) }

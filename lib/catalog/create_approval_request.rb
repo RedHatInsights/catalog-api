@@ -24,7 +24,7 @@ module Catalog
 
     def submit_approval_requests(order_item)
       response = Approval::Service.call(ApprovalApiClient::RequestApi) do |api|
-        api.create_request(Api::V1x0::Catalog::CreateRequestBodyFrom.new(@order, order_item, @task).process.result)
+        api.create_request(Catalog::CreateRequestBodyFrom.new(@order, order_item, @task).process.result)
       end
 
       order_item.approval_requests.create!(
