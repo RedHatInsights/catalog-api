@@ -7,6 +7,8 @@ class OrderProcess < ApplicationRecord
   belongs_to :after_portfolio_item, :class_name => 'PortfolioItem'
   has_many :tag_links, :dependent => :destroy, :inverse_of => :order_process
 
+  validates :name, :uniqueness => {:scope => :tenant}
+
   def metadata
     {:user_capabilities => user_capabilities}
   end
