@@ -8,8 +8,7 @@ module Api
       class CopyPortfolio                       < Api::V1x1::Catalog::CopyPortfolio; end
       class CopyPortfolioItem                   < Api::V1x1::Catalog::CopyPortfolioItem; end
       class CreateIcon                          < Api::V1x1::Catalog::CreateIcon; end
-      class CreateRequestBodyFrom               < Api::V1x1::Catalog::CreateRequestBodyFrom; end
-      class CreateRequestForAppliedInventories  < Api::V1x1::Catalog::CreateRequestBodyFrom; end
+      class CreateRequestForAppliedInventories  < Api::V1x1::Catalog::CreateRequestForAppliedInventories; end
       class DuplicateImage                      < Api::V1x1::Catalog::DuplicateImage; end
       class ImportServicePlans                  < Api::V1x1::Catalog::ImportServicePlans; end
       class NextName                            < Api::V1x1::Catalog::NextName; end
@@ -36,13 +35,6 @@ module Api
 
     module ServiceOffering
       class AddToPortfolioItem < Api::V1x1::ServiceOffering::AddToPortfolioItem; end
-    end
-
-    module Tags
-      class CollectLocalOrderResources < Api::V1x1::Tags::CollectLocalOrderResources; end
-      module Topology
-        class RemoteInventory < Api::V1x1::Tags::Topology::RemoteInventory; end
-      end
     end
   end
 end
