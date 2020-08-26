@@ -25,29 +25,42 @@ describe OrderProcess do
   end
 
   context "name validation" do
-    let(:order_process1_copy) { create(:order_process, :tenant_id => tenant_id) }
-
-    before do
-      order_process1.update(:name => "dup")
-      order_process1_copy.update(:name => "dup")
-    end
-
-    context "when the tenant is the same" do
-      let(:tenant_id) { tenant1.id }
+    context "when no name is given" do
+      before do
+        order_process1.update(:name => nil)
+      end
 
       it "fails validation" do
-        expect(order_process1).to be_valid
-        expect(order_process1_copy).to_not be_valid
-        expect(order_process1_copy.errors.messages[:name]).to eq(["has already been taken"])
+        expect(order_process1).to_not be_valid
+        expect(order_process1.errors.messages[:name]).to eq(["can't be blank"])
       end
     end
 
-    context "when the tenant is different" do
-      let(:tenant_id) { tenant2.id }
+    context "when there is a duplicate name" do
+      let(:order_process1_copy) { create(:order_process, :tenant_id => tenant_id) }
 
-      it "passes validation" do
-        expect(order_process1).to be_valid
-        expect(order_process1_copy).to be_valid
+      before do
+        order_process1.update(:name => "dup")
+        order_process1_copy.update(:name => "dup")
+      end
+
+      context "when the tenant is the same" do
+        let(:tenant_id) { tenant1.id }
+
+        it "fails validation" do
+          expect(order_process1).to be_valid
+          expect(order_process1_copy).to_not be_valid
+          expect(order_process1_copy.errors.messages[:name]).to eq(["has already been taken"])
+        end
+      end
+
+      context "when the tenant is different" do
+        let(:tenant_id) { tenant2.id }
+
+        it "passes validation" do
+          expect(order_process1).to be_valid
+          expect(order_process1_copy).to be_valid
+        end
       end
     end
   end

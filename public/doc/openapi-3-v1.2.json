@@ -4270,6 +4270,9 @@
       },
       "OrderProcess": {
         "type": "object",
+        "required": [
+          "name"
+        ],
         "properties": {
           "id": {
             "type": "string",
