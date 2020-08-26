@@ -6,7 +6,6 @@ module Api
         attr_reader :messages
 
         def initialize(portfolio_item)
-          @result = false
           @portfolio_item = portfolio_item
           @messages = []
         end
@@ -15,6 +14,7 @@ module Api
           fetch_source
           fetch_service_offering
           @result = @service_offering && @source && !archived? && !survey_changed? && source_available?
+          @result = !!@result
           self
         end
 

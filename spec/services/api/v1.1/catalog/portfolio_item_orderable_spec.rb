@@ -32,35 +32,35 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
 
       context "when the nothing has changed without service plans" do
         it "returns true" do
-          expect(subject.process.result).to be_truthy
+          expect(subject.process.result).to be(true)
         end
       end
 
       context "when the nothing has changed with service plans" do
         let(:service_plans) { [create(:service_plan, :portfolio_item => portfolio_item)] }
         it "returns true" do
-          expect(subject.process.result).to be_truthy
+          expect(subject.process.result).to be(true)
         end
       end
 
       context "when the source is not available" do
         let(:availability_status) { 'not available' }
         it "returns false" do
-          expect(subject.process.result).to be_falsey
+          expect(subject.process.result).to be(false)
         end
       end
 
       context "when the survey has changed" do
         let(:survey_changed) { true }
         it "returns false" do
-          expect(subject.process.result).to be_falsey
+          expect(subject.process.result).to be(false)
         end
       end
 
       context "when the service offering has been archived" do
         let(:archived_at) { Time.now }
         it "returns false" do
-          expect(subject.process.result).to be_falsey
+          expect(subject.process.result).to be(false)
         end
       end
     end
@@ -76,7 +76,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
       context "when the service offering cannot be retrieved" do
         it "returns false" do
           obj = subject.process
-          expect(obj.result).to be_falsey
+          expect(obj.result).to be(false)
           expect(obj.messages[0]).to match(/Service offering could not be retrieved/)
         end
       end
@@ -93,7 +93,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
       context "when the source cannot be retrieved" do
         it "returns false" do
           obj = subject.process
-          expect(obj.result).to be_falsey
+          expect(obj.result).to be(false)
           expect(obj.messages[0]).to match(/Source could not be retrieved/)
         end
       end
