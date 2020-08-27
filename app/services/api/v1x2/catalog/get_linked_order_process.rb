@@ -5,7 +5,7 @@ module Api
         attr_reader :order_processes
 
         def process
-          order_process_ids = TagLink.where(@params.except(:object_id)).where(:tag_name => link_tags).pluck(:order_process_id)
+          order_process_ids = TagLink.where(@params.except(:object_id)).where(:tag_name => link_tags).select(:order_process_id)
           @order_processes = OrderProcess.where(:id => order_process_ids)
 
           self
