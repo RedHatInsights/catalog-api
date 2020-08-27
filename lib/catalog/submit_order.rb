@@ -10,7 +10,11 @@ module Catalog
 
     def process
       @order = Order.find_by!(:id => @order_id)
-      @order.order_items.each do |order_item|
+
+      # TODO: This will need to be updated to figure out the next order item in the
+      # process sequence to run. For now, we will only submit the 'applicable' order
+      # item.
+      @order.order_items.where(:process_scope => 'applicable').each do |order_item|
         raise ::Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
 
         if ::Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)

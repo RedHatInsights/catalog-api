@@ -14,6 +14,7 @@ RSpec.shared_context "uses an order item with raw service parameters set" do
 
     @order_item =
       create(:order_item_with_callback, :portfolio_item              => portfolio_item,
+                                        :process_scope               => 'applicable',
                                         :service_parameters          => service_parameters,
                                         :service_plan_ref            => service_plan_ref,
                                         :provider_control_parameters => provider_control_parameters,
