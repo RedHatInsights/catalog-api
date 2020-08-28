@@ -13,7 +13,6 @@ module Api
     class GraphqlController                   < Api::V1x1::GraphqlController; end
     class IconsController                     < Api::V1x1::IconsController; end
     class OrderItemsController                < Api::V1x1::OrderItemsController; end
-    class PortfolioItemsController            < Api::V1x1::PortfolioItemsController; end
     class PortfoliosController                < Api::V1x1::PortfoliosController; end
     class ProgressMessagesController          < Api::V1x1::ProgressMessagesController; end
     class ProviderControlParametersController < Api::V1x1::ProviderControlParametersController; end
