@@ -374,6 +374,14 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :topology, :v1] do
         expect(json["name"]).to_not eq portfolio_item.name
         expect(json["name"]).to match(/^Copy of.*/)
       end
+
+      context "when payload has new portfolio item name" do
+        let(:params) { {:portfolio_id => portfolio_id, :portfolio_item_name => 'new_portfolio_item_name'} }
+
+        it "returns portfolio item with new name" do
+          expect(json["name"]).to eq("new_portfolio_item_name")
+        end
+      end
     end
 
     context "when copying into a different portfolio" do
