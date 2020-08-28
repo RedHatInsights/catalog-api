@@ -8,18 +8,40 @@ RSpec.shared_context "uses an order item with raw service parameters set" do
     )
   end
 
+  let(:order_item_params) do
+    {
+      :portfolio_item              => portfolio_item,
+      :service_parameters          => service_parameters,
+      :service_plan_ref            => service_plan_ref,
+      :provider_control_parameters => provider_control_parameters,
+      :order_id                    => order.id,
+      :count                       => 1,
+      :context                     => default_request
+    }
+  end
+
+  let(:pre_order_item) do
+    create(:order_item_with_callback, order_item_params.merge(:process_scope => 'before', :process_sequence => 1)).tap do |item|
+      item.update(:state => 'Completed')
+    end
+  end
+
+  let(:order_item) do
+    create(:order_item_with_callback, order_item_params.merge(:process_scope => 'applicable', :process_sequence => 2)).tap do |item|
+      item.update(:state => 'Approved')
+    end
+  end
+
+  let(:post_order_item) do
+    create(:order_item_with_callback, order_item_params.merge(:process_scope => 'after', :process_sequence => 3))
+  end
+
   before do
     stub_request(:get, topological_url("service_plans/#{service_plan_ref}"))
       .to_return(:status => 200, :body => service_plan_show_response.to_json, :headers => default_headers)
 
-    @order_item =
-      create(:order_item_with_callback, :portfolio_item              => portfolio_item,
-                                        :process_scope               => 'applicable',
-                                        :service_parameters          => service_parameters,
-                                        :service_plan_ref            => service_plan_ref,
-                                        :provider_control_parameters => provider_control_parameters,
-                                        :order_id                    => order.id,
-                                        :count                       => 1,
-                                        :context                     => default_request)
+    pre_order_item
+    order_item
+    post_order_item
   end
 end

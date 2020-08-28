@@ -16,7 +16,7 @@ class OrderItem < ApplicationRecord
   validates_presence_of :order_id
   validates_presence_of :portfolio_item_id
 
-  belongs_to :order
+  belongs_to :order, :inverse_of => :order_items
   belongs_to :portfolio_item
   has_many :progress_messages, :dependent => :destroy
   has_many :approval_requests, :dependent => :destroy
@@ -33,6 +33,10 @@ class OrderItem < ApplicationRecord
     end
   end
 
+  def can_order?
+    process_scope == 'applicable' ? state == 'Approved' : state == 'Created'
+  end
+
   def update_message(level, message)
     progress_messages << ProgressMessage.new(:level => level, :message => message, :tenant_id => self.tenant_id)
     touch
@@ -40,10 +44,12 @@ class OrderItem < ApplicationRecord
 
   def mark_completed(msg = nil, **opts)
     mark_item(msg, :completed_at => DateTime.now, :state => "Completed", **opts)
+    Catalog::SubmitOrderItem.new(order_id).process
   end
 
   def mark_failed(msg = nil, **opts)
     mark_item(msg, :completed_at => DateTime.now, :state => "Failed", :level => "error", **opts)
+    Catalog::SubmitOrderItem.new(order_id).process
   end
 
   def mark_ordered(msg = nil, **opts)

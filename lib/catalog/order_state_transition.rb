@@ -18,6 +18,7 @@ module Catalog
     def determine_order_state
       item_states = @order.order_items.collect(&:state)
 
+      # TO DO: How to determine order state with pre and post order_processes?
       if item_states.include?('Failed') || item_states.include?('Denied')
         'Failed'
       elsif item_states.all? { |state| state == "Completed" }

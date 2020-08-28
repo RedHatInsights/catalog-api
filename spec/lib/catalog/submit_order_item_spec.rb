@@ -1,4 +1,4 @@
-describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
@@ -54,8 +54,26 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
     end
 
     context "when the source is valid" do
-      it "updates the order item with the task id" do
-        expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
+      context "when pre order item has not restarted" do
+        before { pre_order_item.update(:state => 'Created') }
+
+        it 'orders the pre item and gets back the task id' do
+          expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
+        end
+      end
+
+      context "when pre order item has completed" do
+        it "orders the order item and gets back the task id" do
+          expect(submit_order.process.order.order_items.second.topology_task_ref).to eq("100")
+        end
+      end
+
+      context "when order item has completed" do
+        before { order_item.update(:state => 'Completed') }
+
+        it 'orders the post item and gets back the task id' do
+          expect(submit_order.process.order.order_items.last.topology_task_ref).to eq("100")
+        end
       end
 
       it "logs a message" do
@@ -69,11 +87,11 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
 
     context "when sending extra parameters" do
       before do
-        @order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
-        submit_order.process
+        order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
       end
 
       it "only sends the parameters specified in the schema" do
+        submit_order.process
         expect(a_request(:post, topological_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
       end
     end

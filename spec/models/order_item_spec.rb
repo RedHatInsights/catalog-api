@@ -58,6 +58,8 @@ describe OrderItem do
     let(:params) { {:external_url => "not.a.real/url"} }
 
     before do
+      expect(Catalog::SubmitOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
+
       order_item.mark_completed(params)
       order_item.reload
     end
@@ -76,6 +78,8 @@ describe OrderItem do
       let(:params) { {:external_url => "not.a.real/url"} }
 
       before do
+        expect(Catalog::SubmitOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
+
         order_item.mark_failed(params)
         order_item.reload
       end
@@ -116,5 +120,49 @@ describe OrderItem do
     end
 
     it_behaves_like "#mark_item"
+  end
+
+  describe '#can_order?' do
+    context 'when process_scope is applicable' do
+      before { order_item.update(:process_scope => 'applicable') }
+
+      it 'is orderable' do
+        order_item.update(:state => 'Approved')
+        expect(order_item.can_order?).to be_truthy
+      end
+
+      it 'is not orderable' do
+        order_item.update(:state => 'Created')
+        expect(order_item.can_order?).to be_falsey
+      end
+    end
+
+    context 'when process_scope is before' do
+      before { order_item.update(:process_scope => 'before') }
+
+      it 'is orderable' do
+        order_item.update(:state => 'Created')
+        expect(order_item.can_order?).to be_truthy
+      end
+
+      it 'is not orderable' do
+        order_item.update(:state => 'Ordered')
+        expect(order_item.can_order?).to be_falsey
+      end
+    end
+  end
+
+  context 'when process_scope is after' do
+    before { order_item.update(:process_scope => 'after') }
+
+    it 'is orderable' do
+      order_item.update(:state => 'Created')
+      expect(order_item.can_order?).to be_truthy
+    end
+
+    it 'is not orderable' do
+      order_item.update(:state => 'Completed')
+      expect(order_item.can_order?).to be_falsey
+    end
   end
 end

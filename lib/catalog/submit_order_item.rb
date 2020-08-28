@@ -1,5 +1,5 @@
 module Catalog
-  class SubmitOrder
+  class SubmitOrderItem
     include SourceMixin
 
     attr_reader :order
@@ -11,21 +11,21 @@ module Catalog
     def process
       @order = Order.find_by!(:id => @order_id)
 
-      # TODO: This will need to be updated to figure out the next order item in the
-      # process sequence to run. For now, we will only submit the 'applicable' order
-      # item.
-      @order.order_items.where(:process_scope => 'applicable').each do |order_item|
-        raise ::Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
+      # For now simply submit next order_item after previous one is completed
+      order_item = @order.order_items.find(&:can_order?)
+      return unless order_item
 
-        if ::Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)
-          order_item.mark_failed("Order Item Failed: Base survey does not match Topology")
-          raise ::Catalog::InvalidSurvey, "Base survey does not match Topology"
-        end
+      raise ::Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
 
-        submit_order_item(order_item)
-
-        Rails.logger.info("Order #{@order_id} submitted for provisioning")
+      if ::Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)
+        order_item.mark_failed("Order Item Failed: Base survey does not match Topology")
+        raise ::Catalog::InvalidSurvey, "Base survey does not match Topology"
       end
+
+      submit_order_item(order_item)
+
+      Rails.logger.info("Order #{@order_id} submitted for provisioning")
+
       @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
       @order.reload
       self
