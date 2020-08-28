@@ -2,17 +2,17 @@ module Api
   module V1x2
     class PortfolioItemsController < Api::V1x1::PortfolioItemsController
       def show
-        portfolio_item = if params[:showDiscarded] == "true"
-                           model.with_discarded.discarded.find(params.require(:id))
-                         else
-                           model.find(params.require(:id))
-                         end
+        portfolio_item = model.find_by(:id => params.require(:id)) || find_in_discarded_items
 
-        authorize(portfolio_item)
+        raise ActiveRecord::RecordNotFound unless portfolio_item
 
-        json = portfolio_item.as_json(:prefixes => _prefixes, :template => action_name)
-        json['metadata']['orderable'] = Catalog::PortfolioItemOrderable.new(portfolio_item).process.result
-        render :json => json
+        render_item(portfolio_item)
+      end
+
+      private
+
+      def find_in_discarded_items
+        model.with_discarded.discarded.find_by(:id => params.require(:id)) if params[:show_discarded] == "true"
       end
     end
   end

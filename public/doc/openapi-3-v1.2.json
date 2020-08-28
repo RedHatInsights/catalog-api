@@ -3330,7 +3330,7 @@
       },
       "ShowDiscarded": {
         "in": "query",
-        "name": "showDiscarded",
+        "name": "show_discarded",
         "required": false,
         "description": "Whether or not to display the discarded result.",
         "schema": {
