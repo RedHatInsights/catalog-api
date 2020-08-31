@@ -13,10 +13,16 @@ module Api
 
       def render_item(item)
         authorize(item)
+        json = prepare_json(item)
 
+        render :json => json
+      end
+
+      def prepare_json(item)
         json = item.as_json(:prefixes => _prefixes, :template => action_name)
         json['metadata']['orderable'] = Catalog::PortfolioItemOrderable.new(item).process.result
-        render :json => json
+
+        json
       end
     end
   end

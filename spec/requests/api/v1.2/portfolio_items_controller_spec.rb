@@ -32,6 +32,7 @@ describe "v1.2 - PortfolioItemRequests", :type => [:request, :topology, :v1x2] d
         it 'return 200' do
           expect(response).to have_http_status(200)
           expect(json["id"]).to eq portfolio_item_id.to_s
+          expect(json["metadata"]["orderable"]).to eq(false)
         end
       end
 
@@ -41,6 +42,7 @@ describe "v1.2 - PortfolioItemRequests", :type => [:request, :topology, :v1x2] d
         it 'return 200' do
           expect(response).to have_http_status(200)
           expect(json["id"]).to eq portfolio_items.second.id.to_s
+          expect(json["metadata"]["orderable"]).to eq(true)
         end
       end
     end
