@@ -32,7 +32,7 @@ module Api
 
         def make_copy
           @portfolio_item.dup.tap do |new_portfolio_item|
-            new_portfolio_item.name = new_name(@portfolio_item.name)
+            new_portfolio_item.name = new_name(@name)
 
             duplicate_icon(@portfolio_item, new_portfolio_item) if @portfolio_item.icon_id.present?
 
