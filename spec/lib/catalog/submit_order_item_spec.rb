@@ -54,15 +54,15 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     end
 
     context "when the source is valid" do
-      context "when pre order item has not restarted" do
-        before { pre_order_item.update(:state => 'Created') }
+      context "when before order item has not restarted" do
+        before { before_order_item.update(:state => 'Created') }
 
-        it 'orders the pre item and gets back the task id' do
+        it 'orders the before item and gets back the task id' do
           expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
         end
       end
 
-      context "when pre order item has completed" do
+      context "when the before order item has completed" do
         it "orders the order item and gets back the task id" do
           expect(submit_order.process.order.order_items.second.topology_task_ref).to eq("100")
         end
@@ -71,7 +71,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
       context "when order item has completed" do
         before { order_item.update(:state => 'Completed') }
 
-        it 'orders the post item and gets back the task id' do
+        it 'orders the after item and gets back the task id' do
           expect(submit_order.process.order.order_items.last.topology_task_ref).to eq("100")
         end
       end

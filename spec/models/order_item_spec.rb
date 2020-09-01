@@ -123,46 +123,66 @@ describe OrderItem do
   end
 
   describe '#can_order?' do
+    before { order_item.update(:process_scope => process_scope, :state => state) }
+ 
     context 'when process_scope is applicable' do
-      before { order_item.update(:process_scope => 'applicable') }
+      let(:process_scope) { 'applicable' }
 
-      it 'is orderable' do
-        order_item.update(:state => 'Approved')
-        expect(order_item.can_order?).to be_truthy
+      context 'when state is Approved' do
+        let(:state) { 'Approved' }
+
+        it 'is orderable' do
+          expect(order_item.can_order?).to be_truthy
+        end
       end
 
-      it 'is not orderable' do
-        order_item.update(:state => 'Created')
-        expect(order_item.can_order?).to be_falsey
+      context 'when state is not applicable' do
+        let(:state) { 'Create' }
+
+        it 'is not orderable' do
+          expect(order_item.can_order?).to be_falsey
+        end
       end
     end
 
     context 'when process_scope is before' do
-      before { order_item.update(:process_scope => 'before') }
+      let(:process_scope) { 'before' }
 
-      it 'is orderable' do
-        order_item.update(:state => 'Created')
-        expect(order_item.can_order?).to be_truthy
+      context 'when state is Created' do
+        let(:state) { 'Created' }
+
+        it 'is orderable' do
+          expect(order_item.can_order?).to be_truthy
+        end
       end
 
-      it 'is not orderable' do
-        order_item.update(:state => 'Ordered')
-        expect(order_item.can_order?).to be_falsey
+      context 'when state is not Created' do
+        let(:state) { 'Ordered' }
+
+        it 'is not orderable' do
+          expect(order_item.can_order?).to be_falsey
+        end
       end
     end
-  end
 
-  context 'when process_scope is after' do
-    before { order_item.update(:process_scope => 'after') }
+    context 'when process_scope is after' do
+      let(:process_scope) { 'after' }
 
-    it 'is orderable' do
-      order_item.update(:state => 'Created')
-      expect(order_item.can_order?).to be_truthy
-    end
+      context 'when state is Created' do
+        let(:state) { 'Created' }
 
-    it 'is not orderable' do
-      order_item.update(:state => 'Completed')
-      expect(order_item.can_order?).to be_falsey
+        it 'is orderable' do
+          expect(order_item.can_order?).to be_truthy
+        end
+      end
+
+      context 'when stae is not Created' do
+        let(:state) { 'Completed' }
+
+        it 'is not orderable' do
+          expect(order_item.can_order?).to be_falsey
+        end
+      end
     end
   end
 end

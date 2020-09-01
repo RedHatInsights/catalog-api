@@ -20,7 +20,7 @@ RSpec.shared_context "uses an order item with raw service parameters set" do
     }
   end
 
-  let(:pre_order_item) do
+  let(:before_order_item) do
     create(:order_item_with_callback, order_item_params.merge(:process_scope => 'before', :process_sequence => 1)).tap do |item|
       item.update(:state => 'Completed')
     end
@@ -32,7 +32,7 @@ RSpec.shared_context "uses an order item with raw service parameters set" do
     end
   end
 
-  let(:post_order_item) do
+  let(:after_order_item) do
     create(:order_item_with_callback, order_item_params.merge(:process_scope => 'after', :process_sequence => 3))
   end
 
@@ -40,8 +40,8 @@ RSpec.shared_context "uses an order item with raw service parameters set" do
     stub_request(:get, topological_url("service_plans/#{service_plan_ref}"))
       .to_return(:status => 200, :body => service_plan_show_response.to_json, :headers => default_headers)
 
-    pre_order_item
+    before_order_item
     order_item
-    post_order_item
+    after_order_item
   end
 end
