@@ -6,24 +6,13 @@ module Api
 
         raise ActiveRecord::RecordNotFound unless portfolio_item
 
-        render_item(portfolio_item)
+        render_item(portfolio_item, portfolio_item == @discarded)
       end
 
       private
 
       def find_in_discarded_items
         @discarded ||= model.with_discarded.discarded.find_by(:id => params.require(:id)) if params[:show_discarded] == "true"
-      end
-
-      def prepare_json(item)
-        json = item.as_json(:prefixes => _prefixes, :template => action_name)
-        json['metadata']['orderable'] = if item == @discarded
-                                          false
-                                        else
-                                          Catalog::PortfolioItemOrderable.new(item).process.result
-                                        end
-
-        json
       end
     end
   end

@@ -11,18 +11,16 @@ module Api
 
       private
 
-      def render_item(item)
+      def render_item(item, is_discarded = false)
         authorize(item)
-        json = prepare_json(item)
+        json = item.as_json(:prefixes => _prefixes, :template => action_name)
+        json['metadata']['orderable'] = if is_discarded
+                                          false
+                                        else
+                                          Catalog::PortfolioItemOrderable.new(item).process.result
+                                        end
 
         render :json => json
-      end
-
-      def prepare_json(item)
-        json = item.as_json(:prefixes => _prefixes, :template => action_name)
-        json['metadata']['orderable'] = Catalog::PortfolioItemOrderable.new(item).process.result
-
-        json
       end
     end
   end
