@@ -116,7 +116,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     let(:order_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "200") }
     let!(:order_items) do
       create_list(:order_item_with_callback, 3,
-                  :order => order2, 
+                  :order            => order2,
                   :service_plan_ref => service_plan_ref,
                   :process_scope    => 'applicable',
                   :portfolio_item   => portfolio_item)
@@ -129,7 +129,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
 
     it "when no order item is orderable" do
       expect(order_items.map(&:can_order?)).to eq([false, false, false])
-      expect(submit_order.process.order.order_items.pluck(:state)).to eql(["Created", "Created", "Created"])
+      expect(submit_order.process.order.order_items.pluck(:state)).to eq(["Created", "Created", "Created"])
     end
 
     it "when all order items are orderable" do
@@ -142,22 +142,22 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     it "when the first order item is orderable" do
       order_items.first.update(:process_scope => 'applicable', :state => "Approved")
 
-      expect(order_items.map(&:can_order?)).to eql([true, false, false])
-      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eql(["Ordered", "Created", "Created"])
+      expect(order_items.map(&:can_order?)).to eq([true, false, false])
+      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eq(["Ordered", "Created", "Created"])
     end
 
     it "when the second order item is orderable" do
       order_items.second.update(:process_scope => 'applicable', :state => "Approved")
 
-      expect(order_items.map(&:can_order?)).to eql([false, true, false])
-      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eql(["Created", "Ordered", "Created"])
+      expect(order_items.map(&:can_order?)).to eq([false, true, false])
+      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eq(["Created", "Ordered", "Created"])
     end
 
     it "when the last order item is orderable" do
       order_items.last.update(:process_scope => 'applicable', :state => "Approved")
 
-      expect(order_items.map(&:can_order?)).to eql([false, false, true])
-      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eql(["Created", "Created", "Ordered"])
+      expect(order_items.map(&:can_order?)).to eq([false, false, true])
+      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eq(["Created", "Created", "Ordered"])
     end
   end
 end

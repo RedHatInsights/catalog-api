@@ -5,8 +5,8 @@ class OrderItem < ApplicationRecord
   destroy_dependencies :progress_messages
   attribute :state, :string, :default => 'Created'
   validates_inclusion_of :state,
-    :in => ["Approval Pending", "Approved", "Canceled", "Completed", "Created", "Denied", "Failed", "Ordered"].freeze,
-    :message => "state %{value} is not included in the list"
+                         :in      => ["Approval Pending", "Approved", "Canceled", "Completed", "Created", "Denied", "Failed", "Ordered"].freeze,
+                         :message => "state %{value} is not included in the list"
 
   acts_as_tenant(:tenant)
 
@@ -34,11 +34,11 @@ class OrderItem < ApplicationRecord
   end
 
   def can_order?
-    process_scope == 'applicable' ? state == 'Approved' : state == 'Created'
+    state == (process_scope == 'applicable' ? 'Approved' : 'Created')
   end
 
   def update_message(level, message)
-    progress_messages << ProgressMessage.new(:level => level, :message => message, :tenant_id => self.tenant_id)
+    progress_messages << ProgressMessage.new(:level => level, :message => message, :tenant_id => tenant_id)
     touch
   end
 
@@ -53,7 +53,7 @@ class OrderItem < ApplicationRecord
   end
 
   def mark_ordered(msg = nil, **opts)
-    mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered",  **opts)
+    mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered", **opts)
   end
 
   private

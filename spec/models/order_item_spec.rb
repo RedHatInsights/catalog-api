@@ -48,7 +48,7 @@ describe OrderItem do
 
   shared_examples_for "#mark_item" do
     it "sets the params properly" do
-      params.each do |k,v|
+      params.each do |k, v|
         expect(order_item.send(k)).to eq v
       end
     end
@@ -124,7 +124,7 @@ describe OrderItem do
 
   describe '#can_order?' do
     before { order_item.update(:process_scope => process_scope, :state => state) }
- 
+
     context 'when process_scope is applicable' do
       let(:process_scope) { 'applicable' }
 
