@@ -4,7 +4,7 @@ describe Internal::V1x0::NotifyController, :type => [:request, :v1_internal] do
     let(:approval_transition) { instance_double("Catalog::UpdateOrderItem") }
 
     before do
-      allow(Api::V1x0::Catalog::ApprovalTransition).to receive(:new).and_return(approval_transition)
+      allow(Catalog::ApprovalTransition).to receive(:new).and_return(approval_transition)
       allow(approval_transition).to receive(:process)
     end
 
@@ -37,7 +37,7 @@ describe Internal::V1x0::NotifyController, :type => [:request, :v1_internal] do
     let(:determine_task_relevancy) { instance_double("Catalog::DetermineTaskRelevancy") }
 
     before do
-      allow(Api::V1x0::Catalog::DetermineTaskRelevancy).to receive(:new)
+      allow(Catalog::DetermineTaskRelevancy).to receive(:new)
         .with(
           having_attributes(
             :payload => hash_including("status" => "test", "task_id" => "321"),
@@ -53,7 +53,7 @@ describe Internal::V1x0::NotifyController, :type => [:request, :v1_internal] do
         match { |actual| actual.class != ActionController::Parameters }
       end
 
-      expect(Api::V1x0::Catalog::DetermineTaskRelevancy).to receive(:new).with(having_attributes(:payload => not_a_parameter))
+      expect(Catalog::DetermineTaskRelevancy).to receive(:new).with(having_attributes(:payload => not_a_parameter))
       post "#{api_version}/notify/task/321", :headers => default_headers, :params => {:payload => {:status => "test"}, :message => "message"}
     end
 

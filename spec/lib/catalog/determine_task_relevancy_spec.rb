@@ -1,8 +1,8 @@
-describe Api::V1x0::Catalog::DetermineTaskRelevancy, :type => :service do
+describe Catalog::DetermineTaskRelevancy, :type => :service do
   let(:subject) { described_class.new(topic) }
   let(:topic) do
     OpenStruct.new(
-      :payload => {"task_id" => "123", "status" => status, "state" => state, "context" => payload_context},
+      :payload => {"task_id" => 123, "status" => status, "state" => state, "context" => payload_context},
       :message => "message"
     )
   end
@@ -62,11 +62,11 @@ describe Api::V1x0::Catalog::DetermineTaskRelevancy, :type => :service do
       let(:status) { "ok" }
 
       context "when the task context has a key path of [:service_instance][:id]" do
-        let(:payload_context) { {"service_instance" => {"id" => "321"}} }
+        let(:payload_context) { {"service_instance" => {"id" => 321}} }
         let(:update_order_item) { instance_double("Api::V1x0::Catalog::UpdateOrderItem") }
 
         before do
-          allow(Api::V1x0::Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
+          allow(Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
           allow(update_order_item).to receive(:process)
         end
 
@@ -110,7 +110,7 @@ describe Api::V1x0::Catalog::DetermineTaskRelevancy, :type => :service do
         end
 
         before do
-          allow(Api::V1x0::Catalog::CreateApprovalRequest).to receive(:new).with(task).and_return(create_approval_request)
+          allow(Catalog::CreateApprovalRequest).to receive(:new).with(task).and_return(create_approval_request)
           allow(create_approval_request).to receive(:process)
         end
 

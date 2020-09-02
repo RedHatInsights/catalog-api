@@ -1,17 +1,18 @@
-describe Api::V1x0::Catalog::AddToOrder, :type => :service do
-  let(:service_offering_ref) { "998" }
+describe Api::V1x2::Catalog::AddToOrderViaOrderProcess, :type => :service do
   let(:order) { create(:order) }
   let(:order_id) { order.id.to_s }
   let(:order_item) { create(:order_item, :portfolio_item_id => portfolio_item.id) }
-  let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref, :owner => 'wilma') }
+  let(:portfolio_item) { create(:portfolio_item) }
   let(:portfolio_item_id) { portfolio_item.id.to_s }
 
   let(:params) do
-    ActionController::Parameters.new('order_id'                    => order_id,
-                                     'portfolio_item_id'           => portfolio_item_id,
-                                     'count'                       => 1,
-                                     'service_parameters'          => {'name' => 'fred'},
-                                     'provider_control_parameters' => {'age' => 50})
+    {
+      :order_id                    => order_id,
+      :portfolio_item_id           => portfolio_item_id,
+      :count                       => 1,
+      :service_parameters          => {'name' => 'fred'},
+      :provider_control_parameters => {'age' => 50}
+    }
   end
 
   let(:subject) { described_class.new(params).process }
@@ -36,6 +37,7 @@ describe Api::V1x0::Catalog::AddToOrder, :type => :service do
 
   context "invalid order" do
     let(:order_id) { "999" }
+
     it "invalid order" do
       expect { described_class.new(params).process }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -58,7 +60,7 @@ describe Api::V1x0::Catalog::AddToOrder, :type => :service do
       end
     end
 
-    it "should create a process message with the x-rh-insights-request-id" do
+    it "creates a process message with the x-rh-insights-request-id" do
       progress_message = Insights::API::Common::Request.with_request(request) { subject.order_item.progress_messages.first }
       expect(progress_message.message).to match('Order item tracking ID (x-rh-insights-request-id): gobbledygook')
     end

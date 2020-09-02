@@ -1,4 +1,4 @@
-describe Api::V1x0::Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
@@ -24,12 +24,6 @@ describe Api::V1x0::Catalog::SubmitOrder, :type => [:service, :topology, :curren
 
   let(:topo_service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
   let(:service_plan_response) { topo_service_plan_response }
-
-  around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
-      example.call
-    end
-  end
 
   include_context "uses an order item with raw service parameters set"
 

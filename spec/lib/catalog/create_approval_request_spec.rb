@@ -1,4 +1,4 @@
-describe Api::V1x0::Catalog::CreateApprovalRequest, :type => :service do
+describe Catalog::CreateApprovalRequest, :type => :service do
   let(:subject) { described_class.new(task) }
   let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123") }
 
@@ -9,13 +9,13 @@ describe Api::V1x0::Catalog::CreateApprovalRequest, :type => :service do
   end
 
   let(:order) { order_item.order }
-  let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
+  let!(:order_item) { create(:order_item, :topology_task_ref => "123", :process_scope => 'applicable') }
 
-  let(:create_request_body_from) { instance_double(Api::V1x0::Catalog::CreateRequestBodyFrom, :result => request_body_from) }
+  let(:create_request_body_from) { instance_double(Catalog::CreateRequestBodyFrom, :result => request_body_from) }
   let(:request_body_from) { {"test" => "test"}.to_json }
 
   before do
-    allow(Api::V1x0::Catalog::CreateRequestBodyFrom).to receive(:new).with(order, order_item, task).and_return(create_request_body_from)
+    allow(Catalog::CreateRequestBodyFrom).to receive(:new).with(order, order_item, task).and_return(create_request_body_from)
     allow(create_request_body_from).to receive(:process).and_return(create_request_body_from)
 
     stub_request(:get, approval_url("workflows/1"))

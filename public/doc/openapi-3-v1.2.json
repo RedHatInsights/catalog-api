@@ -557,6 +557,9 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/PortfolioID"
+          },
+          {
+            "$ref": "#/components/parameters/QueryCacheID"
           }
         ],
         "responses": {
@@ -929,6 +932,9 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/ShowDiscarded"
           }
         ],
         "responses": {
@@ -3243,6 +3249,15 @@
           "type": "string"
         }
       },
+      "QueryCacheID": {
+        "in": "query",
+        "name": "cache_id",
+        "required": false,
+        "description": "Artificial string to help avoid falsey browser cache. This can occur after changing static resources like images. The browser will return an outdated cached response. Appending different query will result in a new async call, instead of retrieving the resource from the browser cache.",
+        "schema": {
+          "type": "string"
+        }
+      },
       "QueryLimit": {
         "in": "query",
         "name": "limit",
@@ -3311,6 +3326,16 @@
         "required": false,
         "schema": {
           "type": "string"
+        }
+      },
+      "ShowDiscarded": {
+        "in": "query",
+        "name": "show_discarded",
+        "required": false,
+        "description": "Whether or not to display the discarded result.",
+        "schema": {
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -4270,6 +4295,9 @@
       },
       "OrderProcess": {
         "type": "object",
+        "required": [
+          "name"
+        ],
         "properties": {
           "id": {
             "type": "string",
