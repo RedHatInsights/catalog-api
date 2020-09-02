@@ -13,7 +13,7 @@ module Catalog
 
       # For now simply submit next order_item after previous one is completed
       order_item = @order.order_items.find(&:can_order?)
-      return unless order_item
+      return self unless order_item
 
       raise ::Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
 

@@ -54,26 +54,8 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     end
 
     context "when the source is valid" do
-      context "when before order item has not restarted" do
-        before { before_order_item.update(:state => 'Created') }
-
-        it 'orders the before item and gets back the task id' do
-          expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
-        end
-      end
-
-      context "when the before order item has completed" do
-        it "orders the order item and gets back the task id" do
-          expect(submit_order.process.order.order_items.second.topology_task_ref).to eq("100")
-        end
-      end
-
-      context "when order item has completed" do
-        before { order_item.update(:state => 'Completed') }
-
-        it 'orders the after item and gets back the task id' do
-          expect(submit_order.process.order.order_items.last.topology_task_ref).to eq("100")
-        end
+      it "updates the order item with the task id" do
+        expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
       end
 
       it "logs a message" do
@@ -87,7 +69,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
 
     context "when sending extra parameters" do
       before do
-        order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
+        @order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
       end
 
       it "only sends the parameters specified in the schema" do
@@ -125,6 +107,57 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
 
     it "fails to order" do
       expect { submit_order.process }.to raise_exception(Catalog::InvalidSurvey)
+    end
+  end
+
+  context "with multiple order items" do
+    let(:order2) { create(:order) }
+    let(:params) { order2.id.to_s }
+    let(:order_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "200") }
+    let!(:order_items) do
+      create_list(:order_item_with_callback, 3,
+                  :order => order2, 
+                  :service_plan_ref => service_plan_ref,
+                  :process_scope    => 'applicable',
+                  :portfolio_item   => portfolio_item)
+    end
+
+    before do
+      stub_request(:post, topological_url("service_offerings/998/order"))
+        .to_return(:status => 200, :body => order_response.to_json, :headers => {"Content-type" => "application/json"})
+    end
+
+    it "when no order item is orderable" do
+      expect(order_items.map(&:can_order?)).to eq([false, false, false])
+      expect(submit_order.process.order.order_items.pluck(:state)).to eql(["Created", "Created", "Created"])
+    end
+
+    it "when all order items are orderable" do
+      order_items.each { |item| item.update(:process_scope => 'before') }
+
+      expect(order_items.map(&:can_order?)).to eq([true, true, true])
+      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to match_array(["Ordered", "Created", "Created"])
+    end
+
+    it "when the first order item is orderable" do
+      order_items.first.update(:process_scope => 'applicable', :state => "Approved")
+
+      expect(order_items.map(&:can_order?)).to eql([true, false, false])
+      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eql(["Ordered", "Created", "Created"])
+    end
+
+    it "when the second order item is orderable" do
+      order_items.second.update(:process_scope => 'applicable', :state => "Approved")
+
+      expect(order_items.map(&:can_order?)).to eql([false, true, false])
+      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eql(["Created", "Ordered", "Created"])
+    end
+
+    it "when the last order item is orderable" do
+      order_items.last.update(:process_scope => 'applicable', :state => "Approved")
+
+      expect(order_items.map(&:can_order?)).to eql([false, false, true])
+      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eql(["Created", "Created", "Ordered"])
     end
   end
 end
