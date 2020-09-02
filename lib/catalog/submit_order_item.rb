@@ -24,7 +24,7 @@ module Catalog
 
       submit_order_item(order_item)
 
-      Rails.logger.info("Order #{@order_id} submitted for provisioning")
+      Rails.logger.info("Order Item #{order_item.id} submitted for provisioning")
 
       @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc)
       @order.reload

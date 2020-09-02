@@ -69,7 +69,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
 
     context "when sending extra parameters" do
       before do
-        @order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
+        order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
       end
 
       it "only sends the parameters specified in the schema" do
@@ -111,53 +111,80 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
   end
 
   context "with multiple order items" do
-    let(:order2) { create(:order) }
-    let(:params) { order2.id.to_s }
+    let(:params) { order.id.to_s }
     let(:order_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "200") }
-    let!(:order_items) do
-      create_list(:order_item_with_callback, 3,
-                  :order            => order2,
-                  :service_plan_ref => service_plan_ref,
-                  :process_scope    => 'applicable',
-                  :portfolio_item   => portfolio_item)
+    let(:order_items) do
+      (1..3).map do |sequence|
+        create(:order_item_with_callback,
+               :order            => order,
+               :service_plan_ref => service_plan_ref,
+               :process_sequence => sequence,
+               :portfolio_item   => portfolio_item)
+      end
     end
 
     before do
       stub_request(:post, topological_url("service_offerings/998/order"))
         .to_return(:status => 200, :body => order_response.to_json, :headers => {"Content-type" => "application/json"})
+
+      allow(Order).to receive(:find_by!).with(:id => params).and_return(order)
+      allow(order).to receive(:order_items).and_return(order_items)
     end
 
-    it "when no order item is orderable" do
-      expect(order_items.map(&:can_order?)).to eq([false, false, false])
-      expect(submit_order.process.order.order_items.pluck(:state)).to eq(["Created", "Created", "Created"])
+    shared_examples_for "order the desired item" do
+      it "orders the desired item" do
+        submit_order.process.order.order_items.each.with_index(1) do |item, index|
+          if index == ordered_item
+            expect(item.state).to eq('Ordered')
+          else
+            expect(item.state).not_to eq('Ordered')
+          end
+        end
+      end
     end
 
-    it "when all order items are orderable" do
-      order_items.each { |item| item.update(:process_scope => 'before') }
+    context "when no order item is orderable" do
+      before do
+        order_items.each { |item| allow(item).to receive(:can_order?).and_return(false) }
+      end
 
-      expect(order_items.map(&:can_order?)).to eq([true, true, true])
-      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to match_array(["Ordered", "Created", "Created"])
+      it 'does not order any item' do
+        submit_order.process.order.order_items.each { |item| expect(item.state).not_to eq('Ordered') }
+      end
     end
 
-    it "when the first order item is orderable" do
-      order_items.first.update(:process_scope => 'applicable', :state => "Approved")
+    context "when the first item becomes orderable" do
+      before do
+        order_items.each { |item| allow(item).to receive(:can_order?).and_return(true) }
+      end
 
-      expect(order_items.map(&:can_order?)).to eq([true, false, false])
-      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eq(["Ordered", "Created", "Created"])
+      let(:ordered_item) { 1 }
+
+      it_behaves_like "order the desired item"
     end
 
-    it "when the second order item is orderable" do
-      order_items.second.update(:process_scope => 'applicable', :state => "Approved")
+    context "when the first item is not orderable the second one is" do
+      before do
+        allow(order_items.first).to receive(:can_order?).and_return(false)
+        allow(order_items.second).to receive(:can_order?).and_return(true)
+        allow(order_items.third).to receive(:can_order?).and_return(true)
+      end
 
-      expect(order_items.map(&:can_order?)).to eq([false, true, false])
-      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eq(["Created", "Ordered", "Created"])
+      let(:ordered_item) { 2 }
+
+      it_behaves_like "order the desired item"
     end
 
-    it "when the last order item is orderable" do
-      order_items.last.update(:process_scope => 'applicable', :state => "Approved")
+    context "when the first and second items are not orderable but the thrid one is" do
+      before do
+        allow(order_items.first).to receive(:can_order?).and_return(false)
+        allow(order_items.second).to receive(:can_order?).and_return(false)
+        allow(order_items.third).to receive(:can_order?).and_return(true)
+      end
 
-      expect(order_items.map(&:can_order?)).to eq([false, false, true])
-      expect(submit_order.process.order.order_items.order(:id).pluck(:state)).to eq(["Created", "Created", "Ordered"])
+      let(:ordered_item) { 3 }
+
+      it_behaves_like "order the desired item"
     end
   end
 end
