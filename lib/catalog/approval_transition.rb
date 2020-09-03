@@ -39,7 +39,7 @@ module Catalog
 
     def submit_order
       @order_item.update_message("info", "Submitting Order #{@order_item.order_id} for provisioning ")
-      Catalog::SubmitOrderItem.new(@order_item.order_id).process
+      Catalog::SubmitNextOrderItem.new(@order_item.order_id).process
       finalize_order
     rescue ::Catalog::TopologyError => e
       Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")

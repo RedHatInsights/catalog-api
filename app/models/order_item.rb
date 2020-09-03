@@ -44,12 +44,12 @@ class OrderItem < ApplicationRecord
 
   def mark_completed(msg = nil, **opts)
     mark_item(msg, :completed_at => DateTime.now, :state => "Completed", **opts)
-    Catalog::SubmitOrderItem.new(order_id).process
+    Catalog::SubmitNextOrderItem.new(order_id).process
   end
 
   def mark_failed(msg = nil, **opts)
     mark_item(msg, :completed_at => DateTime.now, :state => "Failed", :level => "error", **opts)
-    Catalog::SubmitOrderItem.new(order_id).process
+    Catalog::SubmitNextOrderItem.new(order_id).process
   end
 
   def mark_ordered(msg = nil, **opts)

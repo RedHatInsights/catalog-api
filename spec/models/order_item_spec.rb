@@ -58,7 +58,7 @@ describe OrderItem do
     let(:params) { {:external_url => "not.a.real/url"} }
 
     before do
-      expect(Catalog::SubmitOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
+      allow(Catalog::SubmitNextOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
 
       order_item.mark_completed(params)
       order_item.reload
@@ -78,7 +78,7 @@ describe OrderItem do
       let(:params) { {:external_url => "not.a.real/url"} }
 
       before do
-        expect(Catalog::SubmitOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
+        allow(Catalog::SubmitNextOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
 
         order_item.mark_failed(params)
         order_item.reload
