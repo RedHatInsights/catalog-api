@@ -54,6 +54,10 @@ class KafkaListener
         Rails.logger.error("Message skipped because it does not belong to a valid tenant")
       end
     end
+  rescue => e
+    Rails.logger.error("Error processing event: #{e.message}")
+  ensure
+    event.ack
   end
 
   def default_messaging_options
