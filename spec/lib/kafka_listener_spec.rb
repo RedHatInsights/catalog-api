@@ -26,6 +26,8 @@ describe KafkaListener do
       :persist_ref => persist_ref,
       :max_bytes   => 500_000
     ).and_yield(event)
+
+    allow(event).to receive(:ack)
   end
 
   context "when kafka at localhost is not available" do
@@ -76,6 +78,31 @@ describe KafkaListener do
         expect(subject).to receive(:process_event).with(event)
         subject.subscribe
       end
+    end
+  end
+
+  context "when the event processing has an error" do
+    before do
+      Tenant.create(:external_tenant => '0369233')
+      allow(subject).to receive(:process_event).and_raise(StandardError)
+    end
+
+    it "does not spin forever" do
+      expect(client).to receive(:subscribe_topic).once
+
+      Timeout.timeout(3) do
+        subject.subscribe
+      end
+    end
+
+    it "acks the event" do
+      expect(event).to receive(:ack)
+      subject.subscribe
+    end
+
+    it "logs an error" do
+      expect(Rails.logger).to receive(:error).with(/Error processing event/)
+      subject.subscribe
     end
   end
 end

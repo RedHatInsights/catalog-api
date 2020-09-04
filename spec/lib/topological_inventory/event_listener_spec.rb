@@ -15,6 +15,8 @@ describe TopologicalInventory::EventListener do
       :persist_ref => described_class::GROUP_REF,
       :max_bytes   => 500_000
     ).and_yield(event)
+
+    allow(event).to receive(:ack)
   end
 
   context 'when event_type is Task.update' do
