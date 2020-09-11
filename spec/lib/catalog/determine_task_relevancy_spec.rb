@@ -189,5 +189,17 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         end
       end
     end
+
+    context 'when the task_id is not relavant to of order_item' do
+      let(:state) { "running" }
+      let(:status) { "ok" }
+      let(:payload_context) { nil }
+      before { order_item.update(:topology_task_ref => "124") }
+
+      it 'does not raise an error' do
+        expect(Rails.logger).to receive(:info)
+        expect { subject.process }.not_to raise_exception(StandardError)
+      end
+    end
   end
 end

@@ -12,6 +12,8 @@ module Catalog
         :context => @topic.payload["context"].try(&:with_indifferent_access)
       )
 
+      return self unless validate_task
+
       add_task_update_message
       delegate_task if %w[completed running].include?(@task.state)
       order_item.mark_failed if @task.status == "error"
@@ -23,6 +25,13 @@ module Catalog
     end
 
     private
+
+    def validate_task
+      return true if order_item
+
+      Rails.logger.info("Incoming task does not belong to this app")
+      false
+    end
 
     def delegate_task
       if @task.context&.has_key_path?(:service_instance)
@@ -36,7 +45,7 @@ module Catalog
     end
 
     def order_item
-      @order_item ||= OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
+      @order_item ||= OrderItem.find_by(:topology_task_ref => @topic.payload["task_id"])
     end
 
     def add_task_update_message
