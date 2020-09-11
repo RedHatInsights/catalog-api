@@ -17,7 +17,7 @@ module Api
       end
 
       def raw_icon
-        image = find_icon(params.permit(:icon_id, :portfolio_item_id, :portfolio_id)).image.decoded_image
+        image = find_icon(parse_raw_icon_params).image.decoded_image
         send_data(image,
                   :type        => MimeMagic.by_magic(image).type,
                   :disposition => 'inline')
@@ -39,6 +39,10 @@ module Api
         elsif ids[:portfolio_id].present?
           Icon.find_by!(:restore_to => Portfolio.find(ids[:portfolio_id]))
         end
+      end
+
+      def parse_raw_icon_params
+        params.permit(:icon_id, :portfolio_item_id, :portfolio_id)
       end
     end
   end
