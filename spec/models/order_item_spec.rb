@@ -87,6 +87,10 @@ describe OrderItem do
       end
 
       it_behaves_like "#mark_item"
+
+      it "finalizes the order" do
+        expect(order_item.order.state).to eq("Failed")
+      end
     end
 
     context "when there are no message parameters passed in" do
