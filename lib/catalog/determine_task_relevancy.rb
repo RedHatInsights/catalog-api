@@ -16,7 +16,7 @@ module Catalog
       delegate_task
 
       self
-    rescue ActiveRecord::RecordNotFound => exception
+    rescue ActiveRecord::RecordNotFound
       Rails.logger.info("Incoming task #{@task.id} has no relevant order item")
       self
     rescue => exception
@@ -28,20 +28,14 @@ module Catalog
 
     def delegate_task
       if @task.status == "error"
-        if @task.state == "running"
-          Rails.logger.error("Incoming task #{@task.id} had an error while running: #{@task.context}")
-        elsif @task.state == "completed"
-          determine_if_context_is_relevant
-          Rails.logger.error("Incoming task #{@task.id} is completed but errored: #{@task.context}")
-          @order_item.mark_failed
-        end
+        process_error_tasks
       else
         # Status is either 'warn' or 'ok'
-        determine_if_context_is_relevant
+        process_relevant_context
       end
     end
 
-    def determine_if_context_is_relevant
+    def process_relevant_context
       if @task.context&.has_key_path?(:service_instance)
         UpdateOrderItem.new(@topic, @task, @order_item).process
       elsif @task.context&.has_key_path?(:applied_inventories)
@@ -52,8 +46,18 @@ module Catalog
       end
     end
 
+    def process_error_tasks
+      if @task.state == "running"
+        Rails.logger.error("Incoming task #{@task.id} had an error while running: #{@task.context}")
+      elsif @task.state == "completed"
+        process_relevant_context
+        Rails.logger.error("Incoming task #{@task.id} is completed but errored: #{@task.context}")
+        @order_item.mark_failed
+      end
+    end
+
     def find_relevant_order_item
-      @order_item ||= OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
+      @order_item = OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
     end
   end
 end
