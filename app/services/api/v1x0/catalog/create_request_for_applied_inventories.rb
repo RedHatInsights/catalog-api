@@ -28,6 +28,7 @@ module Api
             task_id = api.applied_inventories_for_service_offering(service_offering_ref, service_plan).task_id
 
             @item.update(:topology_task_ref => task_id)
+            Rails.logger.info("OrderItem #{@item.id} updated with topology task ref #{task_id}")
           end
         end
 

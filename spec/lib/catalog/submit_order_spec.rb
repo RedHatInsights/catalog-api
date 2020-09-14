@@ -57,6 +57,14 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
       it "updates the order item with the task id" do
         expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
       end
+
+      it "logs a message" do
+        # item.mark_ordered ends up calling a separate rails logger so we need to `allow` here.
+        allow(Rails.logger).to receive(:info)
+
+        expect(Rails.logger).to receive(:info).with("OrderItem #{order.order_items.first.id} ordered with topology task ref 100")
+        submit_order.process
+      end
     end
 
     context "when sending extra parameters" do
