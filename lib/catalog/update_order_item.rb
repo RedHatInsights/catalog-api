@@ -1,9 +1,10 @@
 module Catalog
   class UpdateOrderItem
-    def initialize(topic, task, order_item)
+    def initialize(topic, task, order_item = nil)
       @payload    = topic.payload
       @message    = topic.message
       @task       = task
+      order_item ||= OrderItem.find_by!(:topology_task_ref => @task.id)
       @order_item = order_item
     end
 
