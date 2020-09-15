@@ -1,204 +1,152 @@
 describe Catalog::DetermineTaskRelevancy, :type => :service do
-  let(:subject) { described_class.new(topic) }
-  let(:topic) do
-    OpenStruct.new(
-      :payload => {"task_id" => 123, "status" => status, "state" => state, "context" => payload_context},
-      :message => "message"
-    )
-  end
-
-  let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
-  let(:order_state_transition) { instance_double(Catalog::OrderStateTransition) }
-
   describe "#process" do
-    context "when the state is running" do
-      let(:state) { "running" }
-      let(:status) { "ok" }
+    subject { described_class.new(topic) }
 
-      context "with payload" do
-        let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
-
-        it "updates the item with a progress message" do
-          subject.process
-          progress_message = ProgressMessage.last
-          expect(progress_message.level).to eq("info")
-          expect(progress_message.message).to match(/Order Item being processed with context.*external_url/)
-          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
-        end
-
-        it "sets the external_url from the payload" do
-          subject.process
-          order_item.reload
-          expect(order_item.external_url).to eq "external_url"
-        end
-      end
-
-      context "without payload" do
-        let(:payload_context) { nil }
-
-        it "logs a message" do
-          expect(Rails.logger).to receive(:info).twice
-          subject.process
-        end
-      end
+    let(:topic) do
+      OpenStruct.new(
+        :payload => {"task_id" => task_id, "status" => status, "state" => state, "context" => payload_context},
+        :message => "message"
+      )
     end
 
-    context "when the state is something else" do
-      let(:state) { "what" }
-      let(:status) { "ok" }
-      let(:payload_context) { nil }
+    let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
 
-      it "updates the item with a progress message" do
+    context "when there is no relevant order item for the task id" do
+      let(:task_id) { "1234" }
+      let(:state) { "a" }
+      let(:status) { "b" }
+      let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
+
+      it "logs a message about irrelevancy" do
+        expect(Rails.logger).to receive(:info).with("Incoming task 1234 has no relevant order item")
         subject.process
-        progress_message = ProgressMessage.last
-        expect(progress_message.level).to eq("info")
-        expect(progress_message.message).to match(/Task update/)
-        expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+      end
+
+      it "returns without doing any work" do
+        expect(Catalog::UpdateOrderItem).not_to receive(:new)
+        expect(Catalog::CreateApprovalRequest).not_to receive(:new)
+        subject.process
       end
     end
 
-    context "when the state is completed" do
-      let(:state) { "completed" }
-      let(:status) { "ok" }
+    context "when an order item exists with the task id" do
+      let(:task_id) { "123" }
+      let(:update_order_item) { instance_double(Catalog::UpdateOrderItem) }
+      let(:create_approval_request) { instance_double(Catalog::CreateApprovalRequest) }
 
-      context "when the task context has a key path of [:service_instance][:id]" do
-        let(:payload_context) { {"service_instance" => {"id" => 321}} }
-        let(:update_order_item) { instance_double("Api::V1x0::Catalog::UpdateOrderItem") }
+      before do
+        allow(Catalog::UpdateOrderItem).to receive(:new).with(topic, an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(update_order_item)
+        allow(update_order_item).to receive(:process)
+        allow(Catalog::CreateApprovalRequest).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(create_approval_request)
+        allow(create_approval_request).to receive(:process)
+      end
 
-        before do
-          allow(Catalog::UpdateOrderItem).to receive(:new).and_return(update_order_item)
-          allow(update_order_item).to receive(:process)
+      context "when the task status is error" do
+        let(:status) { "error" }
+
+        context "when the task state is running" do
+          let(:state) { "running" }
+          let(:payload_context) { {"test" => "test"} }
+
+          it "logs an error message" do
+            expect(Rails.logger).to receive(:error).with("Incoming task 123 had an error while running: #{payload_context}")
+            subject.process
+          end
         end
 
-        context "success scenario" do
-          before do
-            allow(update_order_item).to receive(:process)
-          end
-          it "updates the item with a progress message" do
-            subject.process
-            progress_message = ProgressMessage.last
-            expect(progress_message.level).to eq("info")
-            expect(progress_message.message).to match(/Task update. State: completed/)
-            expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+        context "when the task state is completed" do
+          let(:state) { "completed" }
+          let(:payload_context) { {"test" => "test"} }
+
+          shared_examples_for "#process that errors and is complete" do
+            it "logs an error message" do
+              expect(Rails.logger).to receive(:error).with("Incoming task 123 is completed but errored: #{payload_context}")
+              subject.process
+            end
+
+            it "marks the item as failed" do
+              expect do
+                subject.process
+                order_item.reload
+              end.to change { order_item.state }.from("Created").to("Failed")
+            end
           end
 
-          it "delegates to updating the order item" do
+          context "when the context has a service instance keypath" do
+            let(:payload_context) { {"service_instance" => "service instance stuff"} }
+
+            it "delegates to the UpdateOrderItem class" do
+              expect(update_order_item).to receive(:process)
+              subject.process
+            end
+
+            it_behaves_like "#process that errors and is complete"
+          end
+
+          context "when the context has an applied inventories keypath" do
+            let(:payload_context) { {"applied_inventories" => "applied inventories stuff"} }
+
+            it "delegates to the CreateApprovalRequest class" do
+              expect(create_approval_request).to receive(:process)
+              subject.process
+            end
+
+            it "logs a message about creating an approval request as a response to a task id" do
+              expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123")
+              subject.process
+            end
+
+            it_behaves_like "#process that errors and is complete"
+          end
+
+          context "when the context does not have a relevant keypath" do
+            let(:payload_context) { nil }
+
+            it "logs a message about irrelevant delegation" do
+              expect(Rails.logger).to receive(:info).with("Incoming task has no current relevant delegation")
+              subject.process
+            end
+
+            it_behaves_like "#process that errors and is complete"
+          end
+        end
+      end
+
+      context "when the task status is not error" do
+        let(:status) { "ok" }
+        let(:state) { "doesn't matter" }
+
+        context "when the context has a service instance keypath" do
+          let(:payload_context) { {"service_instance" => "service instance stuff"} }
+
+          it "delegates to the UpdateOrderItem class" do
             expect(update_order_item).to receive(:process)
             subject.process
           end
         end
 
-        context "error scenario" do
-          it "raises StandardError" do
-            allow(update_order_item).to receive(:process).and_raise(StandardError)
-            expect(Rails.logger).to receive(:error).once
-            expect { subject.process }.to raise_exception(StandardError)
-          end
-        end
-      end
+        context "when the context has an applied inventories keypath" do
+          let(:payload_context) { {"applied_inventories" => "applied inventories stuff"} }
 
-      context "when the task context has a key path of [:applied_inventories]" do
-        let(:payload_context) { {"applied_inventories" => ["1", "2"]} }
-        let(:create_approval_request) { instance_double("Api::V1x0::Catalog::CreateApprovalRequest") }
-        let(:task) do
-          TopologicalInventoryApiClient::Task.new(
-            :id      => "123",
-            :state   => "completed",
-            :status  => "ok",
-            :context => {"applied_inventories" => ["1", "2"]}
-          )
-        end
-
-        before do
-          allow(Catalog::CreateApprovalRequest).to receive(:new).with(task).and_return(create_approval_request)
-          allow(create_approval_request).to receive(:process)
-        end
-
-        it "creates a task with id, state, status and context" do
-          expect(TopologicalInventoryApiClient::Task).to receive(:new).with(
-            :id      => "123",
-            :state   => "completed",
-            :status  => "ok",
-            :context => {"applied_inventories" => ["1", "2"]}
-          ).and_return(task)
-          subject.process
-        end
-
-        it "updates the item with a progress message" do
-          subject.process
-          progress_message = ProgressMessage.last
-          expect(progress_message.level).to eq("info")
-          expect(progress_message.message).to match(/Task update. State: completed/)
-          expect(progress_message.order_item_id).to eq(order_item.id.to_s)
-        end
-
-        it "delegates to creating the approval request" do
-          expect(create_approval_request).to receive(:process)
-          subject.process
-        end
-
-        it "updates the item with a task progress message before delgation" do
-          subject.instance_variable_set(:@order_item, order_item)
-          expect(order_item).to receive(:update_message).with(:info, /Task update. State: completed/).ordered
-          expect(create_approval_request).to receive(:process).ordered
-          subject.process
-        end
-      end
-
-      context "when the task context does not have either key path" do
-        let(:payload_context) { {"error" => "Undefined method oh noes"} }
-
-        context "when the status is 'error'" do
-          let(:status) { "error" }
-
-          before do
-            allow(Catalog::OrderStateTransition).to receive(:new).with(order_item.order).and_return(order_state_transition)
-            allow(order_state_transition).to receive(:process)
-          end
-
-          it "updates the item with a progress message" do
+          it "delegates to the CreateApprovalRequest class" do
+            expect(create_approval_request).to receive(:process)
             subject.process
-            progress_message = ProgressMessage.last
-            expect(progress_message.level).to eq("error")
-            expect(progress_message.message).to match(/Task update/)
-            expect(progress_message.order_item_id).to eq(order_item.id.to_s)
           end
 
-          it "transitions the order state and marks the order item failed" do
-            expect(order_state_transition).to receive(:process)
+          it "logs a message about creating an approval request as a response to a task id" do
+            expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123")
             subject.process
-            order_item.reload
-            expect(order_item.state).to eq("Failed")
           end
         end
 
-        context "when the status is not 'error'" do
-          let(:status) { "updated" }
+        context "when the context does not have a relevant keypath" do
+          let(:payload_context) { nil }
 
-          before do
-            allow(Rails.logger).to receive(:info).with(anything)
-          end
-
-          it "updates the item with a progress message" do
+          it "logs a message about irrelevant delegation" do
+            expect(Rails.logger).to receive(:info).with("Incoming task has no current relevant delegation")
             subject.process
-            progress_message = ProgressMessage.last
-            expect(progress_message.level).to eq("info")
-            expect(progress_message.message).to match(/Task update/)
-            expect(progress_message.order_item_id).to eq(order_item.id.to_s)
           end
         end
-      end
-    end
-
-    context 'when the task_id is not relavant to of order_item' do
-      let(:state) { "running" }
-      let(:status) { "ok" }
-      let(:payload_context) { nil }
-      before { order_item.update(:topology_task_ref => "124") }
-
-      it 'does not raise an error' do
-        expect(Rails.logger).to receive(:info)
-        expect { subject.process }.not_to raise_exception(StandardError)
       end
     end
   end
