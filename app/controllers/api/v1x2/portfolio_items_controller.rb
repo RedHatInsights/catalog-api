@@ -6,13 +6,13 @@ module Api
 
         raise ActiveRecord::RecordNotFound unless portfolio_item
 
-        render_item(portfolio_item)
+        render_item(portfolio_item, portfolio_item == @discarded)
       end
 
       private
 
       def find_in_discarded_items
-        model.with_discarded.discarded.find_by(:id => params.require(:id)) if params[:show_discarded] == "true"
+        @discarded ||= model.with_discarded.discarded.find_by(:id => params.require(:id)) if params[:show_discarded] == "true"
       end
     end
   end
