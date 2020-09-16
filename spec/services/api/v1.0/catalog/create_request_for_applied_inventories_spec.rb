@@ -39,6 +39,11 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
         expect(order_item.topology_task_ref).to eq("321")
       end
 
+      it "logs a message about the order item receiving a new task id" do
+        expect(Rails.logger).to receive(:info).with("OrderItem #{order_item.id} updated with topology task ref 321")
+        subject.process
+      end
+
       it "creates a progress message on the order item" do
         subject.process
         progress_message = ProgressMessage.last

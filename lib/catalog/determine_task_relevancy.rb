@@ -12,10 +12,12 @@ module Catalog
         :context => @topic.payload["context"].try(&:with_indifferent_access)
       )
 
-      add_task_update_message
-      delegate_task if %w[completed running].include?(@task.state)
-      order_item.mark_failed if @task.status == "error"
+      find_relevant_order_item
+      delegate_task
 
+      self
+    rescue ActiveRecord::RecordNotFound
+      Rails.logger.info("Incoming task #{@task.id} has no relevant order item")
       self
     rescue => exception
       Rails.logger.error(exception.inspect)
@@ -25,28 +27,37 @@ module Catalog
     private
 
     def delegate_task
+      if @task.status == "error"
+        process_error_tasks
+      else
+        # Status is either 'warn' or 'ok'
+        process_relevant_context
+      end
+    end
+
+    def process_relevant_context
       if @task.context&.has_key_path?(:service_instance)
-        UpdateOrderItem.new(@topic, @task).process
+        UpdateOrderItem.new(@topic, @task, @order_item).process
       elsif @task.context&.has_key_path?(:applied_inventories)
-        Rails.logger.info("Creating approval request for task")
-        CreateApprovalRequest.new(@task).process
+        Rails.logger.info("Creating approval request for task id #{@task.id}")
+        CreateApprovalRequest.new(@task, @order_item).process
       else
         Rails.logger.info("Incoming task has no current relevant delegation")
       end
     end
 
-    def order_item
-      @order_item ||= OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
+    def process_error_tasks
+      if @task.state == "running"
+        Rails.logger.error("Incoming task #{@task.id} had an error while running: #{@task.context}")
+      elsif @task.state == "completed"
+        process_relevant_context
+        Rails.logger.error("Incoming task #{@task.id} is completed but errored: #{@task.context}")
+        @order_item.mark_failed
+      end
     end
 
-    def add_task_update_message
-      message = "Task update. State: #{@task.state}. Status: #{@task.status}. Context: #{@task.context}"
-      @task.status == "error" ? add_update_message(:error, message) : add_update_message(:info, message)
-    end
-
-    def add_update_message(state, message)
-      order_item.update_message(state, message)
-      Rails.logger.send(state, message)
+    def find_relevant_order_item
+      @order_item = OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
     end
   end
 end

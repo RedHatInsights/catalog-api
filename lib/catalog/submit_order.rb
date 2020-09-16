@@ -40,6 +40,7 @@ module Catalog
       TopologicalInventory::Service.call do |api_instance|
         result = api_instance.order_service_offering(item.portfolio_item.service_offering_ref, parameters(item))
         item.mark_ordered("Ordered", :topology_task_ref => result.task_id)
+        Rails.logger.info("OrderItem #{item.id} ordered with topology task ref #{result.task_id}")
       end
     end
 

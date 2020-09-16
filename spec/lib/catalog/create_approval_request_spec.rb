@@ -1,5 +1,5 @@
 describe Catalog::CreateApprovalRequest, :type => :service do
-  let(:subject) { described_class.new(task) }
+  let(:subject) { described_class.new(task, order_item) }
   let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123") }
 
   around do |example|
@@ -9,7 +9,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
   end
 
   let(:order) { order_item.order }
-  let!(:order_item) { create(:order_item, :topology_task_ref => "123", :process_scope => 'applicable') }
+  let!(:order_item) { create(:order_item, :process_scope => 'applicable') }
 
   let(:create_request_body_from) { instance_double(Catalog::CreateRequestBodyFrom, :result => request_body_from) }
   let(:request_body_from) { {"test" => "test"}.to_json }
