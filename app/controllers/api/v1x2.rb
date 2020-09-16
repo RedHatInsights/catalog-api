@@ -17,7 +17,6 @@ module Api
     class ProviderControlParametersController < Api::V1x1::ProviderControlParametersController; end
     class ServicePlansController              < Api::V1x1::ServicePlansController; end
     class SettingsController                  < Api::V1x1::SettingsController; end
-    class TagsController                      < Api::V1x1::TagsController; end
     class TenantsController                   < Api::V1x1::TenantsController; end
 
     extend_each_subclass Mixins::IndexMixin

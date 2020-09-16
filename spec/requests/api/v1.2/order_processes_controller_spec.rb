@@ -391,6 +391,43 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
   end
 
+  describe "GET /order_processes/:id/tags #tags" do
+    let(:bad_order_process_id) { order_process.id + 1 }
+
+    before do
+      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
+      allow(catalog_access).to receive(:process).and_return(catalog_access)
+      order_process.tag_add("yay_tag")
+    end
+
+    context "when listing all tags for an order process" do
+      let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
+
+      it "returns the tags for the order process" do
+        get "#{api_version}/order_processes/#{order_process.id}/tags", :headers => default_headers
+
+        expect(json["meta"]["count"]).to eq 1
+        expect(json["data"].first["tag"]).to eq Tag.new(:name => "yay_tag").to_tag_string
+      end
+
+      it "returns not found when order process missing" do
+        get "#{api_version}/order_processes/#{bad_order_process_id}/tags", :headers => default_headers
+
+        expect(response).to have_http_status(404)
+      end
+    end
+
+    context "when listing all tags for an order process you do not have access to" do
+      let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[group]) }
+
+      it "returns 403" do
+        get "#{api_version}/order_processes/#{order_process.id}/tags", :headers => default_headers
+
+        expect(response).to have_http_status(403)
+      end
+    end
+  end
+
   describe "GET /order_processes #link_tags" do
     let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
 
