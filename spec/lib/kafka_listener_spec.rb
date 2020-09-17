@@ -1,4 +1,4 @@
-describe KafkaListener do
+xdescribe KafkaListener do
   let(:test_listener_class) do
     Class.new(described_class) do
       def process_event(_event)
