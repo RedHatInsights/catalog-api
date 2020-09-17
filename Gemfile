@@ -32,7 +32,7 @@ gem 'mimemagic', '~> 0.3.3'
 gem 'more_core_extensions', '~>3.5'
 gem 'pg', '~> 1.0', :require => false
 gem 'prometheus-client', '~> 0.8.0'
-gem 'puma', '>= 4.3.5'
+gem 'puma', '~> 4', '>= 4.3.5'
 gem 'pundit'
 gem 'rack-cors', '>= 1.0.4'
 gem 'rest-client', '>= 1.8.0'
