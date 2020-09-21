@@ -90,6 +90,56 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
 
           subject
         end
+
+        context "when there is no before portfolio item" do
+          let(:before_portfolio_item) { nil }
+          let(:before_params) { "doesn't matter" }
+          let(:after_params) do
+            {
+              :order_id          => order.id,
+              :portfolio_item_id => after_portfolio_item.id,
+              :process_sequence  => 2,
+              :process_scope     => "after"
+            }
+          end
+
+          it "applies the process sequence of '1' to the order item" do
+            subject
+            expect(order.order_items.first.process_sequence).to eq(1)
+          end
+
+          it "applies the process scope of 'applicable' to the order item" do
+            subject
+            expect(order.order_items.first.process_scope).to eq("applicable")
+          end
+
+          it "delegates creation of an 'after' order_item with a process sequence of 2" do
+            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params)
+
+            subject
+          end
+        end
+
+        context "when there is no after portfolio item" do
+          let(:after_portfolio_item) { nil }
+          let(:after_params) { "doesn't matter" }
+
+          it "applies the process sequence of '2' to the order item" do
+            subject
+            expect(order.order_items.first.process_sequence).to eq(2)
+          end
+
+          it "applies the process scope of 'applicable' to the order item" do
+            subject
+            expect(order.order_items.first.process_scope).to eq("applicable")
+          end
+
+          it "delegates creation of a 'before' order_item with a process sequence of 1" do
+            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params)
+
+            subject
+          end
+        end
       end
 
       context "when there is 1 existing tag on the portfolio_item" do
