@@ -19,15 +19,18 @@ module Api
           after_sequence_number = determine_starting_after_sequence_number(relevant_order_processes)
 
           relevant_order_processes.each do |order_process|
-            Catalog::AddToOrderViaOrderProcess.new(before_params(order_process, before_sequence_number)).process
-            Catalog::AddToOrderViaOrderProcess.new(after_params(order_process, after_sequence_number)).process
+            if order_process.before_portfolio_item.present?
+              Catalog::AddToOrderViaOrderProcess.new(before_params(order_process, before_sequence_number)).process
+              before_sequence_number += 1
+            end
 
-            before_sequence_number += 1
-            after_sequence_number -= 1
+            if order_process.after_portfolio_item.present?
+              Catalog::AddToOrderViaOrderProcess.new(after_params(order_process, after_sequence_number)).process
+              after_sequence_number -= 1
+            end
           end
 
-          applicable_sequence = (relevant_order_processes.length + 1)
-          applicable_order_item.update(:process_sequence => applicable_sequence, :process_scope => "applicable")
+          applicable_order_item.update(:process_sequence => applicable_sequence(relevant_order_processes), :process_scope => "applicable")
 
           self
         end
@@ -66,7 +69,15 @@ module Api
         end
 
         def determine_starting_after_sequence_number(relevant_order_processes)
-          (relevant_order_processes.length * 2) + 1
+          # TODO: Would be nice to use filter_map in Ruby 2.7
+          before_count = relevant_order_processes.collect(&:before_portfolio_item).compact.count
+          after_count = relevant_order_processes.collect(&:after_portfolio_item).compact.count
+          before_count + after_count + 1
+        end
+
+        def applicable_sequence(relevant_order_processes)
+          before_count = relevant_order_processes.collect(&:before_portfolio_item).compact.count
+          before_count + 1
         end
       end
     end
