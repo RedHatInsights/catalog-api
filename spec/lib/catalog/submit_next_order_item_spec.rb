@@ -1,4 +1,4 @@
-describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::SubmitNextOrderItem, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
@@ -69,11 +69,11 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
 
     context "when sending extra parameters" do
       before do
-        @order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
-        submit_order.process
+        order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
       end
 
       it "only sends the parameters specified in the schema" do
+        submit_order.process
         expect(a_request(:post, topological_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
       end
     end
@@ -107,6 +107,66 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
 
     it "fails to order" do
       expect { submit_order.process }.to raise_exception(Catalog::InvalidSurvey)
+    end
+  end
+
+  context "with multiple order items" do
+    let(:params) { order.id.to_s }
+    let(:order_items) do
+      (1..3).map do |sequence|
+        create(:order_item,
+               :order            => order,
+               :service_plan_ref => "service_plan_ref_#{sequence}",
+               :process_sequence => sequence,
+               :portfolio_item   => create(:portfolio_item))
+      end
+    end
+
+    before do
+      allow(Order).to receive(:find_by!).with(:id => params).and_return(order)
+      allow(order).to receive(:order_items).and_return(order_items)
+    end
+
+    shared_examples_for "order the desired item" do
+      before do
+        order_items.each.with_index(1) do |item, index|
+          allow(item).to receive(:can_order?).and_return(index >= ordered_item)
+        end
+      end
+
+      it "orders the desired item" do
+        expect(submit_order).to receive(:submit_order_item).with(order_items[ordered_item - 1])
+        submit_order.process
+      end
+    end
+
+    context "when no order item is orderable" do
+      before do
+        order_items.each { |item| allow(item).to receive(:can_order?).and_return(false) }
+      end
+
+      it 'does not order any item' do
+        expect(submit_order).not_to receive(:submit_order_item)
+        submit_order.process
+      end
+    end
+
+    context "when the first item becomes orderable" do
+      let(:ordered_item) { 1 }
+
+      it_behaves_like "order the desired item"
+    end
+
+    context "when the first item is not orderable the second one is" do
+      let(:ordered_item) { 2 }
+
+      it_behaves_like "order the desired item"
+    end
+
+    context "when the first and second items are not orderable but the third one is" do
+      let(:ordered_item) { 3 }
+
+      it_behaves_like "order the desired item"
     end
   end
 end

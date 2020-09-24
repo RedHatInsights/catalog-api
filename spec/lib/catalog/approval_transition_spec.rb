@@ -1,6 +1,6 @@
 describe Catalog::ApprovalTransition do
-  let(:so) { class_double(Catalog::SubmitOrder).as_stubbed_const(:transfer_nested_constants => true) }
-  let(:submit_order) { instance_double(Catalog::SubmitOrder) }
+  let(:so) { class_double(Catalog::SubmitNextOrderItem).as_stubbed_const(:transfer_nested_constants => true) }
+  let(:submit_order) { instance_double(Catalog::SubmitNextOrderItem) }
   let(:topo_ex) { ::Catalog::TopologyError.new("boom") }
 
   let(:req) { { :headers => default_headers, :original_url => "localhost/nope" } }
@@ -34,7 +34,7 @@ describe Catalog::ApprovalTransition do
         expect(order_item_transition.process.state).to eq "Approved"
       end
 
-      it "calls out to Catalog::SubmitOrder" do
+      it "calls out to Catalog::SubmitNextOrderItem" do
         expect(so).to receive(:new).with(order.id)
         expect(submit_order).to receive(:process).once
         order_item_transition.process

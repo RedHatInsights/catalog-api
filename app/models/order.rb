@@ -11,7 +11,7 @@ class Order < ApplicationRecord
 
   default_scope { kept.order(:created_at => :desc) }
 
-  has_many :order_items, :dependent => :destroy
+  has_many :order_items, -> { order(:process_sequence) }, :dependent => :destroy, :inverse_of => :order
 
   before_create :set_defaults
 
