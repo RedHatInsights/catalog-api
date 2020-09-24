@@ -1,7 +1,6 @@
 describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
   let!(:portfolio)       { create(:portfolio) }
-  let!(:portfolio_item)  { create(:portfolio_item, :portfolio => portfolio) }
-  let!(:portfolio_items) { portfolio.portfolio_items << portfolio_item }
+  let!(:portfolio_items) { create_list(:portfolio_item, 3, :portfolio => portfolio) }
   let(:portfolio_id)     { portfolio.id }
   let(:rbac_access)      { instance_double(Catalog::RBAC::Access) }
 
@@ -106,7 +105,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
   end
 
   describe "POST /portfolios #create" do
-    let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio" } }
+    let(:valid_attributes) { {:name => 'Fred', :description => "Fred's Portfolio"} }
 
     context "when the user has create access" do
       it 'creates a portfolio' do
@@ -136,7 +135,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
 
   describe "PATCH /portfolios #update" do
     let!(:portfolio1) { create(:portfolio) }
-    let(:updated_attributes) { {:name => 'Barney', :description => "Barney's Portfolio" } }
+    let(:updated_attributes) { {:name => 'Barney', :description => "Barney's Portfolio"} }
 
     context "user has update permission" do
       it 'only allows updating a specific portfolio' do
@@ -170,9 +169,17 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
   end
 
   describe "POST /portfolios/:portfolio_id/copy #copy" do
-    it 'returns a 200' do
+    before do
       post "#{api_version}/portfolios/#{portfolio.id}/copy", :headers => default_headers
+    end
+
+    it 'returns a 200' do
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'has the same metadata statistics as original' do
+      portfolio.reload
+      expect(json["metadata"]["statistics"]).to include(portfolio.metadata["statistics"])
     end
   end
 
@@ -184,7 +191,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     let(:share_resource) { instance_double(Api::V1x0::Catalog::ShareResource) }
     let(:options) do
       {
-        :object => portfolio,
+        :object      => portfolio,
         :permissions => ["read"],
         :group_uuids => [group_uuid]
       }
@@ -234,7 +241,7 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     let(:unshare_resource) { instance_double(Api::V1x0::Catalog::UnshareResource) }
     let(:options) do
       {
-        :object => portfolio,
+        :object      => portfolio,
         :permissions => ["read"],
         :group_uuids => [group_uuid]
       }
