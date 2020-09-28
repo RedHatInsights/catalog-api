@@ -18,13 +18,12 @@ module Api
 
         def process
           PortfolioItem.transaction do
-          @new_portfolio_item = make_copy
-        rescue StandardError => e
-          Rails.logger.error("Failed to copy Portfolio Item #{@portfolio_item.id}: #{e.message}")
-          raise
-        end
+            @new_portfolio_item = make_copy
+          rescue => e
+            Rails.logger.error("Failed to copy Portfolio Item #{@portfolio_item.id}: #{e.message}")
+            raise
+          end
 
-          @to_portfolio.portfolio_items << @new_portfolio_item
           self
         end
 
@@ -41,6 +40,8 @@ module Api
               new_plan.save!
               new_portfolio_item.service_plans << new_plan
             end
+
+            new_portfolio_item.portfolio_id = @to_portfolio.id
 
             new_portfolio_item.save
           end
