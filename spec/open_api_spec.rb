@@ -55,7 +55,7 @@ describe "OpenAPI stuff" do
     end
 
     context "with the openapi json" do
-      let(:v1_path) {{:path => "#{path_prefix}/#{app_name}/v1/*path", :verb => "DELETE|GET|OPTIONS|PATCH|POST"}}
+      let(:v1_path) { {:path => "#{path_prefix}/#{app_name}/v1/*path", :verb => "DELETE|GET|OPTIONS"} }
       it "matches the routes" do
 
         redirect_routes = [
