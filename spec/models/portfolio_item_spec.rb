@@ -53,7 +53,7 @@ describe PortfolioItem do
   context "length restrictions" do
     it "raises validation error" do
       expect do
-        PortfolioItem.create!(:name => 'a'*513, :description => 'abc', :owner => 'fred')
+        PortfolioItem.create!(:name => 'a' * 513, :description => 'abc', :owner => 'fred')
       end.to raise_error(ActiveRecord::RecordInvalid, /Name is too long/)
     end
   end
@@ -68,6 +68,26 @@ describe PortfolioItem do
 
         subject.run_callbacks kind
       end
+    end
+  end
+
+  context "with two valid tags" do
+    let(:portfolio) { create(:portfolio) }
+    subject! { create(:portfolio_item, :portfolio => portfolio) }
+
+    before do
+      subject.tag_add('workflows', :namespace => 'approval', :value => '123')
+      subject.tag_add('workflows', :namespace => 'approval', :value => '456')
+      subject.tag_add('order_processes', :namespace => 'approval', :value => '789')
+      subject.update_metadata
+    end
+
+    it 'adds staticsitcs' do
+      expect(subject.metadata.keys).to match_array(%w[statistics updated_at user_capabilities])
+    end
+
+    it 'returns statistics with approval_processes value of two' do
+      expect(subject.metadata['statistics']['approval_processes']).to eq(2)
     end
   end
 end

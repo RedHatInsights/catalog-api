@@ -12,7 +12,7 @@ describe Portfolio do
   context "length restrictions" do
     it "raises validation error" do
       expect do
-        Portfolio.create!(:name => 'a'*513, :tenant => tenant1, :description => 'abc', :owner => 'fred')
+        Portfolio.create!(:name => 'a' * 513, :tenant => tenant1, :description => 'abc', :owner => 'fred')
       end.to raise_error(ActiveRecord::RecordInvalid, /Name is too long/)
     end
   end
@@ -103,7 +103,7 @@ describe Portfolio do
   end
 
   context "tags" do
-    let(:options) { { :namespace => 'test', :value => '1' } }
+    let(:options) { {:namespace => 'test', :value => '1'} }
     let(:name) { 'fred' }
     before do
       portfolio.tag_add(name, options)
@@ -140,6 +140,7 @@ describe Portfolio do
 
     it 'adds staticsitcs' do
       expect(subject.metadata['statistics']).to include(
+        'approval_processes' => 0,
         'portfolio_items'    => 0,
         'shared_groups'      => 0
       )
@@ -216,6 +217,19 @@ describe Portfolio do
 
       it 'returns statistics with shared_groups value of zero' do
         expect(subject.metadata['statistics']['shared_groups']).to be_zero
+      end
+    end
+
+    context 'with two valid tags' do
+      before do
+        subject.tag_add('workflows', :namespace => 'approval', :value => '123')
+        subject.tag_add('workflows', :namespace => 'approval', :value => '456')
+        subject.tag_add('order_processes', :namespace => 'approval', :value => '789')
+        subject.update_metadata
+      end
+
+      it 'returns statistics with approval_processes value of two' do
+        expect(subject.metadata['statistics']['approval_processes']).to eq(2)
       end
     end
   end
