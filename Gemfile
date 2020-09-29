@@ -27,7 +27,7 @@ gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'maste
 gem 'insights-api-common', '~> 4.0'
 gem 'jbuilder', '~> 2.0'
 gem 'manageiq-loggers', '~> 0.2'
-gem 'manageiq-messaging', :git => 'https://github.com/bzwei/manageiq-messaging', :branch => 'rdkafka'
+gem 'manageiq-messaging', '~> 1.0'
 gem 'mimemagic', '~> 0.3.3'
 gem 'more_core_extensions', '~>3.5'
 gem 'pg', '~> 1.0', :require => false

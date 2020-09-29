@@ -1,4 +1,4 @@
-xdescribe KafkaListener do
+describe KafkaListener do
   let(:test_listener_class) do
     Class.new(described_class) do
       def process_event(_event)
@@ -28,23 +28,6 @@ xdescribe KafkaListener do
     ).and_yield(event)
 
     allow(event).to receive(:ack)
-  end
-
-  context "when kafka at localhost is not available" do
-    before do
-      allow(ManageIQ::Messaging::Client).to receive(:open).with(
-        :encoding => "json",
-        :host     => "localhost",
-        :port     => 9092,
-        :protocol => :Kafka
-      ).and_raise(Kafka::ConnectionError)
-    end
-
-    it "logs the error and exits" do
-      expect(Rails.logger).to receive(:error).once.with(/Cannot connect to Kafka/)
-
-      subject.subscribe
-    end
   end
 
   describe "message headers are not complete" do
