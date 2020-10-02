@@ -35,7 +35,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       let(:create_approval_request) { instance_double(Catalog::CreateApprovalRequest) }
 
       before do
-        allow(Catalog::UpdateOrderItem).to receive(:new).with(topic, an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(update_order_item)
+        allow(Catalog::UpdateOrderItem).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(update_order_item)
         allow(update_order_item).to receive(:process)
         allow(Catalog::CreateApprovalRequest).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(create_approval_request)
         allow(create_approval_request).to receive(:process)
