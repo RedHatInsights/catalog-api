@@ -48,7 +48,7 @@ describe OrderItem do
 
   shared_examples_for "#mark_item" do
     it "sets the params properly" do
-      params.each do |k,v|
+      params.each do |k, v|
         expect(order_item.send(k)).to eq v
       end
     end
@@ -58,6 +58,8 @@ describe OrderItem do
     let(:params) { {:external_url => "not.a.real/url"} }
 
     before do
+      allow(Catalog::SubmitNextOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
+
       order_item.mark_completed(params)
       order_item.reload
     end
@@ -76,6 +78,8 @@ describe OrderItem do
       let(:params) { {:external_url => "not.a.real/url"} }
 
       before do
+        allow(Catalog::SubmitNextOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
+
         order_item.mark_failed(params)
         order_item.reload
       end
@@ -116,5 +120,69 @@ describe OrderItem do
     end
 
     it_behaves_like "#mark_item"
+  end
+
+  describe '#can_order?' do
+    before { order_item.update(:process_scope => process_scope, :state => state) }
+
+    context 'when process_scope is applicable' do
+      let(:process_scope) { 'applicable' }
+
+      context 'when state is Approved' do
+        let(:state) { 'Approved' }
+
+        it 'is orderable' do
+          expect(order_item.can_order?).to be_truthy
+        end
+      end
+
+      context 'when state is not applicable' do
+        let(:state) { 'Create' }
+
+        it 'is not orderable' do
+          expect(order_item.can_order?).to be_falsey
+        end
+      end
+    end
+
+    context 'when process_scope is before' do
+      let(:process_scope) { 'before' }
+
+      context 'when state is Created' do
+        let(:state) { 'Created' }
+
+        it 'is orderable' do
+          expect(order_item.can_order?).to be_truthy
+        end
+      end
+
+      context 'when state is not Created' do
+        let(:state) { 'Ordered' }
+
+        it 'is not orderable' do
+          expect(order_item.can_order?).to be_falsey
+        end
+      end
+    end
+
+    context 'when process_scope is after' do
+      let(:process_scope) { 'after' }
+
+      context 'when state is Created' do
+        let(:state) { 'Created' }
+
+        it 'is orderable' do
+          expect(order_item.can_order?).to be_truthy
+        end
+      end
+
+      context 'when stae is not Created' do
+        let(:state) { 'Completed' }
+
+        it 'is not orderable' do
+          expect(order_item.can_order?).to be_falsey
+        end
+      end
+    end
   end
 end

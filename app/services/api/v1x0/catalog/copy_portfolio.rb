@@ -28,6 +28,8 @@ module Api
               new_portfolio.save!
 
               copy_portfolio_items(new_portfolio.id)
+
+              new_portfolio.update_metadata
             end
           end
         end

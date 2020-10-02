@@ -5,8 +5,8 @@ class OrderItem < ApplicationRecord
   destroy_dependencies :progress_messages
   attribute :state, :string, :default => 'Created'
   validates_inclusion_of :state,
-    :in => ["Approval Pending", "Approved", "Canceled", "Completed", "Created", "Denied", "Failed", "Ordered"].freeze,
-    :message => "state %{value} is not included in the list"
+                         :in      => ["Approval Pending", "Approved", "Canceled", "Completed", "Created", "Denied", "Failed", "Ordered"].freeze,
+                         :message => "state %{value} is not included in the list"
 
   acts_as_tenant(:tenant)
 
@@ -16,7 +16,7 @@ class OrderItem < ApplicationRecord
   validates_presence_of :order_id
   validates_presence_of :portfolio_item_id
 
-  belongs_to :order
+  belongs_to :order, :inverse_of => :order_items
   belongs_to :portfolio_item
   has_many :progress_messages, :dependent => :destroy
   has_many :approval_requests, :dependent => :destroy
@@ -33,21 +33,27 @@ class OrderItem < ApplicationRecord
     end
   end
 
+  def can_order?
+    state == (process_scope == 'applicable' ? 'Approved' : 'Created')
+  end
+
   def update_message(level, message)
-    progress_messages << ProgressMessage.new(:level => level, :message => message, :tenant_id => self.tenant_id)
+    progress_messages << ProgressMessage.new(:level => level, :message => message, :tenant_id => tenant_id)
     touch
   end
 
   def mark_completed(msg = nil, **opts)
     mark_item(msg, :completed_at => DateTime.now, :state => "Completed", **opts)
+    Catalog::SubmitNextOrderItem.new(order_id).process
   end
 
   def mark_failed(msg = nil, **opts)
     mark_item(msg, :completed_at => DateTime.now, :state => "Failed", :level => "error", **opts)
+    Catalog::SubmitNextOrderItem.new(order_id).process
   end
 
   def mark_ordered(msg = nil, **opts)
-    mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered",  **opts)
+    mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered", **opts)
   end
 
   private

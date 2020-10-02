@@ -1,4 +1,4 @@
-describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
@@ -8,7 +8,7 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
     create(:portfolio_item, :service_offering_ref => service_offering_ref, :service_offering_source_ref => "17")
   end
   let!(:service_plan) { create(:service_plan, :portfolio_item => portfolio_item, :base => valid_ddf) }
-  let(:submit_order) { described_class.new(params) }
+  let(:submit_order) { described_class.new(order_item) }
   let(:validater) { instance_double(Api::V1x0::Catalog::ValidateSource) }
   let(:validity) { true }
   let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
@@ -36,8 +36,7 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
-  context "when the order ID is valid" do
-    let(:params) { order.id.to_s }
+  context "when the order item is valid" do
     let(:order_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "100") }
 
     before do
@@ -55,25 +54,25 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
 
     context "when the source is valid" do
       it "updates the order item with the task id" do
-        expect(submit_order.process.order.order_items.first.topology_task_ref).to eq("100")
+        expect(submit_order.process.order_item.topology_task_ref).to eq("100")
       end
 
       it "logs a message" do
         # item.mark_ordered ends up calling a separate rails logger so we need to `allow` here.
         allow(Rails.logger).to receive(:info)
 
-        expect(Rails.logger).to receive(:info).with("OrderItem #{order.order_items.first.id} ordered with topology task ref 100")
+        expect(Rails.logger).to receive(:info).with("OrderItem #{order_item.id} ordered with topology task ref 100")
         submit_order.process
       end
     end
 
     context "when sending extra parameters" do
       before do
-        @order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
-        submit_order.process
+        order_item.update!(:service_parameters => service_parameters.merge(:extra_param => "extra! extra!"))
       end
 
       it "only sends the parameters specified in the schema" do
+        submit_order.process
         expect(a_request(:post, topological_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
       end
     end
@@ -89,16 +88,7 @@ describe Catalog::SubmitOrder, :type => [:service, :topology, :current_forwardab
     end
   end
 
-  context "when the order ID is invalid" do
-    let(:params) { 333 }
-
-    it "raises an exception" do
-      expect { submit_order.process }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-  end
-
   context "when the base service_plan has changed from topology" do
-    let(:params) { order.id.to_s }
     let(:service_plan_response) do
       topo_service_plan_response.tap do |plan|
         plan.data.first.create_json_schema["schema"]["description"] += " changed service plan"
