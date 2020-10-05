@@ -37,7 +37,7 @@ module Catalog
 
     def process_relevant_context
       if @task.context&.has_key_path?(:service_instance)
-        UpdateOrderItem.new(@topic, @task, @order_item).process
+        UpdateOrderItem.new(@task, @order_item).process
       elsif @task.context&.has_key_path?(:applied_inventories)
         Rails.logger.info("Creating approval request for task id #{@task.id}")
         CreateApprovalRequest.new(@task, @order_item).process
@@ -57,7 +57,7 @@ module Catalog
     end
 
     def find_relevant_order_item
-      @order_item = OrderItem.find_by!(:topology_task_ref => @topic.payload["task_id"])
+      @order_item = OrderItem.find_by!(:topology_task_ref => @task.id)
     end
   end
 end
