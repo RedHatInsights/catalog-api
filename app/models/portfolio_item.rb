@@ -3,6 +3,7 @@ class PortfolioItem < ApplicationRecord
   include Discard::Model
   include UserCapabilities
   include Api::V1x0::Catalog::DiscardRestore
+  include Metadata::Ancillary
   destroy_dependencies :service_plans
 
   MAX_NAME_LENGTH = 512
@@ -21,16 +22,26 @@ class PortfolioItem < ApplicationRecord
   has_many :service_plans, :dependent => :destroy
   belongs_to :portfolio
   validates :service_offering_ref, :name, :presence => true
-  validates :favorite_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
+  validates :favorite_before_type_cast, :format => {:with => /\A(true|false)\z/i}, :allow_blank => true
   validates :name, :presence => true, :length => {:maximum => MAX_NAME_LENGTH}
 
   def metadata
-    {:user_capabilities => user_capabilities}
+    ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities)
   end
 
   private
 
   def update_portfolio_stats
     portfolio.update_metadata
+  end
+
+  def update_ancillary_metadata
+    ancillary_metadata.statistics = statistics_metadata
+  end
+
+  def statistics_metadata
+    {
+      'approval_processes' => tags.where(:namespace => 'approval', :name => 'workflows').count
+    }
   end
 end

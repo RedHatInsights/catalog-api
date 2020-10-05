@@ -15,8 +15,8 @@ class Portfolio < ApplicationRecord
   default_scope -> { kept.order(Arel.sql('LOWER(portfolios.name)')) }
   belongs_to :icon, :optional => true
 
-  validates :name, :presence => true, :length => {:maximum => MAX_NAME_LENGTH}, :uniqueness => { :scope => %i(tenant_id discarded_at) }
-  validates :enabled_before_type_cast, :format => { :with => /\A(true|false)\z/i }, :allow_blank => true
+  validates :name, :presence => true, :length => {:maximum => MAX_NAME_LENGTH}, :uniqueness => {:scope => %i[tenant_id discarded_at]}
+  validates :enabled_before_type_cast, :format => {:with => /\A(true|false)\z/i}, :allow_blank => true
 
   has_many :portfolio_items, :dependent => :destroy
 
@@ -36,8 +36,9 @@ class Portfolio < ApplicationRecord
 
   def statistics_metadata
     {
-      'portfolio_items' => portfolio_items.count,
-      'shared_groups'   => access_control_entries.count { |ace| ace.permissions.present? }
+      'approval_processes' => tags.where(:namespace => 'approval', :name => 'workflows').count,
+      'portfolio_items'    => portfolio_items.count,
+      'shared_groups'      => access_control_entries.count { |ace| ace.permissions.present? }
     }
   end
 end
