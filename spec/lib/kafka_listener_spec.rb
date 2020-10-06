@@ -84,7 +84,8 @@ describe KafkaListener do
     end
 
     it "logs an error" do
-      expect(Rails.logger).to receive(:error).with(/Error processing event/)
+      expect(Rails.logger).to receive(:error).ordered
+      expect(Rails.logger).to receive(:error).with(/Error processing event/).ordered
       subject.subscribe
     end
   end

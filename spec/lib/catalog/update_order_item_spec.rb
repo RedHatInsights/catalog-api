@@ -1,12 +1,17 @@
 describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
-  let(:subject) { described_class.new(topic, task, order_item) }
-  let(:topic) { Struct.new(:payload, :message).new(payload, "message") }
-  let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:id => service_instance_id}}) }
+  let(:subject) { described_class.new(task, order_item) }
+  let(:artifacts) { {'expose_to_cloud_redhat_com_k1' => 'v1', 'expose_to_cloud_redhat_com_k2' => 'v2', 'other' => 'v3'} }
+  let(:task) do
+    TopologicalInventoryApiClient::Task.new(
+      "id"      => "123",
+      "status"  => status,
+      "state"   => state,
+      "context" => {:service_instance => {:id => service_instance_id}, :artifacts => artifacts}.with_indifferent_access
+    )
+  end
   let(:service_instance_id) { "321" }
 
   describe "#process" do
-    let(:payload) { {"task_id" => "123", "status" => status, "state" => state, "context" => "payloadcontext"} }
-    # let(:order_item) { instance_double(OrderItem, :service_instance_ref => 213) }
     let(:order_item) { create(:order_item, :service_instance_ref => 213) }
 
     before do
@@ -17,7 +22,7 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
 
     shared_examples_for "#process info message" do
       it "updates the order item with an info message" do
-        expect(order_item).to receive(:update_message).with("info", "Task update message received with payload: #{payload}")
+        expect(order_item).to receive(:update_message).with("info", "Task update message received with payload: #{task}")
         subject.process
       end
     end
@@ -31,8 +36,8 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
         context "when the task has a service instance id" do
           it_behaves_like "#process info message"
 
-          it "marks the item as completed with the correct service instance id" do
-            expect(order_item).to receive(:mark_completed).with("Order Item Complete", :service_instance_ref => "321")
+          it "marks the item as completed with the correct service instance id and artifacts" do
+            expect(order_item).to receive(:mark_completed).with("Order Item Complete", :service_instance_ref => "321", :artifacts => {'k1' => 'v1', 'k2' => 'v2'})
             subject.process
           end
         end
@@ -42,8 +47,8 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
 
           it_behaves_like "#process info message"
 
-          it "marks the item as completed with the correct service instance id" do
-            expect(order_item).to receive(:mark_completed).with("Order Item Complete", :service_instance_ref => "213")
+          it "marks the item as completed with the correct service instance id and artifacts" do
+            expect(order_item).to receive(:mark_completed).with("Order Item Complete", :service_instance_ref => "213", :artifacts => {'k1' => 'v1', 'k2' => 'v2'})
             subject.process
           end
         end
@@ -51,11 +56,10 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
 
       context "when the state is running" do
         let(:state) { "running" }
-        let(:task) { TopologicalInventoryApiClient::Task.new(:context => {:service_instance => {:url => "http://tower.com/job/3"}}) }
+        before { task.context = {:service_instance => {:url => "http://tower.com/job/3"}} }
 
         it "sends two update messages" do
-          expect(order_item).to receive(:update_message).with("info", "Task update message received with payload: #{payload}")
-          expect(order_item).to receive(:update_message).with("info", "Order Item being processed with context: payloadcontext")
+          expect(order_item).to receive(:update_message).with("info", "Task update message received with payload: #{task}")
           subject.process
         end
 

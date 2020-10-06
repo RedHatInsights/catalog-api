@@ -20,6 +20,11 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
     before do |example|
       allow(Api::V1x1::Catalog::PortfolioItemOrderable).to receive(:new).with(portfolio_item).and_return(portfolio_item_orderable)
       allow(portfolio_item_orderable).to receive(:process).and_return(portfolio_item_orderable)
+
+      portfolio_item.tag_add('workflows', :namespace => 'approval', :value => '123')
+      portfolio_item.tag_add('order_processes', :namespace => 'approval', :value => '456')
+
+      portfolio_item.update_metadata
       subject unless example.metadata[:subject_inside]
     end
 
@@ -50,9 +55,10 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
           "untag"        => true
         )
         expect(json["metadata"]["orderable"]).to eq(true)
+        expect(json["metadata"]["statistics"]).to include('approval_processes' => 1)
       end
 
-       it_behaves_like "action that tests authorization", :show?, PortfolioItem
+      it_behaves_like "action that tests authorization", :show?, PortfolioItem
     end
 
     context 'the portfolio_item does not exist' do
