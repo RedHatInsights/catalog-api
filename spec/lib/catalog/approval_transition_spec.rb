@@ -31,12 +31,15 @@ describe Catalog::ApprovalTransition do
       end
 
       it "returns the state as approved" do
-        expect(order_item_transition.process.state).to eq "Approved"
+        expect(order_item_transition.process.state).to eq("Approved")
       end
 
       it "calls out to Catalog::SubmitNextOrderItem" do
         expect(so).to receive(:new).with(order.id)
-        expect(submit_order).to receive(:process).once
+        expect(submit_order).to receive(:process).once do
+          order_item.reload
+          expect(order_item.state).to eq("Approved")
+        end
         order_item_transition.process
       end
 
