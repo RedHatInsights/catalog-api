@@ -26,6 +26,7 @@ class OrderItem < ApplicationRecord
 
   def set_defaults
     self.state = "Created"
+    self.context = {}
 
     if Insights::API::Common::Request.current.present?
       self.context = Insights::API::Common::Request.current.to_h
@@ -54,6 +55,19 @@ class OrderItem < ApplicationRecord
 
   def mark_ordered(msg = nil, **opts)
     mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered", **opts)
+  end
+
+  def tag_resources_cached?
+    context.key?("tag_resources")
+  end
+
+  def cache_tag_resources(tag_resources)
+    context[:tag_resources] = tag_resources
+    update(:context => context)
+  end
+
+  def tag_resources
+    context.dig("tag_resources") || []
   end
 
   private

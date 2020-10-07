@@ -35,7 +35,7 @@ module Catalog
 
     def all_tag_resources
       local_tag_resources = Tags::CollectLocalOrderResources.new(:order_id => @order.id).process.tag_resources
-      remote_tag_resources = Tags::Topology::RemoteInventory.new(@task).process.tag_resources
+      remote_tag_resources = @order_item.tag_resources_cached? ? @order_item.tag_resources : Tags::Topology::RemoteInventory.new(@task).process.tag_resources
 
       local_tag_resources + remote_tag_resources
     end

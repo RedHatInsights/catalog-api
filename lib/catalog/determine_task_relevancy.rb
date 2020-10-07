@@ -39,6 +39,9 @@ module Catalog
       if @task.context&.has_key_path?(:service_instance)
         UpdateOrderItem.new(@task, @order_item).process
       elsif @task.context&.has_key_path?(:applied_inventories)
+        Rails.logger.info("Evaluating order processes for order item id #{@order_item.id}")
+        EvaluateOrderProcess.new(@task, @order_item.order).process
+
         Rails.logger.info("Creating approval request for task id #{@task.id}")
         CreateApprovalRequest.new(@task, @order_item).process
       else

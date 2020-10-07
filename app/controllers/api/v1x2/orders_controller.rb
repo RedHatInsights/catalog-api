@@ -7,8 +7,6 @@ module Api
 
         service_offering_check
 
-        Catalog::EvaluateOrderProcess.new(@order).process
-
         order = Catalog::CreateRequestForAppliedInventories.new(@order).process.order
         render :json => order
       end
