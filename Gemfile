@@ -30,6 +30,7 @@ gem 'manageiq-loggers', '~> 0.2'
 gem 'manageiq-messaging', '~> 1.0'
 gem 'mimemagic', '~> 0.3.3'
 gem 'more_core_extensions', '~>3.5'
+gem "mustache", "~> 1.0"
 gem 'pg', '~> 1.0', :require => false
 gem 'prometheus-client', '~> 0.8.0'
 gem 'puma', '~> 4', '>= 4.3.5'

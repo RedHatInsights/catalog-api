@@ -38,8 +38,11 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
 
   context "when the order item is valid" do
     let(:order_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "100") }
+    let(:workspace_builder) { instance_double(Catalog::WorkspaceBuilder, :process => double(:workspace => {})) }
 
     before do
+      allow(Catalog::WorkspaceBuilder).to receive(:new).with(order_item.order).and_return(workspace_builder)
+
       stub_request(:post, topological_url("service_offerings/998/order"))
         .with(
           :body    => {

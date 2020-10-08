@@ -1,3 +1,5 @@
+require 'mustache'
+
 module Catalog
   class OrderItemSanitizedParameters
     attr_reader :sanitized_parameters
@@ -34,7 +36,8 @@ module Catalog
     end
 
     def filtered_parameters
-      service_parameters_raw.slice(*fields.collect { |field| field.with_indifferent_access["name"] })
+      params = service_parameters_raw.slice(*fields.collect { |field| field.with_indifferent_access["name"] })
+      params.transform_values! { |v| substitute(v) }
     end
 
     def service_plan_schema
@@ -70,6 +73,14 @@ module Catalog
 
     def service_plan_does_not_exist?
       service_plan_ref.nil?
+    end
+
+    def substitute(template)
+      Mustache.render(template, workspace)
+    end
+
+    def workspace
+      @workspace ||= Catalog::WorkspaceBuilder.new(order_item.order).process.workspace
     end
   end
 end
