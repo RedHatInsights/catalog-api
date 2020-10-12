@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_06_172019) do
+ActiveRecord::Schema.define(version: 2020_10_12_171120) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -127,6 +127,8 @@ ActiveRecord::Schema.define(version: 2020_10_06_172019) do
     t.datetime "updated_at", null: false
     t.integer "before_portfolio_item_id"
     t.integer "after_portfolio_item_id"
+    t.decimal "internal_sequence"
+    t.index ["internal_sequence", "tenant_id"], name: "index_order_processes_on_internal_sequence_and_tenant_id", unique: true
   end
 
   create_table "orders", force: :cascade do |t|
