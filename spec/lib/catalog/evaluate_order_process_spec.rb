@@ -207,19 +207,19 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
 
         context "when has remote tags from topology" do
           let(:tag_resources) do
-            [{:app_name    => "catalog",
+            [{:app_name    => "topology",
               :object_type => "ServiceInventory",
               :tags        => [
-                :tag => "/catalog/order_processes=#{order_process.id}"
+                :tag => "/topology/order_processes=#{order_process.id}"
               ]}]
           end
-          let(:remote_inventory_instance) { instance_double(Tags::Topology::RemoteInventory, :tag_resources => tag_resources) }
+          let(:remote_inventory_instance) { instance_double(Tags::Topology::RemoteInventory) }
 
           before do
-            TagLink.create(:order_process_id => order_process.id, :tag_name => "/catalog/order_processes=#{order_process.id}")
+            TagLink.create(:order_process_id => order_process.id, :tag_name => "/topology/order_processes=#{order_process.id}")
 
             allow(Tags::Topology::RemoteInventory).to receive(:new).and_return(remote_inventory_instance)
-            allow(remote_inventory_instance).to receive(:process).and_return(remote_inventory_instance)
+            allow(remote_inventory_instance).to receive(:cached_tag_resources).and_return(tag_resources)
           end
 
           it "applies the process sequence of '3' to the order item" do

@@ -19,6 +19,7 @@ describe Catalog::CreateRequestBodyFrom, :type => [:service, :current_forwardabl
       allow(local_tag_service_instance).to receive(:process).and_return(local_tag_service_instance)
       allow(Tags::Topology::RemoteInventory).to receive(:new).with(task).and_return(remote_tag_service_instance)
       allow(remote_tag_service_instance).to receive(:process).and_return(remote_tag_service_instance)
+      allow(remote_tag_service_instance).to receive(:cached_tag_resources).and_return(remote_tag_service_instance.tag_resources)
 
       stub_request(:get, sources_url("sources/#{order_item.portfolio_item.service_offering_source_ref}"))
         .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)

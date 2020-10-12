@@ -185,28 +185,4 @@ describe OrderItem do
       end
     end
   end
-
-  context 'with order item context' do
-    let(:request) { default_request }
-    let(:order_item) do
-      Insights::API::Common::Request.with_request(request) { create(:order_item) }
-    end
-    let(:tag_resources) do
-      {:app_name    => "catalog",
-       :object_type => "ServiceInventory",
-       :tags        => [
-         :tag => "/tag1namespace/tag1=tag1value"
-       ]}
-    end
-
-    it 'returns cached tag resources' do
-      expect(order_item.tag_resources_cached?).to be_falsey
-      expect(order_item.tag_resources).to be_empty
-
-      order_item.cache_tag_resources(tag_resources)
-
-      expect(order_item.tag_resources_cached?).to be_truthy
-      expect(order_item.tag_resources).to eq(tag_resources.deep_transform_keys(&:to_s))
-    end
-  end
 end

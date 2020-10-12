@@ -45,8 +45,8 @@ module Catalog
     end
 
     def all_tags
-      tag_prefix = "/#{Api::V1x2::Catalog::TaggingService::TAG_NAMESPACE}/#{Api::V1x2::Catalog::TaggingService::TAG_NAME}"
-      (local_tags + remote_tags).select { |tag| tag.start_with?(tag_prefix) }.uniq
+      tag_pattern = '\/\w+\/order_processes=\d'
+      (local_tags + remote_tags).select { |tag| tag.match?(tag_pattern) }.uniq
     end
 
     def local_tags
@@ -57,12 +57,8 @@ module Catalog
     end
 
     def remote_tags
-      unless @applicable_order_item.tag_resources_cached?
-        resources = Tags::Topology::RemoteInventory.new(@task).process.tag_resources
-        @applicable_order_item.cache_tag_resources(resources)
-      end
-
-      @applicable_order_item.tag_resources.collect { |resource| resource["tags"] }.flatten.collect { |tag| tag["tag"] }
+      remote_tag_resources = Tags::Topology::RemoteInventory.new(@task).cached_tag_resources
+      remote_tag_resources.collect { |resource| resource[:tags] }.flatten.collect { |tag| tag[:tag] }
     end
 
     def before_params(order_process, before_sequence_number)
