@@ -29,6 +29,7 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
         {
           :order_id          => order.id,
           :portfolio_item_id => before_portfolio_item.id,
+          :count             => 1,
           :process_sequence  => 1,
           :process_scope     => "before"
         }
@@ -38,6 +39,7 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
         {
           :order_id          => order.id,
           :portfolio_item_id => after_portfolio_item.id,
+          :count             => 1,
           :process_sequence  => 3,
           :process_scope     => "after"
         }
@@ -98,6 +100,7 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
             {
               :order_id          => order.id,
               :portfolio_item_id => after_portfolio_item.id,
+              :count             => 1,
               :process_sequence  => 2,
               :process_scope     => "after"
             }
@@ -205,6 +208,7 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
             {
               :order_id          => order.id,
               :portfolio_item_id => before_portfolio_item.id,
+              :count             => 1,
               :process_sequence  => 1,
               :process_scope     => "before"
             }
@@ -213,6 +217,7 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
             {
               :order_id          => order.id,
               :portfolio_item_id => before_portfolio_item2.id,
+              :count             => 1,
               :process_sequence  => 2,
               :process_scope     => "before"
             }
@@ -222,6 +227,7 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
             {
               :order_id          => order.id,
               :portfolio_item_id => after_portfolio_item.id,
+              :count             => 1,
               :process_sequence  => 5,
               :process_scope     => "after"
             }
@@ -230,6 +236,7 @@ describe Api::V1x2::Catalog::EvaluateOrderProcess, :type => :service do
             {
               :order_id          => order.id,
               :portfolio_item_id => after_portfolio_item2.id,
+              :count             => 1,
               :process_sequence  => 4,
               :process_scope     => "after"
             }
