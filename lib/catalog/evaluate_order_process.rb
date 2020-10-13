@@ -2,9 +2,10 @@ module Catalog
   class EvaluateOrderProcess
     attr_reader :order
 
-    def initialize(task, order)
+    def initialize(task, order, tag_resources)
       @task = task
       @order = order
+      @tag_resources = tag_resources
     end
 
     def process
@@ -46,19 +47,8 @@ module Catalog
 
     def all_tags
       tag_pattern = '\/\w+\/order_processes=\d'
-      (local_tags + remote_tags).select { |tag| tag.match?(tag_pattern) }.uniq
-    end
 
-    def local_tags
-      portfolio_item_tags = @applicable_order_item.portfolio_item.tags
-      portfolio_tags = @applicable_order_item.portfolio_item.portfolio.tags
-
-      (portfolio_item_tags + portfolio_tags).collect(&:to_tag_string)
-    end
-
-    def remote_tags
-      remote_tag_resources = Tags::Topology::RemoteInventory.new(@task).cached_tag_resources
-      remote_tag_resources.collect { |resource| resource[:tags] }.flatten.collect { |tag| tag[:tag] }
+      @tag_resources.map { |resource| resource[:tags] }.flatten.map { |tag| tag[:tag] }.select { |t| t.match?(tag_pattern) }.uniq
     end
 
     def before_params(order_process, before_sequence_number)

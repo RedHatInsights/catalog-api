@@ -7,9 +7,11 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
     let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123", :context => {:applied_inventories => applied_inventories}) }
     let(:applied_inventories) { [] }
 
-    subject { described_class.new(task, order).process }
+    subject { described_class.new(task, order, tag_resources).process }
 
     context "when there are no existing tags on the portfolio or portfolio_item" do
+      let(:tag_resources) { [] }
+
       it "applies the process sequence of '1' to the order item" do
         subject
         expect(order.order_items.first.process_sequence).to eq(1)
@@ -54,6 +56,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
                :after_portfolio_item  => after_portfolio_item)
       end
       let(:add_to_order_via_order_process) { instance_double(Api::V1x2::Catalog::AddToOrderViaOrderProcess) }
+      let(:tag_resources) { Tags::CollectLocalOrderResources.new(:order_id => order.id).process.tag_resources }
 
       before do
         TagLink.create(:order_process_id => order_process.id, :tag_name => "/catalog/order_processes=#{order_process.id}")
@@ -217,9 +220,6 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
 
           before do
             TagLink.create(:order_process_id => order_process.id, :tag_name => "/topology/order_processes=#{order_process.id}")
-
-            allow(Tags::Topology::RemoteInventory).to receive(:new).and_return(remote_inventory_instance)
-            allow(remote_inventory_instance).to receive(:cached_tag_resources).and_return(tag_resources)
           end
 
           it "applies the process sequence of '3' to the order item" do

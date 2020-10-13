@@ -13,10 +13,6 @@ module Tags
         self
       end
 
-      def cached_tag_resources
-        @tag_resources || consolidate_inventory_tags
-      end
-
       private
 
       def consolidate_inventory_tags
