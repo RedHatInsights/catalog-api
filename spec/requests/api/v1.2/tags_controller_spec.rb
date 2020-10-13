@@ -15,7 +15,6 @@ describe "v1.2 - Tags", :type => [:request, :controller, :v1x2] do
   before do
     portfolio_item.tag_add("yay")
     portfolio.tag_add("a_tag")
-    order_process.tag_add("process_tag")
 
     allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
     allow(catalog_access).to receive(:process).and_return(catalog_access)
@@ -32,8 +31,8 @@ describe "v1.2 - Tags", :type => [:request, :controller, :v1x2] do
     it "returns a list of tags" do
       get "#{api_version}/tags", :headers => default_headers
 
-      expect(json["meta"]["count"]).to eq 3
-      expect(json["data"].map { |e| Tag.parse(e["tag"])[:name] }).to match_array %w[yay a_tag process_tag]
+      expect(json["meta"]["count"]).to eq 2
+      expect(json["data"].map { |e| Tag.parse(e["tag"])[:name] }).to match_array %w[yay a_tag]
     end
   end
 
@@ -96,42 +95,6 @@ describe "v1.2 - Tags", :type => [:request, :controller, :v1x2] do
         get "#{api_version}/portfolios/#{portfolio.id}/tags", :headers => default_headers
 
         expect(response).to have_http_status(404)
-      end
-    end
-  end
-
-  describe "GET /order_processes/:id/tags #tags" do
-    let(:bad_order_process_id) { order_process.id + 1 }
-
-    before do
-      allow(Insights::API::Common::RBAC::Access).to receive(:new).and_return(catalog_access)
-      allow(catalog_access).to receive(:process).and_return(catalog_access)
-    end
-
-    context "when listing all tags for an order process" do
-      let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
-
-      it "returns the tags for the order process" do
-        get "#{api_version}/order_processes/#{order_process.id}/tags", :headers => default_headers
-
-        expect(json["meta"]["count"]).to eq 1
-        expect(json["data"].first["tag"]).to eq Tag.new(:name => "process_tag").to_tag_string
-      end
-
-      it "returns not found when order process missing" do
-        get "#{api_version}/order_processes/#{bad_order_process_id}/tags", :headers => default_headers
-
-        expect(response).to have_http_status(404)
-      end
-    end
-
-    context "when listing all tags for an order process you do not have access to" do
-      let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[group]) }
-
-      it "returns 403" do
-        get "#{api_version}/order_processes/#{order_process.id}/tags", :headers => default_headers
-
-        expect(response).to have_http_status(403)
       end
     end
   end

@@ -4,7 +4,6 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
 
   let!(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio) { create(:portfolio) }
-  let!(:order_process) { create(:order_process) }
   let(:bad_portfolio_id) { portfolio.id + 1 }
   let(:bad_portfolio_item_id) { portfolio_item.id + 1 }
 
@@ -15,7 +14,6 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
   before do
     portfolio_item.tag_add("yay")
     portfolio.tag_add("a_tag")
-    order_process.tag_add("process_tag")
 
     allow(Catalog::RBAC::AccessControlEntries).to receive(:new).with(["123-456"]).and_return(rbac_aces)
 
@@ -34,8 +32,8 @@ describe "v1.0 - Tagging API", :type => [:request, :v1] do
     it "returns a list of tags" do
       get "#{api_version}/tags", :headers => default_headers
 
-      expect(json["meta"]["count"]).to eq 3
-      expect(json["data"].map { |e| Tag.parse(e["tag"])[:name] }).to match_array %w[yay a_tag process_tag]
+      expect(json["meta"]["count"]).to eq 2
+      expect(json["data"].map { |e| Tag.parse(e["tag"])[:name] }).to match_array %w[yay a_tag]
     end
   end
 
