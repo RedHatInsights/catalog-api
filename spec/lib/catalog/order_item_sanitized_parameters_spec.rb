@@ -76,20 +76,26 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
         end
 
         context "when the do_not_mask_values parameter is set" do
+          around do |example|
+            Insights::API::Common::Request.with_request(default_request) { example.call }
+          end
+          let(:item_name) { "s.t $ ./ \b } 中文{ |" }
+          let(:portfolio_item) { create(:portfolio_item, :name => item_name) }
+
           let(:order_item) do
             create(
               :order_item_with_callback,
+              :portfolio_item     => portfolio_item,
               :service_plan_ref   => service_plan_ref,
-              :service_parameters => {"name" => "{{user.name}}", "Totally not a pass" => "s3cret"}
+              :service_parameters => {"name" => "{{applicable.#{item_name}.artifacts.testk}}", "Totally not a pass" => "s3cret"},
+              :artifacts          => {"testk" => "testv"},
+              :process_scope      => 'applicable'
             )
           end
-          let(:workspace) { {'user' => {'email' => 'a@b.c', 'name' => 'Fred Smith'}} }
           let(:params) { ActionController::Parameters.new(:order_item => order_item, :do_not_mask_values => true) }
-          let(:workspace_builder) { instance_double(Catalog::WorkspaceBuilder, :process => double(:workspace => workspace)) }
 
           it "returns only what is in the parameters" do
-            expect(Catalog::WorkspaceBuilder).to receive(:new).with(order_item.order).and_return(workspace_builder)
-            expect(result).to match_array %w[Fred\ Smith s3cret]
+            expect(result).to match_array %w[testv s3cret]
           end
         end
       end
