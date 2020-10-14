@@ -76,10 +76,20 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
         end
 
         context "when the do_not_mask_values parameter is set" do
+          let(:order_item) do
+            create(
+              :order_item_with_callback,
+              :service_plan_ref   => service_plan_ref,
+              :service_parameters => {"name" => "{{user.name}}", "Totally not a pass" => "s3cret"}
+            )
+          end
+          let(:workspace) { {'user' => {'email' => 'a@b.c', 'name' => 'Fred Smith'}} }
           let(:params) { ActionController::Parameters.new(:order_item => order_item, :do_not_mask_values => true) }
+          let(:workspace_builder) { instance_double(Catalog::WorkspaceBuilder, :process => double(:workspace => workspace)) }
 
           it "returns only what is in the parameters" do
-            expect(result).to match_array %w[fred s3cret]
+            expect(Catalog::WorkspaceBuilder).to receive(:new).with(order_item.order).and_return(workspace_builder)
+            expect(result).to match_array %w[Fred\ Smith s3cret]
           end
         end
       end

@@ -54,6 +54,7 @@ module Api
           {
             :order_id          => @order.id,
             :portfolio_item_id => order_process.before_portfolio_item.id,
+            :count             => 1,
             :process_sequence  => before_sequence_number,
             :process_scope     => "before"
           }
@@ -63,6 +64,7 @@ module Api
           {
             :order_id          => @order.id,
             :portfolio_item_id => order_process.after_portfolio_item.id,
+            :count             => 1,
             :process_sequence  => after_sequence_number,
             :process_scope     => "after"
           }
