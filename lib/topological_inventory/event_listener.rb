@@ -13,6 +13,9 @@ module TopologicalInventory
       event.payload['task_id'] = event.payload.delete('id')
       topic = OpenStruct.new(:payload => event.payload, :message => event.message)
       Catalog::DetermineTaskRelevancy.new(topic).process
+    rescue
+      order_item = OrderItem.find_by(:topology_task_ref => event.payload['task_id'].to_s)
+      order_item&.mark_failed("Internal Error. Please contact our support team.")
     end
   end
 end

@@ -34,7 +34,9 @@ describe Approval::EventListener do
   end
 
   context 'when event_type is request_finished' do
-    let(:approval_request) { create(:approval_request, :has_tenant) }
+    let(:order) { create(:order) }
+    let(:order_item) { create(:order_item, :order => order) }
+    let(:approval_request) { create(:approval_request, :has_tenant, :order_item => order_item) }
     let(:payload) { {'request_id' => approval_request.approval_request_ref, 'decision' => 'denied', 'reason' => 'bad'} }
     let(:event) { ManageIQ::Messaging::ReceivedMessage.new(nil, Catalog::NotifyApprovalRequest::EVENT_REQUEST_FINISHED, payload, default_headers, nil, client) }
 
@@ -47,6 +49,16 @@ describe Approval::EventListener do
         :state  => 'denied',
         :reason => 'bad'
       )
+    end
+
+    it 'fails the order when an error happens' do
+      allow(Catalog::NotifyApprovalRequest).to receive(:new).and_raise("Bad happened")
+
+      subject.subscribe
+      order.reload
+      order_item.reload
+      expect(order.state).to eq('Failed')
+      expect(order_item.state).to eq('Failed')
     end
   end
 end

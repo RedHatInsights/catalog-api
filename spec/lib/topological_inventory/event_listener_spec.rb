@@ -20,7 +20,8 @@ describe TopologicalInventory::EventListener do
   end
 
   context 'when event_type is Task.update' do
-    let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
+    let(:order) { create(:order) }
+    let!(:order_item) { create(:order_item, :order => order, :topology_task_ref => "123") }
     let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
     let(:payload) { {'id' => "123", "status" => "ok", "state" => "running", "context" => payload_context} }
     let(:event) { ManageIQ::Messaging::ReceivedMessage.new(nil, 'Task.update', payload, default_headers, nil, client) }
@@ -33,6 +34,16 @@ describe TopologicalInventory::EventListener do
       expect(progress_message.order_item_id).to eq(order_item.id.to_s)
       order_item.reload
       expect(order_item.external_url).to eq("external_url")
+    end
+
+    it 'fails the order if an error happens' do
+      allow(Catalog::DetermineTaskRelevancy).to receive(:new).and_raise("Bad happened")
+
+      subject.subscribe
+      order.reload
+      order_item.reload
+      expect(order.state).to eq('Failed')
+      expect(order_item.state).to eq('Failed')
     end
   end
 end
