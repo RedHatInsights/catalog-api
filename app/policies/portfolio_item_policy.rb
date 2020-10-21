@@ -44,6 +44,12 @@ class PortfolioItemPolicy < ApplicationPolicy
   alias tag? set_approval?
   alias untag? set_approval?
 
+  def set_order_process?
+    rbac_access.admin_access_check("order_processes", "read") &&
+      rbac_access.admin_access_check("order_processes", "link") &&
+      rbac_access.admin_access_check("order_processes", "unlink")
+  end
+
   private
 
   def can_read_and_update_destination?(destination_id)
