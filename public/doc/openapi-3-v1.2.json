@@ -3856,6 +3856,16 @@
             "example": "before",
             "description": "Denotes the scope in which the order item will run for the order it belongs to. It can be 'before', 'after', or 'applicable'",
             "readOnly": true
+          },
+          "artifacts": {
+            "type": "object",
+            "title": "Return values from a product provision",
+            "description": "Contains a key/value object that contains all of the information sent from a product provision",
+            "readOnly": true,
+            "example": {
+              "expose_to_cloud_redhat_com_important_id": 10,
+              "expose_to_cloud_redhat_com_ip_address": "127.0.0.1"
+            }
           }
         }
       },
