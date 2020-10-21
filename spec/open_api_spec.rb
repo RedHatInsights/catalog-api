@@ -26,14 +26,6 @@ describe "OpenAPI stuff" do
     end
   end
 
-  let(:internal_api_routes) do
-    [
-      {:path => "/internal/v0/*path", :verb => "POST"},
-      {:path => "/internal/v1.0/notify/approval_request/:id", :verb => "POST"},
-      {:path => "/internal/v1.0/notify/task/:id", :verb => "POST"}
-    ]
-  end
-
   let(:health_check_routes) do
     [
       {:path => "/health", :verb => "GET"}
@@ -61,7 +53,7 @@ describe "OpenAPI stuff" do
         redirect_routes = [
           v1_path
         ]
-        expect(rails_routes).to match_array(open_api_routes + redirect_routes + internal_api_routes + health_check_routes)
+        expect(rails_routes).to match_array(open_api_routes + redirect_routes + health_check_routes)
       end
     end
 

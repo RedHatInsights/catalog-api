@@ -16,5 +16,4 @@ Rails.application.routes.draw do
     draw(:v1x2)
   end
   draw(:public)
-  draw(:v1x0_internal)
 end
