@@ -5,10 +5,6 @@ describe OrderProcess do
 
   it { is_expected.to have_many(:tag_links) }
 
-  it ".taggable?" do
-    expect(OrderProcess.taggable?).to be_truthy
-  end
-
   context "with tenants" do
     before do
       create(:order_process, :tenant => tenant1)

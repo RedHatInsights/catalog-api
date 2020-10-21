@@ -51,20 +51,6 @@ describe OrderProcessPolicy do
     end
   end
 
-  describe "#tag?" do
-    it "returns true" do
-      expect(rbac_access).to receive(:link_access_check).and_return(true)
-      expect(subject.tag?).to eq(true)
-    end
-  end
-
-  describe "#untag?" do
-    it "returns true" do
-      expect(rbac_access).to receive(:unlink_access_check).and_return(true)
-      expect(subject.untag?).to eq(true)
-    end
-  end
-
   describe "#user_capabilities" do
     before do
       allow(rbac_access).to receive(:read_access_check).and_return(true)
@@ -82,9 +68,7 @@ describe OrderProcessPolicy do
         "link"    => true,
         "show"    => true,
         "unlink"  => true,
-        "update"  => true,
-        "tag"     => true,
-        "untag"   => true
+        "update"  => true
       )
     end
   end

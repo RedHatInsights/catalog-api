@@ -1,7 +1,6 @@
 class OrderProcess < ApplicationRecord
   include UserCapabilities
   acts_as_tenant(:tenant)
-  acts_as_taggable_on
 
   default_scope { order(:internal_sequence => :asc) }
 
