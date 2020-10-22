@@ -3860,11 +3860,11 @@
           "artifacts": {
             "type": "object",
             "title": "Return values from a product provision",
-            "description": "Contains a key/value object that contains all of the information sent from a product provision",
+            "description": "Contains a prefix-stripped key/value object that contains all of the information exposed from product provisioning. Must be exposed from Tower with prefix 'expose_to_cloud_redhat_com_'",
             "readOnly": true,
             "example": {
-              "expose_to_cloud_redhat_com_important_id": 10,
-              "expose_to_cloud_redhat_com_ip_address": "127.0.0.1"
+              "important_id": 10,
+              "ip_address": "127.0.0.1"
             }
           }
         }
