@@ -32,6 +32,12 @@ class PortfolioPolicy < ApplicationPolicy
   alias tag? set_approval?
   alias untag? set_approval?
 
+  def set_order_process?
+    rbac_access.admin_access_check("order_processes", "read") &&
+      rbac_access.admin_access_check("order_processes", "link") &&
+      rbac_access.admin_access_check("order_processes", "unlink")
+  end
+
   class Scope < Scope
     def resolve
       if access_scopes.include?('admin')

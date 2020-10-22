@@ -11,6 +11,7 @@ describe "v1.2 - PortfolioItemRequests", :type => [:request, :topology, :v1x2] d
     allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
     allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
     allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
+    allow(rbac_access).to receive(:admin_access_check).and_return(true)
   end
 
   describe "GET /portfolio_items/:portfolio_item_id #show with showDiscarded query" do

@@ -11,6 +11,7 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
     allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
     allow(rbac_access).to receive(:permission_check).with('read', Portfolio).and_return(true)
     allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
+    allow(rbac_access).to receive(:admin_access_check).and_return(true)
   end
 
   describe "GET /portfolio_items/:portfolio_item_id #show" do
@@ -43,16 +44,17 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
 
       it "returns the metadata" do
         expect(json["metadata"]["user_capabilities"]).to eq(
-          "copy"         => true,
-          "create"       => true,
-          "destroy"      => true,
-          "restore"      => true,
-          "update"       => true,
-          "edit_survey"  => true,
-          "show"         => true,
-          "set_approval" => true,
-          "tag"          => true,
-          "untag"        => true
+          "copy"              => true,
+          "create"            => true,
+          "destroy"           => true,
+          "restore"           => true,
+          "update"            => true,
+          "edit_survey"       => true,
+          "show"              => true,
+          "set_approval"      => true,
+          "tag"               => true,
+          "untag"             => true,
+          "set_order_process" => true
         )
         expect(json["metadata"]["orderable"]).to eq(true)
         expect(json["metadata"]["statistics"]).to include('approval_processes' => 1)
