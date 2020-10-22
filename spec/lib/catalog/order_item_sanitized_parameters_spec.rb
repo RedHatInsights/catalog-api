@@ -92,6 +92,15 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
             expect(result).to match_array %w[Fred\ Smith s3cret]
           end
         end
+
+        context "when raw service parameters is nil" do
+          let(:order_item) { create(:order_item, :service_plan_ref => service_plan_ref) }
+          let(:params) { ActionController::Parameters.new(:order_item => order_item, :do_not_mask_values => true) }
+
+          it "returns empty filtered parameters" do
+            expect(subject.process.sanitized_parameters).to be_empty
+          end
+        end
       end
     end
 

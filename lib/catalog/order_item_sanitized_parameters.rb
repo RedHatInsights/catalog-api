@@ -32,7 +32,7 @@ module Catalog
     end
 
     def service_parameters_raw
-      order_item.service_parameters_raw
+      order_item.service_parameters_raw || {}
     end
 
     def filtered_parameters
