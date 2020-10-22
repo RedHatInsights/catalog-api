@@ -6,6 +6,7 @@ module Catalog
 
     MASKED_VALUE = "$protected$".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
+    ORDER_ITEM_REGEX = /(?<=\{\{after\.|applicable\.|before\.)(.+?)(?=\.artifacts|\.extra_vars|\.status.*\}\})/.freeze
 
     def initialize(params)
       @params = params
@@ -76,7 +77,16 @@ module Catalog
     end
 
     def substitute(template)
-      Mustache.render(template, workspace)
+      template.gsub!(ORDER_ITEM_REGEX) { |order_item_name| encode_name(order_item_name) }
+
+      template.instance_of?(String) ? Mustache.render(template, workspace) : template
+    rescue
+      Rails.logger.error("Failed to substitue #{template} with workspace #{workspace}")
+      raise
+    end
+
+    def encode_name(name)
+      name.each_byte.map { |byte| byte.to_s(16) }.join
     end
 
     def workspace
