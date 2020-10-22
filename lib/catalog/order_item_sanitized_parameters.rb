@@ -37,18 +37,13 @@ module Catalog
     end
 
     def filtered_parameters
-      params = service_parameters_raw.slice(*fields.collect { |field| field.with_indifferent_access["name"] })
-      params.transform_values! { |v| substitute(v) }
+      params = service_parameters_raw.slice(*fields.collect { |field| field[:name] })
+      params.collect { |key, value| [key, sanitize_value(key, value)] }.to_h
     end
 
     def service_plan_schema
-      TopologicalInventory::Service.call do |api|
-        @plan = api.show_service_plan(service_plan_ref.to_s)
-      end
-      @plan.create_json_schema
-    rescue ::Catalog::TopologyError => e
-      Rails.logger.error("DefaultApi->show_service_plan #{e.message}")
-      raise
+      service_plan = order_item.portfolio_item.service_plans.first
+      service_plan.modified || service_plan.base
     end
 
     def compute_sanitized_parameters
@@ -69,11 +64,29 @@ module Catalog
     end
 
     def fields
-      service_plan_schema.dig(:schema, :fields) || []
+      @fields ||= service_plan_schema.with_indifferent_access.dig(:schema, :fields)
     end
 
     def service_plan_does_not_exist?
       service_plan_ref.nil?
+    end
+
+    def sanitize_value(key, value)
+      field = fields.find { |f| f[:name] == key }
+      return value unless field[:isSubstitution]
+
+      str_val = substitute(value)
+      if str_val.blank?
+        Rails.logger.warn("Substitution result for expression #{value} is blank")
+        order_item.update_message("warn", "Parameter #{key} results an empty value after substitution")
+      end
+
+      begin
+        convert_type(str_val, field[:type])
+      rescue
+        Rails.logger.error("Failed to convert #{str_val} to #{field[:type]}. Substitution expression #{value}, worksplace #{workspace}")
+        raise
+      end
     end
 
     def substitute(template)
@@ -81,8 +94,23 @@ module Catalog
 
       template.instance_of?(String) ? Mustache.render(template, workspace) : template
     rescue
-      Rails.logger.error("Failed to substitue #{template} with workspace #{workspace}")
+      Rails.logger.error("Failed to substitute #{template} with workspace #{workspace}")
       raise
+    end
+
+    def convert_type(str, dtype)
+      case dtype
+      when 'integer'
+        Integer(str)
+      when 'float', 'number'
+        Float(str)
+      when 'boolean'
+        raise ArgumentError, "Cannot convert #{str} to boolean" unless str.downcase! == 'true' || str == 'false'
+
+        str == 'true'
+      else
+        str
+      end
     end
 
     def encode_name(name)
