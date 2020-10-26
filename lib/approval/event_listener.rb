@@ -25,6 +25,9 @@ module Approval
 
     def update_approval_status(event)
       Catalog::NotifyApprovalRequest.new(event.payload['request_id'], event.payload, event.message).process
+    rescue
+      order_item = ApprovalRequest.find_by(:approval_request_ref => event.payload['request_id'])&.order_item
+      order_item&.mark_failed("Internal Error. Please contact our support team.")
     end
   end
 end
