@@ -3714,6 +3714,16 @@
             "example": "before",
             "description": "Denotes the scope in which the order item will run for the order it belongs to. It can be 'before', 'after', or 'applicable'",
             "readOnly": true
+          },
+          "artifacts": {
+            "type": "object",
+            "title": "Return values from a product provision",
+            "description": "Contains a prefix-stripped key/value object that contains all of the information exposed from product provisioning. Must be exposed from Tower with prefix 'expose_to_cloud_redhat_com_'",
+            "readOnly": true,
+            "example": {
+              "important_id": 10,
+              "ip_address": "127.0.0.1"
+            }
           }
         }
       },
