@@ -201,7 +201,6 @@ describe Portfolio do
     context 'with an access_control_entry with permissions' do
       before do
         create(:access_control_entry, :has_read_permission, :aceable => subject)
-        subject.update_metadata
       end
 
       it 'returns statistics with shared_groups value of 1' do
@@ -212,7 +211,6 @@ describe Portfolio do
     context 'with an access_control_entry without permissions' do
       before do
         create(:access_control_entry, :aceable => subject)
-        subject.update_metadata
       end
 
       it 'returns statistics with shared_groups value of zero' do
@@ -225,7 +223,6 @@ describe Portfolio do
         subject.tag_add('workflows', :namespace => 'approval', :value => '123')
         subject.tag_add('workflows', :namespace => 'approval', :value => '456')
         subject.tag_add('order_processes', :namespace => 'approval', :value => '789')
-        subject.update_metadata
       end
 
       it 'returns statistics with approval_processes value of two' do

@@ -26,7 +26,7 @@ class PortfolioItem < ApplicationRecord
   validates :name, :presence => true, :length => {:maximum => MAX_NAME_LENGTH}
 
   def metadata
-    ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities)
+    ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities, 'statistics' => statistics_metadata)
   end
 
   private

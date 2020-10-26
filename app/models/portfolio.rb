@@ -25,7 +25,7 @@ class Portfolio < ApplicationRecord
   end
 
   def metadata
-    ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities)
+    ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities, 'statistics' => statistics_metadata)
   end
 
   private
