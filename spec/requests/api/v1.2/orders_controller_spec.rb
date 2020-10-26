@@ -23,11 +23,8 @@ describe "v1.2 - OrdersCotnroller", :type => [:request, :controller, :v1x2] do
     context "when the service offering has not been archived" do
       let(:archived) { false }
       let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
-      let(:evaluate_order_process) { instance_double(Api::V1x2::Catalog::EvaluateOrderProcess) }
 
       before do |example|
-        allow(Api::V1x2::Catalog::EvaluateOrderProcess).to receive(:new).with(order).and_return(evaluate_order_process)
-        allow(evaluate_order_process).to receive(:process)
         allow(Api::V1x2::Catalog::CreateRequestForAppliedInventories).to receive(:new).with(order).and_return(svc_object)
         allow(svc_object).to receive(:process).and_return(svc_object)
         allow(svc_object).to receive(:order).and_return(order)

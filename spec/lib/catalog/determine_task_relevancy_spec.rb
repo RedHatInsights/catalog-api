@@ -9,7 +9,8 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       )
     end
 
-    let!(:order_item) { create(:order_item, :topology_task_ref => "123") }
+    let(:order) { create(:order) }
+    let!(:order_item) { create(:order_item, :order => order, :topology_task_ref => "123") }
 
     context "when there is no relevant order item for the task id" do
       let(:task_id) { "1234" }
@@ -31,14 +32,22 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
     context "when an order item exists with the task id" do
       let(:task_id) { "123" }
+      let(:tag_resources) { [] }
       let(:update_order_item) { instance_double(Catalog::UpdateOrderItem) }
       let(:create_approval_request) { instance_double(Catalog::CreateApprovalRequest) }
+      let(:evaluate_order_process) { instance_double(Catalog::EvaluateOrderProcess) }
+      let(:tag_resources_instance) { instance_double(Tags::CollectTagResources) }
 
       before do
         allow(Catalog::UpdateOrderItem).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(update_order_item)
         allow(update_order_item).to receive(:process)
-        allow(Catalog::CreateApprovalRequest).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(create_approval_request)
+        allow(Catalog::CreateApprovalRequest).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item, tag_resources).and_return(create_approval_request)
         allow(create_approval_request).to receive(:process)
+        allow(Catalog::EvaluateOrderProcess).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order, tag_resources).and_return(evaluate_order_process)
+        allow(evaluate_order_process).to receive(:process)
+        allow(Tags::CollectTagResources).to receive(:new).and_return(tag_resources_instance)
+        allow(tag_resources_instance).to receive(:process).and_return(tag_resources_instance)
+        allow(tag_resources_instance).to receive(:tag_resources).and_return(tag_resources)
       end
 
       context "when the task status is error" do
@@ -84,15 +93,17 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           end
 
           context "when the context has an applied inventories keypath" do
-            let(:payload_context) { {"applied_inventories" => "applied inventories stuff"} }
+            let(:payload_context) { {"applied_inventories" => ["applied_inventory_id"]} }
 
             it "delegates to the CreateApprovalRequest class" do
+              expect(evaluate_order_process).to receive(:process)
               expect(create_approval_request).to receive(:process)
               subject.process
             end
 
             it "logs a message about creating an approval request as a response to a task id" do
-              expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123")
+              expect(Rails.logger).to receive(:info).with("Evaluating order processes for order item id #{order_item.id}").ordered
+              expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123").ordered
               subject.process
             end
 
@@ -126,15 +137,17 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         end
 
         context "when the context has an applied inventories keypath" do
-          let(:payload_context) { {"applied_inventories" => "applied inventories stuff"} }
+          let(:payload_context) { {"applied_inventories" => ["applied_inventory_id"]} }
 
           it "delegates to the CreateApprovalRequest class" do
+            expect(evaluate_order_process).to receive(:process)
             expect(create_approval_request).to receive(:process)
             subject.process
           end
 
           it "logs a message about creating an approval request as a response to a task id" do
-            expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123")
+            expect(Rails.logger).to receive(:info).with("Evaluating order processes for order item id #{order_item.id}").ordered
+            expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123").ordered
             subject.process
           end
         end
