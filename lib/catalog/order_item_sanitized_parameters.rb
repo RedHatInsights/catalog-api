@@ -42,8 +42,17 @@ module Catalog
     end
 
     def service_plan_schema
-      service_plan = order_item.portfolio_item.service_plans.first
-      service_plan.modified || service_plan.base
+      service_plan = order_item.portfolio_item.service_plans&.first
+      service_plan&.modified || service_plan&.base || live_service_plan_schema
+    end
+
+    def live_service_plan_schema
+      TopologicalInventory::Service.call do |api|
+        api.show_service_plan(service_plan_ref.to_s).create_json_schema
+      end
+    rescue ::Catalog::TopologyError => e
+      Rails.logger.error("DefaultApi->show_service_plan #{e.message}")
+      raise
     end
 
     def compute_sanitized_parameters

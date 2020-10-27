@@ -58,13 +58,32 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
         end
         let(:result) { subject.process.sanitized_parameters.values }
 
-        context "when the api call is successful" do
-          it "returns 3 masked values" do
-            expect(result.count { |v| v == described_class::MASKED_VALUE }).to eq 3
+        context "when portfolio_item has service plans" do
+          it "returns 3 masked values and 1 unmasked" do
+            expect(result.count { |v| v == described_class::MASKED_VALUE }).to eq(3)
+            expect(result.count { |v| v != described_class::MASKED_VALUE }).to eq(1)
+          end
+        end
+
+        context "when portfilio_item has no service plans" do
+          let(:portfolio_item) { create(:portfolio_item, :name => item_name) }
+          let(:service_plan_response) do
+            TopologicalInventoryApiClient::ServicePlan.new(
+              :name               => "Plan A",
+              :id                 => "1",
+              :description        => "Plan A",
+              :create_json_schema => {:schema => {:fields => fields}}
+            )
           end
 
-          it "leaves one value alone" do
-            expect(result.count { |v| v != described_class::MASKED_VALUE }).to eq 1
+          before do
+            stub_request(:get, topological_url("service_plans/777"))
+              .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
+          end
+
+          it "returns 3 masked values and 1 unmasked" do
+            expect(result.count { |v| v == described_class::MASKED_VALUE }).to eq(3)
+            expect(result.count { |v| v != described_class::MASKED_VALUE }).to eq(1)
           end
         end
 
