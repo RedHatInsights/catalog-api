@@ -45,7 +45,7 @@ module Catalog
         EvaluateOrderProcess.new(@task, @order_item.order, tag_resources).process
 
         Rails.logger.info("Creating approval request for task id #{@task.id}")
-        CreateApprovalRequest.new(@task, @order_item, tag_resources).process
+        CreateApprovalRequest.new(@task, tag_resources, @order_item).process
       else
         Rails.logger.info("Incoming task has no current relevant delegation")
       end
