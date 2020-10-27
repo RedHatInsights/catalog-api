@@ -151,7 +151,6 @@ describe Portfolio do
     context 'ancillary_metadata instance does not exist' do
       it 'creates ancillary_metadata instance but does not save it' do
         expect(subject).to receive(:build_ancillary_metadata).and_call_original
-        expect(subject).to receive(:update_ancillary_metadata)
 
         subject.update_metadata
         expect(subject.ancillary_metadata.persisted?).to be false
@@ -162,7 +161,6 @@ describe Portfolio do
       subject { portfolio }
 
       it 'updates and saves ancillary_metadata' do
-        expect(subject).to receive(:update_ancillary_metadata)
         expect(subject.ancillary_metadata).to receive(:save!)
 
         subject.update_metadata
@@ -172,7 +170,7 @@ describe Portfolio do
         before { subject.destroy }
 
         it 'returns without updating ancillary_metadata' do
-          expect(subject).to_not receive(:update_ancillary_metadata)
+          expect(subject.ancillary_metadata).not_to receive(:save!)
 
           portfolio.update_metadata
         end

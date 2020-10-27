@@ -30,10 +30,6 @@ class Portfolio < ApplicationRecord
 
   private
 
-  def update_ancillary_metadata
-    ancillary_metadata.statistics = statistics_metadata
-  end
-
   def statistics_metadata
     {
       'approval_processes' => tags.where(:namespace => 'approval', :name => 'workflows').count,
