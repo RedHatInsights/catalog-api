@@ -3,23 +3,26 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
   let(:params) { ActionController::Parameters.new('order_item_id' => order_item.id) }
 
   describe "#process" do
-    let(:order_item) { create(:order_item_with_callback, :service_plan_ref => service_plan_ref, :service_parameters => {"name" => "fred", "Totally not a pass" => "s3cret"}) }
+    let(:service_plan) { create(:service_plan, :base => {:schema => {:fields => fields}}, :modified => nil) }
+    let(:item_name) { "s.t $ ./ \b } 中文{ |" }
+    let(:portfolio_item) { create(:portfolio_item, :name => item_name, :service_plans => [service_plan]) }
+    let(:order_item) do
+      create(
+        :order_item,
+        :portfolio_item   => portfolio_item,
+        :service_plan_ref => service_plan_ref,
+        :artifacts        => artifacts,
+        :process_scope    => 'applicable'
+      ).tap do |item|
+        item.send(:service_parameters_raw=, "name" => "{{applicable.#{item_name}.artifacts.testk}}", "Totally not a pass" => "s3cret")
+        item.save
+      end
+    end
+    let(:artifacts) { {'testk' => 'testv'} }
+    let(:data_type) { 'string' }
 
     context "when there is a valid service_plan_ref" do
       let(:service_plan_ref) { "777" }
-      let(:service_plan_response) do
-        TopologicalInventoryApiClient::ServicePlan.new(
-          :name               => "Plan A",
-          :id                 => "1",
-          :description        => "Plan A",
-          :create_json_schema => {:schema => {:fields => fields}}
-        )
-      end
-
-      before do
-        stub_request(:get, topological_url("service_plans/777"))
-          .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
-      end
 
       context "ddf parameters" do
         let(:fields) do
@@ -44,52 +47,137 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
             :helperText   => "Don't look.",
             :initialValue => ""
           }, {
-            :name         => "name",
-            :label        => "field 1",
-            :component    => "textarea-field",
-            :helperText   => "That's not my name.",
-            :initialValue => ""
+            :name           => "name",
+            :type           => data_type,
+            :label          => "field 1",
+            :component      => "textarea-field",
+            :helperText     => "That's not my name.",
+            :initialValue   => "{{applicable.#{item_name}.artifacts.testk}}",
+            :isSubstitution => true
           }]
         end
         let(:result) { subject.process.sanitized_parameters.values }
 
-        context "when the api call is successful" do
-          it "returns 3 masked values" do
-            expect(result.count { |v| v == described_class::MASKED_VALUE }).to eq 3
-          end
-
-          it "leaves one value alone" do
-            expect(result.count { |v| v != described_class::MASKED_VALUE }).to eq 1
+        context "when portfolio_item has service plans" do
+          it "returns 3 masked values and 1 unmasked" do
+            expect(result.count { |v| v == described_class::MASKED_VALUE }).to eq(3)
+            expect(result.count { |v| v != described_class::MASKED_VALUE }).to eq(1)
           end
         end
 
-        context "when the api call is not successful" do
-          before do
-            stub_request(:get, topological_url("service_plans/777"))
-              .to_raise(TopologicalInventoryApiClient::ApiError)
+        context "when portfilio_item has no service plans" do
+          let(:portfolio_item) { create(:portfolio_item, :name => item_name) }
+          let(:service_plan_response) do
+            TopologicalInventoryApiClient::ServicePlan.new(
+              :name               => "Plan A",
+              :id                 => "1",
+              :description        => "Plan A",
+              :create_json_schema => {:schema => {:fields => fields}}
+            )
           end
 
-          it "handles the exception and reraises a StandardError" do
-            expect(Rails.logger).to receive(:error).thrice
-            expect { subject.process }.to raise_error(StandardError)
+          before do
+            stub_request(:get, topological_url("service_plans/777"))
+              .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
+          end
+
+          it "returns 3 masked values and 1 unmasked" do
+            expect(result.count { |v| v == described_class::MASKED_VALUE }).to eq(3)
+            expect(result.count { |v| v != described_class::MASKED_VALUE }).to eq(1)
           end
         end
 
         context "when the do_not_mask_values parameter is set" do
-          let(:order_item) do
-            create(
-              :order_item_with_callback,
-              :service_plan_ref   => service_plan_ref,
-              :service_parameters => {"name" => "{{user.name}}", "Totally not a pass" => "s3cret"}
-            )
+          around do |example|
+            Insights::API::Common::Request.with_request(default_request) { example.call }
           end
-          let(:workspace) { {'user' => {'email' => 'a@b.c', 'name' => 'Fred Smith'}} }
-          let(:params) { ActionController::Parameters.new(:order_item => order_item, :do_not_mask_values => true) }
-          let(:workspace_builder) { instance_double(Catalog::WorkspaceBuilder, :process => double(:workspace => workspace)) }
 
-          it "returns only what is in the parameters" do
-            expect(Catalog::WorkspaceBuilder).to receive(:new).with(order_item.order).and_return(workspace_builder)
-            expect(result).to match_array %w[Fred\ Smith s3cret]
+          let(:params) { ActionController::Parameters.new(:order_item => order_item, :do_not_mask_values => true) }
+
+          context 'when substitution data type is string' do
+            it 'includes a string in the parameters' do
+              expect(result).to match_array %w[testv s3cret]
+            end
+          end
+
+          context 'when substitution data type is integer' do
+            let(:data_type) { 'integer' }
+
+            context 'when substituted string is a valid integer' do
+              let(:artifacts) { {'testk' => 500} }
+
+              it 'includes an integer in the parameters' do
+                expect(result).to match_array [500, 's3cret']
+              end
+            end
+
+            context 'when substituted string is not a valid integer' do
+              let(:artifacts) { {'testk' => true} }
+
+              it 'raise an error' do
+                expect { result }.to raise_error(ArgumentError)
+              end
+            end
+          end
+
+          context 'when substitution data type is float' do
+            let(:data_type) { 'float' }
+
+            context 'when substituted string is a valid float' do
+              let(:artifacts) { {'testk' => '50.20'} }
+
+              it 'includes an integer in the parameters' do
+                expect(result).to match_array [50.20, 's3cret']
+              end
+            end
+
+            context 'when substituted string is not a valid float' do
+              let(:artifacts) { {'testk' => 'any'} }
+
+              it 'raise an error' do
+                expect { result }.to raise_error(ArgumentError)
+              end
+            end
+          end
+
+          context 'when substitution data type is boolean' do
+            let(:data_type) { 'boolean' }
+
+            context 'when substituted string is a valid boolean' do
+              let(:artifacts) { {'testk' => 'false'} }
+
+              it 'includes an integer in the parameters' do
+                expect(result).to match_array [false, 's3cret']
+              end
+            end
+
+            context 'when substituted string is not a valid boolean' do
+              let(:artifacts) { {'testk' => 'any'} }
+
+              it 'raise an error' do
+                expect { result }.to raise_error(ArgumentError)
+              end
+            end
+          end
+
+          context 'when substitution key does not exist' do
+            context 'when substituted string is a valid float' do
+              let(:artifacts) { {} }
+
+              it 'includes an integer in the parameters' do
+                expect(Rails.logger).to receive(:warn)
+                expect(result).to match_array ['', 's3cret']
+              end
+            end
+          end
+        end
+
+        context "when raw service parameters is nil" do
+          let(:order_item) { create(:order_item, :portfolio_item => portfolio_item, :service_plan_ref => service_plan_ref) }
+          let(:params) { ActionController::Parameters.new(:order_item => order_item, :do_not_mask_values => true) }
+
+          it "returns empty filtered parameters" do
+            expect(subject.process.sanitized_parameters).to be_empty
           end
         end
       end

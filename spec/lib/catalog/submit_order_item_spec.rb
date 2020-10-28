@@ -2,12 +2,12 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
-  let(:service_parameters) { {'var1' => 'Fred', 'var2' => 'Wilma'} }
+  let(:service_parameters) { {'username' => 'Fred', 'quest' => 'Test Catalog'} }
   let(:provider_control_parameters) { {'namespace' => 'Bedrock'} }
   let(:portfolio_item) do
-    create(:portfolio_item, :service_offering_ref => service_offering_ref, :service_offering_source_ref => "17")
+    create(:portfolio_item, :service_plans => [service_plan], :service_offering_ref => service_offering_ref, :service_offering_source_ref => "17")
   end
-  let!(:service_plan) { create(:service_plan, :portfolio_item => portfolio_item, :base => valid_ddf) }
+  let(:service_plan) { create(:service_plan, :base => valid_ddf, :modified => nil) }
   let(:submit_order) { described_class.new(order_item) }
   let(:validater) { instance_double(Api::V1x0::Catalog::ValidateSource) }
   let(:validity) { true }

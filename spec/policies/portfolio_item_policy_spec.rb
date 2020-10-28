@@ -230,6 +230,15 @@ describe PortfolioItemPolicy do
     end
   end
 
+  describe "#set_order_process?" do
+    it "delegates to the check for read/link/unlink permissions on the order process" do
+      expect(rbac_access).to receive(:admin_access_check).with('order_processes', 'read').and_return(true)
+      expect(rbac_access).to receive(:admin_access_check).with('order_processes', 'link').and_return(true)
+      expect(rbac_access).to receive(:admin_access_check).with('order_processes', 'unlink').and_return(true)
+      expect(subject.set_order_process?).to eq(true)
+    end
+  end
+
   describe "#user_capabilities" do
     before do
       # Index
@@ -243,21 +252,27 @@ describe PortfolioItemPolicy do
 
       # Set approval
       allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
+
+      # set order process
+      allow(rbac_access).to receive(:admin_access_check).with('order_processes', 'read').and_return(true)
+      allow(rbac_access).to receive(:admin_access_check).with('order_processes', 'link').and_return(true)
+      allow(rbac_access).to receive(:admin_access_check).with('order_processes', 'unlink').and_return(true)
     end
 
     it "returns a hash of user capabilities" do
-      expect(subject.user_capabilities).to eq({
-        "create"       => true,
-        "update"       => true,
-        "destroy"      => true,
-        "restore"      => true,
-        "copy"         => true,
-        "set_approval" => true,
-        "show"         => true,
-        "edit_survey"  => true,
-        "tag"          => true,
-        "untag"        => true
-      })
+      expect(subject.user_capabilities).to eq(
+        "create"            => true,
+        "update"            => true,
+        "destroy"           => true,
+        "restore"           => true,
+        "copy"              => true,
+        "set_approval"      => true,
+        "show"              => true,
+        "edit_survey"       => true,
+        "tag"               => true,
+        "untag"             => true,
+        "set_order_process" => true
+      )
     end
   end
 end

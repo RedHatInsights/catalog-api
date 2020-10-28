@@ -1,6 +1,7 @@
 describe Catalog::CreateApprovalRequest, :type => :service do
-  let(:subject) { described_class.new(task, order_item) }
+  let(:subject) { described_class.new(task, tag_resources, order_item) }
   let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123") }
+  let(:tag_resources) { [] }
 
   around do |example|
     with_modified_env(:APPROVAL_URL => "http://approval.example.com") do
@@ -15,7 +16,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
   let(:request_body_from) { {"test" => "test"}.to_json }
 
   before do
-    allow(Catalog::CreateRequestBodyFrom).to receive(:new).with(order, order_item, task).and_return(create_request_body_from)
+    allow(Catalog::CreateRequestBodyFrom).to receive(:new).with(order, order_item, task, tag_resources).and_return(create_request_body_from)
     allow(create_request_body_from).to receive(:process).and_return(create_request_body_from)
 
     stub_request(:get, approval_url("workflows/1"))

@@ -19,17 +19,15 @@ module Approval
     end
 
     def remove_approval_tag(event)
-      insights_headers = event.headers.slice('x-rh-identity', 'x-rh-insights-request-id')
-      Insights::API::Common::Request.with_request(:headers => insights_headers, :original_url => nil) do |req|
-        ActsAsTenant.with_tenant(Tenant.find_by!(:external_tenant => req.tenant)) do
-          workflow_id = event.payload['workflow_id']
-          Tag.find_by(:name => 'workflows', :namespace => 'approval', :value => workflow_id.to_s)&.destroy
-        end
-      end
+      workflow_id = event.payload['workflow_id']
+      Tag.find_by(:name => 'workflows', :namespace => 'approval', :value => workflow_id.to_s)&.destroy
     end
 
     def update_approval_status(event)
       Catalog::NotifyApprovalRequest.new(event.payload['request_id'], event.payload, event.message).process
+    rescue
+      order_item = ApprovalRequest.find_by(:approval_request_ref => event.payload['request_id'])&.order_item
+      order_item&.mark_failed("Internal Error. Please contact our support team.")
     end
   end
 end

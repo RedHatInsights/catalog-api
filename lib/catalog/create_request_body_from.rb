@@ -2,10 +2,11 @@ module Catalog
   class CreateRequestBodyFrom
     attr_reader :result
 
-    def initialize(order, order_item, task)
+    def initialize(order, order_item, task, tag_resources)
       @order = order
       @order_item = order_item
       @task = task
+      @tag_resources = tag_resources
     end
 
     def process
@@ -18,7 +19,7 @@ module Catalog
           :platform  => platform(@order_item.portfolio_item),
           :params    => @order_item.service_parameters
         }
-        request.tag_resources = all_tag_resources
+        request.tag_resources = @tag_resources
       end
 
       self
@@ -31,13 +32,6 @@ module Catalog
         api_instance.show_source(portfolio_item.service_offering_source_ref)
       end
       source.name
-    end
-
-    def all_tag_resources
-      local_tag_resources = Tags::CollectLocalOrderResources.new(:order_id => @order.id).process.tag_resources
-      remote_tag_resources = Tags::Topology::RemoteInventory.new(@task).process.tag_resources
-
-      local_tag_resources + remote_tag_resources
     end
   end
 end

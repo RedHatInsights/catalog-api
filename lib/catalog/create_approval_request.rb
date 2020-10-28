@@ -2,10 +2,11 @@ module Catalog
   class CreateApprovalRequest
     attr_reader :order
 
-    def initialize(task, order_item = nil)
+    def initialize(task, tag_resources, order_item = nil)
       @task = task
       order_item ||= OrderItem.find_by!(:topology_task_ref => task.id)
       @order = order_item.order
+      @tag_resources = tag_resources
     end
 
     def process
@@ -28,7 +29,7 @@ module Catalog
 
     def submit_approval_requests(order_item)
       response = Approval::Service.call(ApprovalApiClient::RequestApi) do |api|
-        api.create_request(Catalog::CreateRequestBodyFrom.new(@order, order_item, @task).process.result)
+        api.create_request(Catalog::CreateRequestBodyFrom.new(@order, order_item, @task, @tag_resources).process.result)
       end
 
       order_item.approval_requests.create!(

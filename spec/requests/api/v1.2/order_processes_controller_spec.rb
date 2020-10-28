@@ -34,9 +34,7 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
           "show"    => true,
           "unlink"  => true,
           "update"  => true,
-          "destroy" => true,
-          "tag"     => true,
-          "untag"   => true
+          "destroy" => true
         )
       end
     end
@@ -442,9 +440,5 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
         expect(response.body).to match(/Catalog::InvalidParameter: Invalid resource object params/)
       end
     end
-  end
-
-  it_behaves_like "controller that supports tagging endpoints" do
-    let(:object_instance) { order_process }
   end
 end

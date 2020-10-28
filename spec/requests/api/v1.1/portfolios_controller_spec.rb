@@ -12,6 +12,9 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
     allow(rbac_access).to receive(:destroy_access_check).and_return(true)
     allow(rbac_access).to receive(:admin_access_check).with("portfolios", "update").and_return(true)
     allow(rbac_access).to receive(:approval_workflow_check).and_return(true)
+    allow(rbac_access).to receive(:admin_access_check).with("order_processes", "read").and_return(true)
+    allow(rbac_access).to receive(:admin_access_check).with("order_processes", "link").and_return(true)
+    allow(rbac_access).to receive(:admin_access_check).with("order_processes", "unlink").and_return(true)
   end
 
   describe "GET /portfolios/:portfolio_id #show" do
@@ -38,17 +41,18 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
 
       it "returns the user capabilities based on the allowed access" do
         expect(json['metadata']['user_capabilities']).to eq(
-          "copy"         => true,
-          "create"       => true,
-          "destroy"      => true,
-          "restore"      => true,
-          "share"        => true,
-          "show"         => true,
-          "unshare"      => true,
-          "update"       => true,
-          "set_approval" => true,
-          "tag"          => true,
-          "untag"        => true
+          "copy"              => true,
+          "create"            => true,
+          "destroy"           => true,
+          "restore"           => true,
+          "share"             => true,
+          "show"              => true,
+          "unshare"           => true,
+          "update"            => true,
+          "set_approval"      => true,
+          "tag"               => true,
+          "untag"             => true,
+          "set_order_process" => true
         )
       end
 
