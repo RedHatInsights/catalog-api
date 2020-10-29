@@ -30,7 +30,7 @@ describe TopologicalInventory::EventListener do
       subject.subscribe
       progress_message = ProgressMessage.last
       expect(progress_message.level).to eq("info")
-      expect(progress_message.message).to match(/Task update message received with payload/)
+      expect(progress_message.message).to eq("Order Item Is Running")
       expect(progress_message.order_item_id).to eq(order_item.id.to_s)
       order_item.reload
       expect(order_item.external_url).to eq("external_url")

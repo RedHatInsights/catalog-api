@@ -20,13 +20,6 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
       allow(order_item).to receive(:mark_failed)
     end
 
-    shared_examples_for "#process info message" do
-      it "updates the order item with an info message" do
-        expect(order_item).to receive(:update_message).with("info", "Task update message received with payload: #{task}")
-        subject.process
-      end
-    end
-
     context "when the status of the task is ok" do
       let(:status) { "ok" }
 
@@ -34,10 +27,8 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
         let(:state) { "completed" }
 
         context "when the task has a service instance id" do
-          it_behaves_like "#process info message"
-
           it "marks the item as completed with the correct service instance id and artifacts" do
-            expect(order_item).to receive(:mark_completed).with("Order Item Complete", :service_instance_ref => "321", :artifacts => {'k1' => 'v1', 'k2' => 'v2'})
+            expect(order_item).to receive(:mark_completed).with("Order Item Completed", :service_instance_ref => "321", :artifacts => {'k1' => 'v1', 'k2' => 'v2'})
             subject.process
           end
         end
@@ -45,10 +36,8 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
         context "when the task does not have a service instance id" do
           let(:service_instance_id) { nil }
 
-          it_behaves_like "#process info message"
-
           it "marks the item as completed with the correct service instance id and artifacts" do
-            expect(order_item).to receive(:mark_completed).with("Order Item Complete", :service_instance_ref => "213", :artifacts => {'k1' => 'v1', 'k2' => 'v2'})
+            expect(order_item).to receive(:mark_completed).with("Order Item Completed", :service_instance_ref => "213", :artifacts => {'k1' => 'v1', 'k2' => 'v2'})
             subject.process
           end
         end
@@ -58,8 +47,8 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
         let(:state) { "running" }
         before { task.context = {:service_instance => {:url => "http://tower.com/job/3"}} }
 
-        it "sends two update messages" do
-          expect(order_item).to receive(:update_message).with("info", "Task update message received with payload: #{task}")
+        it "updates progress messages" do
+          expect(order_item).to receive(:update_message).with("info", "Order Item Is Running")
           subject.process
         end
 
@@ -80,8 +69,6 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
           expect(order_item).to receive(:mark_failed).with("Order Item Failed", :service_instance_ref => "321")
           subject.process
         end
-
-        it_behaves_like "#process info message"
       end
 
       context "when the task does not have a service instance id" do
@@ -91,16 +78,7 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
           expect(order_item).to receive(:mark_failed).with("Order Item Failed", :service_instance_ref => "213")
           subject.process
         end
-
-        it_behaves_like "#process info message"
       end
-    end
-
-    context "when the status of the task is anything else" do
-      let(:status) { "foo" }
-      let(:state) { "bar" }
-
-      it_behaves_like "#process info message"
     end
   end
 end
