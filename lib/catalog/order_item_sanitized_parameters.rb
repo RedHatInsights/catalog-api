@@ -15,6 +15,7 @@ module Catalog
 
     def process
       @sanitized_parameters = compute_sanitized_parameters
+      @order_item.save if @params[:do_not_mask_values]
 
       self
     rescue => e
@@ -91,7 +92,9 @@ module Catalog
       end
 
       begin
-        convert_type(str_val, field[:type])
+        convert_type(str_val, field[:type]).tap do |new_val|
+          @order_item.service_parameters[key] = new_val
+        end
       rescue
         Rails.logger.error("Failed to convert #{str_val} to #{field[:type]}. Substitution expression #{value}, worksplace #{workspace}")
         raise
