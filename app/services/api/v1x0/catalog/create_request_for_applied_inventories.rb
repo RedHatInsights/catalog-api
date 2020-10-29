@@ -42,7 +42,7 @@ module Api
           changed_surveys = ::Catalog::SurveyCompare.collect_changed(@item.portfolio_item.service_plans)
 
           unless changed_surveys.empty?
-            invalid_survey_messages = changed_surveys.collect { |service_plan| service_plan.invalid_survey_message }
+            invalid_survey_messages = changed_surveys.collect(&:invalid_survey_message)
             raise ::Catalog::InvalidSurvey, invalid_survey_messages
           end
         end

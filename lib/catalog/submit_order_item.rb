@@ -38,7 +38,7 @@ module Catalog
       changed_surveys = ::Catalog::SurveyCompare.collect_changed(order_item.portfolio_item.service_plans)
 
       unless changed_surveys.empty?
-        invalid_survey_messages = changed_surveys.collect { |service_plan| service_plan.invalid_survey_message }
+        invalid_survey_messages = changed_surveys.collect(&:invalid_survey_message)
         order_item.mark_failed("Order Item Failed: #{invalid_survey_messages.join('; ')}")
         raise ::Catalog::InvalidSurvey, invalid_survey_messages
       end
