@@ -10,8 +10,7 @@ module Api
         end
 
         def process
-          raise ::Catalog::InvalidSurvey, "Base survey does not match Topology" if ::Catalog::SurveyCompare.any_changed?(@item.portfolio_item.service_plans)
-
+          validate_surveys
           send_request_to_compute_applied_inventories
 
           @item.update_message(:info, "Waiting for inventories")
@@ -37,6 +36,15 @@ module Api
 
         def service_offering_ref
           @item.portfolio_item.service_offering_ref.to_s
+        end
+
+        def validate_surveys
+          changed_surveys = ::Catalog::SurveyCompare.collect_changed(@item.portfolio_item.service_plans)
+
+          unless changed_surveys.empty?
+            invalid_survey_messages = changed_surveys.collect { |service_plan| service_plan.invalid_survey_message }
+            raise ::Catalog::InvalidSurvey, invalid_survey_messages
+          end
         end
       end
     end

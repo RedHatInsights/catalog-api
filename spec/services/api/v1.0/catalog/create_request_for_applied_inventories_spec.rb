@@ -55,11 +55,18 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
 
     context "when there is a modified survey" do
       let!(:service_plan) { create(:service_plan, :portfolio_item => portfolio_item) }
-      before { allow(Catalog::SurveyCompare).to receive(:any_changed?).with(portfolio_item.service_plans).and_return(true) }
+
+      before do
+        allow(Catalog::SurveyCompare).to receive(:collect_changed).with(portfolio_item.service_plans).and_return([service_plan])
+        allow(service_plan).to receive(:invalid_survey_message).and_return("Invalid survey")
+      end
 
       context "when the survey does not match topology" do
         it "raises an error" do
-          expect { subject.process }.to raise_exception(Catalog::InvalidSurvey)
+          expect { subject.process }.to raise_exception do |error|
+            expect(error).to be_a(Catalog::InvalidSurvey)
+            expect(JSON.parse(error.message)).to eq(["Invalid survey"])
+          end
         end
       end
     end
