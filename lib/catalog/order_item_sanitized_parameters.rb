@@ -41,20 +41,6 @@ module Catalog
       params.collect { |key, value| [key, sanitize_value(key, value)] }.to_h
     end
 
-    def service_plan_schema
-      service_plan = order_item.portfolio_item.service_plans&.first
-      service_plan&.modified || service_plan&.base || live_service_plan_schema
-    end
-
-    def live_service_plan_schema
-      TopologicalInventory::Service.call do |api|
-        api.show_service_plan(service_plan_ref.to_s).create_json_schema
-      end
-    rescue ::Catalog::TopologyError => e
-      Rails.logger.error("DefaultApi->show_service_plan #{e.message}")
-      raise
-    end
-
     def compute_sanitized_parameters
       return {} if service_plan_does_not_exist?
       return filtered_parameters if @params[:do_not_mask_values]
@@ -73,7 +59,7 @@ module Catalog
     end
 
     def fields
-      @fields ||= service_plan_schema.with_indifferent_access.dig(:schema, :fields)
+      @fields ||= ServicePlanFields.new(order_item).process.fields
     end
 
     def service_plan_does_not_exist?
