@@ -25,7 +25,7 @@ describe "v1.2 - OrdersCotnroller", :type => [:request, :controller, :v1x2] do
       let(:svc_object) { instance_double("Catalog::CreateRequestForAppliedInventories") }
 
       before do |example|
-        allow(Api::V1x2::Catalog::CreateRequestForAppliedInventories).to receive(:new).with(order).and_return(svc_object)
+        allow(Api::V1x0::Catalog::CreateRequestForAppliedInventories).to receive(:new).with(order).and_return(svc_object)
         allow(svc_object).to receive(:process).and_return(svc_object)
         allow(svc_object).to receive(:order).and_return(order)
         subject unless example.metadata[:subject_inside]
@@ -97,6 +97,32 @@ describe "v1.2 - OrdersCotnroller", :type => [:request, :controller, :v1x2] do
         expect(response.content_type).to eq("application/json")
         expect(response).to have_http_status(400)
         expect(first_error_detail).to match(/Catalog::InvalidSurvey/)
+
+        order.reload
+        expect(order.state).to eq("Failed")
+      end
+    end
+
+    describe "when exceptions are raised" do
+      let(:archived) { false }
+      shared_examples_for "with errors" do
+        it "returns Failed state" do
+          subject
+          order.reload
+          expect(order.state).to eq("Failed")
+        end
+      end
+
+      context "from service_offering_service" do
+        before { allow(service_offering_service).to receive(:process).and_raise(StandardError) }
+
+        it_behaves_like "with errors"
+      end
+
+      context "from topo service" do
+        before { allow(TopologicalInventory::Service).to receive(:call).and_raise(Catalog::TopologyError.new("boom")) }
+
+        it_behaves_like "with errors"
       end
     end
   end

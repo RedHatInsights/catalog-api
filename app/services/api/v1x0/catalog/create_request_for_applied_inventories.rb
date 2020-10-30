@@ -16,6 +16,9 @@ module Api
 
           @item.update_message(:info, "Waiting for inventories")
           self
+        rescue
+          @order.update(:state => "Failed")
+          raise
         end
 
         private

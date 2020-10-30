@@ -13,6 +13,9 @@ module Api
 
             raise ::Catalog::ServiceOfferingArchived, archived_error_message
           end
+        rescue
+          @order.update(:state => "Failed")
+          raise
         end
 
         def archived_error_message
