@@ -22,12 +22,16 @@ module Catalog
 
       relevant_order_processes.each do |order_process|
         if order_process.before_portfolio_item.present?
-          Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(before_params(order_process, before_sequence_number)).process
+          before_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(before_params(order_process, before_sequence_number)).process.order_item
+          before_item.send(:service_parameters_raw=, service_parameters(before_item))
+          before_item.save
           before_sequence_number += 1
         end
 
         if order_process.after_portfolio_item.present?
-          Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(after_params(order_process, after_sequence_number)).process
+          after_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(after_params(order_process, after_sequence_number)).process.order_item
+          after_item.send(:service_parameters_raw=, service_parameters(after_item))
+          after_item.save
           after_sequence_number -= 1
         end
       end
@@ -81,6 +85,12 @@ module Catalog
     def applicable_sequence(relevant_order_processes)
       before_count = relevant_order_processes.collect(&:before_portfolio_item).compact.count
       before_count + 1
+    end
+
+    def service_parameters(order_item)
+      ServicePlanFields.new(order_item).process.fields.each_with_object({}) do |field, default_params|
+        default_params[field[:name]] = field[:initialValue] if field[:initialValue]
+      end
     end
   end
 end

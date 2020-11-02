@@ -6,6 +6,24 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
     let(:portfolio) { create(:portfolio) }
     let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123", :context => {:applied_inventories => applied_inventories}) }
     let(:applied_inventories) { [] }
+    let(:before_service_plan) { create(:service_plan, :base => {:schema => {:fields => fields}}, :modified => nil) }
+    let(:after_service_plan) { create(:service_plan, :base => {:schema => {:fields => fields}}, :modified => nil) }
+    let(:fields) do
+      [{
+        :name         => "param1",
+        :type         => "string",
+        :label        => "Param1",
+        :component    => "text-field",
+        :helperText   => "",
+        :isRequired   => true,
+        :initialValue => "val1"
+      }, {
+        :name       => "most_important_var1",
+        :label      => "secret field 1",
+        :component  => "textarea-field",
+        :helperText => ""
+      }]
+    end
 
     subject { described_class.new(task, order, tag_resources).process }
 
@@ -48,14 +66,17 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           :process_scope     => "after"
         }
       end
-      let(:before_portfolio_item) { create(:portfolio_item) }
-      let(:after_portfolio_item) { create(:portfolio_item) }
+      let(:before_portfolio_item) { create(:portfolio_item, :service_plans => [before_service_plan]) }
+      let(:after_portfolio_item) { create(:portfolio_item, :service_plans => [after_service_plan]) }
+      let(:before_order_item) { create(:order_item, :order => order, :portfolio_item => before_portfolio_item) }
+      let(:after_order_item) { create(:order_item, :order => order, :portfolio_item => after_portfolio_item) }
       let(:order_process) do
         create(:order_process,
                :before_portfolio_item => before_portfolio_item,
                :after_portfolio_item  => after_portfolio_item)
       end
-      let(:add_to_order_via_order_process) { instance_double(Api::V1x2::Catalog::AddToOrderViaOrderProcess) }
+      let(:add_to_order_via_order_process_before) { instance_double(Api::V1x2::Catalog::AddToOrderViaOrderProcess, :order_item => before_order_item) }
+      let(:add_to_order_via_order_process_after) { instance_double(Api::V1x2::Catalog::AddToOrderViaOrderProcess, :order_item => after_order_item) }
       let(:tag_resources) { Tags::CollectLocalOrderResources.new(:order_id => order.id).process.tag_resources }
 
       before do
@@ -63,12 +84,13 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
 
         allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
           .with(before_params)
-          .and_return(add_to_order_via_order_process)
+          .and_return(add_to_order_via_order_process_before)
         allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
           .with(after_params)
-          .and_return(add_to_order_via_order_process)
+          .and_return(add_to_order_via_order_process_after)
 
-        allow(add_to_order_via_order_process).to receive(:process)
+        allow(add_to_order_via_order_process_before).to receive(:process).and_return(add_to_order_via_order_process_before)
+        allow(add_to_order_via_order_process_after).to receive(:process).and_return(add_to_order_via_order_process_after)
       end
 
       context "when there is 1 existing tag on the portfolio" do
@@ -87,20 +109,23 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
         end
 
         it "delegates creation of a 'before' order_item with a process sequence of 1" do
-          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params)
+          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params).and_return(add_to_order_via_order_process_before)
 
           subject
+          expect(before_order_item.service_parameters_raw).to eq('param1' => 'val1')
         end
 
         it "delegates creation of an 'after' order_item with a process sequence of 3" do
-          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params)
+          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params).and_return(add_to_order_via_order_process_after)
 
           subject
+          expect(after_order_item.service_parameters_raw).to eq('param1' => 'val1')
         end
 
         context "when there is no before portfolio item" do
-          let(:before_portfolio_item) { nil }
-          let(:before_params) { "doesn't matter" }
+          let(:order_process) do
+            create(:order_process, :after_portfolio_item => after_portfolio_item)
+          end
           let(:after_params) do
             {
               :order_id          => order.id,
@@ -122,15 +147,17 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           end
 
           it "delegates creation of an 'after' order_item with a process sequence of 2" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params)
+            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params).and_return(add_to_order_via_order_process_after)
 
             subject
+            expect(after_order_item.service_parameters_raw).to eq('param1' => 'val1')
           end
         end
 
         context "when there is no after portfolio item" do
-          let(:after_portfolio_item) { nil }
-          let(:after_params) { "doesn't matter" }
+          let(:order_process) do
+            create(:order_process, :before_portfolio_item => before_portfolio_item)
+          end
 
           it "applies the process sequence of '2' to the order item" do
             subject
@@ -143,9 +170,10 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           end
 
           it "delegates creation of a 'before' order_item with a process sequence of 1" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params)
+            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params).and_return(add_to_order_via_order_process_before)
 
             subject
+            expect(before_order_item.service_parameters_raw).to eq('param1' => 'val1')
           end
         end
       end
@@ -299,10 +327,10 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             portfolio.tag_add("order_processes", :namespace => "catalog", :value => order_process2.id)
             allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
               .with(before_params2)
-              .and_return(add_to_order_via_order_process)
+              .and_return(add_to_order_via_order_process_before)
             allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
               .with(after_params2)
-              .and_return(add_to_order_via_order_process)
+              .and_return(add_to_order_via_order_process_after)
           end
 
           it "applies the process sequence of '3' to the order item" do
