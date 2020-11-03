@@ -97,6 +97,8 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
           context 'when substitution data type is string' do
             it 'includes a string in the parameters' do
               expect(result).to match_array %w[testv s3cret]
+              order_item.reload
+              expect(order_item.service_parameters).to include('name' => 'testv')
             end
           end
 

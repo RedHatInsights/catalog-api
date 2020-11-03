@@ -12,6 +12,7 @@ module Api
     class ApprovalRequestsController          < Api::V1x1::ApprovalRequestsController; end
     class GraphqlController                   < Api::V1x1::GraphqlController; end
     class OrderItemsController                < Api::V1x1::OrderItemsController; end
+    class OrdersController                    < Api::V1x1::OrdersController; end
     class PortfoliosController                < Api::V1x1::PortfoliosController; end
     class ProgressMessagesController          < Api::V1x1::ProgressMessagesController; end
     class ProviderControlParametersController < Api::V1x1::ProviderControlParametersController; end
