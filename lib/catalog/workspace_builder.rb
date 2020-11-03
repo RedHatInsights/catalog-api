@@ -29,7 +29,7 @@ module Catalog
         facts[item.process_scope][encode_name(item.portfolio_item.name)] = order_item_facts(item)
       end
 
-      facts
+      correct_product(facts)
     end
 
     def order_item_facts(order_item)
@@ -38,6 +38,12 @@ module Catalog
 
     def encode_name(name)
       name.each_byte.map { |byte| byte.to_s(16) }.join
+    end
+
+    # assume there is one applicable order_item and name it product
+    def correct_product(facts)
+      applicable = facts.delete('applicable')
+      facts.merge('product' => Hash(applicable.first&.last)) # skip the portfolio_item name
     end
   end
 end

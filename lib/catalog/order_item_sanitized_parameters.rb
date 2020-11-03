@@ -6,7 +6,7 @@ module Catalog
 
     MASKED_VALUE = "$protected$".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
-    ORDER_ITEM_REGEX = /(?<=\{\{after\.|applicable\.|before\.)(.+?)(?=\.artifacts|\.extra_vars|\.status.*\}\})/.freeze
+    ORDER_ITEM_REGEX = /(?<=\{\{after\.|before\.)(.+?)(?=\.artifacts|\.extra_vars|\.status.*\}\})/.freeze
 
     def initialize(params)
       @params = params
