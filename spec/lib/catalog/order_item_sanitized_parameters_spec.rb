@@ -9,10 +9,11 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
     let(:order_item) do
       create(
         :order_item,
-        :portfolio_item   => portfolio_item,
-        :service_plan_ref => service_plan_ref,
-        :artifacts        => artifacts,
-        :process_scope    => 'applicable'
+        :portfolio_item     => portfolio_item,
+        :service_plan_ref   => service_plan_ref,
+        :artifacts          => artifacts,
+        :service_parameters => nil,
+        :process_scope      => 'applicable'
       ).tap do |item|
         item.send(:service_parameters_raw=, "name" => "{{applicable.#{item_name}.artifacts.testk}}", "Totally not a pass" => "s3cret")
         item.save
