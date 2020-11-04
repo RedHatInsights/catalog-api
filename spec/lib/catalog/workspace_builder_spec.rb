@@ -64,7 +64,7 @@ describe Catalog::WorkspaceBuilder do
       expect(ws['request']).to include('order_id' => order.id, 'order_started' => time.utc)
       expect(ws['before']).to include(subject.send(:encode_name, portfolio_item_process.name) => {'artifacts' => before_facts, 'extra_vars' => before_params, 'status' => 'Created'})
       expect(ws['after']).to include(subject.send(:encode_name, portfolio_item_process.name) => {'artifacts' => after_facts, 'extra_vars' => after_params, 'status' => 'Created'})
-      expect(ws['applicable']).to include(subject.send(:encode_name, portfolio_item.name) => {'artifacts' => app_facts, 'extra_vars' => order_params, 'status' => 'Created'})
+      expect(ws['product']).to include('artifacts' => app_facts, 'extra_vars' => order_params, 'status' => 'Created')
     end
   end
 end

@@ -9,8 +9,6 @@ module Catalog
     end
 
     def process
-      @order_item.update_message("info", "Task update message received with payload: #{@task}")
-
       mark_item_based_on_status
     end
 
@@ -21,8 +19,9 @@ module Catalog
       when "ok"
         case @task.state
         when "completed"
-          @order_item.mark_completed("Order Item Complete", :service_instance_ref => service_instance_id, :artifacts => artifacts)
+          @order_item.mark_completed("Order Item Completed", :service_instance_ref => service_instance_id, :artifacts => artifacts)
         when "running"
+          @order_item.update_message("info", "Order Item Is Running")
           @order_item.update!(:external_url => @task.context.dig(:service_instance, :url))
         end
       when "error"

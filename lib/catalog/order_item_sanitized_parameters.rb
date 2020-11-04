@@ -6,7 +6,7 @@ module Catalog
 
     MASKED_VALUE = "$protected$".freeze
     FILTERED_PARAMS = %w[password token secret].freeze
-    ORDER_ITEM_REGEX = /(?<=\{\{after\.|applicable\.|before\.)(.+?)(?=\.artifacts|\.extra_vars|\.status.*\}\})/.freeze
+    ORDER_ITEM_REGEX = /(?<=\{\{after\.|before\.)(.+?)(?=\.artifacts|\.extra_vars|\.status.*\}\})/.freeze
 
     def initialize(params)
       @params = params
@@ -15,7 +15,7 @@ module Catalog
 
     def process
       @sanitized_parameters = compute_sanitized_parameters
-      @order_item.save if @params[:do_not_mask_values]
+      update_service_parameters if @params[:do_not_mask_values]
 
       self
     rescue => e
@@ -46,6 +46,10 @@ module Catalog
       return {} if service_plan_does_not_exist?
       return filtered_parameters if @params[:do_not_mask_values]
 
+      mask_values
+    end
+
+    def mask_values
       svc_params = ActiveSupport::HashWithIndifferentAccess.new(service_parameters_raw)
       fields.each_with_object({}) do |field, result|
         value = mask_value?(field) ? MASKED_VALUE : svc_params[field[:name]]
@@ -79,7 +83,7 @@ module Catalog
 
       begin
         convert_type(str_val, field[:type]).tap do |new_val|
-          @order_item.service_parameters[key] = new_val
+          order_item.service_parameters_raw[key] = new_val
         end
       rescue
         Rails.logger.error("Failed to convert #{str_val} to #{field[:type]}. Substitution expression #{value}, worksplace #{workspace}")
@@ -117,6 +121,10 @@ module Catalog
 
     def workspace
       @workspace ||= Catalog::WorkspaceBuilder.new(order_item.order).process.workspace
+    end
+
+    def update_service_parameters
+      order_item.update(:service_parameters => mask_values)
     end
   end
 end

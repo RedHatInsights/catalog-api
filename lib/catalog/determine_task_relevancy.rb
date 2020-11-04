@@ -52,12 +52,16 @@ module Catalog
     end
 
     def process_error_tasks
+      @order_item.update_message("error", "Task update message received with payload: #{@task}")
       if @task.state == "running"
         Rails.logger.error("Incoming task #{@task.id} had an error while running: #{@task.context}")
       elsif @task.state == "completed"
-        process_relevant_context
         Rails.logger.error("Incoming task #{@task.id} is completed but errored: #{@task.context}")
-        @order_item.mark_failed
+        if @task.context&.has_key_path?(:service_instance)
+          UpdateOrderItem.new(@task, @order_item).process
+        else
+          @order_item.mark_failed("Order Item Failed")
+        end
       end
     end
 
