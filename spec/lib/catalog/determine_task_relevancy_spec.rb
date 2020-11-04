@@ -57,68 +57,39 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           let(:state) { "running" }
           let(:payload_context) { {"test" => "test"} }
 
-          it "logs an error message" do
+          it "logs an error and adds a progress message" do
             expect(Rails.logger).to receive(:error).with("Incoming task 123 had an error while running: #{payload_context}")
             subject.process
+            order_item.reload
+            expect(order_item.progress_messages.size).to eq(1)
+            expect(order_item.state).to eq("Created")
           end
         end
 
         context "when the task state is completed" do
           let(:state) { "completed" }
-          let(:payload_context) { {"test" => "test"} }
-
-          shared_examples_for "#process that errors and is complete" do
-            it "logs an error message" do
-              expect(Rails.logger).to receive(:error).with("Incoming task 123 is completed but errored: #{payload_context}")
-              subject.process
-            end
-
-            it "marks the item as failed" do
-              expect do
-                subject.process
-                order_item.reload
-              end.to change { order_item.state }.from("Created").to("Failed")
-            end
-          end
 
           context "when the context has a service instance keypath" do
             let(:payload_context) { {"service_instance" => "service instance stuff"} }
 
-            it "delegates to the UpdateOrderItem class" do
+            it "updates the order item using the update service" do
+              expect(Rails.logger).to receive(:error).with("Incoming task 123 is completed but errored: #{payload_context}")
               expect(update_order_item).to receive(:process)
               subject.process
             end
-
-            it_behaves_like "#process that errors and is complete"
           end
 
-          context "when the context has an applied inventories keypath" do
-            let(:payload_context) { {"applied_inventories" => ["applied_inventory_id"]} }
+          context "when the context does not have a service keypath" do
+            let(:payload_context) { {"test" => "test"} }
 
-            it "delegates to the CreateApprovalRequest class" do
-              expect(evaluate_order_process).to receive(:process)
-              expect(create_approval_request).to receive(:process)
+            it "fails the order, log errors, and adds a progress message" do
+              expect(Rails.logger).to receive(:error).with("Incoming task 123 is completed but errored: #{payload_context}")
+              expect(Rails.logger).to receive(:error).with(/Updated OrderItem: \d+ with 'Failed'/)
               subject.process
+              order_item.reload
+              expect(order_item.progress_messages.size).to eq(2)
+              expect(order_item.state).to eq('Failed')
             end
-
-            it "logs a message about creating an approval request as a response to a task id" do
-              expect(Rails.logger).to receive(:info).with("Evaluating order processes for order item id #{order_item.id}").ordered
-              expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123").ordered
-              subject.process
-            end
-
-            it_behaves_like "#process that errors and is complete"
-          end
-
-          context "when the context does not have a relevant keypath" do
-            let(:payload_context) { nil }
-
-            it "logs a message about irrelevant delegation" do
-              expect(Rails.logger).to receive(:info).with("Incoming task has no current relevant delegation")
-              subject.process
-            end
-
-            it_behaves_like "#process that errors and is complete"
           end
         end
       end
