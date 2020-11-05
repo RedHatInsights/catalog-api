@@ -6,7 +6,7 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
       "id"      => "123",
       "status"  => status,
       "state"   => state,
-      "context" => {:service_instance => {:id => service_instance_id}, :artifacts => artifacts}.with_indifferent_access
+      "context" => {:service_instance => {:id => service_instance_id, :artifacts => artifacts}}.with_indifferent_access
     )
   end
   let(:service_instance_id) { "321" }

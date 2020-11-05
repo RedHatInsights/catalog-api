@@ -34,7 +34,7 @@ module Catalog
     end
 
     def artifacts
-      Hash(@task.context['artifacts']).each_with_object({}) do |(key, val), facts|
+      Hash(@task.context.dig(:service_instance, :artifacts)).each_with_object({}) do |(key, val), facts|
         facts[key.delete_prefix(CRHC_PREFIX)] = val if key.start_with?(CRHC_PREFIX)
       end
     end
