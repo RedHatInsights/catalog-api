@@ -52,7 +52,9 @@ describe Order do
       order1.reload
       last_message = order1.progress_messages.last
       expect(order1.updated_at).to be_a(Time)
-      expect(last_message.order_id.to_i).to eq order1.id
+      expect(last_message.message).to eq("test message")
+      expect(last_message.messageable_type).to eq(order1.class.name)
+      expect(last_message.messageable_id.to_i).to eq(order1.id)
       expect(last_message.tenant_id).to eq(order1.tenant.id)
     end
   end

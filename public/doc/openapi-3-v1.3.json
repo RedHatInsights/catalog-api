@@ -1689,7 +1689,7 @@
         }
       }
     },
-    "/orders/{id}/progress_messages": {
+    "/orders/{order_id}/progress_messages": {
       "get": {
         "tags": [
           "Order"
@@ -1700,9 +1700,6 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderID"
-          },
-          {
-            "$ref": "#/components/parameters/SourceType"
           },
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -1906,9 +1903,6 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/OrderItemID"
-          },
-          {
-            "$ref": "#/components/parameters/SourceType"
           },
           {
             "$ref": "#/components/parameters/QueryLimit"
@@ -3249,16 +3243,6 @@
           "type": "boolean",
           "default": false
         }
-      },
-      "SourceType": {
-        "in": "query",
-        "name": "source_type",
-        "required": false,
-        "description": "Type of the progress messages source (could be either Order or OrderItem).",
-        "schema": {
-          "type": "string",
-          "default": "OrderItem"
-        }
       }
     },
     "responses": {
@@ -3678,6 +3662,12 @@
             "type": "string",
             "readOnly": true
           },
+          "name": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Name",
+            "description": "Name of the Portfolio Item or Order Process"
+          },
           "count": {
             "type": "integer",
             "default": 1,
@@ -3776,7 +3766,7 @@
             "type": "string",
             "title": "Scope of when the order item is ran",
             "example": "before",
-            "description": "Denotes the scope in which the order item will run for the order it belongs to. It can be 'before', 'after', or 'applicable'",
+            "description": "Denotes the scope in which the order item will run for the order it belongs to. It can be 'before', 'after', or 'product'",
             "readOnly": true
           },
           "artifacts": {

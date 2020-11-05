@@ -1,8 +1,8 @@
 module Api
   module V1x3
     module Mixins
-      module IndexMixin
-        include Api::V1x2::Mixins::IndexMixin
+      module ShowMixin
+        include Api::V1x2::Mixins::ShowMixin
       end
     end
   end

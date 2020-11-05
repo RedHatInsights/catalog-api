@@ -18,8 +18,8 @@ class OrderItem < ApplicationRecord
 
   belongs_to :order, :inverse_of => :order_items
   belongs_to :portfolio_item
-  has_many :progress_messages, :dependent => :destroy
   has_many :approval_requests, :dependent => :destroy
+  has_many :progress_messages, :as => :messageable, :dependent => :destroy, :inverse_of => :messageable
 
   before_create :set_defaults
   before_save :sanitize_parameters, :if => :will_save_change_to_service_parameters?

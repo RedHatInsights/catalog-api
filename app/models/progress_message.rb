@@ -12,6 +12,8 @@ class ProgressMessage < ApplicationRecord
       .where("orders.owner = ?", Insights::API::Common::Request.current.user.username)
   }
 
+  belongs_to :messageable, :polymorphic => true
+
   def set_defaults
     self.received_at = DateTime.now
   end

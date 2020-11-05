@@ -7,7 +7,8 @@ describe OrderItem do
       order_item.reload
       last_message = order_item.progress_messages.last
       expect(order_item.updated_at).to be_a(Time)
-      expect(last_message.order_item_id.to_i).to eq order_item.id
+      expect(last_message.messageable_id.to_i).to eq(order_item.id)
+      expect(last_message.messageable_type).to eq(order_item.class.name)
       expect(last_message.tenant_id).to eq(order_item.tenant.id)
     end
   end
