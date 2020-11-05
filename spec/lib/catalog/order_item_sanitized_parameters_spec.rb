@@ -9,6 +9,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
     let(:order_item) do
       create(
         :order_item,
+        :name               => item_name,
         :portfolio_item     => portfolio_item,
         :service_plan_ref   => service_plan_ref,
         :artifacts          => artifacts,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_12_171120) do
+ActiveRecord::Schema.define(version: 2020_11_05_135352) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -105,6 +105,7 @@ ActiveRecord::Schema.define(version: 2020_10_12_171120) do
     t.integer "process_sequence"
     t.string "process_scope"
     t.jsonb "artifacts"
+    t.string "name"
     t.index ["discarded_at"], name: "index_order_items_on_discarded_at"
     t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
   end
@@ -144,9 +145,6 @@ ActiveRecord::Schema.define(version: 2020_10_12_171120) do
     t.index ["discarded_at"], name: "index_orders_on_discarded_at"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
-
-# Could not dump table "permissions" because of following StandardError
-#   Unknown type 'permissions_name' for column 'name'
 
   create_table "portfolio_item_tags", id: :serial, force: :cascade do |t|
     t.bigint "tag_id", null: false

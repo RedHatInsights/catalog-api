@@ -26,7 +26,7 @@ module Catalog
     def collect_order_items
       facts = {'before' => {}, 'applicable' => {}, 'after' => {}}
       @order.order_items.each do |item|
-        facts[item.process_scope][encode_name(item.portfolio_item.name)] = order_item_facts(item)
+        facts[item.process_scope][encode_name(item.name)] = order_item_facts(item)
       end
 
       correct_product(facts)

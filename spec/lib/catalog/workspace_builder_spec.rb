@@ -3,6 +3,7 @@ describe Catalog::WorkspaceBuilder do
   let!(:before_item) do
     create(
       :order_item,
+      :name             => 'before',
       :order_id         => order.id,
       :context          => default_request,
       :portfolio_item   => portfolio_item_process,
@@ -17,6 +18,7 @@ describe Catalog::WorkspaceBuilder do
   let!(:app_item) do
     create(
       :order_item,
+      :name             => 'product',
       :order_id         => order.id,
       :context          => default_request,
       :portfolio_item   => portfolio_item,
@@ -31,6 +33,7 @@ describe Catalog::WorkspaceBuilder do
   let!(:after_item) do
     create(
       :order_item,
+      :name             => 'after',
       :order_id         => order.id,
       :context          => default_request,
       :portfolio_item   => portfolio_item_process,
@@ -62,8 +65,8 @@ describe Catalog::WorkspaceBuilder do
       ws = subject.process.workspace
       expect(ws['user']).to include("email" => "jdoe@acme.com", "name" => "John Doe")
       expect(ws['request']).to include('order_id' => order.id, 'order_started' => time.utc)
-      expect(ws['before']).to include(subject.send(:encode_name, portfolio_item_process.name) => {'artifacts' => before_facts, 'extra_vars' => before_params, 'status' => 'Created'})
-      expect(ws['after']).to include(subject.send(:encode_name, portfolio_item_process.name) => {'artifacts' => after_facts, 'extra_vars' => after_params, 'status' => 'Created'})
+      expect(ws['before']).to include(subject.send(:encode_name, before_item.name) => {'artifacts' => before_facts, 'extra_vars' => before_params, 'status' => 'Created'})
+      expect(ws['after']).to include(subject.send(:encode_name, after_item.name) => {'artifacts' => after_facts, 'extra_vars' => after_params, 'status' => 'Created'})
       expect(ws['product']).to include('artifacts' => app_facts, 'extra_vars' => order_params, 'status' => 'Created')
     end
   end
