@@ -20,19 +20,21 @@ module Catalog
       before_sequence_number = 1
       after_sequence_number = determine_starting_after_sequence_number(relevant_order_processes)
 
-      relevant_order_processes.each do |order_process|
-        if order_process.before_portfolio_item.present?
-          before_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, before_sequence_number, "before")).process.order_item
-          before_item.send(:service_parameters_raw=, service_parameters(before_item))
-          before_item.save
-          before_sequence_number += 1
-        end
+      Insights::API::Common::Request.with_request(@applicable_order_item.context.transform_keys(&:to_sym)) do
+        relevant_order_processes.each do |order_process|
+          if order_process.before_portfolio_item.present?
+            before_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, before_sequence_number, "before")).process.order_item
+            before_item.send(:service_parameters_raw=, service_parameters(before_item))
+            before_item.save
+            before_sequence_number += 1
+          end
 
-        if order_process.after_portfolio_item.present?
-          after_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, after_sequence_number, "after")).process.order_item
-          after_item.send(:service_parameters_raw=, service_parameters(after_item))
-          after_item.save
-          after_sequence_number -= 1
+          if order_process.after_portfolio_item.present?
+            after_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, after_sequence_number, "after")).process.order_item
+            after_item.send(:service_parameters_raw=, service_parameters(after_item))
+            after_item.save
+            after_sequence_number -= 1
+          end
         end
       end
 

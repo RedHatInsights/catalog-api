@@ -1,10 +1,12 @@
 describe Catalog::EvaluateOrderProcess, :type => :service do
   describe "#process" do
+    let(:request) { default_request }
     let(:order) { create(:order) }
-    let!(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
+    let!(:order_item) { Insights::API::Common::Request.with_request(request) { create(:order_item, :order => order, :portfolio_item => portfolio_item) } }
     let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
     let(:portfolio) { create(:portfolio) }
     let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123", :context => {:applied_inventories => applied_inventories}) }
+    let(:tag_resources) { Tags::CollectLocalOrderResources.new(:order_id => order.id).process.tag_resources }
     let(:applied_inventories) { [] }
     let(:before_service_plan) { create(:service_plan, :base => {:schema => {:fields => fields}}, :modified => nil) }
     let(:after_service_plan) { create(:service_plan, :base => {:schema => {:fields => fields}}, :modified => nil) }
@@ -47,52 +49,53 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
     end
 
     context "when there are existing tags" do
-      let(:before_params) do
-        {
-          :name              => order_process.name,
-          :order_id          => order.id,
-          :portfolio_item_id => before_portfolio_item.id,
-          :count             => 1,
-          :process_sequence  => 1,
-          :process_scope     => "before"
-        }
-      end
-
-      let(:after_params) do
-        {
-          :name              => order_process.name,
-          :order_id          => order.id,
-          :portfolio_item_id => after_portfolio_item.id,
-          :count             => 1,
-          :process_sequence  => 3,
-          :process_scope     => "after"
-        }
-      end
       let(:before_portfolio_item) { create(:portfolio_item, :service_plans => [before_service_plan]) }
       let(:after_portfolio_item) { create(:portfolio_item, :service_plans => [after_service_plan]) }
-      let(:before_order_item) { create(:order_item, :order => order, :portfolio_item => before_portfolio_item) }
-      let(:after_order_item) { create(:order_item, :order => order, :portfolio_item => after_portfolio_item) }
       let(:order_process) do
         create(:order_process,
                :before_portfolio_item => before_portfolio_item,
                :after_portfolio_item  => after_portfolio_item)
       end
-      let(:add_to_order_via_order_process_before) { instance_double(Api::V1x2::Catalog::AddToOrderViaOrderProcess, :order_item => before_order_item) }
-      let(:add_to_order_via_order_process_after) { instance_double(Api::V1x2::Catalog::AddToOrderViaOrderProcess, :order_item => after_order_item) }
-      let(:tag_resources) { Tags::CollectLocalOrderResources.new(:order_id => order.id).process.tag_resources }
+      let(:service_plans_instance) { instance_double(Api::V1x0::Catalog::ServicePlans) }
 
       before do
         TagLink.create(:order_process_id => order_process.id, :tag_name => "/catalog/order_processes=#{order_process.id}")
 
-        allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
-          .with(before_params)
-          .and_return(add_to_order_via_order_process_before)
-        allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
-          .with(after_params)
-          .and_return(add_to_order_via_order_process_after)
+        allow(Api::V1x0::Catalog::ServicePlans).to receive(:new).and_return(service_plans_instance)
+        allow(service_plans_instance).to receive_message_chain(:process, :items).and_return([before_service_plan])
+      end
 
-        allow(add_to_order_via_order_process_before).to receive(:process).and_return(add_to_order_via_order_process_before)
-        allow(add_to_order_via_order_process_after).to receive(:process).and_return(add_to_order_via_order_process_after)
+      shared_examples_for "#one existing tag" do
+        it "should return 3 order items" do
+          subject
+          expect(order.order_items.count).to eq(3)
+        end
+
+        it "should have right process sequences and scopes" do
+          subject
+
+          expect(order.order_items.first.process_sequence).to eq(1)
+          expect(order.order_items.first.process_scope).to eq("before")
+
+          expect(order.order_items.second.process_sequence).to eq(2)
+          expect(order.order_items.second.process_scope).to eq("applicable")
+
+          expect(order.order_items.last.process_sequence).to eq(3)
+          expect(order.order_items.last.process_scope).to eq("after")
+        end
+
+        it "should have same insights_request_id" do
+          subject
+          expect(order.order_items.first.insights_request_id).to eq(request[:headers]["x-rh-insights-request-id"])
+          expect(order.order_items.second.insights_request_id).to eq(request[:headers]["x-rh-insights-request-id"])
+          expect(order.order_items.last.insights_request_id).to eq(request[:headers]["x-rh-insights-request-id"])
+        end
+
+        it "'before' and 'after' order_items should have valid service_parameters_raw" do
+          subject
+          expect(order.order_items.first.service_parameters_raw).to eq('param1' => 'val1')
+          expect(order.order_items.last.service_parameters_raw).to eq('param1' => 'val1')
+        end
       end
 
       context "when there is 1 existing tag on the portfolio" do
@@ -100,60 +103,31 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           portfolio.tag_add("order_processes", :namespace => "catalog", :value => order_process.id)
         end
 
-        it "applies the process sequence of '2' to the order item" do
-          subject
-          expect(order.order_items.first.process_sequence).to eq(2)
-        end
-
-        it "applies the process scope of 'applicable' to the order item" do
-          subject
-          expect(order.order_items.first.process_scope).to eq("applicable")
-        end
-
-        it "delegates creation of a 'before' order_item with a process sequence of 1" do
-          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params).and_return(add_to_order_via_order_process_before)
-
-          subject
-          expect(before_order_item.service_parameters_raw).to eq('param1' => 'val1')
-        end
-
-        it "delegates creation of an 'after' order_item with a process sequence of 3" do
-          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params).and_return(add_to_order_via_order_process_after)
-
-          subject
-          expect(after_order_item.service_parameters_raw).to eq('param1' => 'val1')
-        end
+        it_behaves_like "#one existing tag"
 
         context "when there is no before portfolio item" do
           let(:order_process) do
             create(:order_process, :after_portfolio_item => after_portfolio_item)
           end
-          let(:after_params) do
-            {
-              :name              => order_process.name,
-              :order_id          => order.id,
-              :portfolio_item_id => after_portfolio_item.id,
-              :count             => 1,
-              :process_sequence  => 2,
-              :process_scope     => "after"
-            }
+
+          it "should return 2 order items" do
+            subject
+            expect(order.order_items.count).to eq(2)
           end
 
-          it "applies the process sequence of '1' to the order item" do
+          it "should have right process sequences and scopes" do
             subject
+
             expect(order.order_items.first.process_sequence).to eq(1)
-          end
+            expect(order.order_items.last.process_sequence).to eq(2)
 
-          it "applies the process scope of 'applicable' to the order item" do
-            subject
             expect(order.order_items.first.process_scope).to eq("applicable")
+            expect(order.order_items.last.process_scope).to eq("after")
           end
 
-          it "delegates creation of an 'after' order_item with a process sequence of 2" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params).and_return(add_to_order_via_order_process_after)
-
+          it "'after' order_items should have valid service_parameters_raw" do
             subject
-            expect(after_order_item.service_parameters_raw).to eq('param1' => 'val1')
+            expect(order.order_items.last.service_parameters_raw).to eq('param1' => 'val1')
           end
         end
 
@@ -162,21 +136,24 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             create(:order_process, :before_portfolio_item => before_portfolio_item)
           end
 
-          it "applies the process sequence of '2' to the order item" do
+          it "should return 2 order items" do
             subject
-            expect(order.order_items.first.process_sequence).to eq(2)
+            expect(order.order_items.count).to eq(2)
           end
 
-          it "applies the process scope of 'applicable' to the order item" do
+          it "should have right process sequences and scopes" do
             subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
+
+            expect(order.order_items.first.process_sequence).to eq(1)
+            expect(order.order_items.last.process_sequence).to eq(2)
+
+            expect(order.order_items.first.process_scope).to eq("before")
+            expect(order.order_items.last.process_scope).to eq("applicable")
           end
 
           it "delegates creation of a 'before' order_item with a process sequence of 1" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params).and_return(add_to_order_via_order_process_before)
-
             subject
-            expect(before_order_item.service_parameters_raw).to eq('param1' => 'val1')
+            expect(order.order_items.first.service_parameters_raw).to eq('param1' => 'val1')
           end
         end
       end
@@ -186,27 +163,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           portfolio_item.tag_add("order_processes", :namespace => "catalog", :value => order_process.id)
         end
 
-        it "applies the process sequence of '2' to the order item" do
-          subject
-          expect(order.order_items.first.process_sequence).to eq(2)
-        end
-
-        it "applies the process scope of 'applicable' to the order item" do
-          subject
-          expect(order.order_items.first.process_scope).to eq("applicable")
-        end
-
-        it "delegates creation of a 'before' order_item with a process sequence of 1" do
-          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params)
-
-          subject
-        end
-
-        it "delegates creation of an 'after' order_item with a process sequence of 3" do
-          expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params)
-
-          subject
-        end
+        it_behaves_like "#one existing tag"
       end
 
       context "when both the portfolio_item and portfolio have tags" do
@@ -216,26 +173,39 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             portfolio.tag_add("order_processes", :namespace => "catalog", :value => order_process.id)
           end
 
-          it "applies the process sequence of '2' to the order item" do
-            subject
-            expect(order.order_items.first.process_sequence).to eq(2)
+          it_behaves_like "#one existing tag"
+        end
+
+        context "when the tags are different" do
+          let(:order_process2) do
+            create(:order_process,
+                   :before_portfolio_item => before_portfolio_item,
+                   :after_portfolio_item  => after_portfolio_item)
           end
 
-          it "applies the process scope of 'applicable' to the order item" do
-            subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
+          before do
+            TagLink.create(:order_process_id => order_process2.id, :tag_name => "/catalog/order_processes=#{order_process2.id}")
+            TagLink.create(:order_process_id => order_process.id, :tag_name => "/catalog/order_processes=#{order_process.id}")
+
+            portfolio_item.tag_add("order_processes", :namespace => "catalog", :value => order_process.id)
+            portfolio.tag_add("order_processes", :namespace => "catalog", :value => order_process2.id)
           end
 
-          it "delegates creation of a 'before' order_item with a process sequence of 1" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params)
-
+          it "should return 5 order items" do
             subject
+            expect(order.order_items.count).to eq(5)
           end
 
-          it "delegates creation of an 'after' order_item with a process sequence of 3" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params)
-
+          it "should return right process sequences and scopes" do
             subject
+            expect(order.order_items.third.process_sequence).to eq(3)
+            expect(order.order_items.third.process_scope).to eq("applicable")
+
+            expect(order.order_items.first.process_scope).to eq("before")
+            expect(order.order_items.second.process_scope).to eq("before")
+
+            expect(order.order_items.fourth.process_scope).to eq("after")
+            expect(order.order_items.last.process_scope).to eq("after")
           end
         end
 
@@ -253,116 +223,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             TagLink.create(:order_process_id => order_process.id, :tag_name => "/topology/order_processes=#{order_process.id}")
           end
 
-          it "applies the process sequence of '3' to the order item" do
-            subject
-            expect(order.order_items.first.process_sequence).to eq(2)
-          end
-
-          it "applies the process scope of 'applicable' to the order item" do
-            subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
-          end
-
-          it "delegates creation of a 'before' order_item with a process sequence of 1" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params)
-
-            subject
-          end
-
-          it "delegates creation of an 'after' order_item with a process sequence of 3" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params)
-
-            subject
-          end
-        end
-
-        context "when the tags are different" do
-          let(:before_params) do
-            {
-              :name              => order_process.name,
-              :order_id          => order.id,
-              :portfolio_item_id => before_portfolio_item.id,
-              :count             => 1,
-              :process_sequence  => 1,
-              :process_scope     => "before"
-            }
-          end
-          let(:before_params2) do
-            {
-              :name              => order_process2.name,
-              :order_id          => order.id,
-              :portfolio_item_id => before_portfolio_item2.id,
-              :count             => 1,
-              :process_sequence  => 2,
-              :process_scope     => "before"
-            }
-          end
-
-          let(:after_params) do
-            {
-              :name              => order_process.name,
-              :order_id          => order.id,
-              :portfolio_item_id => after_portfolio_item.id,
-              :count             => 1,
-              :process_sequence  => 5,
-              :process_scope     => "after"
-            }
-          end
-          let(:after_params2) do
-            {
-              :name              => order_process2.name,
-              :order_id          => order.id,
-              :portfolio_item_id => after_portfolio_item2.id,
-              :count             => 1,
-              :process_sequence  => 4,
-              :process_scope     => "after"
-            }
-          end
-
-          let(:before_portfolio_item2) { create(:portfolio_item) }
-          let(:after_portfolio_item2) { create(:portfolio_item) }
-          let(:order_process2) do
-            create(:order_process,
-                   :before_portfolio_item => before_portfolio_item2,
-                   :after_portfolio_item  => after_portfolio_item2)
-          end
-
-          before do
-            TagLink.create(:order_process_id => order_process2.id, :tag_name => "/catalog/order_processes=#{order_process2.id}")
-
-            portfolio_item.tag_add("order_processes", :namespace => "catalog", :value => order_process.id)
-            portfolio.tag_add("order_processes", :namespace => "catalog", :value => order_process2.id)
-            allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
-              .with(before_params2)
-              .and_return(add_to_order_via_order_process_before)
-            allow(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new)
-              .with(after_params2)
-              .and_return(add_to_order_via_order_process_after)
-          end
-
-          it "applies the process sequence of '3' to the order item" do
-            subject
-            expect(order.order_items.first.process_sequence).to eq(3)
-          end
-
-          it "applies the process scope of 'applicable' to the order item" do
-            subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
-          end
-
-          it "delegates creation of two 'before' order_items with the appropriate process sequences" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params)
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params2)
-
-            subject
-          end
-
-          it "delegates creation of two 'after' order_items with the appropriate process sequences" do
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params)
-            expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params2)
-
-            subject
-          end
+          it_behaves_like "#one existing tag"
         end
       end
     end
