@@ -31,6 +31,7 @@ describe Api::V1x0::Catalog::AddToOrder, :type => :service do
   it "add order item" do
     Insights::API::Common::Request.with_request(request) do
       expect(subject.order_item.portfolio_item_id).to eq(portfolio_item.id)
+      expect(subject.order_item.name).to eq(portfolio_item.name)
     end
   end
 
