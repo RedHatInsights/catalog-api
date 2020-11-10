@@ -58,6 +58,26 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
     end
   end
 
+  describe "#collect_changed" do
+    let(:plans) { [service_plan] }
+
+    context "when the base has changed from topology" do
+      let(:service_plan) { create(:service_plan) }
+
+      it "returns an array of the changed plans" do
+        expect(Catalog::SurveyCompare.collect_changed(plans)).to eq(plans)
+      end
+    end
+
+    context "when the base has not changed from topology" do
+      let(:service_plan) { create(:service_plan, :base => valid_ddf) }
+
+      it "returns an empty array" do
+        expect(Catalog::SurveyCompare.collect_changed(plans)).to eq([])
+      end
+    end
+  end
+
   describe "empty?" do
     context "when an empty service plan exists" do
       let(:service_plan) { create(:service_plan, :base => empty_ddf) }

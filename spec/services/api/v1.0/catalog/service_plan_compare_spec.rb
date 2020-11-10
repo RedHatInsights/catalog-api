@@ -12,7 +12,7 @@ describe Api::V1x0::Catalog::ServicePlanCompare do
       let(:changed) { true }
 
       it "raises a Catalog::InvalidSurvey error" do
-        expect { subject.process }.to raise_error(::Catalog::InvalidSurvey, "Base survey does not match Topology")
+        expect { subject.process }.to raise_error(::Catalog::InvalidSurvey, /The underlying survey.*has been changed/)
       end
     end
 

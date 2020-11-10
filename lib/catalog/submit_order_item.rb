@@ -23,10 +23,7 @@ module Catalog
     def validate_before_submit
       raise ::Catalog::NotAuthorized unless valid_source?(order_item.portfolio_item.service_offering_source_ref)
 
-      return unless Catalog::SurveyCompare.any_changed?(order_item.portfolio_item.service_plans)
-
-      order_item.mark_failed("Order Item Failed: Base survey does not match Topology")
-      raise Catalog::InvalidSurvey, "Base survey does not match Topology"
+      validate_surveys
     end
 
     def parameters
@@ -34,6 +31,16 @@ module Catalog
         obj.service_parameters = sanitized_parameters
         obj.provider_control_parameters = order_item.provider_control_parameters
         obj.service_plan_id = order_item.service_plan_ref
+      end
+    end
+
+    def validate_surveys
+      changed_surveys = ::Catalog::SurveyCompare.collect_changed(order_item.portfolio_item.service_plans)
+
+      unless changed_surveys.empty?
+        invalid_survey_messages = changed_surveys.collect(&:invalid_survey_message)
+        order_item.mark_failed("Order Item Failed: #{invalid_survey_messages.join('; ')}")
+        raise ::Catalog::InvalidSurvey, invalid_survey_messages
       end
     end
 

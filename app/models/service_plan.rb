@@ -11,11 +11,15 @@ class ServicePlan < ApplicationRecord
     base["schemaType"].presence == "emptySchema"
   end
 
+  def invalid_survey_message
+    "The underlying survey on #{portfolio_item.name} in the #{portfolio_item.portfolio.name} portfolio has been changed and is no longer valid, please contact an administrator to fix it."
+  end
+
   private
 
   def modified_survey
     if Catalog::SurveyCompare.changed?(self)
-      raise Catalog::InvalidSurvey, "Base survey does not match Topology"
+      raise Catalog::InvalidSurvey, invalid_survey_message
     end
   end
 

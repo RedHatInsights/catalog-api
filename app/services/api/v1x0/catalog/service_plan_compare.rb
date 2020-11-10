@@ -9,7 +9,7 @@ module Api
         end
 
         def process
-          raise ::Catalog::InvalidSurvey, "Base survey does not match Topology" if survey_changed?
+          raise ::Catalog::InvalidSurvey, @service_plan.invalid_survey_message if survey_changed?
 
           self
         end
