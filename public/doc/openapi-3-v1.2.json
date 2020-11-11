@@ -3614,6 +3614,12 @@
             "type": "string",
             "readOnly": true
           },
+          "name": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Name",
+            "description": "Name of the Portfolio Item or Order Process"
+          },
           "count": {
             "type": "integer",
             "default": 1,

@@ -22,14 +22,14 @@ module Catalog
 
       relevant_order_processes.each do |order_process|
         if order_process.before_portfolio_item.present?
-          before_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(before_params(order_process, before_sequence_number)).process.order_item
+          before_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, before_sequence_number, "before")).process.order_item
           before_item.send(:service_parameters_raw=, service_parameters(before_item))
           before_item.save
           before_sequence_number += 1
         end
 
         if order_process.after_portfolio_item.present?
-          after_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(after_params(order_process, after_sequence_number)).process.order_item
+          after_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, after_sequence_number, "after")).process.order_item
           after_item.send(:service_parameters_raw=, service_parameters(after_item))
           after_item.save
           after_sequence_number -= 1
@@ -55,23 +55,14 @@ module Catalog
       @tag_resources.map { |resource| resource[:tags] }.flatten.map { |tag| tag[:tag] }.select { |t| t.match?(tag_pattern) }.uniq
     end
 
-    def before_params(order_process, before_sequence_number)
+    def order_item_params(order_process, sequence_number, scope)
       {
+        :name              => order_process.name,
         :order_id          => @order.id,
-        :portfolio_item_id => order_process.before_portfolio_item.id,
+        :portfolio_item_id => scope == "before" ? order_process.before_portfolio_item.id : order_process.after_portfolio_item.id,
         :count             => 1,
-        :process_sequence  => before_sequence_number,
-        :process_scope     => "before"
-      }
-    end
-
-    def after_params(order_process, after_sequence_number)
-      {
-        :order_id          => @order.id,
-        :portfolio_item_id => order_process.after_portfolio_item.id,
-        :count             => 1,
-        :process_sequence  => after_sequence_number,
-        :process_scope     => "after"
+        :process_sequence  => sequence_number,
+        :process_scope     => scope
       }
     end
 

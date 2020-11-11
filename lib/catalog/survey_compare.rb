@@ -12,6 +12,10 @@ module Catalog
         plans.any? { |plan| changed?(plan) }
       end
 
+      def collect_changed(plans)
+        plans.collect { |plan| plan if changed?(plan) }.compact
+      end
+
       def empty?(plan)
         plan.empty_schema?
       end

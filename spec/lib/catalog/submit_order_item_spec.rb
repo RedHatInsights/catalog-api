@@ -99,7 +99,11 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     end
 
     it "fails to order" do
-      expect { submit_order.process }.to raise_exception(Catalog::InvalidSurvey)
+      expect(order_item).to receive(:mark_failed).with(/Order Item Failed:/)
+      expect { submit_order.process }.to raise_exception do |error|
+        expect(error).to be_a(Catalog::InvalidSurvey)
+        expect(error.message).to match(/The underlying survey.*has been changed/)
+      end
     end
   end
 end

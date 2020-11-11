@@ -49,6 +49,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
     context "when there are existing tags" do
       let(:before_params) do
         {
+          :name              => order_process.name,
           :order_id          => order.id,
           :portfolio_item_id => before_portfolio_item.id,
           :count             => 1,
@@ -59,6 +60,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
 
       let(:after_params) do
         {
+          :name              => order_process.name,
           :order_id          => order.id,
           :portfolio_item_id => after_portfolio_item.id,
           :count             => 1,
@@ -128,6 +130,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           end
           let(:after_params) do
             {
+              :name              => order_process.name,
               :order_id          => order.id,
               :portfolio_item_id => after_portfolio_item.id,
               :count             => 1,
@@ -276,6 +279,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
         context "when the tags are different" do
           let(:before_params) do
             {
+              :name              => order_process.name,
               :order_id          => order.id,
               :portfolio_item_id => before_portfolio_item.id,
               :count             => 1,
@@ -285,6 +289,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           end
           let(:before_params2) do
             {
+              :name              => order_process2.name,
               :order_id          => order.id,
               :portfolio_item_id => before_portfolio_item2.id,
               :count             => 1,
@@ -295,6 +300,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
 
           let(:after_params) do
             {
+              :name              => order_process.name,
               :order_id          => order.id,
               :portfolio_item_id => after_portfolio_item.id,
               :count             => 1,
@@ -304,6 +310,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           end
           let(:after_params2) do
             {
+              :name              => order_process2.name,
               :order_id          => order.id,
               :portfolio_item_id => after_portfolio_item2.id,
               :count             => 1,

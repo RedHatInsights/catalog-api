@@ -19,7 +19,9 @@ module Api
         private
 
         def order_item_params
-          @params.permit(:order_id, :portfolio_item_id, :count, :service_parameters => {}, :provider_control_parameters => {})
+          @params.permit(:order_id, :portfolio_item_id, :count, :service_parameters => {}, :provider_control_parameters => {}).tap do |params|
+            params[:name] = PortfolioItem.find(@params[:portfolio_item_id]).name
+          end
         end
 
         def service_plan_ref

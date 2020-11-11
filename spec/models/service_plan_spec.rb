@@ -34,8 +34,13 @@ describe ServicePlan do
 
   describe "#update" do
     context "invalid" do
-      it "sets an error" do
-        expect { service_plan.update!(:modified => { "schema"=> { "title" => "changed", "more" => "less" }}) }.to raise_error(Catalog::InvalidSurvey)
+      it "sets an error with a custom exception message" do
+        expect do
+          service_plan.update!(:modified => {"schema"=> {"title" => "changed", "more" => "less"}})
+        end.to raise_error(
+          Catalog::InvalidSurvey,
+          "The underlying survey on #{portfolio_item.name} in the #{portfolio_item.portfolio.name} portfolio has been changed and is no longer valid, please contact an administrator to fix it."
+        )
       end
     end
 

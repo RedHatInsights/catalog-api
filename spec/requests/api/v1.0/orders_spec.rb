@@ -86,7 +86,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       let!(:service_plan) { create(:service_plan, :portfolio_item => order.order_items.first.portfolio_item) }
 
       before do |example|
-        allow(::Catalog::SurveyCompare).to receive(:any_changed?).with(order.order_items.first.portfolio_item.service_plans).and_return(true)
+        allow(::Catalog::SurveyCompare).to receive(:collect_changed).with(order.order_items.first.portfolio_item.service_plans).and_return([service_plan])
 
         subject unless example.metadata[:subject_inside]
       end
