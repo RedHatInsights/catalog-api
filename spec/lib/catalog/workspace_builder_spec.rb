@@ -22,7 +22,7 @@ describe Catalog::WorkspaceBuilder do
       :order_id         => order.id,
       :context          => default_request,
       :portfolio_item   => portfolio_item,
-      :process_scope    => 'applicable',
+      :process_scope    => 'product',
       :process_sequence => 2,
       :artifacts        => app_facts
     ).tap do |item|

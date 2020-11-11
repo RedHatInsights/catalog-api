@@ -34,7 +34,7 @@ class OrderItem < ApplicationRecord
   end
 
   def can_order?
-    state == (process_scope == 'applicable' ? 'Approved' : 'Created')
+    state == (process_scope == 'product' ? 'Approved' : 'Created')
   end
 
   def update_message(level, message)

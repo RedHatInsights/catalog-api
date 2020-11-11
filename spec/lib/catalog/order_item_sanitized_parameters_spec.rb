@@ -54,7 +54,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
             :label          => "field 1",
             :component      => "textarea-field",
             :helperText     => "That's not my name.",
-            :initialValue   => "{{applicable.#{item_name}.artifacts.testk}}",
+            :initialValue   => "{{product.artifacts.testk}}",
             :isSubstitution => true
           }]
         end

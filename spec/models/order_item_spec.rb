@@ -125,8 +125,8 @@ describe OrderItem do
   describe '#can_order?' do
     before { order_item.update(:process_scope => process_scope, :state => state) }
 
-    context 'when process_scope is applicable' do
-      let(:process_scope) { 'applicable' }
+    context 'when process_scope is product' do
+      let(:process_scope) { 'product' }
 
       context 'when state is Approved' do
         let(:state) { 'Approved' }
@@ -136,7 +136,7 @@ describe OrderItem do
         end
       end
 
-      context 'when state is not applicable' do
+      context 'when state is not Approved' do
         let(:state) { 'Create' }
 
         it 'is not orderable' do

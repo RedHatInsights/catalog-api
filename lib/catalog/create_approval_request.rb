@@ -13,7 +13,7 @@ module Catalog
       # Possibly in the future we may want to create approval requests for
       # a before or after order item, but currently it is only for the
       # applicable product.
-      @order.order_items.where(:process_scope => 'applicable').each do |order_item|
+      @order.order_items.where(:process_scope => 'product').each do |order_item|
         submit_approval_requests(order_item)
       end
 
