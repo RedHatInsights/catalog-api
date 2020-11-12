@@ -80,6 +80,7 @@ class OrderItem < ApplicationRecord
     update_message(level, msg) if msg
     Rails.logger.send(level, "Updated OrderItem: #{id} with '#{opts[:state]}' state".tap { |log| log << " message: #{msg}" }) if msg
 
+    order.reload
     Catalog::OrderStateTransition.new(order).process
   end
 end

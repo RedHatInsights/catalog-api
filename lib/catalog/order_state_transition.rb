@@ -22,6 +22,7 @@ module Catalog
       if item_states.include?('Failed') || item_states.include?('Denied')
         'Failed'
       elsif item_states.all? { |state| state == "Completed" }
+        @order.update_message("info", "Order Completed")
         'Completed'
       elsif item_states.include?('Canceled')
         'Canceled'
