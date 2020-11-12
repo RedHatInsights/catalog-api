@@ -24,7 +24,7 @@ module Catalog
     end
 
     def collect_order_items
-      facts = {'before' => {}, 'applicable' => {}, 'after' => {}}
+      facts = {'before' => {}, 'product' => {}, 'after' => {}}
       @order.order_items.each do |item|
         facts[item.process_scope][encode_name(item.name)] = order_item_facts(item)
       end
@@ -42,8 +42,8 @@ module Catalog
 
     # assume there is one applicable order_item and name it product
     def correct_product(facts)
-      applicable = facts.delete('applicable')
-      facts.merge('product' => Hash(applicable.first&.last)) # skip the portfolio_item name
+      applicable = facts.delete('product')
+      facts.merge('product' => Hash(applicable.first&.last)) # skip the order_item name
     end
   end
 end

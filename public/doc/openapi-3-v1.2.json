@@ -3718,7 +3718,7 @@
             "type": "string",
             "title": "Scope of when the order item is ran",
             "example": "before",
-            "description": "Denotes the scope in which the order item will run for the order it belongs to. It can be 'before', 'after', or 'applicable'",
+            "description": "Denotes the scope in which the order item will run for the order it belongs to. It can be 'before', 'after', or 'product'",
             "readOnly": true
           },
           "artifacts": {

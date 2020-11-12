@@ -35,9 +35,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
         expect(order.order_items.first.process_sequence).to eq(1)
       end
 
-      it "applies the proccess scope of 'applicable' to the order item" do
+      it "applies the proccess scope of 'product' to the order item" do
         subject
-        expect(order.order_items.first.process_scope).to eq("applicable")
+        expect(order.order_items.first.process_scope).to eq('product')
       end
 
       it "does not add any other order items to the order" do
@@ -105,9 +105,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           expect(order.order_items.first.process_sequence).to eq(2)
         end
 
-        it "applies the process scope of 'applicable' to the order item" do
+        it "applies the process scope of 'product' to the order item" do
           subject
-          expect(order.order_items.first.process_scope).to eq("applicable")
+          expect(order.order_items.first.process_scope).to eq("product")
         end
 
         it "delegates creation of a 'before' order_item with a process sequence of 1" do
@@ -144,9 +144,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             expect(order.order_items.first.process_sequence).to eq(1)
           end
 
-          it "applies the process scope of 'applicable' to the order item" do
+          it "applies the process scope of 'product' to the order item" do
             subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
+            expect(order.order_items.first.process_scope).to eq("product")
           end
 
           it "delegates creation of an 'after' order_item with a process sequence of 2" do
@@ -167,9 +167,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             expect(order.order_items.first.process_sequence).to eq(2)
           end
 
-          it "applies the process scope of 'applicable' to the order item" do
+          it "applies the process scope of 'product' to the order item" do
             subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
+            expect(order.order_items.first.process_scope).to eq("product")
           end
 
           it "delegates creation of a 'before' order_item with a process sequence of 1" do
@@ -191,9 +191,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           expect(order.order_items.first.process_sequence).to eq(2)
         end
 
-        it "applies the process scope of 'applicable' to the order item" do
+        it "applies the process scope of 'product' to the order item" do
           subject
-          expect(order.order_items.first.process_scope).to eq("applicable")
+          expect(order.order_items.first.process_scope).to eq("product")
         end
 
         it "delegates creation of a 'before' order_item with a process sequence of 1" do
@@ -221,9 +221,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             expect(order.order_items.first.process_sequence).to eq(2)
           end
 
-          it "applies the process scope of 'applicable' to the order item" do
+          it "applies the process scope of 'product' to the order item" do
             subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
+            expect(order.order_items.first.process_scope).to eq("product")
           end
 
           it "delegates creation of a 'before' order_item with a process sequence of 1" do
@@ -258,9 +258,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             expect(order.order_items.first.process_sequence).to eq(2)
           end
 
-          it "applies the process scope of 'applicable' to the order item" do
+          it "applies the process scope of 'product' to the order item" do
             subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
+            expect(order.order_items.first.process_scope).to eq("product")
           end
 
           it "delegates creation of a 'before' order_item with a process sequence of 1" do
@@ -345,9 +345,9 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             expect(order.order_items.first.process_sequence).to eq(3)
           end
 
-          it "applies the process scope of 'applicable' to the order item" do
+          it "applies the process scope of 'product' to the order item" do
             subject
-            expect(order.order_items.first.process_scope).to eq("applicable")
+            expect(order.order_items.first.process_scope).to eq("product")
           end
 
           it "delegates creation of two 'before' order_items with the appropriate process sequences" do

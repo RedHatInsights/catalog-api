@@ -36,7 +36,7 @@ module Catalog
         end
       end
 
-      @applicable_order_item.update(:process_sequence => applicable_sequence(relevant_order_processes), :process_scope => "applicable")
+      @applicable_order_item.update(:process_sequence => applicable_sequence(relevant_order_processes), :process_scope => "product")
 
       self
     end
