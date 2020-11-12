@@ -1,4 +1,4 @@
-RSpec.describe ApplicationController, :type => [:request, :v1x2] do
+RSpec.describe ApplicationController, :type => [:request, :v1x3] do
   let(:portfolio) { create(:portfolio, :name => 'tenant_portfolio', :description => 'tenant desc', :owner => 'wilma') }
   let(:portfolio_id) { portfolio.id }
   let(:catalog_access) { instance_double(Insights::API::Common::RBAC::Access, :scopes => %w[admin]) }
