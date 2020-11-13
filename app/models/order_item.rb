@@ -2,6 +2,8 @@ class OrderItem < ApplicationRecord
   include OwnerField
   include Discard::Model
   include Api::V1x0::Catalog::DiscardRestore
+  FINISHED_STATES = ["Completed", "Failed", "Canceled", "Denied"].freeze
+
   destroy_dependencies :progress_messages
   attribute :state, :string, :default => 'Created'
   validates_inclusion_of :state,
@@ -56,13 +58,24 @@ class OrderItem < ApplicationRecord
     mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered", **opts)
   end
 
+  def clear_sensitive_service_parameters
+    self[:service_parameters_raw] = nil
+    save!
+  end
+
+  def service_parameters_raw
+    self[:service_parameters_raw] || self[:service_parameters]
+  end
+
   private
 
   def sanitize_parameters
     # Store the API accessible parameters with protected field values masked
-    self.service_parameters_raw = self[:service_parameters]
+    sanitized_parameters = Catalog::OrderItemSanitizedParameters.new(self).process.sanitized_parameters
+    return if sanitized_parameters == service_parameters
 
-    self[:service_parameters] = Catalog::OrderItemSanitizedParameters.new(:order_item => self).process.sanitized_parameters
+    self.service_parameters_raw = self[:service_parameters]
+    self[:service_parameters] = sanitized_parameters
   end
 
   def service_parameters_raw=(val)

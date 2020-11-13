@@ -114,14 +114,14 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
           expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params).and_return(add_to_order_via_order_process_before)
 
           subject
-          expect(before_order_item.service_parameters_raw).to eq('param1' => 'val1')
+          expect(before_order_item.service_parameters).to eq('param1' => 'val1')
         end
 
         it "delegates creation of an 'after' order_item with a process sequence of 3" do
           expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params).and_return(add_to_order_via_order_process_after)
 
           subject
-          expect(after_order_item.service_parameters_raw).to eq('param1' => 'val1')
+          expect(after_order_item.service_parameters).to eq('param1' => 'val1')
         end
 
         context "when there is no before portfolio item" do
@@ -153,7 +153,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(after_params).and_return(add_to_order_via_order_process_after)
 
             subject
-            expect(after_order_item.service_parameters_raw).to eq('param1' => 'val1')
+            expect(after_order_item.service_parameters).to eq('param1' => 'val1')
           end
         end
 
@@ -176,7 +176,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
             expect(Api::V1x2::Catalog::AddToOrderViaOrderProcess).to receive(:new).with(before_params).and_return(add_to_order_via_order_process_before)
 
             subject
-            expect(before_order_item.service_parameters_raw).to eq('param1' => 'val1')
+            expect(before_order_item.service_parameters).to eq('param1' => 'val1')
           end
         end
       end

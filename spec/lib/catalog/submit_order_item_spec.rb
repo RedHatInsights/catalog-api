@@ -92,6 +92,21 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
         end
       end
     end
+
+    context "when runtime service_parameters changes due to substitution" do
+      let(:original_parameters) { {'username' => 'oldname'} }
+      let(:order_item_runtime_parameters) { instance_double(Catalog::OrderItemRuntimeParameters, :process => double(:runtime_parameters => service_parameters)) }
+      before do
+        order_item.update(:service_parameters => original_parameters)
+        allow(Catalog::OrderItemRuntimeParameters).to receive(:new).and_return(order_item_runtime_parameters)
+      end
+
+      it "updates service_parameters with the runtime parameters" do
+        expect(order_item.service_parameters).to eq(original_parameters)
+        submit_order.process
+        expect(order_item.service_parameters).to eq(service_parameters)
+      end
+    end
   end
 
   context "when the base service_plan has changed from topology" do
