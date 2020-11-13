@@ -4,7 +4,8 @@ class SetInternalSequenceValue < ActiveRecord::Migration[5.2]
 
   def up
     OrderProcess.all.group_by(&:tenant_id).each do |_t, processes|
-      seq = processes.max_by { |process| process.internal_sequence || 0 }
+      max_process = processes.max_by { |process| process.internal_sequence || 0 }
+      seq = max_process.internal_sequence || 0
       processes.each do |process|
         next if process.internal_sequence
 
