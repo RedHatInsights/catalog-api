@@ -79,7 +79,6 @@ describe PortfolioItem do
       subject.tag_add('workflows', :namespace => 'approval', :value => '123')
       subject.tag_add('workflows', :namespace => 'approval', :value => '456')
       subject.tag_add('order_processes', :namespace => 'approval', :value => '789')
-      subject.update_metadata
     end
 
     it 'adds staticsitcs' do

@@ -23,7 +23,6 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
       portfolio.tag_add('workflows', :namespace => 'approval', :value => '123')
       portfolio.tag_add('order_processes', :namespace => 'approval', :value => '456')
 
-      portfolio.update_metadata
       get "#{api_version}/portfolios/#{portfolio_id}", :headers => default_headers
     end
 

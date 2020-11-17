@@ -25,7 +25,6 @@ describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] d
       portfolio_item.tag_add('workflows', :namespace => 'approval', :value => '123')
       portfolio_item.tag_add('order_processes', :namespace => 'approval', :value => '456')
 
-      portfolio_item.update_metadata
       subject unless example.metadata[:subject_inside]
     end
 
