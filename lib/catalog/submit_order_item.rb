@@ -18,6 +18,9 @@ module Catalog
         Rails.logger.info("OrderItem #{order_item.id} ordered with topology task ref #{result.task_id}")
       end
       self
+    rescue => e
+      Rails.logger.error("Error Submitting Order Item: #{@order_item.id}: #{e.message}")
+      @order_item.mark_failed("Error Submitting Order Item: #{e.message}")
     end
 
     private
@@ -41,8 +44,7 @@ module Catalog
 
       unless changed_surveys.empty?
         invalid_survey_messages = changed_surveys.collect(&:invalid_survey_message)
-        order_item.mark_failed("Order Item Failed: #{invalid_survey_messages.join('; ')}")
-        raise ::Catalog::InvalidSurvey, invalid_survey_messages
+        raise ::Catalog::InvalidSurvey, invalid_survey_messages.join('; ')
       end
     end
 

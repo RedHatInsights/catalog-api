@@ -53,7 +53,7 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
         subject.process
         progress_message = ProgressMessage.last
         expect(progress_message.level).to eq("info")
-        expect(progress_message.message).to eq("Waiting for inventories")
+        expect(progress_message.message).to eq("Computing inventories")
         expect(progress_message.messageable_id).to eq(order_item.order.id)
         expect(progress_message.messageable_type).to eq(order_item.order.class.name)
       end

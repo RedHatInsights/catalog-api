@@ -118,19 +118,15 @@ describe Catalog::ApprovalTransition do
 
     context "when the call to submit order fails" do
       before do
-        count = 0
         approval.update(:state => "approved")
-        allow(submit_order).to receive(:process) do
-          count += 1
-          count < 2 ? raise(topo_ex) : submit_order
-        end
+        allow(submit_order).to receive(:process).and_raise(topo_ex)
       end
 
       it "blows up" do
         order_item_transition.process
         msg = order.progress_messages.last
         expect(msg.level).to eq "error"
-        expect(msg.message).to eq "Error Submitting Order: #{topo_ex.message}"
+        expect(msg.message).to eq "Error when submitting order item #{order_item.id}: #{topo_ex.message}"
       end
     end
 

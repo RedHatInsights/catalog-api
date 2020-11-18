@@ -39,8 +39,7 @@ module Catalog
       Catalog::SubmitNextOrderItem.new(@order_item.order_id).process
     rescue ::Catalog::TopologyError => e
       Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
-      @order_item.order.update_message("error", "Error Submitting Order: #{e.message}")
-      @order_item.mark_failed("Error Submitting Order: #{e.message}")
+      @order_item.order.update_message("error", "Error when submitting order item #{@order_item.id}: #{e.message}")
     end
 
     def mark_canceled
