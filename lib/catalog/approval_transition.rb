@@ -10,9 +10,7 @@ module Catalog
     end
 
     def process
-      Insights::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
-        state_transitions
-      end
+      state_transitions
       self
     end
 

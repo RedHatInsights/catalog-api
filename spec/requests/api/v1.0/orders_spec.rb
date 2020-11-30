@@ -81,8 +81,12 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
 
     context "when the survey has changed" do
       let(:archived) { false }
-
-      let!(:order_item) { create(:order_item, :order => order) }
+      let(:req) { {:headers => default_headers, :original_url => "localhost/nope"} }
+      let!(:order_item) do
+        Insights::API::Common::Request.with_request(req) do
+          create(:order_item, :order => order)
+        end
+      end
       let!(:service_plan) { create(:service_plan, :portfolio_item => order.order_items.first.portfolio_item) }
 
       before do |example|

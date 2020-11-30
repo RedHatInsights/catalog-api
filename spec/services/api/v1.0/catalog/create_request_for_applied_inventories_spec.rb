@@ -1,7 +1,12 @@
 describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :service do
   let(:subject) { described_class.new(order_item.order) }
   let(:service_plan_ref) { "991" }
-  let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref) }
+  let(:req) { {:headers => default_headers, :original_url => "localhost/nope"} }
+  let!(:order_item) do
+    Insights::API::Common::Request.with_request(req) do
+      create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref)
+    end
+  end
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
 
   around do |example|
