@@ -17,6 +17,7 @@ class PortfolioItem < ApplicationRecord
   after_discard   :update_portfolio_stats
   after_undiscard :update_portfolio_stats
   after_destroy   :update_portfolio_stats
+  before_destroy  :validate_deletable, :prepend => true
 
   belongs_to :icon, :optional => true
   has_many :service_plans, :dependent => :destroy
@@ -29,6 +30,13 @@ class PortfolioItem < ApplicationRecord
     ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities, 'statistics' => statistics_metadata)
   end
 
+  def validate_deletable
+    unless deletable?
+      errors.add(:base, "cannot be deleted because it is used by some order processes")
+      throw :abort
+    end
+  end
+
   private
 
   def update_portfolio_stats
@@ -39,5 +47,9 @@ class PortfolioItem < ApplicationRecord
     {
       'approval_processes' => tags.where(:namespace => 'approval', :name => 'workflows').count
     }
+  end
+
+  def deletable?
+    tags.where(:name => 'order_processes').count == 0
   end
 end

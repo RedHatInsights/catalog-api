@@ -69,6 +69,30 @@ describe PortfolioItem do
         subject.run_callbacks kind
       end
     end
+
+    it "runs validate_deletable callback" do
+      expect(subject).to receive(:validate_deletable)
+
+      subject.run_callbacks 'destroy'
+    end
+  end
+
+  describe "#validate_deletable" do
+    let(:portfolio) { create(:portfolio) }
+    subject! { create(:portfolio_item, :portfolio => portfolio) }
+
+    it "passes validation when there is no order process associated" do
+      expect(subject.validate_deletable).to be_nil
+    end
+
+    context "when has associated order processes" do
+      before { subject.tag_add('order_processes', :namespace => 'catalog', :value => '789') }
+
+      it "raises an error" do
+        expect { subject.validate_deletable }.to raise_error(UncaughtThrowError, "uncaught throw :abort")
+        expect(subject.errors[:base]).to include("cannot be deleted because it is used by some order processes")
+      end
+    end
   end
 
   context "with two valid tags" do
