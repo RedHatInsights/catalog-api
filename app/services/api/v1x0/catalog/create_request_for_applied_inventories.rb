@@ -15,11 +15,12 @@ module Api
             validate_surveys
             send_request_to_compute_applied_inventories
 
-            @item.update_message(:info, "Waiting for inventories")
+            @order.update_message(:info, "Computing inventories")
           end
           self
-        rescue
+        rescue => e
           @order.update(:state => "Failed")
+          @order.update_message(:error, "Error computing inventories: #{e.message}")
           raise
         end
 

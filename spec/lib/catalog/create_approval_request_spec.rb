@@ -72,7 +72,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
       it "creates a progress message" do
         expect { subject.process }.to raise_exception(Catalog::ApprovalError)
-        expect(ProgressMessage.last.message).to eq("Error while creating approval request")
+        expect(ProgressMessage.first.message).to eq("Error while creating approval request")
+        expect(ProgressMessage.last.message).to eq("Order Failed")
       end
 
       it "fails the order" do

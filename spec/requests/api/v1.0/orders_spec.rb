@@ -66,7 +66,8 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       end
 
       it "creates progress messages for the order items" do
-        expect(ProgressMessage.last.message).to match(/has been archived/)
+        expect(ProgressMessage.first.message).to match(/has been archived/)
+        expect(ProgressMessage.last.message).to match(/Order Failed/)
       end
 
       it "marks the order as failed" do

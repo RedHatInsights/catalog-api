@@ -20,10 +20,13 @@ module Catalog
 
       # TO DO: How to determine order state with pre and post order_processes?
       if item_states.include?('Failed') || item_states.include?('Denied')
+        @order.update_message("error", "Order Failed")
         'Failed'
       elsif item_states.all? { |state| state == "Completed" }
+        @order.update_message("info", "Order Completed")
         'Completed'
       elsif item_states.include?('Canceled')
+        # Message of 'Order Canceled' has been recorded
         'Canceled'
       else
         'Ordered'

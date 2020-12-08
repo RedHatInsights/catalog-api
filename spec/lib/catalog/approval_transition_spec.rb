@@ -124,9 +124,9 @@ describe Catalog::ApprovalTransition do
 
       it "blows up" do
         order_item_transition.process
-        msg = order_item.progress_messages.last
+        msg = order.progress_messages.last
         expect(msg.level).to eq "error"
-        expect(msg.message).to eq "Error Submitting Order #{order.id}, #{topo_ex.message}"
+        expect(msg.message).to eq "Error when submitting order item #{order_item.id}: #{topo_ex.message}"
       end
     end
 
@@ -137,7 +137,7 @@ describe Catalog::ApprovalTransition do
 
       it "fails the order" do
         order_item_transition.process
-        msg = order_item.progress_messages.last
+        msg = order.progress_messages.last
         expect(msg.level).to eq "error"
         expect(msg.message).to match(/Error Sending Email/)
       end
