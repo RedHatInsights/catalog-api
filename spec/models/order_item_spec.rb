@@ -186,4 +186,57 @@ describe OrderItem do
       end
     end
   end
+
+  describe 'sanitize parameters before an order_item is saved' do
+    let(:order_item) { create(:order_item_with_callback, :service_parameters => {'key' => 'val'}) }
+    let(:order_item_sanitized_parameters) { instance_double(Catalog::OrderItemSanitizedParameters, :process => double(:sanitized_parameters => sanitized_parameters)) }
+    before { allow(Catalog::OrderItemSanitizedParameters).to receive(:new).and_return(order_item_sanitized_parameters) }
+
+    context 'when parameters need sanitizing' do
+      let(:sanitized_parameters) { {'key' => '$protected$'} }
+
+      it 'copies original parameters to service_parameters_raw' do
+        expect(order_item.service_parameters).to eq('key' => '$protected$')
+        expect(order_item.service_parameters_raw).to eq('key' => 'val')
+      end
+    end
+
+    context 'when parameters do not need sanitizing' do
+      let(:sanitized_parameters) { {'key' => 'val'} }
+
+      it 'leaves service_parameters_raw empty' do
+        expect(order_item.service_parameters).to eq('key' => 'val')
+        expect(order_item[:service_parameters_raw]).to be_nil
+      end
+    end
+  end
+
+  describe '#service_parameters_raw' do
+    context 'when sensitive service_parameters present' do
+      before do
+        order_item[:service_parameters_raw] = 'some value'
+        order_item.save
+      end
+
+      it 'returns internal service_parameters_raw' do
+        expect(order_item.service_parameters_raw).to eq('some value')
+      end
+
+      describe '#clear_sensitive_service_parameters' do
+        it 'clears sensitive service parameters' do
+          expect(order_item[:service_parameters_raw]).to eq('some value')
+          order_item.clear_sensitive_service_parameters
+          order_item.reload
+          expect(order_item[:service_parameters_raw]).to be_nil
+        end
+      end
+    end
+
+    context 'when no service_parameters present' do
+      it 'returns service_parameters' do
+        expect(order_item.service_parameters).to eq("name" => "fred")
+        expect(order_item.service_parameters_raw).to eq("name" => "fred")
+      end
+    end
+  end
 end

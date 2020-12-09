@@ -13,7 +13,7 @@ module Catalog
       validate_before_submit
 
       TopologicalInventory::Service.call do |api_instance|
-        result = api_instance.order_service_offering(order_item.portfolio_item.service_offering_ref, parameters)
+        result = api_instance.order_service_offering(order_item.portfolio_item.service_offering_ref, service_offering)
         order_item.mark_ordered(:topology_task_ref => result.task_id)
         Rails.logger.info("OrderItem #{order_item.id} ordered with topology task ref #{result.task_id}")
       end
@@ -21,6 +21,8 @@ module Catalog
     rescue => e
       Rails.logger.error("Error Submitting Order Item: #{@order_item.id}: #{e.message}")
       @order_item.mark_failed("Error Submitting Order Item: #{e.message}")
+    ensure
+      order_item.update(:service_parameters => runtime_parameters)
     end
 
     private
@@ -31,9 +33,9 @@ module Catalog
       validate_surveys
     end
 
-    def parameters
+    def service_offering
       TopologicalInventoryApiClient::OrderParametersServiceOffering.new.tap do |obj|
-        obj.service_parameters = sanitized_parameters
+        obj.service_parameters = runtime_parameters
         obj.provider_control_parameters = order_item.provider_control_parameters
         obj.service_plan_id = order_item.service_plan_ref
       end
@@ -48,11 +50,8 @@ module Catalog
       end
     end
 
-    def sanitized_parameters
-      Catalog::OrderItemSanitizedParameters.new(
-        :order_item         => order_item,
-        :do_not_mask_values => true
-      ).process.sanitized_parameters
+    def runtime_parameters
+      @runtime_parameters ||= OrderItemRuntimeParameters.new(order_item).process.runtime_parameters
     end
   end
 end
