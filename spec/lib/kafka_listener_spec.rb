@@ -61,6 +61,11 @@ describe KafkaListener do
         expect(subject).to receive(:process_event).with(event)
         subject.subscribe
       end
+
+      it 'runs in a new db connection checkout from the pool' do
+        expect(ActiveRecord::Base.connection_pool).to receive(:with_connection)
+        subject.subscribe
+      end
     end
   end
 
