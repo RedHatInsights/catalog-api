@@ -5,6 +5,18 @@ describe 'Metrics' do
       portfolio_count
       product_count
       portfolio_share_count
+      product_source_count
+      most_recent_portfolio_create_date
+      most_recent_product_create_date
+      most_recent_order_create_date
+      total_orders
+      order_count_last_30_days
+      order_count_31_to_60_days_ago
+      order_count_61_to_90_days_ago
+      portfolio_creators
+      unique_order_usernames
+      discarded_portfolios
+      discarded_products
     ].collect(&:titleize)
   end
 
@@ -80,10 +92,11 @@ describe 'Metrics' do
 
     context '#with_data' do
       let(:expected_result) do
+        date_string = Date.today.iso8601
         [
           header,
-          [Tenant.first.external_tenant, 2, 0, 1],
-          [tenant.external_tenant, 3, 0, 2]
+          [Tenant.first.external_tenant, 2, 0, 1, 0, date_string, nil, nil, 0, 0, 0, 0, "jdoe", 0, 0, 0],
+          [tenant.external_tenant,       3, 0, 2, 0, date_string, nil, nil, 0, 0, 0, 0, "jdoe", 0, 0, 0]
         ]
       end
 

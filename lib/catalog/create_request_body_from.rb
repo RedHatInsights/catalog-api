@@ -1,5 +1,6 @@
 module Catalog
   class CreateRequestBodyFrom
+    include Platform
     attr_reader :result
 
     def initialize(order, order_item, task, tag_resources)
@@ -16,22 +17,13 @@ module Catalog
           :product   => @order_item.portfolio_item.name,
           :portfolio => @order_item.portfolio_item.portfolio.name,
           :order_id  => @order_item.order_id.to_s,
-          :platform  => platform(@order_item.portfolio_item),
+          :platform  => platform(@order_item.portfolio_item).name,
           :params    => @order_item.service_parameters
         }
         request.tag_resources = @tag_resources
       end
 
       self
-    end
-
-    private
-
-    def platform(portfolio_item)
-      source = Sources.call do |api_instance|
-        api_instance.show_source(portfolio_item.service_offering_source_ref)
-      end
-      source.name
     end
   end
 end

@@ -2,6 +2,8 @@ class OrderItem < ApplicationRecord
   include OwnerField
   include Discard::Model
   include Api::V1x0::Catalog::DiscardRestore
+  FINISHED_STATES = ["Completed", "Failed", "Canceled", "Denied"].freeze
+
   destroy_dependencies :progress_messages
   attribute :state, :string, :default => 'Created'
   validates_inclusion_of :state,
@@ -18,8 +20,8 @@ class OrderItem < ApplicationRecord
 
   belongs_to :order, :inverse_of => :order_items
   belongs_to :portfolio_item
-  has_many :progress_messages, :dependent => :destroy
   has_many :approval_requests, :dependent => :destroy
+  has_many :progress_messages, :as => :messageable, :dependent => :destroy, :inverse_of => :messageable
 
   before_create :set_defaults
   before_save :sanitize_parameters, :if => :will_save_change_to_service_parameters?
@@ -34,7 +36,7 @@ class OrderItem < ApplicationRecord
   end
 
   def can_order?
-    state == (process_scope == 'applicable' ? 'Approved' : 'Created')
+    state == (process_scope == 'product' ? 'Approved' : 'Created')
   end
 
   def update_message(level, message)
@@ -56,13 +58,24 @@ class OrderItem < ApplicationRecord
     mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered", **opts)
   end
 
+  def clear_sensitive_service_parameters
+    self[:service_parameters_raw] = nil
+    save!
+  end
+
+  def service_parameters_raw
+    self[:service_parameters_raw] || self[:service_parameters]
+  end
+
   private
 
   def sanitize_parameters
     # Store the API accessible parameters with protected field values masked
-    self.service_parameters_raw = self[:service_parameters]
+    sanitized_parameters = Catalog::OrderItemSanitizedParameters.new(self).process.sanitized_parameters
+    return if sanitized_parameters == service_parameters
 
-    self[:service_parameters] = Catalog::OrderItemSanitizedParameters.new(:order_item => self).process.sanitized_parameters
+    self.service_parameters_raw = self[:service_parameters]
+    self[:service_parameters] = sanitized_parameters
   end
 
   def service_parameters_raw=(val)
@@ -80,6 +93,7 @@ class OrderItem < ApplicationRecord
     update_message(level, msg) if msg
     Rails.logger.send(level, "Updated OrderItem: #{id} with '#{opts[:state]}' state".tap { |log| log << " message: #{msg}" }) if msg
 
+    order.reload
     Catalog::OrderStateTransition.new(order).process
   end
 end

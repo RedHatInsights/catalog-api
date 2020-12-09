@@ -1,8 +1,6 @@
 module Catalog
   class ApprovalTransition
-    attr_reader :order_item_id
-    attr_reader :order_item
-    attr_reader :state
+    attr_reader :order_item_id, :order_item, :state
 
     def initialize(order_item_id)
       @order_item = OrderItem.find(order_item_id)
@@ -10,9 +8,7 @@ module Catalog
     end
 
     def process
-      Insights::API::Common::Request.with_request(@order_item.context.transform_keys(&:to_sym)) do
-        state_transitions
-      end
+      state_transitions
       self
     end
 
@@ -39,28 +35,28 @@ module Catalog
 
     def submit_order
       finalize_order
-      @order_item.update_message("info", "Submitting Order #{@order_item.order_id} for provisioning ")
+      @order_item.order.update_message("info", "Submitting Order for provisioning")
       Catalog::SubmitNextOrderItem.new(@order_item.order_id).process
     rescue ::Catalog::TopologyError => e
       Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
-      @order_item.update_message("error", "Error Submitting Order #{@order_item.order_id}, #{e.message}")
+      @order_item.order.update_message("error", "Error when submitting order item #{@order_item.id}: #{e.message}")
     end
 
     def mark_canceled
       finalize_order
-      @order_item.update_message("info", "Order #{@order_item.order_id} has been canceled")
+      @order_item.order.update_message("info", "Order has been canceled")
       Rails.logger.info("Order #{@order_item.order_id} has been canceled")
     end
 
     def mark_denied
       finalize_order
-      @order_item.update_message("info", "Order #{@order_item.order_id} has been denied")
+      @order_item.order.update_message("info", "Order has been denied")
       Rails.logger.info("Order #{@order_item.order_id} has been denied")
     end
 
     def mark_errored
       finalize_order
-      @order_item.update_message("error", "Order #{@order_item.order_id} has approval errors. #{reasons}")
+      @order_item.order.update_message("error", "Order has approval errors. #{reasons}")
       Rails.logger.error("Order #{@order_item.order_id} has failed. #{reasons}")
     end
 

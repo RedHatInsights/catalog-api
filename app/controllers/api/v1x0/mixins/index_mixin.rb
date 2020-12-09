@@ -48,6 +48,10 @@ module Api
         def name
           self.class.to_s
         end
+
+        def permitted_params
+          super + [:messageable_type, :messageable_id]
+        end
       end
     end
   end

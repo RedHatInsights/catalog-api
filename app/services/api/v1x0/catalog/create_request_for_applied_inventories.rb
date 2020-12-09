@@ -10,13 +10,17 @@ module Api
         end
 
         def process
-          validate_surveys
-          send_request_to_compute_applied_inventories
+          # The request was made in submit_order API. Switch to the context of the item which contains the tracking ID.
+          Insights::API::Common::Request.with_request(@item.context.transform_keys(&:to_sym)) do
+            validate_surveys
+            send_request_to_compute_applied_inventories
 
-          @item.update_message(:info, "Waiting for inventories")
+            @order.update_message(:info, "Computing inventories")
+          end
           self
-        rescue
+        rescue => e
           @order.update(:state => "Failed")
+          @order.update_message(:error, "Error computing inventories: #{e.message}")
           raise
         end
 

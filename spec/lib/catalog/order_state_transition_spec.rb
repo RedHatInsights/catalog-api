@@ -32,9 +32,15 @@ describe Catalog::OrderStateTransition do
       end
 
       it "sets the state to Failed even if only one is denied" do
-        order_item2.update(:state => "Approved")
+        order_item2.update(:state => "Completed")
         transition
         expect(order.state).to eq 'Failed'
+      end
+
+      it "sets the state to Ordered if another item is not finished" do
+        order_item2.update(:state => 'Pending')
+        transition
+        expect(order.state).to eq('Ordered')
       end
     end
 
@@ -69,6 +75,25 @@ describe Catalog::OrderStateTransition do
       it "sets the state to Canceled" do
         transition
         expect(order.state).to eq 'Canceled'
+      end
+    end
+
+    context "when order items have sensitive service_parameters" do
+      before do
+        order_item[:service_parameters_raw] = {'password' => 'abc'}
+        order_item.save
+        order_item2[:service_parameters_raw] = {'token' => '123'}
+        order_item2.update(:state => 'Completed')
+      end
+
+      let(:expected_state) { "Completed" }
+
+      it "clears all service_parameters_raw" do
+        transition
+        order_item.reload
+        order_item2.reload
+        expect(order_item[:service_parameters_raw]).to be_nil
+        expect(order_item2[:service_parameters_raw]).to be_nil
       end
     end
   end

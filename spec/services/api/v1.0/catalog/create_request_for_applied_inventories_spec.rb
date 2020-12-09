@@ -1,7 +1,12 @@
 describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :service do
   let(:subject) { described_class.new(order_item.order) }
   let(:service_plan_ref) { "991" }
-  let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref) }
+  let(:req) { {:headers => default_headers, :original_url => "localhost/nope"} }
+  let!(:order_item) do
+    Insights::API::Common::Request.with_request(req) do
+      create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref)
+    end
+  end
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
 
   around do |example|
@@ -48,8 +53,9 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
         subject.process
         progress_message = ProgressMessage.last
         expect(progress_message.level).to eq("info")
-        expect(progress_message.message).to eq("Waiting for inventories")
-        expect(progress_message.order_item_id).to eq(order_item.id.to_s)
+        expect(progress_message.message).to eq("Computing inventories")
+        expect(progress_message.messageable_id).to eq(order_item.order.id)
+        expect(progress_message.messageable_type).to eq(order_item.order.class.name)
       end
     end
 

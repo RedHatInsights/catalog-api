@@ -10,7 +10,7 @@ describe Catalog::CreateApprovalRequest, :type => :service do
   end
 
   let(:order) { order_item.order }
-  let!(:order_item) { create(:order_item, :process_scope => 'applicable') }
+  let!(:order_item) { create(:order_item, :process_scope => 'product') }
 
   let(:create_request_body_from) { instance_double(Catalog::CreateRequestBodyFrom, :result => request_body_from) }
   let(:request_body_from) { {"test" => "test"}.to_json }
@@ -72,7 +72,8 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
       it "creates a progress message" do
         expect { subject.process }.to raise_exception(Catalog::ApprovalError)
-        expect(ProgressMessage.last.message).to eq("Error while creating approval request")
+        expect(ProgressMessage.first.message).to eq("Error while creating approval request")
+        expect(ProgressMessage.last.message).to eq("Order Failed")
       end
 
       it "fails the order" do

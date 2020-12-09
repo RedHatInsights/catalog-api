@@ -85,8 +85,26 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
 
       it "throws an unauthorized exception" do
         Insights::API::Common::Request.with_request(default_request) do
-          expect { submit_order.process }.to raise_error(Catalog::NotAuthorized)
+          submit_order.process
+          msg = order_item.progress_messages.last
+          expect(msg.level).to eq "error"
+          expect(msg.message).to eq "Error Submitting Order Item: Catalog::NotAuthorized"
         end
+      end
+    end
+
+    context "when runtime service_parameters changes due to substitution" do
+      let(:original_parameters) { {'username' => 'oldname'} }
+      let(:order_item_runtime_parameters) { instance_double(Catalog::OrderItemRuntimeParameters, :process => double(:runtime_parameters => service_parameters)) }
+      before do
+        order_item.update(:service_parameters => original_parameters)
+        allow(Catalog::OrderItemRuntimeParameters).to receive(:new).and_return(order_item_runtime_parameters)
+      end
+
+      it "updates service_parameters with the runtime parameters" do
+        expect(order_item.service_parameters).to eq(original_parameters)
+        submit_order.process
+        expect(order_item.service_parameters).to eq(service_parameters)
       end
     end
   end
@@ -99,11 +117,10 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     end
 
     it "fails to order" do
-      expect(order_item).to receive(:mark_failed).with(/Order Item Failed:/)
-      expect { submit_order.process }.to raise_exception do |error|
-        expect(error).to be_a(Catalog::InvalidSurvey)
-        expect(error.message).to match(/The underlying survey.*has been changed/)
-      end
+      submit_order.process
+      msg = order_item.progress_messages.last
+      expect(msg.level).to eq "error"
+      expect(msg.message).to match(/Error Submitting Order Item: The underlying survey/)
     end
   end
 end

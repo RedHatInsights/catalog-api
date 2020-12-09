@@ -16,8 +16,6 @@ module Metadata
         build_ancillary_metadata
       end
 
-      update_ancillary_metadata
-
       ancillary_metadata.save! unless new_record?
     end
   end

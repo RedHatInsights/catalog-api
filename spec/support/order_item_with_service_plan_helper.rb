@@ -18,7 +18,7 @@ RSpec.shared_context "uses an order item with raw service parameters set" do
       :order_id                    => order.id,
       :count                       => 1,
       :context                     => default_request,
-      :process_scope               => 'applicable',
+      :process_scope               => 'product',
       :process_sequence            => 1
     ).tap do |item|
       item.update(:state => 'Approved')

@@ -45,4 +45,17 @@ describe Order do
       end
     end
   end
+
+  context "updating order progress messages" do
+    it "syncs the time between order and progress message" do
+      order1.update_message("test_level", "test message")
+      order1.reload
+      last_message = order1.progress_messages.last
+      expect(order1.updated_at).to be_a(Time)
+      expect(last_message.message).to eq("test message")
+      expect(last_message.messageable_type).to eq(order1.class.name)
+      expect(last_message.messageable_id.to_i).to eq(order1.id)
+      expect(last_message.tenant_id).to eq(order1.tenant.id)
+    end
+  end
 end

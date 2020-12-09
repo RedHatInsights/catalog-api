@@ -7,7 +7,8 @@ describe OrderItem do
       order_item.reload
       last_message = order_item.progress_messages.last
       expect(order_item.updated_at).to be_a(Time)
-      expect(last_message.order_item_id.to_i).to eq order_item.id
+      expect(last_message.messageable_id.to_i).to eq(order_item.id)
+      expect(last_message.messageable_type).to eq(order_item.class.name)
       expect(last_message.tenant_id).to eq(order_item.tenant.id)
     end
   end
@@ -125,8 +126,8 @@ describe OrderItem do
   describe '#can_order?' do
     before { order_item.update(:process_scope => process_scope, :state => state) }
 
-    context 'when process_scope is applicable' do
-      let(:process_scope) { 'applicable' }
+    context 'when process_scope is product' do
+      let(:process_scope) { 'product' }
 
       context 'when state is Approved' do
         let(:state) { 'Approved' }
@@ -136,7 +137,7 @@ describe OrderItem do
         end
       end
 
-      context 'when state is not applicable' do
+      context 'when state is not Approved' do
         let(:state) { 'Create' }
 
         it 'is not orderable' do
@@ -182,6 +183,59 @@ describe OrderItem do
         it 'is not orderable' do
           expect(order_item.can_order?).to be_falsey
         end
+      end
+    end
+  end
+
+  describe 'sanitize parameters before an order_item is saved' do
+    let(:order_item) { create(:order_item_with_callback, :service_parameters => {'key' => 'val'}) }
+    let(:order_item_sanitized_parameters) { instance_double(Catalog::OrderItemSanitizedParameters, :process => double(:sanitized_parameters => sanitized_parameters)) }
+    before { allow(Catalog::OrderItemSanitizedParameters).to receive(:new).and_return(order_item_sanitized_parameters) }
+
+    context 'when parameters need sanitizing' do
+      let(:sanitized_parameters) { {'key' => '$protected$'} }
+
+      it 'copies original parameters to service_parameters_raw' do
+        expect(order_item.service_parameters).to eq('key' => '$protected$')
+        expect(order_item.service_parameters_raw).to eq('key' => 'val')
+      end
+    end
+
+    context 'when parameters do not need sanitizing' do
+      let(:sanitized_parameters) { {'key' => 'val'} }
+
+      it 'leaves service_parameters_raw empty' do
+        expect(order_item.service_parameters).to eq('key' => 'val')
+        expect(order_item[:service_parameters_raw]).to be_nil
+      end
+    end
+  end
+
+  describe '#service_parameters_raw' do
+    context 'when sensitive service_parameters present' do
+      before do
+        order_item[:service_parameters_raw] = 'some value'
+        order_item.save
+      end
+
+      it 'returns internal service_parameters_raw' do
+        expect(order_item.service_parameters_raw).to eq('some value')
+      end
+
+      describe '#clear_sensitive_service_parameters' do
+        it 'clears sensitive service parameters' do
+          expect(order_item[:service_parameters_raw]).to eq('some value')
+          order_item.clear_sensitive_service_parameters
+          order_item.reload
+          expect(order_item[:service_parameters_raw]).to be_nil
+        end
+      end
+    end
+
+    context 'when no service_parameters present' do
+      it 'returns service_parameters' do
+        expect(order_item.service_parameters).to eq("name" => "fred")
+        expect(order_item.service_parameters_raw).to eq("name" => "fred")
       end
     end
   end

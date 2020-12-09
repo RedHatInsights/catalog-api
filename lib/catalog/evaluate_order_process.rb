@@ -22,26 +22,28 @@ module Catalog
 
       relevant_order_processes.each do |order_process|
         if order_process.before_portfolio_item.present?
-          before_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, before_sequence_number, "before")).process.order_item
-          before_item.send(:service_parameters_raw=, service_parameters(before_item))
-          before_item.save
+          create_itsm_item(order_process, before_sequence_number, 'before')
           before_sequence_number += 1
         end
 
         if order_process.after_portfolio_item.present?
-          after_item = Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, after_sequence_number, "after")).process.order_item
-          after_item.send(:service_parameters_raw=, service_parameters(after_item))
-          after_item.save
+          create_itsm_item(order_process, after_sequence_number, 'after')
           after_sequence_number -= 1
         end
       end
 
-      @applicable_order_item.update(:process_sequence => applicable_sequence(relevant_order_processes), :process_scope => "applicable")
+      @applicable_order_item.update(:process_sequence => applicable_sequence(relevant_order_processes), :process_scope => "product")
 
       self
     end
 
     private
+
+    def create_itsm_item(order_process, sequence_number, scope)
+      Api::V1x2::Catalog::AddToOrderViaOrderProcess.new(order_item_params(order_process, sequence_number, scope)).process.order_item.tap do |item|
+        item.update(:service_parameters => service_parameters(item))
+      end
+    end
 
     def find_relevant_order_processes
       tag_link_query = TagLink.where(:tag_name => all_tags)

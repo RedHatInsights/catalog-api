@@ -5,7 +5,7 @@ class ApprovalRequest < ApplicationRecord
   belongs_to :order_item
 
   after_create do
-    order_item.update_message("info", "Created Approval Request ref: #{approval_request_ref}.  catalog approval request id: #{id}")
+    order_item.order.update_message("info", "Created Approval Request ref: #{approval_request_ref}.  catalog approval request id: #{id}")
   end
 
   scope :by_owner, lambda {
