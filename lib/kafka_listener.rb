@@ -39,13 +39,15 @@ class KafkaListener
     end
 
     Insights::API::Common::Request.with_request(:headers => insights_headers, :original_url => nil) do |req|
-      tenant = Tenant.find_by(:external_tenant => req.tenant)
-      if tenant
-        ActsAsTenant.with_tenant(tenant) do
-          process_event(event)
+      ActiveRecord::Base.connection_pool.with_connection do
+        tenant = Tenant.find_by(:external_tenant => req.tenant)
+        if tenant
+          ActsAsTenant.with_tenant(tenant) do
+            process_event(event)
+          end
+        else
+          Rails.logger.error("Message skipped because it does not belong to a valid tenant")
         end
-      else
-        Rails.logger.error("Message skipped because it does not belong to a valid tenant")
       end
     end
   rescue => e
