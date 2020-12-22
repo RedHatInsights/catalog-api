@@ -1,11 +1,11 @@
 {
-  "schema": 
+  "schema":
   {"fields": [
-    {"name": "empty-service-plan", 
-     "label": "This product requires no user input and is fully configured by the system. Click submit to order this item.", 
+    {"name": "empty-service-plan",
+     "label": "This product requires no user input and is fully configured by the system. Click confirm to order this item.",
      "component": "plain-text"
     }
   ]
-  }, 
+  },
   "schemaType": "emptySchema"
 }
