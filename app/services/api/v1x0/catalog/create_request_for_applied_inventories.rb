@@ -19,8 +19,7 @@ module Api
           end
           self
         rescue => e
-          @order.update(:state => "Failed")
-          @order.update_message(:error, "Error computing inventories: #{e.message}")
+          @order.mark_failed("Error computing inventories: #{e.message}")
           raise
         end
 

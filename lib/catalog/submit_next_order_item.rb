@@ -15,13 +15,9 @@ module Catalog
 
       Catalog::SubmitOrderItem.new(order_item).process
 
-      @order.update(:state => 'Ordered', :order_request_sent_at => Time.now.utc) unless @order.state == 'Ordered'
-
+      @order.mark_ordered
       @order.reload
       self
-    rescue => e
-      Rails.logger.error("Error Submitting Order #{@order_id}: #{e.message}")
-      raise
     end
   end
 end

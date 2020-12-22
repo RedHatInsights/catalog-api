@@ -20,49 +20,47 @@ module Catalog
         submit_order
       elsif denied?
         @state = "Denied"
-        mark_denied
+        cancel_all
       elsif canceled?
         @state = "Canceled"
-        mark_canceled
+        cancel_all
       elsif error?
         @state = "Failed"
-        mark_errored
+        cancel_all
       else
         @state = "Pending"
-        ::Catalog::OrderStateTransition.new(@order_item.order).process
       end
     end
 
     def submit_order
-      finalize_order
-      @order_item.order.update_message("info", "Submitting Order for provisioning")
+      @order_item.update(:state => "Approved")
+      @order_item.order.mark_ordered("Submitting Order for provisioning")
+      update_order
       Catalog::SubmitNextOrderItem.new(@order_item.order_id).process
-    rescue ::Catalog::TopologyError => e
-      Rails.logger.error("Error Submitting Order #{@order_item.order_id}, #{e.message}")
-      @order_item.order.update_message("error", "Error when submitting order item #{@order_item.id}: #{e.message}")
     end
 
-    def mark_canceled
-      finalize_order
-      @order_item.order.update_message("info", "Order has been canceled")
-      Rails.logger.info("Order #{@order_item.order_id} has been canceled")
+    def cancel_all
+      level = @state == "Failed" ? "error" : "info"
+      @order_item.order.order_items.each do |item|
+        state = item == @order_item ? @state : "Canceled"
+        @order_item.update_message(level, "Order Item #{state}")
+        Rails.logger.send(level, "Order Item #{item.id} marked as #{state} because approval status is #{@state}")
+        item.update(:state => state)
+      end
+      update_order
     end
 
-    def mark_denied
-      finalize_order
-      @order_item.order.update_message("info", "Order has been denied")
-      Rails.logger.info("Order #{@order_item.order_id} has been denied")
-    end
-
-    def mark_errored
-      finalize_order
-      @order_item.order.update_message("error", "Order has approval errors. #{reasons}")
-      Rails.logger.error("Order #{@order_item.order_id} has failed. #{reasons}")
-    end
-
-    def finalize_order
-      @order_item.update(:state => @state)
-      Catalog::OrderStateTransition.new(@order_item.order).process
+    def update_order
+      level = @state == "Failed" ? "error" : "info"
+      approval_reasons = reasons
+      if approval_reasons.blank?
+        @order_item.order.update_message(level, "Approval Request finished with status #{@state}")
+        Rails.logger.send(level, "Approval request for order #{@order_item.order_id} with status #{@state}")
+      else
+        @order_item.order.update_message(level, "Approval Request finished with status #{@state} and reason #{approval_reasons}")
+        Rails.logger.send(level, "Approval request for order #{@order_item.order_id} with status #{@state} and reason #{approval_reasons}")
+      end
+      Catalog::OrderStateTransition.new(@order_item.order).process unless @state == "Approved"
     end
 
     def approved?
