@@ -1,4 +1,4 @@
-describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :current_forwardable, :sources] do
   let(:subject) { described_class.new(order_item) }
 
   describe "#process" do
@@ -12,12 +12,15 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :cu
         :portfolio_item     => portfolio_item,
         :service_plan_ref   => service_plan_ref,
         :artifacts          => artifacts,
-        :service_parameters => {"name" => "{{after.#{item_name}.artifacts.testk}}", "Totally not a pass" => "s3cret"},
-        :process_scope      => 'after'
+        :service_parameters => {"flexible" => template, "fixed" => "fixed"},
+        :process_scope      => scope,
+        :approval_requests  => [create(:approval_request)]
       )
     end
     let(:artifacts) { {'testk' => 'testv'} }
     let(:data_type) { 'string' }
+    let(:template)  { "{{after.#{item_name}.artifacts.testk}}" }
+    let(:scope)     { 'after' }
 
     context "when there is a valid service_plan_ref" do
       around do |example|
@@ -28,39 +31,36 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :cu
       let(:result) { subject.process.runtime_parameters.values }
       let(:fields) do
         [{
-          :name         => "Totally not a pass",
-          :type         => "password",
-          :label        => "Totally not a pass",
+          :name         => "fixed",
+          :type         => "string",
+          :label        => "fixed",
           :component    => "text-field",
           :helperText   => "",
           :isRequired   => true,
           :initialValue => ""
         }, {
-          :name         => "most_important_var1",
-          :label        => "secret field 1",
-          :component    => "textarea-field",
-          :helperText   => "Has no effect on anything, ever.",
-          :initialValue => ""
-        }, {
-          :name         => "token idea",
-          :label        => "field 1",
-          :component    => "textarea-field",
-          :helperText   => "Don't look.",
-          :initialValue => ""
-        }, {
-          :name           => "name",
+          :name           => "flexible",
           :type           => data_type,
-          :label          => "field 1",
+          :label          => "flexible",
           :component      => "textarea-field",
-          :helperText     => "That's not my name.",
+          :helperText     => "",
           :initialValue   => "{{product.artifacts.testk}}",
           :isSubstitution => true
         }]
       end
 
       context 'when substitution data type is string' do
+        let(:template) { '{{product.parameters.fixed}}' }
+        let(:scope) { 'product' }
+        let(:source_response) { SourcesApiClient::Source.new(:name => 'the platform') }
+
+        before do
+          stub_request(:get, sources_url("sources/#{order_item.portfolio_item.service_offering_source_ref}"))
+            .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
+        end
+
         it 'includes a string in the parameters' do
-          expect(result).to match_array %w[testv s3cret]
+          expect(result).to match_array %w[fixed fixed]
         end
       end
 
@@ -71,7 +71,7 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :cu
           let(:artifacts) { {'testk' => 500} }
 
           it 'includes an integer in the parameters' do
-            expect(result).to match_array [500, 's3cret']
+            expect(result).to match_array [500, 'fixed']
           end
         end
 
@@ -91,7 +91,7 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :cu
           let(:artifacts) { {'testk' => '50.20'} }
 
           it 'includes a floating number in the parameters' do
-            expect(result).to match_array [50.20, 's3cret']
+            expect(result).to match_array [50.20, 'fixed']
           end
         end
 
@@ -111,7 +111,7 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :cu
           let(:artifacts) { {'testk' => 'false'} }
 
           it 'includes a boolean in the parameters' do
-            expect(result).to match_array [false, 's3cret']
+            expect(result).to match_array [false, 'fixed']
           end
         end
 
@@ -129,7 +129,7 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :cu
 
         it 'includes an empty string in the parameters' do
           expect(Rails.logger).to receive(:warn)
-          expect(result).to match_array ['', 's3cret']
+          expect(result).to match_array ['', 'fixed']
         end
       end
 

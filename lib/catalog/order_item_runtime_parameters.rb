@@ -2,7 +2,7 @@ module Catalog
   class OrderItemRuntimeParameters
     attr_reader :runtime_parameters
 
-    ORDER_ITEM_REGEX = /(?<=\{\{after\.|before\.)(.+?)(?=\.artifacts|\.extra_vars|\.status.*\}\})/.freeze
+    ORDER_ITEM_REGEX = /(?<=\{\{after\.|before\.)(.+?)(?=\.artifacts|\.parameters|\.status.*\}\})/.freeze
 
     def initialize(order_item)
       @order_item = order_item
@@ -51,8 +51,8 @@ module Catalog
       end
     end
 
-    def substitute(template)
-      template.gsub!(ORDER_ITEM_REGEX) { |order_item_name| encode_name(order_item_name) }
+    def substitute(template_raw)
+      template = template_raw.gsub(ORDER_ITEM_REGEX) { |order_item_name| encode_name(order_item_name) }
 
       template.instance_of?(String) ? Mustache.render(template, workspace) : template
     rescue
