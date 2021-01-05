@@ -10,6 +10,8 @@ module Catalog
     end
 
     def process
+      @order.mark_approval_pending
+
       # Possibly in the future we may want to create approval requests for
       # a before or after order item, but currently it is only for the
       # applicable product.
@@ -17,12 +19,7 @@ module Catalog
         submit_approval_requests(order_item)
       end
 
-      @order.update(:state => "Approval Pending", :order_request_sent_at => Time.now.utc)
       self
-    rescue ::Catalog::ApprovalError => e
-      @order.order_items.first.mark_failed("Error while creating approval request")
-      Rails.logger.error("Error putting in approval Request for #{order.id}: #{e.message}")
-      raise
     end
 
     private
@@ -39,6 +36,8 @@ module Catalog
       )
 
       Rails.logger.info("Approval Requests Submitted for Order #{@order.id}")
+    rescue Catalog::ApprovalError => e
+      order_item.mark_failed("Error while creating approval request: #{e.message}")
     end
   end
 end

@@ -7,11 +7,14 @@ describe Catalog::ApprovalTransition do
 
   let(:order) { create(:order) }
 
-  let!(:order_item) do
+  let(:order_items) do
     Insights::API::Common::Request.with_request(req) do
-      create(:order_item, :order => order)
+      create_list(:order_item, 2, :order => order)
     end
   end
+
+  let!(:order_item) { order_items.first }
+  let(:after_item) { order_items.second }
 
   let(:approval) do
     create(:approval_request, :order_item => order_item)
@@ -48,6 +51,12 @@ describe Catalog::ApprovalTransition do
         order.reload
         expect(order.state).to eq("Ordered")
       end
+
+      it "does not modify the state of other items" do
+        order_item_transition.process
+        after_item.reload
+        expect(after_item.state).to eq("Created")
+      end
     end
 
     context "when denied" do
@@ -76,10 +85,10 @@ describe Catalog::ApprovalTransition do
         expect(order.state).to eq "Failed"
       end
 
-      it "finalizes the Order" do
+      it "marks other items as canceled" do
         order_item_transition.process
-        order.reload
-        expect(order.state).to eq("Failed")
+        after_item.reload
+        expect(after_item.state).to eq("Canceled")
       end
     end
 
@@ -103,6 +112,12 @@ describe Catalog::ApprovalTransition do
         expect(order_item.state).to eq "Canceled"
       end
 
+      it "marks other items as canceled" do
+        order_item_transition.process
+        after_item.reload
+        expect(after_item.state).to eq "Canceled"
+      end
+
       it "marks the order as canceled" do
         order_item_transition.process
         order.reload
@@ -116,30 +131,27 @@ describe Catalog::ApprovalTransition do
       end
     end
 
-    context "when the call to submit order fails" do
-      before do
-        approval.update(:state => "approved")
-        allow(submit_order).to receive(:process).and_raise(topo_ex)
-      end
-
-      it "blows up" do
-        order_item_transition.process
-        msg = order.progress_messages.last
-        expect(msg.level).to eq "error"
-        expect(msg.message).to eq "Error when submitting order item #{order_item.id}: #{topo_ex.message}"
-      end
-    end
-
     context "when the approval fails" do
       before do
         approval.update(:state => "error", :reason => 'Error Sending Email')
       end
 
+      it "marks the order item as failed" do
+        order_item_transition.process
+        order_item.reload
+        expect(order_item.state).to eq "Failed"
+      end
+
+      it "marks other items as cancel" do
+        order_item_transition.process
+        after_item.reload
+        expect(after_item.state).to eq "Canceled"
+      end
+
       it "fails the order" do
         order_item_transition.process
-        msg = order.progress_messages.last
-        expect(msg.level).to eq "error"
-        expect(msg.message).to match(/Error Sending Email/)
+        order.reload
+        expect(order.state).to eq "Failed"
       end
     end
   end

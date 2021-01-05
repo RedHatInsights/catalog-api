@@ -35,6 +35,10 @@ class OrderItem < ApplicationRecord
     end
   end
 
+  def finished?
+    FINISHED_STATES.include?(state)
+  end
+
   def can_order?
     state == (process_scope == 'product' ? 'Approved' : 'Created')
   end
@@ -45,17 +49,31 @@ class OrderItem < ApplicationRecord
   end
 
   def mark_completed(msg = nil, **opts)
-    mark_item(msg, :completed_at => DateTime.now, :state => "Completed", **opts)
+    return if state == "Completed"
+
+    mark_item(msg, :completed_at => Time.now.utc, :state => "Completed", **opts)
     Catalog::SubmitNextOrderItem.new(order_id).process
   end
 
   def mark_failed(msg = nil, **opts)
-    mark_item(msg, :completed_at => DateTime.now, :state => "Failed", :level => "error", **opts)
-    Catalog::SubmitNextOrderItem.new(order_id).process
+    return if state == "Failed"
+
+    mark_item(msg, :completed_at => Time.now.utc, :state => "Failed", :level => "error", **opts)
+    if order.state == 'Ordered'
+      # Order has been approved. One item fail but others may continue.
+      Catalog::SubmitNextOrderItem.new(order_id).process
+    else
+      # Order has not been approved. Fail all items.
+      order.order_items.each do |item|
+        item.mark_failed("This order item has failed due to the entire order failing before it ran") unless item.finished?
+      end
+    end
   end
 
   def mark_ordered(msg = nil, **opts)
-    mark_item(msg, :order_request_sent_at => DateTime.now, :state => "Ordered", **opts)
+    return if state == "Ordered"
+
+    mark_item(msg, :order_request_sent_at => Time.now.utc, :state => "Ordered", **opts)
   end
 
   def clear_sensitive_service_parameters

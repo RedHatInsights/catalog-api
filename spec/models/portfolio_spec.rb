@@ -167,12 +167,11 @@ describe Portfolio do
       end
 
       context 'ancillary_metadata instance was destroyed' do
-        before { subject.destroy }
-
         it 'returns without updating ancillary_metadata' do
           expect(subject.ancillary_metadata).not_to receive(:save!)
 
-          portfolio.update_metadata
+          subject.ancillary_metadata.destroy
+          subject.update_metadata
         end
       end
     end

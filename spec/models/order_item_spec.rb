@@ -75,33 +75,35 @@ describe OrderItem do
   end
 
   describe "#mark_failed" do
-    context "when there are no message parameters passed in" do
-      let(:params) { {:external_url => "not.a.real/url"} }
+    let!(:item2) { create(:order_item, :order => order_item.order) }
 
-      before do
-        allow(Catalog::SubmitNextOrderItem).to receive(:new).with(order_item.order_id).and_return(double(:process => nil))
+    context "when the order is not yet approved" do
+      before { order_item.order.update(:state => 'Approval Pending') }
 
-        order_item.mark_failed(params)
-        order_item.reload
-      end
+      it "marks all order items and the order failed" do
+        order_item.mark_failed
+        item2.reload
 
-      it "marks the order and order item as failed" do
-        expect(order_item.state).to eq "Failed"
-        expect(order_item.order.state).to eq "Failed"
-        expect(order_item.completed_at).to be_truthy
-      end
-
-      it_behaves_like "#mark_item"
-
-      it "finalizes the order" do
-        expect(order_item.order.state).to eq("Failed")
+        [order_item, item2, order_item.order].each do |item|
+          expect(item.state).to eq("Failed")
+          expect(item.completed_at).to be_truthy
+        end
       end
     end
 
-    context "when there are no message parameters passed in" do
-      it "does not log a message" do
-        expect(Rails.logger).not_to receive(:error)
+    context "when the order has started" do
+      before { order_item.order.update(:state => 'Ordered') }
+
+      it "marks order item as failed and other items continue to run" do
+        expect(Catalog::SubmitNextOrderItem).to receive(:new).with(item2.order_id).and_return(double(:process => nil))
+
         order_item.mark_failed
+        item2.reload
+
+        expect(order_item.state).to eq("Failed")
+        expect(order_item.completed_at).to be_truthy
+        expect(item2.state).to eq("Created")
+        expect(item2.order.state).to eq("Ordered")
       end
     end
   end
@@ -114,9 +116,8 @@ describe OrderItem do
       order_item.reload
     end
 
-    it "marks the order and order item as failed" do
+    it "marks the order item as failed" do
       expect(order_item.state).to eq "Ordered"
-      expect(order_item.order.state).to eq "Ordered"
       expect(order_item.completed_at).to be_falsey
     end
 

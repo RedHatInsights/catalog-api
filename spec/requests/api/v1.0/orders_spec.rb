@@ -60,7 +60,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       it_behaves_like "action that tests authorization", :submit_order?, Order
 
       it "logs the error", :subject_inside do
-        expect(Rails.logger).to receive(:error).with(/Service offering for order #{order.id} has been archived/).twice
+        expect(Rails.logger).to receive(:error).with(/Service offering for order #{order.id} has been archived/)
 
         subject
       end

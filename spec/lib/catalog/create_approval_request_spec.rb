@@ -66,18 +66,18 @@ describe Catalog::CreateApprovalRequest, :type => :service do
 
       it "raises an error and does not create an approval request" do
         expect(ApprovalRequest.count).to eq(0)
-        expect { subject.process }.to raise_exception(Catalog::ApprovalError)
+        subject.process
         expect(ApprovalRequest.count).to eq(0)
       end
 
       it "creates a progress message" do
-        expect { subject.process }.to raise_exception(Catalog::ApprovalError)
-        expect(ProgressMessage.first.message).to eq("Error while creating approval request")
+        subject.process
+        expect(ProgressMessage.first.message).to match(/Error while creating approval request/)
         expect(ProgressMessage.last.message).to eq("Order Failed")
       end
 
       it "fails the order" do
-        expect { subject.process }.to raise_exception(Catalog::ApprovalError)
+        subject.process
         order.reload
         expect(order.state).to eq("Failed")
       end

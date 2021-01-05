@@ -85,6 +85,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
             it "fails the order, log errors, and adds a progress message" do
               expect(Rails.logger).to receive(:error).with("Incoming task 123 is completed but errored: #{payload_context}")
               expect(Rails.logger).to receive(:error).with(/Updated OrderItem: \d+ with 'Failed'/)
+              expect(Rails.logger).to receive(:error).with(/Order Failed/)
               subject.process
               order_item.reload
               expect(order_item.progress_messages.size).to eq(2)
