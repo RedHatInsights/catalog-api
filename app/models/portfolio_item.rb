@@ -17,7 +17,7 @@ class PortfolioItem < ApplicationRecord
   after_discard   :update_portfolio_stats
   after_undiscard :update_portfolio_stats
   after_destroy   :update_portfolio_stats
-  before_destroy  :validate_deletable, :prepend => true
+  before_discard  :validate_deletable, :prepend => true
 
   belongs_to :icon, :optional => true
   has_many :service_plans, :dependent => :destroy
