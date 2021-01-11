@@ -32,7 +32,7 @@ class ApplicationPolicy
 
   def user_capabilities
     capabilities = {}
-    (self.class.instance_methods(false) - [:user_capabilities, :index?]).each do |method|
+    (self.class.instance_methods(false) - [:user_capabilities, :index?, :error_message]).each do |method|
       capabilities[method.to_s.delete_suffix('?')] = self.send(method)
     end
 
