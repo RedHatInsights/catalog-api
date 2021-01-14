@@ -54,7 +54,7 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
 
     it "uses a custom message" do
       post "#{api_version}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
-      expect(first_error_detail).to eq("You are not authorized to copy this portfolio item")
+      expect(first_error_detail).to eq("You are not authorized to perform the copy action for this portfolio item")
     end
   end
 
