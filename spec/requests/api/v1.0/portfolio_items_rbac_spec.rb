@@ -51,6 +51,11 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
       post "#{api_version}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
       expect(response).to have_http_status(403)
     end
+
+    it "uses a custom message" do
+      post "#{api_version}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
+      expect(first_error_detail).to eq("You are not authorized to perform the copy action for this portfolio item")
+    end
   end
 
   context "when user has RBAC update portfolios access" do
@@ -67,6 +72,27 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
       post "#{api_version}/portfolio_items/#{portfolio_item1.id}/copy", :headers => default_headers
 
       expect(response).to have_http_status(:ok)
+    end
+  end
+
+  context "when the user does not have create access" do
+    subject do
+      post "#{api_version}/portfolio_items", :params => {:portfolio_id => portfolio.id.to_s}, :headers => default_headers
+    end
+
+    before do
+      allow(rbac_access).to receive(:resource_check).with("update", portfolio.id, Portfolio).and_return(false)
+    end
+
+    it 'returns status code 403' do
+      subject
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "uses a custom message" do
+      subject
+      expect(first_error_detail).to eq("You are not authorized to perform the create action for this portfolio item")
     end
   end
 end

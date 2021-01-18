@@ -1,21 +1,27 @@
 class PortfolioItemPolicy < ApplicationPolicy
+  attr_reader :error_message
+
   def index?
     rbac_access.permission_check('read', Portfolio)
   end
 
   def create?
+    build_error_message(__method__)
     update_portfolio_check
   end
 
   def update?
+    build_error_message(__method__)
     update_portfolio_check
   end
 
   def show?
+    build_error_message(__method__)
     rbac_access.resource_check('read', @record.portfolio_id, Portfolio)
   end
 
   def destroy?
+    build_error_message(__callee__)
     update_portfolio_check
   end
 
@@ -33,6 +39,7 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   def edit_survey?
+    build_error_message(__method__)
     update_portfolio_check
   end
 
@@ -51,6 +58,10 @@ class PortfolioItemPolicy < ApplicationPolicy
   end
 
   private
+
+  def build_error_message(action)
+    @error_message = "You are not authorized to perform the #{action.to_s.delete_suffix('?')} action for this portfolio item"
+  end
 
   def can_read_and_update_destination?(destination_id)
     rbac_access.resource_check('read', destination_id, Portfolio) &&

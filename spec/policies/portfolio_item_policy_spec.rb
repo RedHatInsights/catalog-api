@@ -19,6 +19,10 @@ describe PortfolioItemPolicy do
   end
 
   describe "#create?" do
+    before do
+      allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+    end
+
     context "when the record passed into the policy is a portfolio" do
       subject { described_class.new(user_context, portfolio) }
 
@@ -30,6 +34,11 @@ describe PortfolioItemPolicy do
         expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
         expect(subject.create?).to eq(true)
       end
+
+      it "sets the error message to denote the record is a portfolio item" do
+        subject.create?
+        expect(subject.error_message).to eq("You are not authorized to perform the create action for this portfolio item")
+      end
     end
 
     context "when the record passed into the policy is a portfolio item" do
@@ -37,20 +46,43 @@ describe PortfolioItemPolicy do
         expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
         expect(subject.create?).to eq(true)
       end
+
+      it "sets the error message to denote the record is a portfolio item" do
+        subject.create?
+        expect(subject.error_message).to eq("You are not authorized to perform the create action for this portfolio item")
+      end
     end
   end
 
   describe "#update?" do
+    before do
+      allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+    end
+
     it "delegates to the check for update permissions on the portfolio" do
       expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
       expect(subject.update?).to eq(true)
     end
+
+    it "sets the error message to denote the record is a portfolio item" do
+      subject.update?
+      expect(subject.error_message).to eq("You are not authorized to perform the update action for this portfolio item")
+    end
   end
 
   describe "#edit_survey?" do
+    before do
+      allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+    end
+
     it "delegates to the check for update permissions on the portfolio" do
       expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
       expect(subject.edit_survey?).to eq(true)
+    end
+
+    it "sets the error message to denote the record is a portfolio item" do
+      subject.edit_survey?
+      expect(subject.error_message).to eq("You are not authorized to perform the edit_survey action for this portfolio item")
     end
   end
 
@@ -90,17 +122,35 @@ describe PortfolioItemPolicy do
 
   %i[destroy? restore?].each do |method|
     describe "##{method}" do
+      before do
+        allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
+      end
+
       it "delegates to the check for update permissions on the portfolio" do
         expect(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
         expect(subject.send(method)).to eq(true)
+      end
+
+      it "sets the error message to denote the record is a portfolio item" do
+        subject.send(method)
+        expect(subject.error_message).to eq("You are not authorized to perform the #{method.to_s.delete_suffix('?')} action for this portfolio item")
       end
     end
   end
 
   describe "#show?" do
+    before do
+      allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
+    end
+
     it "delegates to the check for read permissions on the portfolio" do
       expect(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
       expect(subject.show?).to eq(true)
+    end
+
+    it "sets the error message to denote the record is a portfolio item" do
+      subject.show?
+      expect(subject.error_message).to eq("You are not authorized to perform the show action for this portfolio item")
     end
   end
 
