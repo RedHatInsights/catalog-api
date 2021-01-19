@@ -1,8 +1,8 @@
 FROM registry.access.redhat.com/ubi8/ubi:8.3-227
 
-RUN dnf -y --disableplugin=subscription-manager module enable ruby:2.5 && \
+RUN dnf -y --disableplugin=subscription-manager module enable ruby:2.6 && \
     dnf -y --disableplugin=subscription-manager --setopt=tsflags=nodocs install \
-    # ruby 2.5 via module
+    # ruby 2.6 via module
     ruby-devel \
     # build utilities
     gcc-c++ git make redhat-rpm-config \
