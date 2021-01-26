@@ -1,4 +1,4 @@
-describe "v1.1 - ServicePlansRequests", :type => [:request, :v1x1, :topology] do
+describe "v1.1 - ServicePlansRequests", :type => [:request, :v1x1, :inventory] do
   let!(:portfolio) { create(:portfolio) }
   let!(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
   let(:service_plan) { create(:service_plan, :portfolio_item => portfolio_item) }

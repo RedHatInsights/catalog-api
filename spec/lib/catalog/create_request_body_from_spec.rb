@@ -1,8 +1,8 @@
-describe Catalog::CreateRequestBodyFrom, :type => [:service, :current_forwardable, :topology, :sources] do
+describe Catalog::CreateRequestBodyFrom, :type => [:service, :current_forwardable, :inventory, :sources] do
   let(:subject) { described_class.new(order, order_item, task, tag_resources) }
   let(:order) { create(:order) }
   let(:order_item) { create(:order_item_with_callback) }
-  let(:task) { TopologicalInventoryApiClient::Task.new }
+  let(:task) { CatalogInventoryApiClient::Task.new }
   let(:tag_resources) { ["a", "b", "c"] }
 
   describe "#process" do

@@ -12,8 +12,7 @@ module Api
         end
 
         def process
-          # Get the api response object from Topology
-          TopologicalInventory::Service.call do |api_instance|
+          CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingApi) do |api_instance|
             @service_offering = api_instance.show_service_offering(@params[:service_offering_ref])
           end
 
@@ -54,7 +53,7 @@ module Api
         end
 
         def create_icon(icon_id)
-          service_offering_icon = TopologicalInventory::Service.call { |topo| topo.show_service_offering_icon(icon_id) }
+          service_offering_icon = CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingIconApi) { |inventory| inventory.show_service_offering_icon(icon_id) }
           return if service_offering_icon.data.nil?
 
           file = Tempfile.new('service_offering').tap do |fh|

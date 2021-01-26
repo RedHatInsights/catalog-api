@@ -17,7 +17,7 @@ ActionDispatch::ExceptionWrapper.rescue_responses.merge!(
   "Catalog::RBACError"                         => :service_unavailable,
   "Catalog::ServiceOfferingArchived"           => :bad_request,
   "Catalog::SourcesError"                      => :service_unavailable,
-  "Catalog::TopologyError"                     => :service_unavailable,
+  "Catalog::InventoryError"                    => :service_unavailable,
   "Discard::DiscardError"                      => :bad_request,
   "Pundit::NotAuthorizedError"                 => :forbidden,
   "Insights::API::Common::RBAC::NetworkError"  => :service_unavailable,

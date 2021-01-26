@@ -8,5 +8,5 @@ module Catalog
   class RBACError < StandardError; end
   class ServiceOfferingArchived < StandardError; end
   class SourcesError < StandardError; end
-  class TopologyError < StandardError; end
+  class InventoryError < StandardError; end
 end

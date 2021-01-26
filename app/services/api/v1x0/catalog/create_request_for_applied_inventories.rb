@@ -26,14 +26,14 @@ module Api
         private
 
         def send_request_to_compute_applied_inventories
-          service_plan = TopologicalInventoryApiClient::AppliedInventoriesParametersServicePlan.new(
+          service_plan = CatalogInventoryApiClient::AppliedInventoriesParametersServicePlan.new(
             :service_parameters => @item.service_parameters
           )
-          TopologicalInventory::Service.call do |api|
+          CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingApi) do |api|
             task_id = api.applied_inventories_for_service_offering(service_offering_ref, service_plan).task_id
 
             @item.update(:topology_task_ref => task_id)
-            Rails.logger.info("OrderItem #{@item.id} updated with topology task ref #{task_id}")
+            Rails.logger.info("OrderItem #{@item.id} updated with inventory task ref #{task_id}")
           end
         end
 

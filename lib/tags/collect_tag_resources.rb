@@ -21,7 +21,7 @@ module Tags
     end
 
     def remote_tag_resources
-      @remote_tag_resources = Topology::RemoteInventory.new(@task).process.tag_resources
+      @remote_tag_resources = Inventory::RemoteInventory.new(@task).process.tag_resources
     end
   end
 end

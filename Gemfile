@@ -42,6 +42,6 @@ gem 'sources-api-client', '~> 1.0'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem 'topological_inventory-api-client', '~> 2.0'
+gem 'catalog_inventory-api-client-ruby', :git => 'https://github.com/RedHatInsights/catalog_inventory-api-client-ruby.git', :branch => 'master'
 
 gem 'insights-approval-api-client', '~> 1.2'

@@ -1,6 +1,6 @@
 describe Tags::CollectTagResources do
   let(:order) { create(:order) }
-  let(:task) { TopologicalInventoryApiClient::Task.new }
+  let(:task) { CatalogInventoryApiClient::Task.new }
   let(:subject) { described_class.new(task, order) }
 
   context "#process" do
@@ -23,10 +23,10 @@ describe Tags::CollectTagResources do
         :tags        => [{:tag => "/Compass/Curious George=Jumpy Squirrel"}]}]
     end
 
-    let(:inventory_instance) { instance_double(Tags::Topology::RemoteInventory) }
+    let(:inventory_instance) { instance_double(Tags::Inventory::RemoteInventory) }
     let(:resource_instance) { instance_double(Tags::CollectLocalOrderResources) }
     before do
-      allow(Tags::Topology::RemoteInventory).to receive(:new).and_return(inventory_instance)
+      allow(Tags::Inventory::RemoteInventory).to receive(:new).and_return(inventory_instance)
       allow(inventory_instance).to receive(:process).and_return(inventory_instance)
       allow(inventory_instance).to receive(:tag_resources).and_return(remote_tag_resources)
       allow(Tags::CollectLocalOrderResources).to receive(:new).and_return(resource_instance)

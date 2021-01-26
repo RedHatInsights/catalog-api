@@ -5,11 +5,11 @@ module Catalog
     end
 
     def process
-      @task = TopologicalInventoryApiClient::Task.new(
+      @task = CatalogInventoryApiClient::Task.new(
         :id      => @topic.payload["task_id"].to_s,
         :state   => @topic.payload["state"],
         :status  => @topic.payload["status"],
-        :context => @topic.payload["context"].try(&:with_indifferent_access)
+        :input   => @topic.payload["context"].try(&:with_indifferent_access)
       )
 
       find_relevant_order_item
@@ -36,9 +36,9 @@ module Catalog
     end
 
     def process_relevant_context
-      if @task.context&.has_key_path?(:service_instance)
+      if @task.input&.has_key_path?(:service_instance)
         UpdateOrderItem.new(@task, @order_item).process
-      elsif @task.context&.has_key_path?(:applied_inventories)
+      elsif @task.input&.has_key_path?(:applied_inventories)
         tag_resources = Tags::CollectTagResources.new(@task, @order_item.order).process.tag_resources
 
         Rails.logger.info("Evaluating order processes for order item id #{@order_item.id}")
@@ -54,10 +54,10 @@ module Catalog
     def process_error_tasks
       @order_item.update_message("error", "Task update message received with payload: #{@task}")
       if @task.state == "running"
-        Rails.logger.error("Incoming task #{@task.id} had an error while running: #{@task.context}")
+        Rails.logger.error("Incoming task #{@task.id} had an error while running: #{@task.input}")
       elsif @task.state == "completed"
-        Rails.logger.error("Incoming task #{@task.id} is completed but errored: #{@task.context}")
-        if @task.context&.has_key_path?(:service_instance)
+        Rails.logger.error("Incoming task #{@task.id} is completed but errored: #{@task.input}")
+        if @task.input&.has_key_path?(:service_instance)
           UpdateOrderItem.new(@task, @order_item).process
         else
           @order_item.mark_failed("Order Item Failed")

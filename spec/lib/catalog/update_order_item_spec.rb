@@ -1,12 +1,12 @@
-describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
+describe Catalog::UpdateOrderItem, :type => [:inventory, :service] do
   let(:subject) { described_class.new(task, order_item) }
   let(:artifacts) { {'expose_to_cloud_redhat_com_k1' => 'v1', 'expose_to_cloud_redhat_com_k2' => 'v2', 'other' => 'v3'} }
   let(:task) do
-    TopologicalInventoryApiClient::Task.new(
-      "id"      => "123",
-      "status"  => status,
-      "state"   => state,
-      "context" => {:service_instance => {:id => service_instance_id, :artifacts => artifacts}}.with_indifferent_access
+    CatalogInventoryApiClient::Task.new(
+      "id"     => "123",
+      "status" => status,
+      "state"  => state,
+      "input"  => {:service_instance => {:id => service_instance_id, :artifacts => artifacts}}.with_indifferent_access
     )
   end
   let(:service_instance_id) { "321" }
@@ -45,7 +45,7 @@ describe Catalog::UpdateOrderItem, :type => [:topology, :service] do
 
       context "when the state is running" do
         let(:state) { "running" }
-        before { task.context = {:service_instance => {:url => "http://tower.com/job/3"}} }
+        before { task.input = {:service_instance => {:url => "http://tower.com/job/3"}} }
 
         it "updates progress messages" do
           expect(order_item).to receive(:update_message).with("info", "Order Item Is Running")

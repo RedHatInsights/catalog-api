@@ -318,7 +318,7 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
 
     context "when object type is ServiceInventory" do
-      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology', :object_id => "123"} }
+      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'catalog-inventory', :object_id => "123"} }
       let(:link_tag_svc) { instance_double("Api::V1x2::Catalog::LinkToOrderProcess") }
 
       it "returns 204" do
@@ -376,7 +376,7 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
 
     context "when object type is ServiceInventory" do
-      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology', :object_id => "123"} }
+      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'catalog-inventory', :object_id => "123"} }
       let(:unlink_tag_svc) { instance_double("Api::V1x2::Catalog::UnlinkFromOrderProcess") }
 
       it "returns 204" do
@@ -410,8 +410,8 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
       end
     end
 
-    context "when app is topology" do
-      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology', :object_id => "123"} }
+    context "when app is catalog-inventory" do
+      let(:tag_attrs) { {:object_type => 'ServiceInventory', :app_name => 'catalog-inventory', :object_id => "123"} }
       let(:get_tag_svc) { instance_double("Api::V1x2::Catalog::GetLinkedOrderProcess") }
 
       it "returns 200" do
@@ -426,7 +426,7 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     end
 
     context "when resource params is invalid" do
-      let(:bad_attrs) { {:object_type => 'ServiceInventory', :app_name => 'topology'} }
+      let(:bad_attrs) { {:object_type => 'ServiceInventory', :app_name => 'catalog-inventory'} }
       let(:get_tag_svc) { instance_double("Api::V1x2::Catalog::GetLinkedOrderProcess") }
 
       it "raises an error" do

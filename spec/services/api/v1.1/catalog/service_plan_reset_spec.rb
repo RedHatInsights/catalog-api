@@ -1,22 +1,22 @@
-describe Api::V1x1::Catalog::ServicePlanReset, :type => [:current_forwardable, :topology] do
+describe Api::V1x1::Catalog::ServicePlanReset, :type => [:current_forwardable, :inventory] do
   let(:subject) { described_class.new(service_plan.id) }
   let(:service_plan_orig) do
-    TopologicalInventoryApiClient::ServicePlan.new(
+    CatalogInventoryApiClient::ServicePlan.new(
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
       :create_json_schema => { :schema => {} }
     )
   end
-  let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => data) }
+  let(:service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => data) }
   let(:service_offering_response) do
-    TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
+    CatalogInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
   end
 
   before do
-    stub_request(:get, topological_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
+    stub_request(:get, inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, topological_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}/service_plans"))
+    stub_request(:get, inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
@@ -63,7 +63,7 @@ describe Api::V1x1::Catalog::ServicePlanReset, :type => [:current_forwardable, :
     context "exception handling" do
       let(:modified) { "modified" }
       it "raises StandardError" do
-        stub_request(:get, topological_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
+        stub_request(:get, inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
           .to_raise(StandardError)
         expect(Rails.logger).to receive(:error).twice
         expect { subject.process }.to raise_exception(StandardError)

@@ -32,7 +32,7 @@ export MANAGEIQ_HOST=localhost
 export MANAGEIQ_PORT=3000
 ```
 
-If the topology inventory requires authentication (ie in dev), basic authentication is supported via these variables. They won't be read in unless :
+If the catalog inventory requires authentication (ie in dev), basic authentication is supported via these variables. They won't be read in unless :
 ```
 export DEV_USERNAME=myuser
 export DEV_PASSWORD=password
@@ -94,7 +94,7 @@ _Includes the `RBAC_URL` and `APPROVAL_URL environment variables to be able to u
 _You can also remove the `RBAC_URL` environment variable and pass in the `BYPASS_RBAC` environment variable instead if you want to test without RBAC_
 
 ```
-APP_NAME=catalog PATH_PREFIX=/api RBAC_URL=https://<url>/api/rbac/v1/ APPROVAL_URL=https://<url>/api/approval/v1/ TOPOLOGICAL_INVENTORY_URL=https://<url>/api/topological-inventory/v1/ SOURCES_URL=https://<url>/api/sources/v1/ DEV_USERNAME=<username> DEV_PASSWORD=<password> bin/rails s -p 5000
+APP_NAME=catalog PATH_PREFIX=/api RBAC_URL=https://<url>/api/rbac/v1/ APPROVAL_URL=https://<url>/api/approval/v1/ CATALOG_INVENTORY_URL=https://<url>/api/catalog-inventory/v1/ SOURCES_URL=https://<url>/api/sources/v1/ DEV_USERNAME=<username> DEV_PASSWORD=<password> bin/rails s -p 5000
 ```
 
 2. **Run the insights proxy based on Linux or Mac**

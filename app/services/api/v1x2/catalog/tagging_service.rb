@@ -7,8 +7,16 @@ module Api
         QUERY_LIMIT = 1000
 
         REMOTE_SERVICES = {
-          "sources"  => {:service_class => ::Sources, :tag_class => nil}, # nil -> ::SourcesApiClient::Tag when it is available
-          "topology" => {:service_class => ::TopologicalInventory::Service, :tag_class => ::TopologicalInventoryApiClient::Tag}
+          "sources"           => {
+            :service_class => ::Sources,
+            :api_class     => ::SourcesApiClient::DefaultApi,
+            :tag_class     => nil # nil -> ::SourcesApiClient::Tag when it is available
+          },
+          "catalog-inventory" => {
+            :service_class => ::CatalogInventory::Service,
+            :api_class     => ::CatalogInventoryApiClient::ServiceInventoryApi,
+            :tag_class     => ::CatalogInventoryApiClient::Tag
+          }
         }.freeze
 
         CATALOG_OBJECT_TYPES = [Portfolio.name, PortfolioItem.name].freeze
@@ -45,7 +53,12 @@ module Api
         end
 
         def call_remote_service(options = {:limit => QUERY_LIMIT})
-          REMOTE_SERVICES[@app_name][:service_class].call do |api|
+          # TODO: better way for generic remote service
+          # catalog-inventory service's call need class info
+          service_class = REMOTE_SERVICES[@app_name][:service_class]
+          api_class     = REMOTE_SERVICES[@app_name][:api_class]
+
+          service_class.call(api_class) do |api|
             api.send(api_method_name, @object_id, options)
           end
         end

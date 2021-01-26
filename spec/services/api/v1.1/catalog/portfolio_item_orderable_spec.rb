@@ -1,4 +1,4 @@
-describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :current_forwardable, :topology, :sources] do
+describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :current_forwardable, :inventory, :sources] do
   let(:subject) { described_class.new(portfolio_item) }
   let(:service_offering_ref) { '998' }
   let(:service_offering_source_ref) { '999' }
@@ -13,7 +13,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
   let(:service_plans) { [] }
 
   let(:service_offering_response) do
-    TopologicalInventoryApiClient::ServiceOffering.new(:archived_at => archived_at)
+    CatalogInventoryApiClient::ServiceOffering.new(:archived_at => archived_at)
   end
 
   let(:source_response) do
@@ -23,7 +23,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
   describe "#process" do
     context "no errors" do
       before do
-        stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
+        stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
           .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
         stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
           .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
@@ -65,10 +65,10 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
       end
     end
 
-    context "with errors from topology" do
+    context "with errors from inventory" do
       before do
-        stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
-          .to_raise(Catalog::TopologyError.new("Kaboom"))
+        stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
+          .to_raise(Catalog::InventoryError.new("Kaboom"))
         stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
           .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
       end
@@ -84,7 +84,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
 
     context "with errors from source" do
       before do
-        stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
+        stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
           .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
         stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
           .to_raise(Catalog::SourcesError.new("Kaboom"))

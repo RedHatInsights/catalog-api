@@ -1,6 +1,6 @@
-module TopologicalInventory
+module CatalogInventory
   class EventListener < KafkaListener
-    SERVICE_NAME = "platform.topological-inventory.task-output-stream".freeze
+    SERVICE_NAME = "platform.catalog-inventory.task-output-stream".freeze
     GROUP_REF = "catalog-api-task-minion".freeze # backward compatible
 
     def initialize(messaging_client_option)

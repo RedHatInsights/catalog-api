@@ -49,7 +49,7 @@ module Api
         end
 
         def fetch_service_offering
-          @service_offering = TopologicalInventory::Service.call do |api|
+          @service_offering = CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingApi) do |api|
             api.show_service_offering(@portfolio_item.service_offering_ref)
           end
         rescue StandardError => e

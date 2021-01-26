@@ -10,17 +10,9 @@ module Api
           @portfolio_item_id = portfolio_item_id
         end
 
+        # TODO: empty now, need to decide what we should do for openshift
         def process
-          source_ref = PortfolioItem.find(@portfolio_item_id).service_offering_source_ref
-          TopologicalInventory::Service.call do |api_instance|
-            # TODO: Temporay till we get this call in the topology service
-            projects = api_instance.list_source_container_projects(source_ref).data
-            update_project_list(projects)
-            self
-          end
-        rescue StandardError => e
-          Rails.logger.error("ProviderControlParameters #{e.message}")
-          raise
+          self
         end
 
         private

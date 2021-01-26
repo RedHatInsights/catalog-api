@@ -1,4 +1,4 @@
-describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::SubmitOrderItem, :type => [:service, :inventory, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:service_plan_ref) { "991" }
   let(:order) { create(:order) }
@@ -14,7 +14,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
   let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
 
   let(:topo_service_plan) do
-    TopologicalInventoryApiClient::ServicePlan.new(
+    CatalogInventoryApiClient::ServicePlan.new(
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
@@ -22,7 +22,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     )
   end
 
-  let(:topo_service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
+  let(:topo_service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
   let(:service_plan_response) { topo_service_plan_response }
 
   include_context "uses an order item with raw service parameters set"
@@ -32,18 +32,18 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     allow(validater).to receive(:process).and_return(validater)
     allow(validater).to receive(:valid).and_return(validity)
 
-    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
+    stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
   context "when the order item is valid" do
-    let(:order_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "100") }
+    let(:order_response) { CatalogInventoryApiClient::InlineResponse200.new(:task_id => "100") }
     let(:workspace_builder) { instance_double(Catalog::WorkspaceBuilder, :process => double(:workspace => {})) }
 
     before do
       allow(Catalog::WorkspaceBuilder).to receive(:new).with(order_item.order).and_return(workspace_builder)
 
-      stub_request(:post, topological_url("service_offerings/998/order"))
+      stub_request(:post, inventory_url("service_offerings/998/order"))
         .with(
           :body    => {
             :service_parameters          => service_parameters,
@@ -64,7 +64,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
         # item.mark_ordered ends up calling a separate rails logger so we need to `allow` here.
         allow(Rails.logger).to receive(:info)
 
-        expect(Rails.logger).to receive(:info).with("OrderItem #{order_item.id} ordered with topology task ref 100")
+        expect(Rails.logger).to receive(:info).with("OrderItem #{order_item.id} ordered with inventory task ref 100")
         submit_order.process
       end
     end
@@ -76,7 +76,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
 
       it "only sends the parameters specified in the schema" do
         submit_order.process
-        expect(a_request(:post, topological_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
+        expect(a_request(:post, inventory_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
       end
     end
 
@@ -109,7 +109,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
     end
   end
 
-  context "when the base service_plan has changed from topology" do
+  context "when the base service_plan has changed from inventory" do
     let(:service_plan_response) do
       topo_service_plan_response.tap do |plan|
         plan.data.first.create_json_schema["schema"]["description"] += " changed service plan"

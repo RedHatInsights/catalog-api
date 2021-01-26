@@ -1,4 +1,4 @@
-describe "v1.1 - PortfolioItemRequests", :type => [:request, :topology, :v1x1] do
+describe "v1.1 - PortfolioItemRequests", :type => [:request, :inventory, :v1x1] do
   let!(:portfolio) { create(:portfolio) }
   let(:portfolio_id) { portfolio.id.to_s }
   let(:portfolio_item) { create(:portfolio_item, :portfolio_id => portfolio_id) }

@@ -68,7 +68,7 @@ describe Api::V1x0::Catalog::CopyPortfolioItem, :type => :service do
     end
 
     context "when the portfolio_item has service_plans" do
-      context "when the service_plan base match topology" do
+      context "when the service_plan base match inventory" do
         let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
         before do
@@ -89,7 +89,7 @@ describe Api::V1x0::Catalog::CopyPortfolioItem, :type => :service do
         end
       end
 
-      context "when the service_plan base do not match topology" do
+      context "when the service_plan base do not match inventory" do
         let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
         before do

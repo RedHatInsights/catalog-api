@@ -57,9 +57,9 @@ describe Api::V1x2::Catalog::UnlinkFromOrderProcess, :type => [:service] do
     end
   end
 
-  describe 'topology' do
+  describe 'inventory' do
     let(:object_id) { '123' }
-    let(:app_name) { 'topology' }
+    let(:app_name) { 'catalog-inventory' }
 
     before do
       stub_request(:post, url).to_return(:status => http_status, :body => order_process_tags.to_json, :headers => headers)
@@ -67,7 +67,7 @@ describe Api::V1x2::Catalog::UnlinkFromOrderProcess, :type => [:service] do
 
     context 'ServiceInventory' do
       let(:object_type) { 'ServiceInventory' }
-      let(:url)         { "http://topology.example.com/api/topological-inventory/v2.0/service_inventories/#{object_id}/untag" }
+      let(:url)         { "http://inventory.example.com/api/catalog-inventory/v1.0/service_inventories/#{object_id}/untag" }
 
       it_behaves_like "#test_remote_process"
     end

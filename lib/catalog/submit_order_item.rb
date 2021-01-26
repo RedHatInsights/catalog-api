@@ -12,10 +12,10 @@ module Catalog
       @order_item.update_message("info", "Submitting Order Item for provisioning")
       validate_before_submit
 
-      TopologicalInventory::Service.call do |api_instance|
+      CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingApi) do |api_instance|
         result = api_instance.order_service_offering(order_item.portfolio_item.service_offering_ref, service_offering)
         order_item.mark_ordered(:topology_task_ref => result.task_id)
-        Rails.logger.info("OrderItem #{order_item.id} ordered with topology task ref #{result.task_id}")
+        Rails.logger.info("OrderItem #{order_item.id} ordered with inventory task ref #{result.task_id}")
       end
       self
     rescue => e
@@ -33,7 +33,7 @@ module Catalog
     end
 
     def service_offering
-      TopologicalInventoryApiClient::OrderParametersServiceOffering.new.tap do |obj|
+      CatalogInventoryApiClient::OrderParametersServiceOffering.new.tap do |obj|
         obj.service_parameters = runtime_parameters
         obj.provider_control_parameters = order_item.provider_control_parameters
         obj.service_plan_id = order_item.service_plan_ref

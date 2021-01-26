@@ -1,4 +1,4 @@
-describe TopologicalInventory::EventListener do
+describe CatalogInventory::EventListener do
   let(:client) { double(:client) }
   let(:subject) { described_class.new(:host => 'localhost', :port => 9092) }
 

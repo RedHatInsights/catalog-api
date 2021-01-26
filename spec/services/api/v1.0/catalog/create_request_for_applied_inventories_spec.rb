@@ -10,21 +10,21 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
+    with_modified_env(:CATALOG_INVENTORY_URL => "http://inventory.example.com") do
       example.call
     end
   end
 
-  let(:topology_response) { TopologicalInventoryApiClient::InlineResponse200.new(:task_id => "321") }
+  let(:topology_response) { CatalogInventoryApiClient::InlineResponse200.new(:task_id => "321") }
   let(:request_body) do
-    TopologicalInventoryApiClient::AppliedInventoriesParametersServicePlan.new(
+    CatalogInventoryApiClient::AppliedInventoriesParametersServicePlan.new(
       :service_parameters => order_item.service_parameters
     ).to_json
   end
 
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-    stub_request(:post, topological_url("service_offerings/123/applied_inventories"))
+    stub_request(:post, inventory_url("service_offerings/123/applied_inventories"))
       .with(:body => request_body)
       .to_return(:status => 200, :body => topology_response.to_json, :headers => default_headers)
   end
@@ -33,11 +33,11 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
     context "when there is not a modified survey" do
       it "makes a request to compute the applied inventories" do
         subject.process
-        expect(a_request(:post, topological_url("service_offerings/123/applied_inventories"))
+        expect(a_request(:post, inventory_url("service_offerings/123/applied_inventories"))
           .with(:body => request_body)).to have_been_made
       end
 
-      it "updates the order item topology task ref" do
+      it "updates the order item inventory task ref" do
         expect(order_item.topology_task_ref).to eq(nil)
         subject.process
         order_item.reload
@@ -45,7 +45,7 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
       end
 
       it "logs a message about the order item receiving a new task id" do
-        expect(Rails.logger).to receive(:info).with("OrderItem #{order_item.id} updated with topology task ref 321")
+        expect(Rails.logger).to receive(:info).with("OrderItem #{order_item.id} updated with inventory task ref 321")
         subject.process
       end
 
@@ -67,7 +67,7 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
         allow(service_plan).to receive(:invalid_survey_message).and_return("Invalid survey")
       end
 
-      context "when the survey does not match topology" do
+      context "when the survey does not match inventory" do
         it "raises an error" do
           expect { subject.process }.to raise_exception do |error|
             expect(error).to be_a(Catalog::InvalidSurvey)

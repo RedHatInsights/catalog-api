@@ -39,11 +39,11 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       let(:tag_resources_instance) { instance_double(Tags::CollectTagResources) }
 
       before do
-        allow(Catalog::UpdateOrderItem).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(update_order_item)
+        allow(Catalog::UpdateOrderItem).to receive(:new).with(an_instance_of(CatalogInventoryApiClient::Task), order_item).and_return(update_order_item)
         allow(update_order_item).to receive(:process)
-        allow(Catalog::CreateApprovalRequest).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), tag_resources, order_item).and_return(create_approval_request)
+        allow(Catalog::CreateApprovalRequest).to receive(:new).with(an_instance_of(CatalogInventoryApiClient::Task), tag_resources, order_item).and_return(create_approval_request)
         allow(create_approval_request).to receive(:process)
-        allow(Catalog::EvaluateOrderProcess).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order, tag_resources).and_return(evaluate_order_process)
+        allow(Catalog::EvaluateOrderProcess).to receive(:new).with(an_instance_of(CatalogInventoryApiClient::Task), order, tag_resources).and_return(evaluate_order_process)
         allow(evaluate_order_process).to receive(:process)
         allow(Tags::CollectTagResources).to receive(:new).and_return(tag_resources_instance)
         allow(tag_resources_instance).to receive(:process).and_return(tag_resources_instance)

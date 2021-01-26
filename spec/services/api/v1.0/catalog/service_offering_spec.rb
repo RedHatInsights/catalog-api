@@ -6,7 +6,7 @@ describe Api::V1x0::Catalog::ServiceOffering do
   end
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com") do
+    with_modified_env(:CATALOG_INVENTORY_URL => "http://inventory.example.com") do
       example.call
     end
   end
@@ -14,10 +14,10 @@ describe Api::V1x0::Catalog::ServiceOffering do
   describe "#process" do
     let!(:order_item) { create(:order_item, :portfolio_item => portfolio_item) }
     let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
-    let(:service_offering_response) { TopologicalInventoryApiClient::ServiceOffering.new(:archived_at => archived_at) }
+    let(:service_offering_response) { CatalogInventoryApiClient::ServiceOffering.new(:archived_at => archived_at) }
 
     before do
-      stub_request(:get, topological_url("service_offerings/123"))
+      stub_request(:get, inventory_url("service_offerings/123"))
         .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
     end
 

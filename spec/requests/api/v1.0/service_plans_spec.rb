@@ -1,4 +1,4 @@
-describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
+describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :inventory] do
   let(:service_plan) { create(:service_plan, :base => JSON.parse(modified_schema)) }
   let(:portfolio_item) { service_plan.portfolio_item }
   let(:service_offering_ref) { portfolio_item.service_offering_ref }
@@ -12,23 +12,23 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
     end
   end
 
-  let(:topo_service_plan) do
-    TopologicalInventoryApiClient::ServicePlan.new(
+  let(:inventory_service_plan) do
+    CatalogInventoryApiClient::ServicePlan.new(
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
       :create_json_schema => JSON.parse(modified_schema)
     )
   end
-  let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
+  let(:service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => [inventory_service_plan]) }
   let(:service_offering_response) do
-    TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
+    CatalogInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
   end
 
   before do
-    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
+    stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
+    stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
@@ -82,7 +82,7 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
       end
 
       it "returns the newly created ServicePlan in an array" do
-        expect(json.first["create_json_schema"]).to eq topo_service_plan.create_json_schema
+        expect(json.first["create_json_schema"]).to eq inventory_service_plan.create_json_schema
       end
 
       it "shows imported as false" do
@@ -100,7 +100,7 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :topology] do
       get "#{api_version}/service_plans/#{service_plan.id}", :headers => default_headers
     end
 
-    context "when the service plan base is different than Topology's base" do
+    context "when the service plan base is different than inventory's base" do
       let(:service_plan) { create(:service_plan) }
 
       it "returns a 400" do

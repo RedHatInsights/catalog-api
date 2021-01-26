@@ -124,8 +124,8 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
         it_behaves_like "with errors"
       end
 
-      context "from topo service" do
-        before { allow(TopologicalInventory::Service).to receive(:call).and_raise(Catalog::TopologyError.new("boom")) }
+      context "from inventory service" do
+        before { allow(CatalogInventory::Service).to receive(:call).and_raise(Catalog::InventoryError.new("boom")) }
 
         it_behaves_like "with errors"
       end

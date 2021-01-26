@@ -1,4 +1,4 @@
-describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :current_forwardable, :sources] do
+describe Catalog::OrderItemRuntimeParameters, :type => [:service, :inventory, :current_forwardable, :sources] do
   let(:subject) { described_class.new(order_item) }
 
   describe "#process" do
@@ -148,7 +148,7 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :topology, :cu
 
       it "does not call the api" do
         subject.process
-        expect(a_request(:any, /topology/)).not_to have_been_made
+        expect(a_request(:any, /inventory/)).not_to have_been_made
       end
 
       it "returns an empty hash" do
