@@ -14,7 +14,7 @@ module Api
             raise ::Catalog::ServiceOfferingArchived, archived_error_message
           end
         rescue
-          @order.update(:state => "Failed")
+          @order.mark_failed("Failed due to unexpected error in service_offering_check")
           raise
         end
 

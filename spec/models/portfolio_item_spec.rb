@@ -73,7 +73,7 @@ describe PortfolioItem do
     it "runs validate_deletable callback" do
       expect(subject).to receive(:validate_deletable)
 
-      subject.run_callbacks 'destroy'
+      subject.run_callbacks 'discard'
     end
   end
 

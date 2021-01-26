@@ -19,7 +19,6 @@ module Catalog
       end
       self
     rescue => e
-      Rails.logger.error("Error Submitting Order Item: #{@order_item.id}: #{e.message}")
       @order_item.mark_failed("Error Submitting Order Item: #{e.message}")
     ensure
       order_item.update(:service_parameters => runtime_parameters)

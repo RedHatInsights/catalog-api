@@ -58,4 +58,48 @@ describe Order do
       expect(last_message.tenant_id).to eq(order1.tenant.id)
     end
   end
+
+  describe "#mark_completed" do
+    it "marks the order as completed" do
+      order1.mark_completed("Cool")
+      expect(order1.state).to eq("Completed")
+      expect(order1.completed_at).to be_truthy
+      expect(order1.progress_messages.last.message).to match(/Cool/)
+    end
+  end
+
+  describe "#mark_failed" do
+    it "marks the order as failed" do
+      order1.mark_failed("Too bad")
+      expect(order1.state).to eq("Failed")
+      expect(order1.completed_at).to be_truthy
+      expect(order1.progress_messages.last.message).to match(/Too bad/)
+    end
+  end
+
+  describe "#mark_canceled" do
+    it "marks the order as failed" do
+      order1.mark_canceled
+      expect(order1.state).to eq("Canceled")
+      expect(order1.completed_at).to be_truthy
+      expect(order1.progress_messages).to be_empty
+    end
+  end
+
+  describe "#mark_ordered" do
+    it "marks the order as failed" do
+      order1.mark_ordered
+      expect(order1.state).to eq("Ordered")
+      expect(order1.order_request_sent_at).to be_truthy
+      expect(order1.progress_messages).to be_empty
+    end
+  end
+
+  describe "#mark_approval_pending" do
+    it "marks the order as failed" do
+      order1.mark_approval_pending
+      expect(order1.state).to eq("Approval Pending")
+      expect(order1.progress_messages).to be_empty
+    end
+  end
 end

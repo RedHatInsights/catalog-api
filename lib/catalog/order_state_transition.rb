@@ -6,32 +6,30 @@ module Catalog
       @order = order
     end
 
+    # This is service is called only when the order has been approved
     def process
-      @state = determine_order_state
-      @order.update!(:state => @state)
+      update_order_state
+      @state = @order.state
 
       self
     end
 
     private
 
-    def determine_order_state
+    def update_order_state
       item_states = @order.order_items.collect(&:state)
 
-      return 'Ordered' unless order_finished?(item_states)
+      return unless order_finished?(item_states)
 
       clear_sensitive_parameters
 
       # TO DO: How to determine order state with pre and post order_processes?
       if item_states.include?('Failed') || item_states.include?('Denied')
-        @order.update_message("error", "Order Failed")
-        'Failed'
+        @order.mark_failed("Order Failed")
       elsif item_states.all? { |state| state == "Completed" }
-        @order.update_message("info", "Order Completed")
-        'Completed'
+        @order.mark_completed("Order Completed")
       elsif item_states.include?('Canceled')
-        # Message of 'Order Canceled' has been recorded
-        'Canceled'
+        @order.mark_canceled("Order Canceled")
       end
     end
 
