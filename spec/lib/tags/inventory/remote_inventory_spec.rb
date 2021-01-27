@@ -1,4 +1,4 @@
-describe Tags::Inventory::RemoteInventory, :type => :service do
+describe Tags::CatalogInventory::RemoteInventory, :type => :service do
   let(:subject) { described_class.new(task) }
 
   before do
@@ -22,12 +22,12 @@ describe Tags::Inventory::RemoteInventory, :type => :service do
     let(:tag4) { CatalogInventoryApiClient::Tag.new(:tag => "/tag4namespace/tag4=tag4value") }
 
     before do
-      stub_request(:get, inventory_url("service_inventories/1/tags")).to_return(
+      stub_request(:get, catalog_inventory_url("service_inventories/1/tags")).to_return(
         :status  => 200,
         :body    => tags_collection1.to_json,
         :headers => default_headers
       )
-      stub_request(:get, inventory_url("service_inventories/2/tags")).to_return(
+      stub_request(:get, catalog_inventory_url("service_inventories/2/tags")).to_return(
         :status  => 200,
         :body    => tags_collection2.to_json,
         :headers => default_headers

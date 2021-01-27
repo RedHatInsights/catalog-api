@@ -16,9 +16,9 @@ describe Api::V1x0::Catalog::ImportServicePlans, :type => [:service, :inventory,
   end
 
   before do
-    stub_request(:get, inventory_url("service_offerings/1"))
+    stub_request(:get, catalog_inventory_url("service_offerings/1"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, inventory_url("service_offerings/1/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/1/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 

@@ -23,7 +23,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
   describe "#process" do
     context "no errors" do
       before do
-        stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
+        stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}"))
           .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
         stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
           .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
@@ -67,8 +67,8 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
 
     context "with errors from inventory" do
       before do
-        stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
-          .to_raise(Catalog::InventoryError.new("Kaboom"))
+        stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}"))
+          .to_raise(Catalog::CatalogInventoryError.new("Kaboom"))
         stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
           .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
       end
@@ -84,7 +84,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
 
     context "with errors from source" do
       before do
-        stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
+        stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}"))
           .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
         stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
           .to_raise(Catalog::SourcesError.new("Kaboom"))

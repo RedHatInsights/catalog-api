@@ -6,6 +6,6 @@ describe CatalogInventory::Service, :type => [:inventory, :current_forwardable] 
       described_class.call(CatalogInventoryApiClient::DefaultApi) do |_api|
         raise topo_ex
       end
-    end.to raise_exception(Catalog::InventoryError)
+    end.to raise_exception(Catalog::CatalogInventoryError)
   end
 end

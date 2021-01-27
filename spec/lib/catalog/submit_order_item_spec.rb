@@ -32,7 +32,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :inventory, :current_forw
     allow(validater).to receive(:process).and_return(validater)
     allow(validater).to receive(:valid).and_return(validity)
 
-    stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
@@ -43,7 +43,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :inventory, :current_forw
     before do
       allow(Catalog::WorkspaceBuilder).to receive(:new).with(order_item.order).and_return(workspace_builder)
 
-      stub_request(:post, inventory_url("service_offerings/998/order"))
+      stub_request(:post, catalog_inventory_url("service_offerings/998/order"))
         .with(
           :body    => {
             :service_parameters          => service_parameters,
@@ -76,7 +76,7 @@ describe Catalog::SubmitOrderItem, :type => [:service, :inventory, :current_forw
 
       it "only sends the parameters specified in the schema" do
         submit_order.process
-        expect(a_request(:post, inventory_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
+        expect(a_request(:post, catalog_inventory_url("service_offerings/998/order")).with { |req| req.body.exclude?("extra_param") }).to have_been_made
       end
     end
 

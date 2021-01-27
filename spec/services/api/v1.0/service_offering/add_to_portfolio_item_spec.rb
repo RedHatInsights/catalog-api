@@ -26,9 +26,9 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :in
     let(:catalog_application_type) { {:data => [{:id => 1, :name => "/insights/platform/catalog"}]} }
 
     before do
-      stub_request(:get, inventory_url("service_offerings/1"))
+      stub_request(:get, catalog_inventory_url("service_offerings/1"))
         .to_return(:status => 200, :body => inventory_service_offering.to_json, :headers => default_headers)
-      stub_request(:get, inventory_url("service_offering_icons/998"))
+      stub_request(:get, catalog_inventory_url("service_offering_icons/998"))
         .to_return(:status => 200, :body => service_offering_icon.to_json, :headers => default_headers)
 
       stub_request(:get, sources_url("application_types"))
@@ -110,12 +110,12 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :in
 
       context "when there is a inventory error" do
         before do
-          stub_request(:get, inventory_url("service_offerings/1"))
+          stub_request(:get, catalog_inventory_url("service_offerings/1"))
             .to_return(:status => 500, :headers => default_headers)
         end
 
         it "raises an exception" do
-          expect { subject.process }.to raise_exception(Catalog::InventoryError)
+          expect { subject.process }.to raise_exception(Catalog::CatalogInventoryError)
         end
       end
     end

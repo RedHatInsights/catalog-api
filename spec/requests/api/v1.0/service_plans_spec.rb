@@ -26,9 +26,9 @@ describe "v1.0 - ServicePlansRequests", :type => [:request, :v1, :inventory] do
   end
 
   before do
-    stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 

@@ -24,7 +24,7 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
 
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-    stub_request(:post, inventory_url("service_offerings/123/applied_inventories"))
+    stub_request(:post, catalog_inventory_url("service_offerings/123/applied_inventories"))
       .with(:body => request_body)
       .to_return(:status => 200, :body => topology_response.to_json, :headers => default_headers)
   end
@@ -33,7 +33,7 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
     context "when there is not a modified survey" do
       it "makes a request to compute the applied inventories" do
         subject.process
-        expect(a_request(:post, inventory_url("service_offerings/123/applied_inventories"))
+        expect(a_request(:post, catalog_inventory_url("service_offerings/123/applied_inventories"))
           .with(:body => request_body)).to have_been_made
       end
 

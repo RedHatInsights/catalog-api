@@ -1,5 +1,5 @@
 module Tags
-  module Inventory
+  module CatalogInventory
     class RemoteInventory
       attr_reader :tag_resources
 
@@ -31,7 +31,7 @@ module Tags
 
       def all_tag_collections
         @task.input[:applied_inventories].collect do |inventory_id|
-          CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceInventoryApi) do |api|
+          ::CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceInventoryApi) do |api|
             api.list_service_inventory_tags(inventory_id).data
           end
         end

@@ -69,7 +69,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :inventory, 
           end
 
           before do
-            stub_request(:get, inventory_url("service_plans/777"))
+            stub_request(:get, catalog_inventory_url("service_plans/777"))
               .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
           end
 

@@ -125,7 +125,7 @@ describe "v1.0 - OrderRequests", :type => [:request, :v1] do
       end
 
       context "from inventory service" do
-        before { allow(CatalogInventory::Service).to receive(:call).and_raise(Catalog::InventoryError.new("boom")) }
+        before { allow(CatalogInventory::Service).to receive(:call).and_raise(Catalog::CatalogInventoryError.new("boom")) }
 
         it_behaves_like "with errors"
       end

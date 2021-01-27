@@ -17,7 +17,7 @@ describe Api::V1x0::Catalog::ServiceOffering do
     let(:service_offering_response) { CatalogInventoryApiClient::ServiceOffering.new(:archived_at => archived_at) }
 
     before do
-      stub_request(:get, inventory_url("service_offerings/123"))
+      stub_request(:get, catalog_inventory_url("service_offerings/123"))
         .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
     end
 

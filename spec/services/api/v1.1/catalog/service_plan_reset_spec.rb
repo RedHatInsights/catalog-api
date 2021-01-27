@@ -14,9 +14,9 @@ describe Api::V1x1::Catalog::ServicePlanReset, :type => [:current_forwardable, :
   end
 
   before do
-    stub_request(:get, inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
@@ -63,7 +63,7 @@ describe Api::V1x1::Catalog::ServicePlanReset, :type => [:current_forwardable, :
     context "exception handling" do
       let(:modified) { "modified" }
       it "raises StandardError" do
-        stub_request(:get, inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
+        stub_request(:get, catalog_inventory_url("service_offerings/#{service_plan.portfolio_item.service_offering_ref}"))
           .to_raise(StandardError)
         expect(Rails.logger).to receive(:error).twice
         expect { subject.process }.to raise_exception(StandardError)

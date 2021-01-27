@@ -22,7 +22,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :inventory, :v1] do
                             :portfolio                   => portfolio)
   end
   let(:portfolio_item_id)    { portfolio_item.id.to_s }
-  let(:topo_ex)              { Catalog::InventoryError.new("kaboom") }
+  let(:topo_ex)              { Catalog::CatalogInventoryError.new("kaboom") }
 
   describe "GET /portfolio_items/:portfolio_item_id" do
     before do
@@ -252,7 +252,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :inventory, :v1] do
     let(:url) { "#{api_version}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
 
     it "fetches plans" do
-      stub_request(:get, inventory_url("sources/568/container_projects"))
+      stub_request(:get, catalog_inventory_url("sources/568/container_projects"))
         .to_return(:status => 200, :body => {:data => [:name => 'fred']}.to_json, :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers
@@ -262,7 +262,7 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :inventory, :v1] do
     end
 
     xit "raises error" do
-      stub_request(:get, inventory_url("sources/568/container_projects"))
+      stub_request(:get, catalog_inventory_url("sources/568/container_projects"))
         .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
 
       get url, :headers => default_headers

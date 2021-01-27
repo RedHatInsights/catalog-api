@@ -16,7 +16,7 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :inventory] do
   let(:service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
 
   before do
-    stub_request(:get, inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 

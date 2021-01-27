@@ -247,7 +247,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
                 :tag => "/catalog-inventory/order_processes=#{order_process.id}"
               ]}]
           end
-          let(:remote_inventory_instance) { instance_double(Tags::Inventory::RemoteInventory) }
+          let(:remote_inventory_instance) { instance_double(Tags::CatalogInventory::RemoteInventory) }
 
           before do
             TagLink.create(:order_process_id => order_process.id, :tag_name => "/catalog-inventory/order_processes=#{order_process.id}")

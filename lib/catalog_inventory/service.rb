@@ -7,7 +7,7 @@ module CatalogInventory
       yield init(klass)
     rescue CatalogInventoryApiClient::ApiError => err
       Rails.logger.error("CatalogInventoryApiClient::ApiError #{err.message} ")
-      raise Catalog::InventoryError, err.message
+      raise Catalog::CatalogInventoryError, err.message
     end
 
     private_class_method def self.setup

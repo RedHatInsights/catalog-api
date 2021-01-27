@@ -6,10 +6,10 @@ module Catalog
 
     def process
       @task = CatalogInventoryApiClient::Task.new(
-        :id      => @topic.payload["task_id"].to_s,
-        :state   => @topic.payload["state"],
-        :status  => @topic.payload["status"],
-        :input   => @topic.payload["context"].try(&:with_indifferent_access)
+        :id     => @topic.payload["task_id"].to_s,
+        :state  => @topic.payload["state"],
+        :status => @topic.payload["status"],
+        :input  => @topic.payload["context"].try(&:with_indifferent_access)
       )
 
       find_relevant_order_item
