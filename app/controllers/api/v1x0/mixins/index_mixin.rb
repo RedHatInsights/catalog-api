@@ -3,7 +3,7 @@ module Api
     module Mixins
       module IndexMixin
         def scoped(relation, pre_authorized)
-          relation = rbac_scope(relation, :pre_authorized => pre_authorized) if Insights::API::Common::RBAC::Access.enabled?
+          relation = rbac_scope(relation, :pre_authorized => pre_authorized) if ::Insights::API::Common::RBAC::Access.enabled?
           if relation.model.respond_to?(:taggable?) && relation.model.taggable?
             ref_schema = {relation.model.tagging_relation_name => :tag}
 
