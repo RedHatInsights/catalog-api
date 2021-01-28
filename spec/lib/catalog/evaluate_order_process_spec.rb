@@ -4,7 +4,7 @@ describe Catalog::EvaluateOrderProcess, :type => :service do
     let!(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
     let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio) }
     let(:portfolio) { create(:portfolio) }
-    let(:task) { CatalogInventoryApiClient::Task.new(:id => "123", :input => {:applied_inventories => applied_inventories}) }
+    let(:task) { CatalogInventoryApiClient::Task.new(:id => "123", :output => {:applied_inventories => applied_inventories}) }
     let(:applied_inventories) { [] }
     let(:before_service_plan) { create(:service_plan, :base => {:schema => {:fields => fields}}, :modified => nil) }
     let(:after_service_plan) { create(:service_plan, :base => {:schema => {:fields => fields}}, :modified => nil) }

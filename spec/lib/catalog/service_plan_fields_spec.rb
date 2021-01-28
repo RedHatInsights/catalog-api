@@ -4,7 +4,7 @@ describe Catalog::ServicePlanFields, :type => [:service, :inventory, :current_fo
     let(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
     let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :service_plans => [service_plan]) }
     let(:portfolio) { create(:portfolio) }
-    let(:task) { CatalogInventoryApiClient::Task.new(:id => "123", :input => {:applied_inventories => applied_inventories}) }
+    let(:task) { CatalogInventoryApiClient::Task.new(:id => "123", :output => {:applied_inventories => applied_inventories}) }
     let(:fields) do
       [{
         'name'         => "param1",
