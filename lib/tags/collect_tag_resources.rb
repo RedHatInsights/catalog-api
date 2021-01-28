@@ -2,14 +2,13 @@ module Tags
   class CollectTagResources
     attr_reader :tag_resources
 
-    def initialize(task, order)
-      @task = task
-      @order = order
+    def initialize(order_item)
+      @item = order_item
     end
 
     def process
       @tag_resources = local_tag_resources + remote_tag_resources
-      Rails.logger.info("Tag resources for order #{@order.id}: #{@tag_resources}")
+      Rails.logger.info("Tag resources for order #{@item.order.id}: #{@tag_resources}")
 
       self
     end
@@ -17,11 +16,11 @@ module Tags
     private
 
     def local_tag_resources
-      @local_tag_resources = CollectLocalOrderResources.new(:order_id => @order.id).process.tag_resources
+      @local_tag_resources = CollectLocalOrderResources.new(:order_id => @item.order.id).process.tag_resources
     end
 
     def remote_tag_resources
-      @remote_tag_resources = CatalogInventory::RemoteInventory.new(@task).process.tag_resources
+      @remote_tag_resources = ::Tags::CatalogInventory::RemoteInventory.new(@item).process.tag_resources
     end
   end
 end

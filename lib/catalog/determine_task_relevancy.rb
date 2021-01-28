@@ -39,7 +39,7 @@ module Catalog
       if @task.output&.has_key_path?(:service_instance)
         UpdateOrderItem.new(@task, @order_item).process
       elsif @task.output&.has_key_path?(:applied_inventories)
-        tag_resources = Tags::CollectTagResources.new(@task, @order_item.order).process.tag_resources
+        tag_resources = Tags::CollectTagResources.new(@order_item.order).process.tag_resources
 
         Rails.logger.info("Evaluating order processes for order item id #{@order_item.id}")
         EvaluateOrderProcess.new(@task, @order_item.order, tag_resources).process

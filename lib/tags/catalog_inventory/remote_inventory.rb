@@ -3,8 +3,8 @@ module Tags
     class RemoteInventory
       attr_reader :tag_resources
 
-      def initialize(task)
-        @task = task
+      def initialize(order_item)
+        @item = order_item
       end
 
       def process
@@ -30,11 +30,13 @@ module Tags
       end
 
       def all_tag_collections
-        @task.input[:applied_inventories].collect do |inventory_id|
-          ::CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceInventoryApi) do |api|
-            api.list_service_inventory_tags(inventory_id).data
-          end
+        ::CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingApi) do |api|
+          api.applied_inventories_tags_for_service_offering(service_offering_id, CatalogInventoryApiClient::AppliedInventoriesParametersServicePlan.new).data
         end
+      end
+
+      def service_offering_id
+        @item.portfolio_item.service_offering_ref.to_s
       end
     end
   end
