@@ -22,7 +22,7 @@ module Catalog
           @order_item.mark_completed("Order Item Completed", :service_instance_ref => service_instance_id, :artifacts => artifacts)
         when "running"
           @order_item.update_message("info", "Order Item Is Running")
-          @order_item.update!(:external_url => @task.output.dig(:service_instance, :url))
+          @order_item.update!(:external_url => @task.output[:url])
         end
       when "error"
         @order_item.mark_failed("Order Item Failed", :service_instance_ref => service_instance_id)
@@ -30,11 +30,11 @@ module Catalog
     end
 
     def service_instance_id
-      @service_instance_id ||= @task.output.dig(:service_instance, :id) || @order_item.service_instance_ref.to_s
+      @service_instance_id ||= @task.output[:id] || @order_item.service_instance_ref.to_s
     end
 
     def artifacts
-      Hash(@task.output.dig(:service_instance, :artifacts)).each_with_object({}) do |(key, val), facts|
+      Hash(@task.output[:artifacts]).each_with_object({}) do |(key, val), facts|
         facts[key.delete_prefix(CRHC_PREFIX)] = val if key.start_with?(CRHC_PREFIX)
       end
     end

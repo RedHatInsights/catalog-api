@@ -10,29 +10,31 @@ module Tags
       def process
         consolidate_inventory_tags
 
+        Rails.logger.info("Remote Tags #{@tag_resources}")
         self
       end
 
       private
 
       def consolidate_inventory_tags
-        @tag_resources = all_tag_collections.collect do |tag_collection|
-          tags = tag_collection.collect do |tag|
-            {:tag => tag.tag}
-          end
-
-          {
-            :app_name    => "catalog-inventory",
-            :object_type => "ServiceInventory",
-            :tags        => tags
-          }
+        tags = all_tag_collections.collect do |tag|
+          {:tag => tag.tag}
         end
+
+        @tag_resources = [{
+          :app_name    => "catalog-inventory",
+          :object_type => "ServiceInventory",
+          :tags        => tags
+        }]
       end
 
       def all_tag_collections
-        ::CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingApi) do |api|
-          api.applied_inventories_tags_for_service_offering(service_offering_id, CatalogInventoryApiClient::AppliedInventoriesParametersServicePlan.new).data
+        result = []
+        ::CatalogInventory::Service.call(::CatalogInventoryApiClient::ServiceOfferingApi) do |api|
+          result = api.applied_inventories_tags_for_service_offering(service_offering_id, ::CatalogInventoryApiClient::AppliedInventoriesParametersServicePlan.new)
         end
+        Rails.logger.info(" Applied Tags #{result}")
+        result
       end
 
       def service_offering_id

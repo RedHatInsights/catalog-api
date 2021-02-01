@@ -1,7 +1,6 @@
 describe Tags::CollectTagResources do
   let(:order) { create(:order) }
-  let(:order_item) { create(:order_item, :order => order) }
-  let(:subject) { described_class.new(order_item) }
+  let(:subject) { described_class.new(order) }
 
   context "#process" do
     let(:tag_resources) do

@@ -5,14 +5,20 @@ module Catalog
     end
 
     def process
+      Rails.logger.info("Topic Payload #{@topic}")
       @task = CatalogInventoryApiClient::Task.new(
         :id     => @topic.payload["task_id"].to_s,
         :state  => @topic.payload["state"],
         :status => @topic.payload["status"],
-        :output => @topic.payload["context"].try(&:with_indifferent_access)
+        :output => @topic.payload["output"].try(&:with_indifferent_access)
       )
 
+      Rails.logger.info("Incoming task #{@task.id}")
+      Rails.logger.info("Incoming task State #{@task.state}")
+      Rails.logger.info("Incoming task Status #{@task.status}")
+      Rails.logger.info("Incoming task Output #{@task.output}")
       find_relevant_order_item
+      Rails.logger.info("Delegating task #{@task.id}")
       delegate_task
 
       self
@@ -36,10 +42,10 @@ module Catalog
     end
 
     def process_relevant_context
-      if @task.output&.has_key_path?(:service_instance)
+      if @task.output&.has_key?(:url)
         UpdateOrderItem.new(@task, @order_item).process
       elsif @task.output&.has_key_path?(:applied_inventories)
-        tag_resources = Tags::CollectTagResources.new(@order_item.order).process.tag_resources
+        tag_resources = Tags::CollectTagResources.new(@task, @order_item.order).process.tag_resources
 
         Rails.logger.info("Evaluating order processes for order item id #{@order_item.id}")
         EvaluateOrderProcess.new(@task, @order_item.order, tag_resources).process
@@ -57,7 +63,7 @@ module Catalog
         Rails.logger.error("Incoming task #{@task.id} had an error while running: #{@task.output}")
       elsif @task.state == "completed"
         Rails.logger.error("Incoming task #{@task.id} is completed but errored: #{@task.output}")
-        if @task.output&.has_key_path?(:service_instance)
+        if @task.output&.has_key?(:url)
           UpdateOrderItem.new(@task, @order_item).process
         else
           @order_item.mark_failed("Order Item Failed")
