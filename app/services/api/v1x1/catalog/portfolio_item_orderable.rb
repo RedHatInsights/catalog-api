@@ -39,8 +39,8 @@ module Api
         end
 
         def fetch_source
-          @source = Sources.call do |api_instance|
-            api_instance.show_source(@portfolio_item.service_offering_source_ref)
+          @soure = CatalogInventory::Service.call(CatalogInventoryApiClient::SourceApi) do |api|
+            api.show_source(@portfolio_item.service_offering_source_ref)
           end
         rescue StandardError => e
           Rails.logger.error("Source could not be retrieved for Portfolio Item #{@portfolio_item.name}")
