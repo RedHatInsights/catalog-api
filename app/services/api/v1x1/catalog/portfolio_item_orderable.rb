@@ -39,7 +39,7 @@ module Api
         end
 
         def fetch_source
-          @soure = CatalogInventory::Service.call(CatalogInventoryApiClient::SourceApi) do |api|
+          @source = CatalogInventory::Service.call(CatalogInventoryApiClient::SourceApi) do |api|
             api.show_source(@portfolio_item.service_offering_source_ref)
           end
         rescue StandardError => e

@@ -22,8 +22,8 @@ describe CatalogInventory::EventListener do
   context 'when event_type is Task.update' do
     let(:order) { create(:order) }
     let!(:order_item) { create(:order_item, :order => order, :topology_task_ref => "123") }
-    let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
-    let(:payload) { {'id' => "123", "status" => "ok", "state" => "running", "context" => payload_context} }
+    let(:payload_context) { {"url" => "external_url"} }
+    let(:payload) { {'id' => "123", "status" => "ok", "state" => "running", "output" => payload_context} }
     let(:event) { ManageIQ::Messaging::ReceivedMessage.new(nil, 'Task.update', payload, default_headers, nil, client) }
 
     it 'adds a new progress message' do

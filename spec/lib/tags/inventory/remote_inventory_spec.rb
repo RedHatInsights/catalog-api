@@ -1,5 +1,7 @@
 describe Tags::CatalogInventory::RemoteInventory, :type => :service do
-  let(:subject) { described_class.new(task) }
+  let(:portfolio_item) { create(:portfolio_item) }
+  let(:order_item) { create(:order_item, :portfolio_item => portfolio_item) }
+  let(:subject) { described_class.new(order_item) }
 
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
@@ -12,26 +14,12 @@ describe Tags::CatalogInventory::RemoteInventory, :type => :service do
   end
 
   describe "#process" do
-    let(:task) { CatalogInventoryApiClient::Task.new(:input => {:applied_inventories => ["1", "2"]}) }
-    let(:tags_collection1) { CatalogInventoryApiClient::TagsCollection.new(:data => [tag1, tag2]) }
-    let(:tag1) { CatalogInventoryApiClient::Tag.new(:tag => "/tag1namespace/tag1=tag1value") }
-    let(:tag2) { CatalogInventoryApiClient::Tag.new(:tag => "/tag2namespace/tag2=tag2value") }
-
-    let(:tags_collection2) { CatalogInventoryApiClient::TagsCollection.new(:data => [tag3, tag4]) }
-    let(:tag3) { CatalogInventoryApiClient::Tag.new(:tag => "/tag3namespace/tag3=tag3value") }
-    let(:tag4) { CatalogInventoryApiClient::Tag.new(:tag => "/tag4namespace/tag4=tag4value") }
+    let(:api) { instance_double(CatalogInventoryApiClient::ServiceOfferingApi) }
+    let(:tags) { [CatalogInventoryApiClient::Tag.new(:tag => "/x/y=z")] }
 
     before do
-      stub_request(:get, catalog_inventory_url("service_inventories/1/tags")).to_return(
-        :status  => 200,
-        :body    => tags_collection1.to_json,
-        :headers => default_headers
-      )
-      stub_request(:get, catalog_inventory_url("service_inventories/2/tags")).to_return(
-        :status  => 200,
-        :body    => tags_collection2.to_json,
-        :headers => default_headers
-      )
+      allow(CatalogInventory::Service).to receive(:call).and_yield(api)
+      allow(api).to receive(:applied_inventories_tags_for_service_offering).and_return(tags)
     end
 
     it "stores tag names, namespaces and values in a specific object format" do
@@ -41,16 +29,7 @@ describe Tags::CatalogInventory::RemoteInventory, :type => :service do
             :app_name    => "catalog-inventory",
             :object_type => "ServiceInventory",
             :tags        => [
-              {:tag => "/tag1namespace/tag1=tag1value"},
-              {:tag => "/tag2namespace/tag2=tag2value"}
-            ]
-          },
-          {
-            :app_name    => "catalog-inventory",
-            :object_type => "ServiceInventory",
-            :tags        => [
-              {:tag => "/tag3namespace/tag3=tag3value"},
-              {:tag => "/tag4namespace/tag4=tag4value"}
+              {:tag => "/x/y=z"}
             ]
           }
         ]

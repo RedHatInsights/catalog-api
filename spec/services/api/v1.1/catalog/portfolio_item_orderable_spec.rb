@@ -17,16 +17,19 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
   end
 
   let(:source_response) do
-    SourcesApiClient::Source.new(:name => 'the platform', :availability_status => availability_status)
+    CatalogInventoryApiClient::Source.new(:info => 'the platform', :availability_status => availability_status)
   end
+  let(:source_api) { instance_double(CatalogInventoryApiClient::SourceApi) }
+  let(:service_offering_api) { instance_double(CatalogInventoryApiClient::ServiceOfferingApi) }
 
   describe "#process" do
     context "no errors" do
       before do
-        stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}"))
-          .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-        stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
-          .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::SourceApi).and_yield(source_api)
+        allow(source_api).to receive(:show_source).and_return(source_response)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi).and_yield(service_offering_api)
+        allow(service_offering_api).to receive(:show_service_offering).and_return(service_offering_response)
+
         allow(::Catalog::SurveyCompare).to receive(:any_changed?).with(service_plans).and_return(survey_changed)
       end
 
@@ -67,10 +70,10 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
 
     context "with errors from inventory" do
       before do
-        stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}"))
-          .to_raise(Catalog::CatalogInventoryError.new("Kaboom"))
-        stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
-          .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::SourceApi).and_yield(source_api)
+        allow(source_api).to receive(:show_source).and_return(source_response)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi)
+          .and_raise(Catalog::CatalogInventoryError.new("Kaboom"))
       end
 
       context "when the service offering cannot be retrieved" do
@@ -84,10 +87,10 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
 
     context "with errors from source" do
       before do
-        stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}"))
-          .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-        stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
-          .to_raise(Catalog::SourcesError.new("Kaboom"))
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::SourceApi)
+                                                          .and_raise(Catalog::SourcesError.new("Kaboom"))
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi).and_yield(service_offering_api)
+        allow(service_offering_api).to receive(:show_service_offering).and_return(service_offering_response)
       end
 
       context "when the source cannot be retrieved" do

@@ -6,7 +6,7 @@ describe Catalog::UpdateOrderItem, :type => [:inventory, :service] do
       "id"     => "123",
       "status" => status,
       "state"  => state,
-      "output"  => {:service_instance => {:id => service_instance_id, :artifacts => artifacts}}.with_indifferent_access
+      "output" => {:id => service_instance_id, :artifacts => artifacts}.with_indifferent_access
     )
   end
   let(:service_instance_id) { "321" }
@@ -45,7 +45,7 @@ describe Catalog::UpdateOrderItem, :type => [:inventory, :service] do
 
       context "when the state is running" do
         let(:state) { "running" }
-        before { task.output = {:service_instance => {:url => "http://tower.com/job/3"}} }
+        before { task.output = {:url => "http://tower.com/job/3"} }
 
         it "updates progress messages" do
           expect(order_item).to receive(:update_message).with("info", "Order Item Is Running")

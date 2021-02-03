@@ -2,9 +2,10 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
   let(:subject) { described_class.new(order_item.order) }
   let(:service_plan_ref) { "991" }
   let(:req) { {:headers => default_headers, :original_url => "localhost/nope"} }
+  let(:order) { create(:order) }
   let!(:order_item) do
     Insights::API::Common::Request.with_request(req) do
-      create(:order_item, :portfolio_item => portfolio_item, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref)
+      create(:order_item, :portfolio_item => portfolio_item, :order => order, :service_parameters => "service_parameters", :service_plan_ref => service_plan_ref)
     end
   end
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => 123) }
@@ -15,37 +16,27 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
     end
   end
 
-  let(:topology_response) { CatalogInventoryApiClient::InlineResponse200.new(:task_id => "321") }
-  let(:request_body) do
-    CatalogInventoryApiClient::AppliedInventoriesParametersServicePlan.new(
-      :service_parameters => order_item.service_parameters
-    ).to_json
-  end
+  let(:create_approval_request) { instance_double(Catalog::CreateApprovalRequest) }
+  let(:evaluate_order_process) { instance_double(Catalog::EvaluateOrderProcess) }
+  let(:tag_resources_instance) { instance_double(Tags::CollectTagResources) }
+  let(:tag_resources) { [] }
 
   before do
     allow(Insights::API::Common::Request).to receive(:current_forwardable).and_return(default_headers)
-    stub_request(:post, catalog_inventory_url("service_offerings/123/applied_inventories"))
-      .with(:body => request_body)
-      .to_return(:status => 200, :body => topology_response.to_json, :headers => default_headers)
+    allow(Catalog::CreateApprovalRequest).to receive(:new).with(nil, tag_resources, order_item).and_return(create_approval_request)
+    allow(create_approval_request).to receive(:process)
+    allow(Catalog::EvaluateOrderProcess).to receive(:new).with(nil, order, tag_resources).and_return(evaluate_order_process)
+    allow(evaluate_order_process).to receive(:process)
+    allow(Tags::CollectTagResources).to receive(:new).and_return(tag_resources_instance)
+    allow(tag_resources_instance).to receive(:process).and_return(tag_resources_instance)
+    allow(tag_resources_instance).to receive(:tag_resources).and_return(tag_resources)
   end
 
   describe "#process" do
     context "when there is not a modified survey" do
-      it "makes a request to compute the applied inventories" do
-        subject.process
-        expect(a_request(:post, catalog_inventory_url("service_offerings/123/applied_inventories"))
-          .with(:body => request_body)).to have_been_made
-      end
-
-      it "updates the order item inventory task ref" do
-        expect(order_item.topology_task_ref).to eq(nil)
-        subject.process
-        order_item.reload
-        expect(order_item.topology_task_ref).to eq("321")
-      end
-
       it "logs a message about the order item receiving a new task id" do
-        expect(Rails.logger).to receive(:info).with("OrderItem #{order_item.id} updated with inventory task ref 321")
+        expect(Rails.logger).to receive(:info).with("Evaluating order processes for order item id #{order_item.id}").ordered
+        expect(Rails.logger).to receive(:info).with("Creating approval request for order_item id #{order_item.id}").ordered
         subject.process
       end
 
@@ -53,7 +44,7 @@ describe Api::V1x0::Catalog::CreateRequestForAppliedInventories, :type => :servi
         subject.process
         progress_message = ProgressMessage.last
         expect(progress_message.level).to eq("info")
-        expect(progress_message.message).to eq("Computing inventories")
+        expect(progress_message.message).to eq("Computed Tags")
         expect(progress_message.messageable_id).to eq(order_item.order.id)
         expect(progress_message.messageable_type).to eq(order_item.order.class.name)
       end
