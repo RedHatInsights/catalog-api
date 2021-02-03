@@ -72,15 +72,14 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
       before do
         allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::SourceApi).and_yield(source_api)
         allow(source_api).to receive(:show_source).and_return(source_response)
-        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi)
-          .and_raise(Catalog::CatalogInventoryError.new("Kaboom"))
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi).and_raise(Catalog::CatalogInventoryError.new("Kaboom"))
       end
 
       context "when the service offering cannot be retrieved" do
         it "returns false" do
           obj = subject.process
           expect(obj.result).to be(false)
-          expect(obj.messages[0]).to match(/Service offering could not be retrieved/)
+          expect(obj.messages[0]).to match(/CatalogInventoryApiClient::ServiceOfferingApi:show_service_offering could not retrieve for #{service_offering_ref}/)
         end
       end
     end
@@ -97,7 +96,7 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
         it "returns false" do
           obj = subject.process
           expect(obj.result).to be(false)
-          expect(obj.messages[0]).to match(/Source could not be retrieved/)
+          expect(obj.messages[0]).to match(/CatalogInventoryApiClient::SourceApi:show_source could not retrieve for #{service_offering_source_ref}/)
         end
       end
     end
