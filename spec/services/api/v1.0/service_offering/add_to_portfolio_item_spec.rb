@@ -1,4 +1,4 @@
-describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :topology] do
+describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :inventory] do
   include ServiceOfferingHelper
   let(:service_offering_ref) { "1" }
   let(:subject) { described_class.new(params) }
@@ -14,21 +14,21 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :to
 
   around do |example|
     Insights::API::Common::Request.with_request(default_request) do
-      with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :SOURCES_URL => "http://sources.example.com") do
+      with_modified_env(:CATALOG_INVENTORY_URL => "http://inventory.example.com", :SOURCES_URL => "http://sources.example.com") do
         example.call
       end
     end
   end
 
   describe "#process" do
-    let(:topology_service_offering) { fully_populated_service_offering }
+    let(:inventory_service_offering) { fully_populated_service_offering }
     let(:service_offering_icon) { fully_populated_service_offering_icon }
     let(:catalog_application_type) { {:data => [{:id => 1, :name => "/insights/platform/catalog"}]} }
 
     before do
-      stub_request(:get, topological_url("service_offerings/1"))
-        .to_return(:status => 200, :body => topology_service_offering.to_json, :headers => default_headers)
-      stub_request(:get, topological_url("service_offering_icons/998"))
+      stub_request(:get, catalog_inventory_url("service_offerings/1"))
+        .to_return(:status => 200, :body => inventory_service_offering.to_json, :headers => default_headers)
+      stub_request(:get, catalog_inventory_url("service_offering_icons/998"))
         .to_return(:status => 200, :body => service_offering_icon.to_json, :headers => default_headers)
 
       stub_request(:get, sources_url("application_types"))
@@ -56,7 +56,7 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :to
         end
 
         context "when service_offering does not have a long_description" do
-          let(:topology_service_offering) { fully_populated_service_offering.tap { |so| so.long_description = nil } }
+          let(:inventory_service_offering) { fully_populated_service_offering.tap { |so| so.long_description = nil } }
 
           it "leaves long_description set to nil" do
             expect(subject.process.item.long_description).to be_nil
@@ -91,7 +91,7 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :to
       end
 
       context "when there is no icon" do
-        let(:topology_service_offering) do
+        let(:inventory_service_offering) do
           fully_populated_service_offering.tap { |so| so.service_offering_icon_id = nil }
         end
 
@@ -108,14 +108,14 @@ describe Api::V1x0::ServiceOffering::AddToPortfolioItem, :type => [:service, :to
         end
       end
 
-      context "when there is a topology error" do
+      context "when there is a inventory error" do
         before do
-          stub_request(:get, topological_url("service_offerings/1"))
+          stub_request(:get, catalog_inventory_url("service_offerings/1"))
             .to_return(:status => 500, :headers => default_headers)
         end
 
         it "raises an exception" do
-          expect { subject.process }.to raise_exception(Catalog::TopologyError)
+          expect { subject.process }.to raise_exception(Catalog::CatalogInventoryError)
         end
       end
     end

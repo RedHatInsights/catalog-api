@@ -24,10 +24,10 @@ module Catalog
     def live_service_plan_schema
       return {} unless @order_item.service_plan_ref
 
-      TopologicalInventory::Service.call do |api|
+      CatalogInventory::Service.call(CatalogInventoryApiClient::ServicePlanApi) do |api|
         api.show_service_plan(@order_item.service_plan_ref.to_s).create_json_schema
       end
-    rescue ::Catalog::TopologyError => e
+    rescue ::Catalog::CatalogInventoryError => e
       Rails.logger.error("DefaultApi->show_service_plan #{e.message}")
       raise
     end

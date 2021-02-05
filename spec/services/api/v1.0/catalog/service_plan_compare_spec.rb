@@ -8,7 +8,7 @@ describe Api::V1x0::Catalog::ServicePlanCompare do
   end
 
   describe "#process" do
-    context "when the base has changed from topology" do
+    context "when the base has changed from inventory" do
       let(:changed) { true }
 
       it "raises a Catalog::InvalidSurvey error" do
@@ -16,7 +16,7 @@ describe Api::V1x0::Catalog::ServicePlanCompare do
       end
     end
 
-    context "when the base has not changed from topology" do
+    context "when the base has not changed from inventory" do
       let(:changed) { false }
 
       it "does not raise an error" do

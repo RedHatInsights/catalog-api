@@ -1,4 +1,4 @@
-describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::OrderItemSanitizedParameters, :type => [:service, :inventory, :current_forwardable] do
   let(:subject) { described_class.new(order_item) }
 
   describe "#process" do
@@ -60,7 +60,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
         context "when portfilio_item has no service plans" do
           let(:portfolio_item) { create(:portfolio_item) }
           let(:service_plan_response) do
-            TopologicalInventoryApiClient::ServicePlan.new(
+            CatalogInventoryApiClient::ServicePlan.new(
               :name               => "Plan A",
               :id                 => "1",
               :description        => "Plan A",
@@ -69,7 +69,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
           end
 
           before do
-            stub_request(:get, topological_url("service_plans/777"))
+            stub_request(:get, catalog_inventory_url("service_plans/777"))
               .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
           end
 
@@ -87,7 +87,7 @@ describe Catalog::OrderItemSanitizedParameters, :type => [:service, :topology, :
 
       it "does not call the api" do
         subject.process
-        expect(a_request(:any, /topology/)).not_to have_been_made
+        expect(a_request(:any, /inventory/)).not_to have_been_made
       end
 
       it "returns an empty hash" do

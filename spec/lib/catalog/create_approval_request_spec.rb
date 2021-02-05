@@ -1,6 +1,6 @@
 describe Catalog::CreateApprovalRequest, :type => :service do
   let(:subject) { described_class.new(task, tag_resources, order_item) }
-  let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123") }
+  let(:task) { CatalogInventoryApiClient::Task.new(:id => "123") }
   let(:tag_resources) { [] }
 
   around do |example|

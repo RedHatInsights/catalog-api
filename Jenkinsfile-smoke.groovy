@@ -9,7 +9,7 @@ if (env.CHANGE_ID) {
     execSmokeTest (
         ocDeployerBuilderPath: "catalog/catalog-api",
         ocDeployerComponentPath: "catalog/catalog-api",
-        ocDeployerServiceSets: "catalog,topological-inventory,sources,approval,platform-mq",
+        ocDeployerServiceSets: "catalog,catalog-inventory,sources,approval,platform-mq",
         iqePlugins: ["self_service_portal"],
         pytestMarker: "catalog_api_smoke",
         // local settings file

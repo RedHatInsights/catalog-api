@@ -6,13 +6,13 @@ describe ServicePlan do
   let(:empty_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "no_service_plan_ddf.json"))) }
 
   around do |example|
-    with_modified_env(:TOPOLOGICAL_INVENTORY_URL => "http://topology.example.com", :BYPASS_RBAC => 'true') do
+    with_modified_env(:CATALOG_INVENTORY_URL => "http://inventory.example.com", :BYPASS_RBAC => 'true') do
       Insights::API::Common::Request.with_request(default_request) { example.call }
     end
   end
 
   let(:topo_service_plan) do
-    TopologicalInventoryApiClient::ServicePlan.new(
+    CatalogInventoryApiClient::ServicePlan.new(
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
@@ -20,15 +20,15 @@ describe ServicePlan do
     )
   end
 
-  let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
+  let(:service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
   let(:service_offering_response) do
-    TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
+    CatalogInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
   end
 
   before do
-    stub_request(:get, topological_url(service_offering_ref))
+    stub_request(:get, catalog_inventory_url(service_offering_ref))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 

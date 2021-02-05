@@ -23,9 +23,9 @@ module ServiceSpecHelper
       'x-rh-insights-request-id' => request_id }
   end
 
-  def topological_url(partial_path, api_version = "v2.0")
-    url_string = "http://topology.example.com"
-    url = URI.join(url_string, "api/", "topological-inventory/", "#{api_version}/", "#{partial_path}")
+  def catalog_inventory_url(partial_path, api_version = "v1.0")
+    url_string = "http://inventory.example.com"
+    url = URI.join(url_string, "api/", "catalog-inventory/", "#{api_version}/", "#{partial_path}")
     url.to_s
   end
 

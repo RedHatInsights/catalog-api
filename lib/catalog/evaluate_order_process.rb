@@ -52,7 +52,7 @@ module Catalog
     end
 
     def all_tags
-      tag_pattern = '\/\w+\/order_processes=\d'
+      tag_pattern = '\/\w+.\w+\/order_processes=\d'
 
       @tag_resources.map { |resource| resource[:tags] }.flatten.map { |tag| tag[:tag] }.select { |t| t.match?(tag_pattern) }.uniq
     end

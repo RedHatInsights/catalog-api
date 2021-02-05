@@ -48,23 +48,17 @@ describe Api::V1x2::Catalog::GetLinkedOrderProcess, :type => [:service] do
     end
   end
 
-  describe 'topology' do
+  describe 'inventory' do
     let(:object_id) { '123' }
-    let(:app_name) { 'topology' }
+    let(:app_name) { 'catalog-inventory' }
 
     before do
       stub_request(:get, url).to_return(:status => http_status, :body => {:data => order_process_tags}.to_json, :headers => headers)
     end
 
-    context 'SecurityGroup' do
-      let(:object_type) { 'SecurityGroup' }
-      let(:url)         { "http://topology.example.com/api/topological-inventory/v2.0/security_groups/#{object_id}/tags?limit=1000" }
-      it_behaves_like "#test_remote_process"
-    end
-
     context 'ServiceInventory' do
       let(:object_type) { 'ServiceInventory' }
-      let(:url)         { "http://topology.example.com/api/topological-inventory/v2.0/service_inventories/#{object_id}/tags?limit=1000" }
+      let(:url)         { "http://inventory.example.com/api/catalog-inventory/v1.0/service_inventories/#{object_id}/tags?limit=1000" }
       it_behaves_like "#test_remote_process"
     end
   end

@@ -67,7 +67,7 @@ describe Api::V1x2::Catalog::AddToOrderViaOrderProcess, :type => :service do
   end
 
   context "service_plan_ref_lookup" do
-    it "gets the correct service_plan_ref from topology" do
+    it "gets the correct service_plan_ref from inventory" do
       Insights::API::Common::Request.with_request(request) do
         expect(subject.order_item.service_plan_ref).to eq "1"
       end

@@ -1,6 +1,6 @@
 module ServiceOfferingHelper
   def fully_populated_service_offering
-    TopologicalInventoryApiClient::ServiceOffering.new(
+    CatalogInventoryApiClient::ServiceOffering.new(
       :id                       => "1",
       :name                     => "test name",
       :description              => "test description",
@@ -19,7 +19,7 @@ module ServiceOfferingHelper
   end
 
   def fully_populated_service_offering_icon
-    TopologicalInventoryApiClient::ServiceOfferingIcon.new(
+    CatalogInventoryApiClient::ServiceOfferingIcon.new(
       :data       => File.read(Rails.root.join("spec", "support", "images", "topology_image.svg")),
       :source_id  => "127",
       :source_ref => "icon-ref"

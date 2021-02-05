@@ -1,10 +1,10 @@
-describe Catalog::ServicePlanFields, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::ServicePlanFields, :type => [:service, :inventory, :current_forwardable] do
   describe "#process" do
     let(:order) { create(:order) }
     let(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item) }
     let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :service_plans => [service_plan]) }
     let(:portfolio) { create(:portfolio) }
-    let(:task) { TopologicalInventoryApiClient::Task.new(:id => "123", :context => {:applied_inventories => applied_inventories}) }
+    let(:task) { CatalogInventoryApiClient::Task.new(:id => "123", :output => {:applied_inventories => applied_inventories}) }
     let(:fields) do
       [{
         'name'         => "param1",
@@ -54,7 +54,7 @@ describe Catalog::ServicePlanFields, :type => [:service, :topology, :current_for
       let(:order_item) { create(:order_item, :order => order, :portfolio_item => portfolio_item, :service_plan_ref => '777') }
 
       let(:service_plan_response) do
-        TopologicalInventoryApiClient::ServicePlan.new(
+        CatalogInventoryApiClient::ServicePlan.new(
           :name               => "Plan A",
           :id                 => "1",
           :description        => "Plan A",
@@ -63,11 +63,11 @@ describe Catalog::ServicePlanFields, :type => [:service, :topology, :current_for
       end
 
       before do
-        stub_request(:get, topological_url("service_plans/777"))
+        stub_request(:get, catalog_inventory_url("service_plans/777"))
           .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
       end
 
-      it 'gets fields live from topology' do
+      it 'gets fields live from inventory' do
         expect(subject.process.fields).to eq(fields)
       end
     end

@@ -1,11 +1,11 @@
-describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
+describe Catalog::SurveyCompare, :type => [:current_forwardable, :inventory] do
   let!(:portfolio_item) { service_plan.portfolio_item }
   let!(:service_offering_ref) { portfolio_item.service_offering_ref }
   let(:valid_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "valid_service_plan_ddf.json"))) }
   let(:empty_ddf) { JSON.parse(File.read(Rails.root.join("spec", "support", "ddf", "no_service_plan_ddf.json"))) }
 
   let(:topo_service_plan) do
-    TopologicalInventoryApiClient::ServicePlan.new(
+    CatalogInventoryApiClient::ServicePlan.new(
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
@@ -13,15 +13,15 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
     )
   end
 
-  let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
+  let(:service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => [topo_service_plan]) }
 
   before do
-    stub_request(:get, topological_url("service_offerings/#{service_offering_ref}/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/#{service_offering_ref}/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
   describe "#changed?" do
-    context "when the base has changed from topology" do
+    context "when the base has changed from inventory" do
       let(:service_plan) { create(:service_plan) }
 
       it "returns true" do
@@ -29,7 +29,7 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
       end
     end
 
-    context "when the base has not changed from topology" do
+    context "when the base has not changed from inventory" do
       let(:service_plan) { create(:service_plan, :base => valid_ddf) }
 
       it "returns false" do
@@ -41,7 +41,7 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
   describe "#any_changed?" do
     let(:plans) { [service_plan] }
 
-    context "when the base has changed from topology" do
+    context "when the base has changed from inventory" do
       let(:service_plan) { create(:service_plan) }
 
       it "returns true" do
@@ -49,7 +49,7 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
       end
     end
 
-    context "when the base has not changed from topology" do
+    context "when the base has not changed from inventory" do
       let(:service_plan) { create(:service_plan, :base => valid_ddf) }
 
       it "returns false" do
@@ -61,7 +61,7 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
   describe "#collect_changed" do
     let(:plans) { [service_plan] }
 
-    context "when the base has changed from topology" do
+    context "when the base has changed from inventory" do
       let(:service_plan) { create(:service_plan) }
 
       it "returns an array of the changed plans" do
@@ -69,7 +69,7 @@ describe Catalog::SurveyCompare, :type => [:current_forwardable, :topology] do
       end
     end
 
-    context "when the base has not changed from topology" do
+    context "when the base has not changed from inventory" do
       let(:service_plan) { create(:service_plan, :base => valid_ddf) }
 
       it "returns an empty array" do

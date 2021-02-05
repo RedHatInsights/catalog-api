@@ -5,7 +5,7 @@ module Catalog
       def changed?(plan)
         return false if empty?(plan)
         potential = new(plan)
-        potential.topo_base != potential.base
+        potential.inventory_base != potential.base
       end
 
       def any_changed?(plans)
@@ -26,8 +26,8 @@ module Catalog
       @reference = plan.portfolio_item.service_offering_ref
     end
 
-    def topo_base
-      TopologicalInventory::Service.call do |api_instance|
+    def inventory_base
+      CatalogInventory::Service.call(CatalogInventoryApiClient::ServiceOfferingApi) do |api_instance|
         survey = api_instance.list_service_offering_service_plans(@reference)
         survey.data.first.create_json_schema.deep_stringify_keys
       end

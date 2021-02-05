@@ -1,6 +1,6 @@
 RSpec.shared_context "uses an order item with raw service parameters set" do
   let(:service_plan_show_response) do
-    TopologicalInventoryApiClient::ServicePlan.new(
+    CatalogInventoryApiClient::ServicePlan.new(
       :name               => "Plan A",
       :id                 => "1",
       :description        => "Plan A",
@@ -26,7 +26,7 @@ RSpec.shared_context "uses an order item with raw service parameters set" do
   end
 
   before do
-    stub_request(:get, topological_url("service_plans/#{service_plan_ref}"))
+    stub_request(:get, catalog_inventory_url("service_plans/#{service_plan_ref}"))
       .to_return(:status => 200, :body => service_plan_show_response.to_json, :headers => default_headers)
 
     order_item

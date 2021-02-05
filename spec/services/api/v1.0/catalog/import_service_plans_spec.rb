@@ -1,24 +1,24 @@
-describe Api::V1x0::Catalog::ImportServicePlans, :type => [:service, :topology, :current_forwardable] do
+describe Api::V1x0::Catalog::ImportServicePlans, :type => [:service, :inventory, :current_forwardable] do
   let(:service_offering_ref) { "1" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:subject) { described_class.new(portfolio_item.id) }
   let(:service_plan) do
-    TopologicalInventoryApiClient::ServicePlan.new(
+    CatalogInventoryApiClient::ServicePlan.new(
       :name               => "The Plan",
       :id                 => "1",
       :description        => "A Service Plan",
       :create_json_schema => {"schema" => {}}
     )
   end
-  let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => data) }
+  let(:service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => data) }
   let(:service_offering_response) do
-    TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
+    CatalogInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => true})
   end
 
   before do
-    stub_request(:get, topological_url("service_offerings/1"))
+    stub_request(:get, catalog_inventory_url("service_offerings/1"))
       .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-    stub_request(:get, topological_url("service_offerings/1/service_plans"))
+    stub_request(:get, catalog_inventory_url("service_offerings/1/service_plans"))
       .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
   end
 
@@ -55,8 +55,8 @@ describe Api::V1x0::Catalog::ImportServicePlans, :type => [:service, :topology, 
         subject.process
       end
 
-      it "reaches out to topology twice" do
-        expect(a_request(:get, /topological-inventory\/v2.0\/service_offerings/)).to have_been_made.twice
+      it "reaches out to inventory twice" do
+        expect(a_request(:get, /catalog-inventory\/v1.0\/service_offerings/)).to have_been_made.twice
       end
 
       it "adds the ServicePlan to the portfolio_item" do
@@ -73,8 +73,8 @@ describe Api::V1x0::Catalog::ImportServicePlans, :type => [:service, :topology, 
         subject.process
       end
 
-      it "reaches out to topology twice" do
-        expect(a_request(:get, /topological-inventory\/v2.0\/service_offerings/)).to have_been_made.twice
+      it "reaches out to inventory twice" do
+        expect(a_request(:get, /catalog-inventory\/v1.0\/service_offerings/)).to have_been_made.twice
       end
 
       it "adds both the ServicePlans to the portfolio_item" do

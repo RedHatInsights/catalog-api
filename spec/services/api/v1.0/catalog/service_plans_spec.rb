@@ -1,19 +1,19 @@
-describe Api::V1x0::Catalog::ServicePlans, :type => [:service, :topology, :current_forwardable] do
+describe Api::V1x0::Catalog::ServicePlans, :type => [:service, :inventory, :current_forwardable] do
   let(:service_offering_ref) { "998" }
   let(:portfolio_item) { create(:portfolio_item, :service_offering_ref => service_offering_ref) }
   let(:params) { portfolio_item.id }
   let(:service_plans) { described_class.new(params) }
 
   describe "#process" do
-    let(:service_plan_response) { TopologicalInventoryApiClient::ServicePlansCollection.new(:data => data) }
+    let(:service_plan_response) { CatalogInventoryApiClient::ServicePlansCollection.new(:data => data) }
     let(:service_offering_response) do
-      TopologicalInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => survey_enabled})
+      CatalogInventoryApiClient::ServiceOffering.new(:extra => {"survey_enabled" => survey_enabled})
     end
 
     before do
-      stub_request(:get, topological_url("service_offerings/998"))
+      stub_request(:get, catalog_inventory_url("service_offerings/998"))
         .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-      stub_request(:get, topological_url("service_offerings/998/service_plans"))
+      stub_request(:get, catalog_inventory_url("service_offerings/998/service_plans"))
         .to_return(:status => 200, :body => service_plan_response.to_json, :headers => default_headers)
     end
 
@@ -50,7 +50,7 @@ describe Api::V1x0::Catalog::ServicePlans, :type => [:service, :topology, :curre
     context "when there are service plans based on the service offering" do
       let(:items) { service_plans.process.items }
       let(:plan1) do
-        TopologicalInventoryApiClient::ServicePlan.new(
+        CatalogInventoryApiClient::ServicePlan.new(
           :name               => "Plan A",
           :id                 => "1",
           :description        => "Plan A",
@@ -58,7 +58,7 @@ describe Api::V1x0::Catalog::ServicePlans, :type => [:service, :topology, :curre
         )
       end
       let(:plan2) do
-        TopologicalInventoryApiClient::ServicePlan.new(
+        CatalogInventoryApiClient::ServicePlan.new(
           :name               => "Plan B",
           :id                 => "2",
           :description        => "Plan B",

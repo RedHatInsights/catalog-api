@@ -1,7 +1,7 @@
 describe Catalog::ApprovalTransition do
   let(:so) { class_double(Catalog::SubmitNextOrderItem).as_stubbed_const(:transfer_nested_constants => true) }
   let(:submit_order) { instance_double(Catalog::SubmitNextOrderItem) }
-  let(:topo_ex) { ::Catalog::TopologyError.new("boom") }
+  let(:topo_ex) { ::Catalog::CatalogInventoryError.new("boom") }
 
   let(:req) { { :headers => default_headers, :original_url => "localhost/nope" } }
 

@@ -1,4 +1,4 @@
-describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :current_forwardable, :topology, :sources] do
+describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :current_forwardable, :inventory, :sources] do
   let(:subject) { described_class.new(portfolio_item) }
   let(:service_offering_ref) { '998' }
   let(:service_offering_source_ref) { '999' }
@@ -13,20 +13,23 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
   let(:service_plans) { [] }
 
   let(:service_offering_response) do
-    TopologicalInventoryApiClient::ServiceOffering.new(:archived_at => archived_at)
+    CatalogInventoryApiClient::ServiceOffering.new(:archived_at => archived_at)
   end
 
   let(:source_response) do
-    SourcesApiClient::Source.new(:name => 'the platform', :availability_status => availability_status)
+    CatalogInventoryApiClient::Source.new(:info => 'the platform', :availability_status => availability_status)
   end
+  let(:source_api) { instance_double(CatalogInventoryApiClient::SourceApi) }
+  let(:service_offering_api) { instance_double(CatalogInventoryApiClient::ServiceOfferingApi) }
 
   describe "#process" do
     context "no errors" do
       before do
-        stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
-          .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-        stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
-          .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::SourceApi).and_yield(source_api)
+        allow(source_api).to receive(:show_source).and_return(source_response)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi).and_yield(service_offering_api)
+        allow(service_offering_api).to receive(:show_service_offering).and_return(service_offering_response)
+
         allow(::Catalog::SurveyCompare).to receive(:any_changed?).with(service_plans).and_return(survey_changed)
       end
 
@@ -65,36 +68,35 @@ describe Api::V1x1::Catalog::PortfolioItemOrderable, :type => [:service, :curren
       end
     end
 
-    context "with errors from topology" do
+    context "with errors from inventory" do
       before do
-        stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
-          .to_raise(Catalog::TopologyError.new("Kaboom"))
-        stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
-          .to_return(:status => 200, :body => source_response.to_json, :headers => default_headers)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::SourceApi).and_yield(source_api)
+        allow(source_api).to receive(:show_source).and_return(source_response)
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi).and_raise(Catalog::CatalogInventoryError.new("Kaboom"))
       end
 
       context "when the service offering cannot be retrieved" do
         it "returns false" do
           obj = subject.process
           expect(obj.result).to be(false)
-          expect(obj.messages[0]).to match(/Service offering could not be retrieved/)
+          expect(obj.messages[0]).to match(/CatalogInventoryApiClient::ServiceOfferingApi:show_service_offering could not retrieve for #{service_offering_ref}/)
         end
       end
     end
 
     context "with errors from source" do
       before do
-        stub_request(:get, topological_url("service_offerings/#{service_offering_ref}"))
-          .to_return(:status => 200, :body => service_offering_response.to_json, :headers => default_headers)
-        stub_request(:get, sources_url("sources/#{service_offering_source_ref}"))
-          .to_raise(Catalog::SourcesError.new("Kaboom"))
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::SourceApi)
+                                                          .and_raise(Catalog::SourcesError.new("Kaboom"))
+        allow(CatalogInventory::Service).to receive(:call).with(CatalogInventoryApiClient::ServiceOfferingApi).and_yield(service_offering_api)
+        allow(service_offering_api).to receive(:show_service_offering).and_return(service_offering_response)
       end
 
       context "when the source cannot be retrieved" do
         it "returns false" do
           obj = subject.process
           expect(obj.result).to be(false)
-          expect(obj.messages[0]).to match(/Source could not be retrieved/)
+          expect(obj.messages[0]).to match(/CatalogInventoryApiClient::SourceApi:show_source could not retrieve for #{service_offering_source_ref}/)
         end
       end
     end

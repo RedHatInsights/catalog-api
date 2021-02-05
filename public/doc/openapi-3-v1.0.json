@@ -1016,7 +1016,7 @@
         "tags": [
           "PortfolioItem"
         ],
-        "summary": "Gets all service plans for a specific portfolio item; requires a connection to the topology service.",
+        "summary": "Gets all service plans for a specific portfolio item; requires a connection to the catalog inventory service.",
         "operationId": "listServicePlans",
         "description": "Gets all service plans for a portfolio item.",
         "parameters": [
@@ -1048,7 +1048,7 @@
             "description": "Portfolio item not found"
           },
           "500": {
-            "description": "Could not access the Topology Service"
+            "description": "Could not access the catalog inventory Service"
           }
         }
       }
@@ -1087,7 +1087,7 @@
             "description": "Portfolio item not found"
           },
           "500": {
-            "description": "Could not access the Topology Service"
+            "description": "Could not access the catalog inventory Service"
           }
         }
       }
@@ -2898,7 +2898,7 @@
           "service_offering_ref": {
             "type": "string",
             "title": "Service Offering Ref",
-            "description": "The service offering ref should be retrieved from a call to the Topology Service.",
+            "description": "The service offering ref should be retrieved from a call to the catalog inventory Service.",
             "example": "177"
           }
         }
@@ -3078,7 +3078,7 @@
           "service_offering_type": {
             "type": "string",
             "title": "Service Offering Type",
-            "description": "The service offering type stored by the Topology Service",
+            "description": "The service offering type stored by the catalog inventory Service",
             "readOnly": true,
             "example": "job_template"
           },
@@ -3144,7 +3144,7 @@
             "type": "string",
             "format": "date-time",
             "title": "Order request sent at",
-            "description": "The time at which the order request was sent to the Topology Service",
+            "description": "The time at which the order request was sent to the catalog inventory Service",
             "nullable": true
           },
           "completed_at": {
@@ -3223,7 +3223,7 @@
             "type": "string",
             "format": "date-time",
             "title": "Order request sent at",
-            "description": "The time at which the order request was sent to the Topology Service",
+            "description": "The time at which the order request was sent to the catalog inventory Service",
             "readOnly": true
           },
           "completed_at": {

@@ -4,7 +4,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
 
     let(:topic) do
       OpenStruct.new(
-        :payload => {"task_id" => task_id, "status" => status, "state" => state, "context" => payload_context},
+        :payload => {"task_id" => task_id, "status" => status, "state" => state, "output" => payload_context},
         :message => "message"
       )
     end
@@ -16,38 +16,21 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
       let(:task_id) { "1234" }
       let(:state) { "a" }
       let(:status) { "b" }
-      let(:payload_context) { {"service_instance" => {"url" => "external_url"}} }
-
-      it "logs a message about irrelevancy" do
-        expect(Rails.logger).to receive(:info).with("Incoming task 1234 has no relevant order item")
-        subject.process
-      end
+      let(:payload_context) { {"url" => "external_url"} }
 
       it "returns without doing any work" do
         expect(Catalog::UpdateOrderItem).not_to receive(:new)
-        expect(Catalog::CreateApprovalRequest).not_to receive(:new)
         subject.process
       end
     end
 
     context "when an order item exists with the task id" do
       let(:task_id) { "123" }
-      let(:tag_resources) { [] }
       let(:update_order_item) { instance_double(Catalog::UpdateOrderItem) }
-      let(:create_approval_request) { instance_double(Catalog::CreateApprovalRequest) }
-      let(:evaluate_order_process) { instance_double(Catalog::EvaluateOrderProcess) }
-      let(:tag_resources_instance) { instance_double(Tags::CollectTagResources) }
 
       before do
-        allow(Catalog::UpdateOrderItem).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order_item).and_return(update_order_item)
+        allow(Catalog::UpdateOrderItem).to receive(:new).with(an_instance_of(CatalogInventoryApiClient::Task), order_item).and_return(update_order_item)
         allow(update_order_item).to receive(:process)
-        allow(Catalog::CreateApprovalRequest).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), tag_resources, order_item).and_return(create_approval_request)
-        allow(create_approval_request).to receive(:process)
-        allow(Catalog::EvaluateOrderProcess).to receive(:new).with(an_instance_of(TopologicalInventoryApiClient::Task), order, tag_resources).and_return(evaluate_order_process)
-        allow(evaluate_order_process).to receive(:process)
-        allow(Tags::CollectTagResources).to receive(:new).and_return(tag_resources_instance)
-        allow(tag_resources_instance).to receive(:process).and_return(tag_resources_instance)
-        allow(tag_resources_instance).to receive(:tag_resources).and_return(tag_resources)
       end
 
       context "when the task status is error" do
@@ -70,7 +53,7 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           let(:state) { "completed" }
 
           context "when the context has a service instance keypath" do
-            let(:payload_context) { {"service_instance" => "service instance stuff"} }
+            let(:payload_context) { {"url" => "external_url"} }
 
             it "updates the order item using the update service" do
               expect(Rails.logger).to receive(:error).with("Incoming task 123 is completed but errored: #{payload_context}")
@@ -100,26 +83,10 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
         let(:state) { "doesn't matter" }
 
         context "when the context has a service instance keypath" do
-          let(:payload_context) { {"service_instance" => "service instance stuff"} }
+          let(:payload_context) { {"url" => "external_url"} }
 
           it "delegates to the UpdateOrderItem class" do
             expect(update_order_item).to receive(:process)
-            subject.process
-          end
-        end
-
-        context "when the context has an applied inventories keypath" do
-          let(:payload_context) { {"applied_inventories" => ["applied_inventory_id"]} }
-
-          it "delegates to the CreateApprovalRequest class" do
-            expect(evaluate_order_process).to receive(:process)
-            expect(create_approval_request).to receive(:process)
-            subject.process
-          end
-
-          it "logs a message about creating an approval request as a response to a task id" do
-            expect(Rails.logger).to receive(:info).with("Evaluating order processes for order item id #{order_item.id}").ordered
-            expect(Rails.logger).to receive(:info).with("Creating approval request for task id 123").ordered
             subject.process
           end
         end
@@ -128,7 +95,10 @@ describe Catalog::DetermineTaskRelevancy, :type => :service do
           let(:payload_context) { nil }
 
           it "logs a message about irrelevant delegation" do
-            expect(Rails.logger).to receive(:info).with("Incoming task has no current relevant delegation")
+            expect(Rails.logger).to receive(:info).with("Topic Payload #{topic}").ordered
+            expect(Rails.logger).to receive(:info).with("Incoming task #{task_id}").ordered
+            expect(Rails.logger).to receive(:info).with("Delegating task #{task_id}").ordered
+            expect(Rails.logger).to receive(:info).with("Incoming task has no current relevant delegation").ordered
             subject.process
           end
         end

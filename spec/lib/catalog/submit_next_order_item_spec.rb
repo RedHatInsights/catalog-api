@@ -1,4 +1,4 @@
-describe Catalog::SubmitNextOrderItem, :type => [:service, :topology, :current_forwardable] do
+describe Catalog::SubmitNextOrderItem, :type => [:service, :inventory, :current_forwardable] do
   let(:submit_next_order_item) { described_class.new(params) }
   let(:order) do
     create(:order).tap do |the_order|
