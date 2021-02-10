@@ -65,7 +65,7 @@ describe Catalog::ApprovalTransition do
       end
 
       it "returns the state as denied" do
-        expect(order_item_transition.process.state).to eq "Denied"
+        expect(order_item_transition.process.state).to eq("Denied")
       end
 
       it "does not call out to submit order" do
@@ -76,19 +76,21 @@ describe Catalog::ApprovalTransition do
       it "marks the order item as denied" do
         order_item_transition.process
         order_item.reload
-        expect(order_item.state).to eq "Denied"
+        expect(order_item.state).to eq("Denied")
+        expect(order_item.progress_messages.last.message).to match(/Denied/)
       end
 
       it "marks the order as failed" do
         order_item_transition.process
         order.reload
-        expect(order.state).to eq "Failed"
+        expect(order.state).to eq("Failed")
       end
 
       it "marks other items as canceled" do
         order_item_transition.process
         after_item.reload
         expect(after_item.state).to eq("Canceled")
+        expect(after_item.progress_messages.last.message).to match(/Canceled/)
       end
     end
 
