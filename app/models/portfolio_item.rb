@@ -31,10 +31,10 @@ class PortfolioItem < ApplicationRecord
   end
 
   def validate_deletable
-    order_process_ids = OrderProcess.where(:before_portfolio_item_id => id).or(OrderProcess.where(:after_portfolio_item_id => id)).pluck(:id)
+    order_process_names = OrderProcess.where(:before_portfolio_item_id => id).or(OrderProcess.where(:after_portfolio_item_id => id)).pluck(:name)
 
-    unless order_process_ids.empty?
-      errors.add(:base, "cannot be deleted because it is used by order processes #{order_process_ids.uniq}")
+    unless order_process_names.empty?
+      errors.add(:base, "cannot be deleted because it is used by order processes #{order_process_names.uniq}")
       throw :abort
     end
   end

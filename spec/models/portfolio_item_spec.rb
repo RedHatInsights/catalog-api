@@ -86,12 +86,12 @@ describe PortfolioItem do
     end
 
     context "when is the before/after portfolio item of an order process" do
-      let!(:order_process1) { create(:order_process, :before_portfolio_item_id => subject.id) }
-      let!(:order_process2) { create(:order_process, :after_portfolio_item_id => subject.id) }
+      let!(:order_process1) { create(:order_process, :name => "foo", :before_portfolio_item_id => subject.id) }
+      let!(:order_process2) { create(:order_process, :name => "bar", :after_portfolio_item_id => subject.id) }
 
       it "raises an error" do
         expect { subject.validate_deletable }.to raise_error(UncaughtThrowError, "uncaught throw :abort")
-        expect(subject.errors[:base]).to include("cannot be deleted because it is used by order processes [#{order_process1.id}, #{order_process2.id}]")
+        expect(subject.errors[:base]).to include("cannot be deleted because it is used by order processes #{OrderProcess.pluck(:name)}")
       end
     end
   end
