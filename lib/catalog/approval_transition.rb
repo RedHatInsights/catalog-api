@@ -43,7 +43,7 @@ module Catalog
       level = @state == "Failed" ? "error" : "info"
       @order_item.order.order_items.each do |item|
         state = item == @order_item ? @state : "Canceled"
-        @order_item.update_message(level, "Order Item #{state}")
+        item.update_message(level, "Order Item #{state} because approval status is #{@state}")
         Rails.logger.send(level, "Order Item #{item.id} marked as #{state} because approval status is #{@state}")
         item.update(:state => state)
       end
