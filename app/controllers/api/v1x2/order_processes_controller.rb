@@ -65,6 +65,12 @@ module Api
         render :json => order_process
       end
 
+      def update_return_portfolio_item
+        order_process = update_association(:return_portfolio_item)
+
+        render :json => order_process
+      end
+
       def remove_association
         order_process = OrderProcess.find(params.require(:order_process_id))
         authorize(order_process, :update?)
