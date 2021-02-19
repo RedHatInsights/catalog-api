@@ -21,7 +21,7 @@ module Catalog
     rescue => e
       @order_item.mark_failed("Error Submitting Order Item: #{e.message}")
     ensure
-      order_item.update(:service_parameters => runtime_parameters)
+      order_item.update(:service_parameters => @runtime_parameters) if @runtime_parameters
     end
 
     private
