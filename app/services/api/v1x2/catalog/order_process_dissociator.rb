@@ -2,7 +2,7 @@ module Api
   module V1x2
     module Catalog
       class OrderProcessDissociator
-        ASSOCIATION_MAP = {"before" => :before_portfolio_item, "after" => :after_portfolio_item}.freeze
+        ASSOCIATION_MAP = {"before" => :before_portfolio_item, "after" => :after_portfolio_item, "return" => :return_portfolio_item}.freeze
 
         attr_reader :order_process
 
