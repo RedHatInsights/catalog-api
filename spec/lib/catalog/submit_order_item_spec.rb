@@ -107,6 +107,15 @@ describe Catalog::SubmitOrderItem, :type => [:service, :topology, :current_forwa
         expect(order_item.service_parameters).to eq(service_parameters)
       end
     end
+
+    context "when runtime service_parameters have errors" do
+      before { allow(Catalog::OrderItemRuntimeParameters).to receive(:new).and_raise("bad happened") }
+
+      it "updates the state to fail" do
+        submit_order.process
+        expect(order_item.state).to eq("Failed")
+      end
+    end
   end
 
   context "when the base service_plan has changed from topology" do
