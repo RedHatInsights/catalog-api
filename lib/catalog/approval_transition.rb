@@ -34,8 +34,8 @@ module Catalog
 
     def submit_order
       @order_item.update(:state => "Approved")
-      @order_item.order.mark_ordered("Submitting Order for provisioning")
       update_order
+      @order_item.order.mark_ordered("Submitting Order for provisioning")
       Catalog::SubmitNextOrderItem.new(@order_item.order_id).process
     end
 
