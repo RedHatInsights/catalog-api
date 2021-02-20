@@ -242,6 +242,62 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
     it_behaves_like "action that tests authorization", :update?, OrderProcess
   end
 
+  describe "PATCH /order_processes/:id/return_portfolio_item #return_portfolio_item" do
+    let(:order_process_associator) { instance_double(Api::V1x2::Catalog::OrderProcessAssociator) }
+    let!(:return_portfolio_item) { create(:portfolio_item) }
+    let(:return_portfolio_item_id) { return_portfolio_item.id.to_s }
+    let(:valid_attributes) { {:portfolio_item_id => return_portfolio_item_id} }
+
+    subject do
+      patch "#{api_version}/order_processes/#{order_process_id}/return_portfolio_item", :headers => default_headers, :params => valid_attributes
+    end
+
+    context "with valid attributes" do
+      before do
+        allow(Api::V1x2::Catalog::OrderProcessAssociator).to receive(:new)
+                                                                 .with(order_process, before_portfolio_item_id, :before_portfolio_item)
+                                                                 .and_return(order_process_associator)
+        allow(order_process_associator).to receive(:process).and_return(order_process_associator)
+        allow(order_process_associator).to receive(:order_process).and_return(order_process)
+      end
+
+      it "delegates to the order process associator" do
+        expect(order_process_associator).to receive(:process)
+        expect(order_process_associator).to receive(:order_process)
+        subject
+      end
+
+      it "returns a 200" do
+        subject
+        expect(response).to have_http_status(200)
+      end
+
+      context "with no update permission" do
+        before do
+          allow(rbac_access).to receive(:update_access_check).and_return(false)
+        end
+
+        it "returns 403" do
+          subject
+          expect(response).to have_http_status(403)
+        end
+      end
+    end
+
+    context "when the order process does not exist" do
+      subject do
+        patch "#{api_version}/order_processes/#{order_process_id + 1}/before_portfolio_item", :headers => default_headers
+      end
+
+      it "returns a 404" do
+        subject
+        expect(response).to have_http_status(404)
+      end
+    end
+
+    it_behaves_like "action that tests authorization", :update?, OrderProcess
+  end
+
   describe "POST /order_process/:id/remove_association #remove_association" do
     let(:remove_association_params) { {:associations_to_remove => ["before"]} }
     subject do

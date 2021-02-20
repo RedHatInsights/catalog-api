@@ -2923,6 +2923,55 @@
         }
       }
     },
+    "/order_processes/{id}/return_portfolio_item": {
+      "patch": {
+        "tags": [
+          "OrderProcess"
+        ],
+        "summary": "Adds 'return' product for an Order Process",
+        "operationId": "addOrderProcessReturnItem",
+        "description": "Defines the product that will be executed on return when using this Order Process",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "'Return' product successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProcess"
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/NotModified"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "OrderProcess or PortfolioItem Not Found."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderProcessPortfolioItemId"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/order_processes/{id}/remove_association": {
       "post": {
         "tags": [
@@ -3452,10 +3501,11 @@
               "type": "string",
               "enum": [
                 "before",
-                "after"
+                "after",
+                "return"
               ]
             },
-            "example": ["before", "after"]
+            "example": ["before", "after", "return"]
           }
         }
       },
@@ -4253,6 +4303,11 @@
           "after_portfolio_item_id": {
             "type": "string",
             "description": "The ID of the portfolio item associated to the 'after' step",
+            "readOnly": true
+          },
+          "return_portfolio_item_id": {
+            "type": "string",
+            "description": "The ID of the portfolio item associated to the item's return",
             "readOnly": true
           },
           "metadata": {

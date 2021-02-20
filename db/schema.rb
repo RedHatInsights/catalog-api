@@ -128,6 +128,7 @@ ActiveRecord::Schema.define(version: 2020_11_05_150627) do
     t.datetime "updated_at", null: false
     t.integer "before_portfolio_item_id"
     t.integer "after_portfolio_item_id"
+    t.integer "return_portfolio_item_id"
     t.decimal "internal_sequence"
     t.index ["internal_sequence", "tenant_id"], name: "index_order_processes_on_internal_sequence_and_tenant_id", unique: true
   end
