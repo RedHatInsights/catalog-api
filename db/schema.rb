@@ -128,7 +128,6 @@ ActiveRecord::Schema.define(version: 2020_11_05_150627) do
     t.datetime "updated_at", null: false
     t.integer "before_portfolio_item_id"
     t.integer "after_portfolio_item_id"
-    t.integer "return_portfolio_item_id"
     t.decimal "internal_sequence"
     t.index ["internal_sequence", "tenant_id"], name: "index_order_processes_on_internal_sequence_and_tenant_id", unique: true
   end
@@ -146,6 +145,9 @@ ActiveRecord::Schema.define(version: 2020_11_05_150627) do
     t.index ["discarded_at"], name: "index_orders_on_discarded_at"
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
+
+# Could not dump table "permissions" because of following StandardError
+#   Unknown type 'permissions_name' for column 'name'
 
   create_table "portfolio_item_tags", id: :serial, force: :cascade do |t|
     t.bigint "tag_id", null: false
