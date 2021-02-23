@@ -26,8 +26,8 @@ describe "v1.3 - OrderProcesses", :type => [:request, :controller, :v1x3] do
     context "with valid attributes" do
       before do
         allow(Api::V1x2::Catalog::OrderProcessAssociator).to receive(:new)
-                                                                 .with(order_process, return_portfolio_item_id, :return_portfolio_item)
-                                                                 .and_return(order_process_associator)
+          .with(order_process, return_portfolio_item_id, :return_portfolio_item)
+          .and_return(order_process_associator)
         allow(order_process_associator).to receive(:process).and_return(order_process_associator)
         allow(order_process_associator).to receive(:order_process).and_return(order_process)
       end
