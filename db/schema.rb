@@ -147,9 +147,6 @@ ActiveRecord::Schema.define(version: 2021_02_23_060934) do
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
-# Could not dump table "permissions" because of following StandardError
-#   Unknown type 'permissions_name' for column 'name'
-
   create_table "portfolio_item_tags", id: :serial, force: :cascade do |t|
     t.bigint "tag_id", null: false
     t.bigint "portfolio_item_id", null: false
