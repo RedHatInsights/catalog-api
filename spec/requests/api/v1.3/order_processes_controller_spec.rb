@@ -14,7 +14,7 @@ describe "v1.3 - OrderProcesses", :type => [:request, :controller, :v1x3] do
   end
 
   describe "PATCH /order_processes/:id/return_portfolio_item #return_portfolio_item" do
-    let(:order_process_associator) { instance_double(Api::V1x3::Catalog::OrderProcessAssociator) }
+    let(:order_process_associator) { instance_double(Api::V1x2::Catalog::OrderProcessAssociator) }
     let!(:return_portfolio_item) { create(:portfolio_item) }
     let(:return_portfolio_item_id) { return_portfolio_item.id.to_s }
     let(:valid_attributes) { {:portfolio_item_id => return_portfolio_item_id} }
@@ -78,7 +78,7 @@ describe "v1.3 - OrderProcesses", :type => [:request, :controller, :v1x3] do
     end
 
     context "when the order process exists" do
-      let(:order_process_dissociator) { instance_double(Api::V1x3::Catalog::OrderProcessDissociator) }
+      let(:order_process_dissociator) { instance_double(Api::V1x2::Catalog::OrderProcessDissociator) }
 
       before do
         allow(Api::V1x2::Catalog::OrderProcessDissociator).to receive(:new)
