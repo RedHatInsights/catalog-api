@@ -42,6 +42,7 @@ namespace :v1x3, :path => "v1.3" do
   resources :order_processes, :only => [:create, :destroy, :index, :show, :update] do
     patch :before_portfolio_item, :to => 'order_processes#update_before_portfolio_item'
     patch :after_portfolio_item, :to => 'order_processes#update_after_portfolio_item'
+    patch :return_portfolio_item, :to => 'order_processes#update_return_portfolio_item'
     post  :remove_association, :to => 'order_processes#remove_association'
   end
 
