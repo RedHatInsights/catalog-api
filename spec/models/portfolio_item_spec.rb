@@ -85,12 +85,13 @@ describe PortfolioItem do
       expect(subject.validate_deletable).to be_nil
     end
 
-    context "when has associated order processes" do
-      before { subject.tag_add('order_processes', :namespace => 'catalog', :value => '789') }
+    context "when is the before/after portfolio item of an order process" do
+      let!(:order_process1) { create(:order_process, :name => "foo", :before_portfolio_item_id => subject.id) }
+      let!(:order_process2) { create(:order_process, :name => "bar", :after_portfolio_item_id => subject.id) }
 
       it "raises an error" do
         expect { subject.validate_deletable }.to raise_error(UncaughtThrowError, "uncaught throw :abort")
-        expect(subject.errors[:base]).to include("cannot be deleted because it is used by some order processes")
+        expect(subject.errors[:base]).to include("cannot be deleted because it is used by order processes #{OrderProcess.pluck(:name)}")
       end
     end
   end
