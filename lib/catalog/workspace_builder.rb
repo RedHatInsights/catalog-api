@@ -78,7 +78,7 @@ module Catalog
       name.each_byte.map { |byte| byte.to_s(16) }.join
     end
 
-    # assume there is one applicable order_item and name it product
+    # assume there is only one product order_item and name it product
     def correct_product(facts)
       product_item = facts.delete('product')
       return facts if product_item.empty? # only for testing. will not happen in production

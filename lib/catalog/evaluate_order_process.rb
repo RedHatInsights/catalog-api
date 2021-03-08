@@ -9,9 +9,9 @@ module Catalog
     end
 
     def process
-      # TODO: Update this for when multiple applicable order items
+      # TODO: Update this for when multiple product order items
       # can be ordered.
-      @applicable_order_item = @order.order_items.first
+      @product_order_item = @order.order_items.first
 
       relevant_order_processes = find_relevant_order_processes
 
@@ -32,7 +32,7 @@ module Catalog
         end
       end
 
-      @applicable_order_item.update(:process_sequence => applicable_sequence(relevant_order_processes), :process_scope => "product")
+      @product_order_item.update(:process_sequence => product_sequence(relevant_order_processes), :process_scope => "product")
 
       self
     end
@@ -75,7 +75,7 @@ module Catalog
       before_count + after_count + 1
     end
 
-    def applicable_sequence(relevant_order_processes)
+    def product_sequence(relevant_order_processes)
       before_count = relevant_order_processes.collect(&:before_portfolio_item).compact.count
       before_count + 1
     end
