@@ -60,8 +60,11 @@ describe Api::V1x0::Catalog::AddToOrder, :type => :service do
     end
 
     it "should create a process message with the x-rh-insights-request-id" do
-      progress_message = Insights::API::Common::Request.with_request(request) { subject.order_item.progress_messages.first }
-      expect(progress_message.message).to match('Order item tracking ID (x-rh-insights-request-id): gobbledygook')
+      Insights::API::Common::Request.with_request(request) do
+        item = subject.order_item
+        expect(item.progress_messages.first.message).to match('Order item tracking ID (x-rh-insights-request-id): gobbledygook')
+        expect(item.order.progress_messages.first.message).to match('Order tracking ID (x-rh-insights-request-id): gobbledygook')
+      end
     end
   end
 
