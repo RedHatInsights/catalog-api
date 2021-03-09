@@ -2,12 +2,19 @@ describe Api::V1x0::Catalog::CopyPortfolioItem, :type => :service do
   let(:portfolio) { create(:portfolio) }
   let(:portfolio2) { create(:portfolio) }
   let(:portfolio_item) { create(:portfolio_item, :portfolio => portfolio, :icon => create(:icon)) }
+  let(:portfolio_item_orderable) { instance_double(Api::V1x1::Catalog::PortfolioItemOrderable, :result => orderable_result) }
+  let(:orderable_result) { true }
+  let(:params) { {:portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id} }
 
   let(:copy_portfolio_item) { described_class.new(params).process }
 
   describe "#process" do
+    before do
+      allow(Api::V1x1::Catalog::PortfolioItemOrderable).to receive(:new).with(portfolio_item).and_return(portfolio_item_orderable)
+      allow(portfolio_item_orderable).to receive(:process).and_return(portfolio_item_orderable)
+    end
+
     context "when copying into the same portfolio" do
-      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
 
       it "makes a copy of the portfolio_item" do
         copied_portfolio = copy_portfolio_item.new_portfolio_item
@@ -36,7 +43,6 @@ describe Api::V1x0::Catalog::CopyPortfolioItem, :type => :service do
     end
 
     context "when making multiple copies" do
-      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
       let!(:another_portfolio_item) do
         create(:portfolio_item,
                :portfolio => portfolio,
@@ -55,9 +61,15 @@ describe Api::V1x0::Catalog::CopyPortfolioItem, :type => :service do
       end
     end
 
-    context "when the portfolio_item has an icon" do
-      let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
+    context "when the portfolio_item is not orderable" do
+      let(:orderable_result) { false }
 
+      it "raises an OrderNotOrderable exception" do
+        expect { copy_portfolio_item }.to raise_error(::Catalog::OrderNotOrderable, /PortfolioItem_name_.* is not orderable/)
+      end
+    end
+
+    context "when the portfolio_item has an icon" do
       it "copies over the icon" do
         copied_portfolio_item = copy_portfolio_item.new_portfolio_item
 
@@ -69,8 +81,6 @@ describe Api::V1x0::Catalog::CopyPortfolioItem, :type => :service do
 
     context "when the portfolio_item has service_plans" do
       context "when the service_plan base match inventory" do
-        let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
-
         before do
           allow(Catalog::SurveyCompare).to receive(:changed?).and_return(false)
           allow(Catalog::DataDrivenFormValidator).to receive(:valid?).and_return(true)
@@ -90,8 +100,6 @@ describe Api::V1x0::Catalog::CopyPortfolioItem, :type => :service do
       end
 
       context "when the service_plan base do not match inventory" do
-        let(:params) { { :portfolio_item_id => portfolio_item.id, :portfolio_id => portfolio.id } }
-
         before do
           allow(Catalog::SurveyCompare).to receive(:changed?).and_return(true)
 

@@ -18,6 +18,7 @@ module Api
 
         def process
           PortfolioItem.transaction do
+            determine_orderable
             @new_portfolio_item = make_copy
           rescue => e
             Rails.logger.error("Failed to copy Portfolio Item #{@portfolio_item.id}: #{e.message}")
@@ -28,6 +29,11 @@ module Api
         end
 
         private
+
+        def determine_orderable
+          return if Api::V1x1::Catalog::PortfolioItemOrderable.new(@portfolio_item).process.result
+          raise ::Catalog::OrderNotOrderable, "#{@portfolio_item.name} is not orderable, and cannot be copied"
+        end
 
         def make_copy
           @portfolio_item.dup.tap do |new_portfolio_item|
