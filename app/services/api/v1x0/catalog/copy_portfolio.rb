@@ -36,7 +36,11 @@ module Api
 
         def copy_portfolio_items(portfolio_id)
           @portfolio.portfolio_items.each do |item|
-            Api::V1x0::Catalog::CopyPortfolioItem.new(:portfolio_item_id => item.id, :portfolio_id => portfolio_id).process
+            begin
+              Api::V1x0::Catalog::CopyPortfolioItem.new(:portfolio_item_id => item.id, :portfolio_id => portfolio_id).process
+            rescue ::Catalog::OrderNotOrderable => e
+              Rails.logger.error("Failed to copy Portfolio Item #{item.id}: #{e.message}")
+            end
           end
         end
       end
