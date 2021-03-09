@@ -32,6 +32,7 @@ module Api
 
         def determine_orderable
           return if Api::V1x1::Catalog::PortfolioItemOrderable.new(@portfolio_item).process.result
+
           raise ::Catalog::OrderNotOrderable, "#{@portfolio_item.name} is not orderable, and cannot be copied"
         end
 

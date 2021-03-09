@@ -348,11 +348,15 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :inventory, :v1] do
   end
 
   describe "copying portfolio items" do
+    let(:portfolio_item_orderable) { instance_double(Api::V1x1::Catalog::PortfolioItemOrderable, :result => true) }
+
     subject do
       post "#{api_version}/portfolio_items/#{portfolio_item.id}/copy", :params => params, :headers => default_headers
     end
 
     before do |example|
+      allow(Api::V1x1::Catalog::PortfolioItemOrderable).to receive(:new).and_return(portfolio_item_orderable)
+      allow(portfolio_item_orderable).to receive(:process).and_return(portfolio_item_orderable)
       subject unless example.metadata[:subject_inside]
     end
 
