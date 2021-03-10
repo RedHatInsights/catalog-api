@@ -179,7 +179,11 @@ describe "v1.1 - PortfoliosRequests", :type => [:request, :v1x1] do
   end
 
   describe "POST /portfolios/:portfolio_id/copy #copy" do
+    let(:portfolio_item_orderable) { instance_double(Api::V1x1::Catalog::PortfolioItemOrderable, :result => true) }
+
     before do
+      allow(Api::V1x1::Catalog::PortfolioItemOrderable).to receive(:new).and_return(portfolio_item_orderable)
+      allow(portfolio_item_orderable).to receive(:process).and_return(portfolio_item_orderable)
       post "#{api_version}/portfolios/#{portfolio.id}/copy", :headers => default_headers
     end
 

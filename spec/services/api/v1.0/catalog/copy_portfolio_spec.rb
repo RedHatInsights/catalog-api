@@ -2,11 +2,17 @@ describe Api::V1x0::Catalog::CopyPortfolio, :type => :service do
   let(:portfolio) { create(:portfolio, :icon => create(:icon)) }
   let!(:portfolio_item1) { create(:portfolio_item, :portfolio => portfolio) }
   let!(:portfolio_item2) { create(:portfolio_item, :portfolio => portfolio) }
+  let(:portfolio_item_orderable) { instance_double(Api::V1x1::Catalog::PortfolioItemOrderable, :result => true) }
 
   let(:copy_portfolio) { described_class.new(:portfolio_id => portfolio.id).process }
 
   describe "#process" do
     let(:new_portfolio) { copy_portfolio.new_portfolio }
+
+    before do
+      allow(Api::V1x1::Catalog::PortfolioItemOrderable).to receive(:new).and_return(portfolio_item_orderable)
+      allow(portfolio_item_orderable).to receive(:process).and_return(portfolio_item_orderable)
+    end
 
     context "when there isn't a conflicting name" do
       it "copies the portfolio over" do

@@ -4,6 +4,7 @@ module Catalog
   class InvalidParameter < StandardError; end
   class InvalidSurvey < StandardError; end
   class NotAuthorized < StandardError; end
+  class OrderNotOrderable < StandardError; end
   class OrderUncancelable < StandardError; end
   class RBACError < StandardError; end
   class ServiceOfferingArchived < StandardError; end

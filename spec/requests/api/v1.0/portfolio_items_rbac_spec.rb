@@ -59,10 +59,13 @@ describe "v1.0 - Portfolio Items RBAC API", :type => [:request, :v1] do
   end
 
   context "when user has RBAC update portfolios access" do
+    let(:portfolio_item_orderable) { instance_double(Api::V1x1::Catalog::PortfolioItemOrderable, :result => true) }
     let(:portfolio_access_obj) { instance_double(Insights::API::Common::RBAC::Access, :accessible? => true) }
     let(:rbac_access) { instance_double(Catalog::RBAC::Access) }
 
     before do
+      allow(Api::V1x1::Catalog::PortfolioItemOrderable).to receive(:new).and_return(portfolio_item_orderable)
+      allow(portfolio_item_orderable).to receive(:process).and_return(portfolio_item_orderable)
       allow(Catalog::RBAC::Access).to receive(:new).and_return(rbac_access)
       allow(rbac_access).to receive(:resource_check).with('read', portfolio.id, Portfolio).and_return(true)
       allow(rbac_access).to receive(:resource_check).with('update', portfolio.id, Portfolio).and_return(true)
