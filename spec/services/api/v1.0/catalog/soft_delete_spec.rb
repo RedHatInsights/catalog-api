@@ -13,5 +13,17 @@ describe Api::V1x0::Catalog::SoftDelete, :type => :service do
         expect(subject.restore_key).to eq Digest::SHA1.hexdigest(portfolio_item.discarded_at.to_s)
       end
     end
+
+    context "when soft-deleting raises an error" do
+      let(:subject) { described_class.new(portfolio_item) }
+
+      before do
+        allow(portfolio_item).to receive(:discard!).and_raise(Discard::RecordNotDiscarded)
+      end
+
+      it "raise the error" do
+        expect { subject.process }.to raise_exception(Discard::RecordNotDiscarded)
+      end
+    end
   end
 end
