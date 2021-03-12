@@ -104,6 +104,20 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :inventory, :v1] do
         expect(json["restore_key"]).to eq Digest::SHA1.hexdigest(PortfolioItem.with_discarded.find(portfolio_item_id).discarded_at.to_s)
       end
     end
+
+    context 'when portfolio item has attached order processes' do
+      let!(:order_process1) { create(:order_process, :name => "foo", :before_portfolio_item_id => portfolio_item_id) }
+      let!(:order_process2) { create(:order_process, :name => "bar", :after_portfolio_item_id => portfolio_item_id) }
+
+      before do |example|
+        subject unless example.metadata[:subject_inside]
+      end
+
+      it "raises an error" do
+        expect(response).to have_http_status(:bad_request)
+        expect(first_error_detail).to include("cannot be deleted because it is used by order processes #{OrderProcess.pluck(:name)}")
+      end
+    end
   end
 
   describe 'POST /portfolio_items/{portfolio_item_id}/undelete' do

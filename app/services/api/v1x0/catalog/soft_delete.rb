@@ -9,10 +9,12 @@ module Api
         end
 
         def process
-          @record.discard
+          @record.discard!
           @restore_key = Digest::SHA1.hexdigest(@record.discarded_at.to_s)
 
           self
+        rescue Discard::RecordNotDiscarded
+          raise Discard::RecordNotDiscarded, "#{@record.class} #{@record.id} #{@record.errors[:base].first}"
         end
       end
     end
