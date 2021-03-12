@@ -31,7 +31,6 @@ namespace :v1x3, :path => "v1.3" do
     get :icon, :to => 'icons#raw_icon'
   end
   resources :portfolio_items, :only => [:create, :destroy, :index, :show, :update], :concerns => [:taggable] do
-    resources :provider_control_parameters, :only => [:index]
     resources :service_plans,               :only => [:index]
     get :icon, :to => 'icons#raw_icon'
     get :next_name, :action => 'next_name', :controller => 'portfolio_items'

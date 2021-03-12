@@ -1053,45 +1053,6 @@
         }
       }
     },
-    "/portfolio_items/{portfolio_item_id}/provider_control_parameters": {
-      "get": {
-        "tags": [
-          "PortfolioItem"
-        ],
-        "summary": "Gets the provider control parameters for this portfolio item; requires control paramaters provided when provisioning the portfolio item.",
-        "operationId": "listProviderControlParameters",
-        "description": "Gets the provider control parameters for a portfolio item.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/PortfolioItemID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Return provider control parameters JSON object.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProviderControlParameters"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "description": "Portfolio item not found"
-          },
-          "500": {
-            "description": "Could not access the catalog inventory Service"
-          }
-        }
-      }
-    },
     "/portfolio_items/{portfolio_item_id}/undelete": {
       "post": {
         "tags": [

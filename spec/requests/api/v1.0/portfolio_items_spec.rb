@@ -248,29 +248,6 @@ describe "v1.0 - PortfolioItemRequests", :type => [:request, :inventory, :v1] do
     end
   end
 
-  context "v1.0 provider control parameters" do
-    let(:url) { "#{api_version}/portfolio_items/#{portfolio_item.id}/provider_control_parameters" }
-
-    it "fetches plans" do
-      stub_request(:get, catalog_inventory_url("sources/568/container_projects"))
-        .to_return(:status => 200, :body => {:data => [:name => 'fred']}.to_json, :headers => {"Content-type" => "application/json"})
-
-      get url, :headers => default_headers
-
-      expect(response.content_type).to eq("application/json")
-      expect(response).to have_http_status(:ok)
-    end
-
-    xit "raises error" do
-      stub_request(:get, catalog_inventory_url("sources/568/container_projects"))
-        .to_return(:status => 404, :body => "", :headers => {"Content-type" => "application/json"})
-
-      get url, :headers => default_headers
-
-      expect(response).to have_http_status(:service_unavailable)
-    end
-  end
-
   describe "patching portfolio items" do
     subject do
       patch "#{api_version}/portfolio_items/#{portfolio_item.id}", :params => params, :headers => default_headers
