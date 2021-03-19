@@ -4,7 +4,7 @@ module CatalogInventory
     GROUP_REF = "catalog-api-task-minion".freeze # backward compatible
 
     def initialize(messaging_client_option)
-      super(messaging_client_option, SERVICE_NAME, GROUP_REF)
+      super(messaging_client_option, ENV['CATALOG_TASK_TOPIC'] || SERVICE_NAME, GROUP_REF)
     end
 
     private

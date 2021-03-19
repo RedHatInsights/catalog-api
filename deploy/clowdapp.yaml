@@ -1,0 +1,127 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: catalog
+objects:
+- apiVersion: v1
+  kind: Secret # For ephemeral/local environment
+  metadata:
+    name: catalog-api-secrets
+    labels:
+      app: catalog
+  stringData:
+    encryption-key: "${ENCRYPTION_KEY}"
+    secret-key: "${SECRET_KEY}"
+
+- apiVersion: cloud.redhat.com/v1alpha1
+  kind: ClowdApp
+  metadata:
+    name: catalog
+  spec:
+    envName: ${ENV_NAME}
+    deployments:
+    - name: api
+      minReplicas: ${{MIN_REPLICAS}}
+      web: true
+      podSpec:
+        image: ${IMAGE}:${IMAGE_TAG}
+        env:
+        - name: APP_NAME
+          value: ${APP_NAME}
+        - name: PATH_PREFIX
+          value: ${PATH_PREFIX}
+        - name: BYPASS_RBAC
+          value: ${BYPASS_RBAC}
+        - name: PGSSLMODE
+          value: ${PGSSLMODE}
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secrets
+              key: encryption-key
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secrets
+              key: secret-key
+        - name: RAILS_LOG_LEVEL
+          value: ${RAILS_LOG_LEVEL}
+        - name: RAILS_SERVE_STATIC_FILES
+          value: "true"
+        readinessProbe:
+          tcpSocket:
+            port: 8000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 120
+          periodSeconds: 10
+          failureThreshold: 6
+        resources:
+          limits:
+            cpu: 200m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 500Mi
+    kafkaTopics:
+    - topicName: platform.catalog-inventory.task-output-stream
+    - topicName: platform.approval
+    database:
+      name: catalog_production
+    dependencies:
+    - approval
+    - catalog-inventory
+    - sources
+    - rbac
+
+parameters:
+- name: CLOWDER_ENABLED
+  description: Determines Clowder deployment
+  value: "True"
+- name: ENV_NAME
+  description: ClowdEnv Name
+  required: false
+- name: APP_NAME
+  displayName: Application Name
+  description: Application name to be used in request paths. Only used when PATH_PREFIX is also specified.
+  value: approval
+- name: BYPASS_RBAC
+  displayName: Bypass RBAC
+  description: Boolean value that determines whether RBAC should be bypassed.
+  value: 'false'
+- name: IMAGE
+  displayName: Image
+  description: Image name
+  value: quay.io/cloudservices/approval-api
+- name: IMAGE_TAG
+  value: latest
+- name: PATH_PREFIX
+  displayName: Path Prefix
+  description: Base path for the API
+  value: api
+- name: RAILS_LOG_LEVEL
+  displayName: Log level for RAILS
+  description: The valid log levels are info, debug, warn, error
+  value: "info"
+- name: PGSSLMODE
+  displayName: Postgres SSL mode
+  description: "Options can be found in the doc: https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS"
+  value: 'prefer'
+- name: MIN_REPLICAS
+  description: The number of replicas to use in the deployment
+  value: "1"
+- name: ENCRYPTION_KEY
+  displayName: Encryption Key (Ephemeral)
+  required: true
+  description: Encryption Key for Passwords
+  from: "[a-zA-Z0-9]{43}"
+  generate: expression
+- name: SECRET_KEY
+  displayName: Secret Key (Ephemeral)
+  required: true
+  description: Rails SECRET_KEY_BASE
+  from: "[a-f0-9]{128}"
+  generate: expression
