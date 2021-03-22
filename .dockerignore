@@ -1,3 +1,11 @@
+.git
+.bundle
+.vscode
+log
+temp
+temp
+.byebug_history
+.*
+v2_key
 Gemfile.lock
 bundler.d
-.git

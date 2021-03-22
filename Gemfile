@@ -22,6 +22,7 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+gem 'clowder-common-ruby', '~> 0.2.2'
 gem 'dhasher'
 gem 'discard', :git => 'https://github.com/jhawthorn/discard', :branch => 'master'
 gem 'insights-api-common', '~> 5.0'

@@ -5,7 +5,7 @@ module Approval
     EVENT_WORKFLOW_DELETED = 'workflow_deleted'.freeze
 
     def initialize(messaging_client_option)
-      super(messaging_client_option, SERVICE_NAME, GROUP_REF)
+      super(messaging_client_option, ENV['APPROVAL_TOPIC'] || SERVICE_NAME, GROUP_REF)
     end
 
     private

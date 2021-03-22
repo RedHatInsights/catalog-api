@@ -7,7 +7,7 @@ RUN dnf -y --disableplugin=subscription-manager module enable ruby:2.6 && \
     # build utilities
     gcc-c++ git make redhat-rpm-config \
     # libraries
-    postgresql-devel openssl-devel libxml2-devel \
+    postgresql-devel openssl-devel libxml2-devel jq \
     #ImageMagick deps
     autoconf libpng-devel libjpeg-devel librsvg2 \ 
     # For the rdkafka gem

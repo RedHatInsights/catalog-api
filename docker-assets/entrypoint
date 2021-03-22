@@ -4,6 +4,18 @@ function urlescape() {
   PAYLOAD="$1" ruby -rcgi -e "puts CGI.escape(ENV['PAYLOAD'])"
 }
 
+if [[ ! -z "${ACG_CONFIG}" ]]; then
+  DATABASE_HOST=`jq -r '.database.hostname' ${ACG_CONFIG}`
+  DATABASE_PORT=`jq -r '.database.port' ${ACG_CONFIG}`
+  DATABASE_USER=`jq -r '.database.username' ${ACG_CONFIG}`
+  DATABASE_PASSWORD=`jq -r '.database.password' ${ACG_CONFIG}`
+
+  export PGSSLROOTCERT=`jq -r '.database.rdsCa' ${ACG_CONFIG}`
+  export RAILS_PORT=`jq -r '.webPort' ${ACG_CONFIG}`
+else
+  export RAILS_PORT=3000
+fi
+
 safeuser=$(urlescape ${DATABASE_USER})
 safepass=$(urlescape ${DATABASE_PASSWORD})
 
