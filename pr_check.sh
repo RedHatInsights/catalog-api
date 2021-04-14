@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# source unit_test.sh
-
 # --------------------------------------------
 # Options that must be configured by app owner
 # --------------------------------------------
@@ -13,17 +11,17 @@ IQE_PLUGINS="catalog"
 IQE_MARKER_EXPRESSION="smoke"
 IQE_FILTER_EXPRESSION=""
 
-echo "LABEL quay.expires-after=3d" >> ./Dockerfile # tag expire in 3 days
 
 # Install bonfire repo/initialize
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
-curl -s $CICD_URL/bootstrap.sh -o bootstrap.sh
-source bootstrap.sh  # checks out bonfire and changes to "cicd" dir...
+curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
 
-source build.sh
-source deploy_ephemeral_env.sh
-#source smoke_test.sh
+source $CICD_ROOT/build.sh
+#source $APP_ROOT/unit_test.sh
+source $CICD_ROOT/deploy_ephemeral_env.sh
+#source $CICD_ROOT/smoke_test.sh
 
+# Until test results produce a junit XML file, create a dummy result file so Jenkins will pass
 mkdir -p $WORKSPACE/artifacts
 cat << EOF > ${WORKSPACE}/artifacts/junit-dummy.xml
 <testsuite tests="1">
