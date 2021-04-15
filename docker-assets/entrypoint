@@ -9,17 +9,32 @@ if [[ ! -z "${ACG_CONFIG}" ]]; then
   DATABASE_PORT=`jq -r '.database.port' ${ACG_CONFIG}`
   DATABASE_USER=`jq -r '.database.username' ${ACG_CONFIG}`
   DATABASE_PASSWORD=`jq -r '.database.password' ${ACG_CONFIG}`
+  DATABASE_NAME=`jq -r '.database.name' ${ACG_CONFIG}`
 
-  export PGSSLROOTCERT=`jq -r '.database.rdsCa' ${ACG_CONFIG}`
   export RAILS_PORT=`jq -r '.webPort' ${ACG_CONFIG}`
+
+  export PGSSLMODE=`jq -r '.database.sslMode' ${ACG_CONFIG}`
+  if [[ $PGSSLMODE = "null" ]]; then
+    unset PGSSLMODE
+  fi
+
+  certString=`jq -r '.database.rdsCa' ${ACG_CONFIG}`
+  if [[ $certString != "null" ]]; then
+    certPath="/opt/rdsca.crt"
+    echo "RDS Cert Path: $certPath"
+    echo "$certString" > $certPath
+
+    export PGSSLROOTCERT=$certPath
+  fi
 else
   export RAILS_PORT=3000
+  DATABASE_NAME=catalog_production
 fi
 
 safeuser=$(urlescape ${DATABASE_USER})
 safepass=$(urlescape ${DATABASE_PASSWORD})
 
 export RAILS_ENV=production
-export DATABASE_URL="postgresql://${safeuser}:${safepass}@${DATABASE_HOST}:${DATABASE_PORT}/catalog_production?encoding=utf8&pool=5&wait_timeout=5"
+export DATABASE_URL="postgresql://${safeuser}:${safepass}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?encoding=utf8&pool=5&wait_timeout=5"
 
 exec ${@}

@@ -33,8 +33,6 @@ objects:
           value: ${PATH_PREFIX}
         - name: BYPASS_RBAC
           value: ${BYPASS_RBAC}
-        - name: PGSSLMODE
-          value: ${PGSSLMODE}
         - name: ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
@@ -70,7 +68,7 @@ objects:
     - topicName: platform.catalog-inventory.task-output-stream
     - topicName: platform.approval
     database:
-      name: catalog_production
+      name: catalog
     dependencies:
     - approval
     - catalog-inventory
@@ -106,10 +104,6 @@ parameters:
   displayName: Log level for RAILS
   description: The valid log levels are info, debug, warn, error
   value: "info"
-- name: PGSSLMODE
-  displayName: Postgres SSL mode
-  description: "Options can be found in the doc: https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS"
-  value: 'prefer'
 - name: MIN_REPLICAS
   description: The number of replicas to use in the deployment
   value: "1"

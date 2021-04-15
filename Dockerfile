@@ -42,6 +42,8 @@ COPY . $WORKDIR
 COPY docker-assets/entrypoint /usr/bin
 COPY docker-assets/run_rails_server /usr/bin
 
+RUN touch /opt/rdsca.crt && chmod 666 /opt/rdsca.crt
+
 RUN chgrp -R 0 $WORKDIR && \
     chmod -R g=u $WORKDIR
 
