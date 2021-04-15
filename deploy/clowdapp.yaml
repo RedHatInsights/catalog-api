@@ -21,7 +21,7 @@ objects:
   spec:
     envName: ${ENV_NAME}
     deployments:
-    - name: api
+    - name: api-v2
       minReplicas: ${{MIN_REPLICAS}}
       web: true
       podSpec:
