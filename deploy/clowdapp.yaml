@@ -73,7 +73,6 @@ objects:
     - approval
     - catalog-inventory
     - rbac
-    optionalDependencies:
     - sources
 
 parameters:
