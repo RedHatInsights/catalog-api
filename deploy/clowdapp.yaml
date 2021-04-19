@@ -85,7 +85,7 @@ parameters:
 - name: APP_NAME
   displayName: Application Name
   description: Application name to be used in request paths. Only used when PATH_PREFIX is also specified.
-  value: approval
+  value: catalog
 - name: BYPASS_RBAC
   displayName: Bypass RBAC
   description: Boolean value that determines whether RBAC should be bypassed.
@@ -93,7 +93,7 @@ parameters:
 - name: IMAGE
   displayName: Image
   description: Image name
-  value: quay.io/cloudservices/approval-api
+  value: quay.io/cloudservices/catalog-api
 - name: IMAGE_TAG
   value: latest
 - name: PATH_PREFIX
