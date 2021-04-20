@@ -73,7 +73,7 @@ objects:
     - approval
     - catalog-inventory
     - rbac
-    - sources
+    - sources-api
 
 parameters:
 - name: CLOWDER_ENABLED
