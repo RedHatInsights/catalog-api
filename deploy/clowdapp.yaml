@@ -74,7 +74,21 @@ objects:
     - catalog-inventory
     - rbac
     - sources
-
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: catalog-api-transitional
+    labels:
+      app: catalog-api
+      pod: catalog-api-v2
+  spec:
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8000
+      name: weblegacy
+    selector:
+      pod: catalog-api-v2
 parameters:
 - name: CLOWDER_ENABLED
   description: Determines Clowder deployment
