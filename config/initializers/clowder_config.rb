@@ -1,5 +1,3 @@
-Rails.logger.debug("Initial ENV: #{ENV.to_h}")
-
 if ClowderCommonRuby::Config.clowder_enabled?
   config = ClowderCommonRuby::Config.load
 
@@ -15,12 +13,11 @@ if ClowderCommonRuby::Config.clowder_enabled?
   ENV['CLOUD_WATCH_LOG_GROUP'] = config.logging.cloudwatch.logGroup
 
   config.endpoints.each do |endpoint|
-    Rails.logger.warn("endpoint: #{endpoint.inspect}")
     url = "http://#{endpoint.hostname}:#{endpoint.port}"
     ENV['RBAC_URL'] = url if endpoint.app == 'rbac' && endpoint.name == 'service'
-    ENV['APPROVAL_URL'] = url if endpoint.app == 'approval' && endpoint.name == 'api'
-    ENV['SOURCES_URL'] = url if endpoint.app == 'sources' && endpoint.name == 'api'
-    ENV['CATALOG_INVENTORY_URL'] = url if endpoint.app == 'catalog-inventory' && endpoint.name == 'api'
+    ENV['APPROVAL_URL'] = url if endpoint.app == 'approval' && endpoint.name == 'api-v2'
+    ENV['SOURCES_URL'] = url if endpoint.app == 'sources-api' && endpoint.name == 'svc'
+    ENV['CATALOG_INVENTORY_URL'] = url if endpoint.app == 'catalog-inventory' && endpoint.name == 'api-v2'
   end
 
   config.kafka.topics.each do |topic|
@@ -28,5 +25,3 @@ if ClowderCommonRuby::Config.clowder_enabled?
     ENV['CATALOG_TASK_TOPIC'] = topic.name if topic.required == CatalogInventory::EventListener::SERVICE_NAME
   end
 end
-
-Rails.logger.debug("After initialized: #{ENV.to_h}")
