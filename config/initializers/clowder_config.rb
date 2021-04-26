@@ -13,6 +13,7 @@ if ClowderCommonRuby::Config.clowder_enabled?
   ENV['CLOUD_WATCH_LOG_GROUP'] = config.logging.cloudwatch.logGroup
 
   config.endpoints.each do |endpoint|
+    Rails.logger.warn("endpoint: #{endpoint.inspect}")
     url = "http://#{endpoint.hostname}:#{endpoint.port}"
     ENV['RBAC_URL'] = url if endpoint.app == 'rbac' && endpoint.name == 'service'
     ENV['APPROVAL_URL'] = url if endpoint.app == 'approval' && endpoint.name == 'api'
