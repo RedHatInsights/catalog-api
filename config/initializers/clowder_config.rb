@@ -1,3 +1,5 @@
+Rails.logger.debug("Initial ENV: #{ENV.to_h}")
+
 if ClowderCommonRuby::Config.clowder_enabled?
   config = ClowderCommonRuby::Config.load
 
@@ -26,3 +28,5 @@ if ClowderCommonRuby::Config.clowder_enabled?
     ENV['CATALOG_TASK_TOPIC'] = topic.name if topic.required == CatalogInventory::EventListener::SERVICE_NAME
   end
 end
+
+Rails.logger.debug("After initialized: #{ENV.to_h}")

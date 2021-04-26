@@ -31,6 +31,12 @@ objects:
           value: ${APP_NAME}
         - name: PATH_PREFIX
           value: ${PATH_PREFIX}
+        - name: SOURCES_URL
+          value: ${SOURCES_SCHEME}://${SOURCES_HOST}:${SOURCES_PORT}
+        - name: CATALOG_INVENTORY_URL
+          value: ${CATALOG_INVENTORY_SCHEME}://${CATALOG_INVENTORY_HOST}:${CATALOG_INVENTORY_PORT}
+        - name: APPROVAL_URL
+          value: ${APPROVAL_SCHEME}://${APPROVAL_HOST}:${APPROVAL_PORT}
         - name: BYPASS_RBAC
           value: ${BYPASS_RBAC}
         - name: ENCRYPTION_KEY
@@ -133,3 +139,45 @@ parameters:
   description: Rails SECRET_KEY_BASE
   from: "[a-f0-9]{128}"
   generate: expression
+- description: Host to use for the Sources service URL.
+  displayName: Sources Service Host
+  name: SOURCES_HOST
+  value: sources-api-svc
+- description: Port to use for the Sources service URL.
+  displayName: Sources Service Port
+  name: SOURCES_PORT
+  required: true
+  value: '8000'
+- description: Scheme to use for the Sources service URL. Can be either http or https
+  displayName: Sources Service Scheme
+  name: SOURCES_SCHEME
+  required: true
+  value: http
+- description: Port to use for the Catalog Inventory service URL.
+  displayName: Catalog Inventory Service Port
+  name: CATALOG_INVENTORY_PORT
+  required: true
+  value: '8080'
+- description: Scheme to use for the Catalog Inventory service URL. Can be either http or https
+  displayName: Catalog Inventory Service Scheme
+  name: CATALOG_INVENTORY_SCHEME
+  required: true
+  value: http
+- description: Host to use for the Catalog Inventory service URL.
+  displayName: Catalog Inventory Service URL
+  name: CATALOG_INVENTORY_HOST
+  value: catalog-inventory-api
+- description: Port to use for the Approval service URL.
+  displayName: Approval Service Port
+  name: APPROVAL_PORT
+  required: true
+  value: '8080'
+- description: Scheme to use for the Approval service URL. Can be either http or https
+  displayName: Approval Service Scheme
+  name: APPROVAL_SCHEME
+  required: true
+  value: http
+- description: Host to use for the Approval service URL.
+  displayName: Approval Service URL
+  name: APPROVAL_HOST
+  value: approval-api
