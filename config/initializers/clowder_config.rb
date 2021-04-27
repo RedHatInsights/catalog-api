@@ -21,6 +21,7 @@ if ClowderCommonRuby::Config.clowder_enabled?
   end
 
   config.kafka.topics.each do |topic|
+    Rails.logger.warn("topic: #{topic.inspect}")
     ENV['APPROVAL_TOPIC'] = topic.name if topic.requestedName == Approval::EventListener::SERVICE_NAME
     ENV['CATALOG_TASK_TOPIC'] = topic.name if topic.required == CatalogInventory::EventListener::SERVICE_NAME
   end
