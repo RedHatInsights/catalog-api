@@ -24,7 +24,7 @@ class ClowderConfig
         config.endpoints.each do |endpoint|
           url = "http://#{endpoint.hostname}:#{endpoint.port}"
           ENV['RBAC_URL'] = url if endpoint.app == 'rbac' && endpoint.name == 'service'
-          ENV['APPROVAL_URL'] = url if endpoint.app == 'approval' && endpoint.name == 'api-v2'
+          ENV['APPROVAL_URL'] = url if endpoint.app == 'approval' && endpoint.name == 'api'
           ENV['SOURCES_URL'] = url if endpoint.app == 'sources-api' && endpoint.name == 'svc'
           ENV['CATALOG_INVENTORY_URL'] = url if endpoint.app == 'catalog-inventory' && endpoint.name == 'api'
         end
