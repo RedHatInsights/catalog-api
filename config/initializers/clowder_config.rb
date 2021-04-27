@@ -6,12 +6,6 @@ if ClowderCommonRuby::Config.clowder_enabled?
   ENV["QUEUE_PORT"] = config.kafka.brokers.first.port.to_s
   ENV["QUEUE_NAME"] = config.kafka.topics.first.name
 
-  # ManageIQ Logger depends on these variables
-  ENV['CW_AWS_ACCESS_KEY_ID'] = config.logging.cloudwatch.accessKeyId
-  ENV['CW_AWS_SECRET_ACCESS_KEY'] = config.logging.cloudwatch.secretAccessKey
-  ENV['CW_AWS_REGION'] = config.logging.cloudwatch.region # not required
-  ENV['CLOUD_WATCH_LOG_GROUP'] = config.logging.cloudwatch.logGroup
-
   config.endpoints.each do |endpoint|
     url = "http://#{endpoint.hostname}:#{endpoint.port}"
     ENV['RBAC_URL'] = url if endpoint.app == 'rbac' && endpoint.name == 'service'
