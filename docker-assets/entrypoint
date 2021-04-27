@@ -11,6 +11,10 @@ if [[ ! -z "${ACG_CONFIG}" ]]; then
   DATABASE_PASSWORD=`jq -r '.database.password' ${ACG_CONFIG}`
   DATABASE_NAME=`jq -r '.database.name' ${ACG_CONFIG}`
 
+  export CW_AWS_ACCESS_KEY_ID=`jq -r '.logging.cloudwatch.accessKeyId' ${ACG_CONFIG}`
+  export CW_AWS_SECRET_ACCESS_KEY=`jq -r '.logging.cloudwatch.secretAccessKey' ${ACG_CONFIG}`
+  export CW_AWS_REGION=`jq -r '.logging.cloudwatch.region' ${ACG_CONFIG}`
+  export CLOUD_WATCH_LOG_GROUP=`jq -r '.logging.cloudwatch.logGroup' ${ACG_CONFIG}`
   export RAILS_PORT=`jq -r '.webPort' ${ACG_CONFIG}`
 
   export PGSSLMODE=`jq -r '.database.sslMode' ${ACG_CONFIG}`
