@@ -5,6 +5,8 @@ class KafkaListener
     self.messaging_client_options = default_messaging_options.merge(messaging_client_options)
     self.service_name = service_name
     self.group_ref = group_ref
+
+    Rails.logger.info("Kafka topics: #{service_name}")
   end
 
   def run
