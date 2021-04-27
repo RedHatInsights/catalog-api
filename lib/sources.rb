@@ -18,6 +18,9 @@ class Sources
       dev_credentials(config)
     end
     SourcesApiClient::DefaultApi.new
+  rescue
+    Rails.logger.error("Failed to connect to #{ENV['SOURCES_URL']}")
+    raise
   end
 
   private_class_method def self.pass_thru_headers
