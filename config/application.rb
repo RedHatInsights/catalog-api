@@ -35,5 +35,10 @@ module Catalog
     config.log_level = (ENV['RAILS_LOG_LEVEL'] || 'debug').downcase.to_sym
     Insights::API::Common::Logging.activate(config)
     Insights::API::Common::Metrics.activate(config, "catalog_api")
+
+    config.before_initialize do
+      require_relative 'clowder_config'
+      ClowderConfig.instance
+    end
   end
 end
