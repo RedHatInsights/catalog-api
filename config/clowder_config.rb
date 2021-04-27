@@ -31,7 +31,7 @@ class ClowderConfig
 
         ENV['RBAC_URL'] = options["endpoints"]["rbac-service"] if options["endpoints"]["rbac-service"].present?
         ENV['APPROVAL_URL'] = options["endpoints"]["approval-api"] if options["endpoints"]["approval-api"].present?
-        ENV['SOURCES_URL'] = option["endpoints"]["sources-api-svc"] if options["endpoints"]["sources-api-svc"].present?
+        ENV['SOURCES_URL'] = options["endpoints"]["sources-api-svc"] if options["endpoints"]["sources-api-svc"].present?
         ENV['CATALOG_INVENTORY_URL'] = options["endpoints"]["catalog-inventory-api"] if options["endpoints"]["catalog-inventory-api"].present?
       else
         options["kafkaBrokers"] = ["#{ENV['QUEUE_HOST']}:#{ENV['QUEUE_PORT']}"]
