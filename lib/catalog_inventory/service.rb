@@ -16,6 +16,9 @@ module CatalogInventory
         config.scheme = URI.parse(ENV['CATALOG_INVENTORY_URL']).try(:scheme) || 'http'
         dev_credentials(config)
       end
+    rescue
+      Rails.logger.error("Failed to connect to #{ENV['CATALOG_INVENTORY_URL']}")
+      raise
     end
 
     private_class_method def self.init(klass)

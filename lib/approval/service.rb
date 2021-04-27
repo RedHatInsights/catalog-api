@@ -14,6 +14,9 @@ module Approval
         config.scheme = URI.parse(ENV['APPROVAL_URL']).try(:scheme) || 'http'
         dev_credentials(config)
       end
+    rescue
+      Rails.logger.error("Failed to connect to #{ENV['APPROVAL_URL']}")
+      raise
     end
 
     private_class_method def self.init(klass)
