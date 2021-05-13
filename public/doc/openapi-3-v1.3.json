@@ -4297,6 +4297,42 @@
           }
         }
       },
+      "SubstitutionParameters": {
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "string",
+            "enum": [
+              "after.<order_process_name>.artifacts.<artifact>",
+              "after.<order_process_name>.parameters.<parameter>",
+              "after.<order_process_name>.status",
+              "before.<order_process_name>.artifacts.<artifact>",
+              "before.<order_process_name>.parameters.<parameter>",
+              "before.<order_process_name>.status",
+              "order.approval.decision",
+              "order.approval.reason",
+              "order.approval.updated_at",
+              "order.created_at",
+              "order.order_id",
+              "order.ordered_by.email",
+              "order.ordered_by.name",
+              "product.artifacts.<artifact>",
+              "product.description",
+              "product.help_url",
+              "product.long_description",
+              "product.name",
+              "product.parameters.<parameter>",
+              "product.platform",
+              "product.portfolio.description",
+              "product.portfolio.name",
+              "product.status",
+              "product.support_url",
+              "product.vendor"
+            ],
+            "description": "substitutable string"
+          }
+        }
+      },
       "Tag": {
         "type": "object",
         "properties": {
