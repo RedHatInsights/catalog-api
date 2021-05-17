@@ -4297,6 +4297,34 @@
           }
         }
       },
+      "SubstitutionParameters": {
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "string",
+            "enum": [
+              "order.approval.decision",
+              "order.approval.reason",
+              "order.approval.updated_at",
+              "order.created_at",
+              "order.order_id",
+              "order.ordered_by.email",
+              "order.ordered_by.name",
+              "product.description",
+              "product.help_url",
+              "product.long_description",
+              "product.name",
+              "product.platform",
+              "product.portfolio.description",
+              "product.portfolio.name",
+              "product.status",
+              "product.support_url",
+              "product.vendor"
+            ],
+            "description": "substitutable string"
+          }
+        }
+      },
       "Tag": {
         "type": "object",
         "properties": {
