@@ -20,7 +20,6 @@ module Api
     class ServicePlansController              < Api::V1x2::ServicePlansController; end
     class SettingsController                  < Api::V1x2::SettingsController; end
     class TagsController                      < Api::V1x2::TagsController; end
-    class TenantsController                   < Api::V1x2::TenantsController; end
 
     extend_each_subclass Mixins::IndexMixin
   end

@@ -821,11 +821,11 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "The tenant was seeded"
           },
           "204": {
-            "description": "No content"
+            "description": "No content, seeding skipped"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
