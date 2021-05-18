@@ -10,6 +10,15 @@ describe "v1.3 - Seed API", :type => [:request, :v1x3] do
   let(:add_to_group) { instance_double(Api::V1x3::Catalog::AddToGroup) } 
   let(:seed_portfolio) { instance_double(Api::V1x3::Catalog::SeedPortfolios) }
 
+  describe 'GET /tenants' do
+    before { get "#{api_version}/tenants", :headers => modified_headers(org_admin) }
+
+    it "not seeded" do
+      expect(response).to have_http_status(200)
+      expect(JSON.parse(response.body)['data'][0]['seeded']).to be_falsey
+    end
+  end
+
   describe 'POST /tenants/:id/seed' do
     context "when the group was previously not seeded" do
 
@@ -24,13 +33,15 @@ describe "v1.3 - Seed API", :type => [:request, :v1x3] do
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
-        expect(RbacSeed.where(:external_tenant => tenant.external_tenant).any?).to be_truthy
+        tenant.reload
+        expect(tenant.seeded).to be_truthy
       end
     end
 
     context "when the group already has been seeded" do
       before do
-        RbacSeed.create!(:external_tenant => org_admin['identity']['account_number'])
+        tenant.update_attributes!(:seeded => true)
+        tenant.save
       end
       before { post "#{api_version}/tenants/#{tenant_id}/seed", :headers => modified_headers(org_admin) }
 

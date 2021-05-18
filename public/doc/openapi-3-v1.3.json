@@ -4217,12 +4217,20 @@
           "external_tenant": {
             "type": "string",
             "title": "Request account number",
-            "description": "The Request account number"
+            "description": "The Request account number",
+            "readOnly": true
           },
           "id": {
             "type": "string",
             "title": "Internal tenant id",
-            "description": "The internal tenant id"
+            "description": "The internal tenant id",
+            "readOnly": true
+          },
+          "seeded": {
+            "type": "boolean",
+            "title": "Seeded",
+            "description": "Tenant Seeded",
+            "readOnly": true
           }
         }
       },
