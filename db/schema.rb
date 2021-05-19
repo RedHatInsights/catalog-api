@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_23_060934) do
+ActiveRecord::Schema.define(version: 2021_05_18_152004) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,6 +147,9 @@ ActiveRecord::Schema.define(version: 2021_02_23_060934) do
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
 
+# Could not dump table "permissions" because of following StandardError
+#   Unknown type 'permissions_name' for column 'name'
+
   create_table "portfolio_item_tags", id: :serial, force: :cascade do |t|
     t.bigint "tag_id", null: false
     t.bigint "portfolio_item_id", null: false
@@ -222,13 +225,6 @@ ActiveRecord::Schema.define(version: 2021_02_23_060934) do
     t.index ["tenant_id"], name: "index_progress_messages_on_tenant_id"
   end
 
-  create_table "rbac_seeds", force: :cascade do |t|
-    t.string "external_tenant"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["external_tenant"], name: "index_rbac_seeds_on_external_tenant"
-  end
-
   create_table "service_plans", force: :cascade do |t|
     t.jsonb "base"
     t.jsonb "modified"
@@ -271,6 +267,7 @@ ActiveRecord::Schema.define(version: 2021_02_23_060934) do
     t.string "name"
     t.string "description"
     t.jsonb "settings", default: {}
+    t.boolean "seeded", default: false
     t.index ["external_tenant"], name: "index_tenants_on_external_tenant"
   end
 

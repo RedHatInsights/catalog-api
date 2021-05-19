@@ -36,10 +36,6 @@ module Api
       class ValidateSource                      < Api::V1x2::Catalog::ValidateSource; end
     end
 
-    module Group
-      class Seed < Api::V1x2::Group::Seed; end
-    end
-
     module ServiceOffering
       class AddToPortfolioItem < Api::V1x2::ServiceOffering::AddToPortfolioItem; end
     end

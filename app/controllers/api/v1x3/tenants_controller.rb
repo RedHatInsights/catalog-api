@@ -13,12 +13,13 @@ module Api
         raise ::Catalog::NotAuthorized unless Insights::API::Common::Request.current.user.org_admin?
 
         username = Insights::API::Common::Request.current.user.username
-        if RbacSeed.where(:external_tenant => tenant.external_tenant).any?
+        if tenant.seeded
           head :no_content
         else
           Api::V1x3::Catalog::AddToGroup.new(DEFAULT_GROUP_NAME, DEFAULT_GROUP_DESC, DEFAULT_ROLES, username).process
           Api::V1x3::Catalog::SeedPortfolios.new.process
-          RbacSeed.create(:external_tenant => tenant.external_tenant)
+          tenant.update_attributes!(:seeded => true)
+          tenant.save
           head :created
         end
       end

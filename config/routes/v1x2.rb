@@ -48,9 +48,7 @@ namespace :v1x2, :path => "v1.2" do
 
   resources :settings
   resources :tags, :only => [:index]
-  resources :tenants, :only => [:index, :show] do
-    post 'seed', :to => 'tenants#seed'
-  end
+  resources :tenants, :only => [:index, :show]
   resources :service_plans, :only => [:create, :show] do
     get 'base', :to => 'service_plans#base'
     get 'modified', :to => 'service_plans#modified'
