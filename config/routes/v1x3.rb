@@ -47,6 +47,7 @@ namespace :v1x3, :path => "v1.3" do
 
   post '/order_processes/:id/link', :to => "order_processes#link", :as => 'link'
   post '/order_processes/:id/unlink', :to => "order_processes#unlink", :as => 'unlink'
+  post '/order_processes/:id/reposition', :to => "order_processes#reposition", :as => 'reposition'
 
   resources :settings
   resources :tags, :only => [:index]

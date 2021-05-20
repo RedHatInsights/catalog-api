@@ -3059,6 +3059,46 @@
           "required": true
         }
       }
+    },
+    "/order_processes/{id}/reposition": {
+      "post": {
+        "tags": [
+          "OrderProcess"
+        ],
+        "summary": "Adjust the position of an order process",
+        "operationId": "reposition",
+        "description": "Adjust the position of an order process related to others by an offset number",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reposition"
+              }
+            }
+          },
+          "description": "How many levels should the sequence be brought up or down",
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Changed the sequence"
+          },
+          "400": {
+            "$ref": "#/components/schemas/HttpApiErrorCollection"
+          },
+          "403": {
+            "$ref": "#/components/schemas/HttpApiErrorCollection"
+          },
+          "404": {
+            "$ref": "#/components/schemas/HttpApiErrorCollection"
+          }
+        }
+      }
     }
   },
   "servers": [
@@ -4451,14 +4491,14 @@
         }
       },
       "ResourceObject": {
-         "type": "object",
-         "description": "Resource object definition",
-         "required": [
+        "type": "object",
+        "description": "Resource object definition",
+        "required": [
           "object_type",
           "app_name",
           "object_id"
-         ],
-         "properties": {
+        ],
+        "properties": {
           "object_type": {
             "type": "string",
             "title": "Object type",
@@ -4476,6 +4516,30 @@
             "title": "Object ID",
             "description": "ID of the object",
             "example": "123"
+          }
+        }
+      },
+      "Reposition": {
+        "description": "The desired increment relative to its current position, or placement to top or bottom of the list.",
+        "type": "object",
+        "properties": {
+          "increment": {
+            "type": "integer",
+            "title": "Increment",
+            "description": "Move the record up (negative) or down (positive) in the list. Do not set it if placement is used",
+            "example": -2,
+            "nullable": true
+          },
+          "placement": {
+            "type": "string",
+            "title": "Placement",
+            "description": "Place the record to the top or bottom of the list. Do not set it if increment is used",
+            "enum": [
+              "bottom",
+              "top"
+            ],
+            "example": "top",
+            "nullable": true
           }
         }
       }

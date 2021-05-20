@@ -6,6 +6,23 @@ module Api
 
         render :json => order_process
       end
+
+      def reposition
+        order_process = OrderProcess.find(params.require(:id))
+        authorize(order_process)
+
+        ::Catalog::OrderProcessSequence.new(order_process, increment_param).process
+
+        head :no_content
+      end
+
+      private
+
+      def increment_param
+        raise Catalog::InvalidParameter, "Cannot have both increment and placement params set" if params[:placement] && params[:increment]
+
+        params[:placement] || params[:increment]
+      end
     end
   end
 end
