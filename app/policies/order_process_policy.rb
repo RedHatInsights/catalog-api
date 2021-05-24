@@ -23,6 +23,10 @@ class OrderProcessPolicy < ApplicationPolicy
     rbac_access.destroy_access_check
   end
 
+  def reposition?
+    rbac_access.update_access_check
+  end
+
   class Scope < Scope
     def resolve
       if access_scopes.include?('admin')

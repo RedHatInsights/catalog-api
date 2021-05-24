@@ -110,4 +110,42 @@ describe "v1.3 - OrderProcesses", :type => [:request, :controller, :v1x3] do
 
     it_behaves_like "action that tests authorization", :update?, OrderProcess
   end
+
+  describe 'POST /order_processes/:id/reposition' do
+    it 'returns status code 204 for positive numeric increment' do
+      post "#{api_version}/order_processes/#{order_process_id}/reposition", :params => {:increment => 1}, :headers => default_headers
+
+      expect(response).to have_http_status(204)
+    end
+
+    it 'returns status code 204 for negative numeric increment' do
+      post "#{api_version}/order_processes/#{order_process_id}/reposition", :params => {:increment => -1}, :headers => default_headers
+
+      expect(response).to have_http_status(204)
+    end
+
+    it 'returns status code 204 for bottom increment' do
+      post "#{api_version}/order_processes/#{order_process_id}/reposition", :params => {:placement => 'bottom'}, :headers => default_headers
+
+      expect(response).to have_http_status(204)
+    end
+
+    it 'returns status code 400 for non-recognized increment' do
+      post "#{api_version}/order_processes/#{order_process_id}/reposition", :params => {:placement => 'bad'}, :headers => default_headers
+
+      expect(response).to have_http_status(400)
+    end
+
+    it 'returns status code 204 for nullable value' do
+      post "#{api_version}/order_processes/#{order_process_id}/reposition", :params => {:placement => nil, :increment => 1}, :headers => default_headers
+
+      expect(response).to have_http_status(204)
+    end
+
+    it 'returns status code 400 when both placement and increment are set' do
+      post "#{api_version}/order_processes/#{order_process_id}/reposition", :params => {:placement => 'top', :increment => 1}, :headers => default_headers
+
+      expect(response).to have_http_status(400)
+    end
+  end
 end

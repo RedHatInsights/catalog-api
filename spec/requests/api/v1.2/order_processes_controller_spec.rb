@@ -29,12 +29,13 @@ describe "v1.2 - OrderProcesses", :type => [:request, :controller, :v1x2] do
         expect(json['created_at']).to eq(order_process.created_at.iso8601)
         expect(json['metadata']).to have_key('user_capabilities')
         expect(json['metadata']['user_capabilities']).to eq(
-          "create"  => true,
-          "link"    => true,
-          "show"    => true,
-          "unlink"  => true,
-          "update"  => true,
-          "destroy" => true
+          "create"     => true,
+          "link"       => true,
+          "reposition" => true,
+          "show"       => true,
+          "unlink"     => true,
+          "update"     => true,
+          "destroy"    => true
         )
       end
     end

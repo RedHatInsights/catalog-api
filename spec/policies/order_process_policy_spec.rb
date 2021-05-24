@@ -63,12 +63,13 @@ describe OrderProcessPolicy do
 
     it "returns user capabilities" do
       expect(subject.user_capabilities).to eq(
-        "create"  => true,
-        "destroy" => true,
-        "link"    => true,
-        "show"    => true,
-        "unlink"  => true,
-        "update"  => true
+        "create"     => true,
+        "destroy"    => true,
+        "link"       => true,
+        "reposition" => true,
+        "show"       => true,
+        "unlink"     => true,
+        "update"     => true
       )
     end
   end
