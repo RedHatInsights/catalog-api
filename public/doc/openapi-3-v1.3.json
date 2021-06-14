@@ -3070,7 +3070,7 @@
         "description": "Adjust the position of an order process related to others by an offset number",
         "parameters": [
           {
-            "$ref": "#/components/parameters/id"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "requestBody": {
