@@ -19,7 +19,9 @@ module Api
       private
 
       def increment_param
-        raise Catalog::InvalidParameter, "Cannot have both increment and placement params set" if params[:placement] && params[:increment]
+        raise ::Catalog::InvalidParameter, "Cannot have both increment and placement params set" if params[:placement] && params[:increment]
+
+        raise ::Catalog::InvalidParameter, "Neither increment nor placement parameter is set" unless params[:placement] || params[:increment]
 
         params[:placement] || params[:increment]
       end
