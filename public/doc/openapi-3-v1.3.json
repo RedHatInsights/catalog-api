@@ -3089,13 +3089,16 @@
             "description": "Changed the sequence"
           },
           "400": {
-            "$ref": "#/components/schemas/HttpApiErrorCollection"
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/schemas/HttpApiErrorCollection"
+            "$ref": "#/components/responses/Forbidden"
           },
           "404": {
-            "$ref": "#/components/schemas/HttpApiErrorCollection"
+            "description": "OrderProcess Not Found."
           }
         }
       }
