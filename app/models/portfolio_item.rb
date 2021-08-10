@@ -34,8 +34,8 @@ class PortfolioItem < ApplicationRecord
     order_process_names = OrderProcess.where(:before_portfolio_item_id => id).or(OrderProcess.where(:after_portfolio_item_id => id)).pluck(:name)
 
     unless order_process_names.empty?
-      errors.add(:base, "cannot be deleted because it is used by order processes #{order_process_names.uniq}")
-      throw :abort
+      errors.add(:base, "PortfolioItem #{id} cannot be deleted because it is used by order processes #{order_process_names.uniq}")
+      raise Discard::DiscardError
     end
   end
 
