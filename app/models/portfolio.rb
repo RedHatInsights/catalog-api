@@ -14,6 +14,7 @@ class Portfolio < ApplicationRecord
   acts_as_taggable_on
   default_scope -> { kept.order(Arel.sql('LOWER(portfolios.name)')) }
   belongs_to :icon, :optional => true
+  before_discard  :validate_deletable, :prepend => true
 
   validates :name, :presence => true, :length => {:maximum => MAX_NAME_LENGTH}, :uniqueness => {:scope => %i[tenant_id discarded_at]}
   validates :enabled_before_type_cast, :format => {:with => /\A(true|false)\z/i}, :allow_blank => true
@@ -26,6 +27,21 @@ class Portfolio < ApplicationRecord
 
   def metadata
     ancillary_metadata.metadata_attributes.merge('user_capabilities' => user_capabilities, 'statistics' => statistics_metadata)
+  end
+
+  def validate_deletable
+    portfolio_items.each do |portfolio_item|
+      begin
+        portfolio_item.validate_deletable
+      rescue Discard::DiscardError
+        errors.add(:base, portfolio_item.errors[:base].first)
+        next
+      end
+    end
+
+    unless errors[:base].empty?
+      raise Discard::DiscardError
+    end
   end
 
   private

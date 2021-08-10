@@ -90,8 +90,8 @@ describe PortfolioItem do
       let!(:order_process2) { create(:order_process, :name => "bar", :after_portfolio_item_id => subject.id) }
 
       it "raises an error" do
-        expect { subject.validate_deletable }.to raise_error(UncaughtThrowError, "uncaught throw :abort")
-        expect(subject.errors[:base]).to include("cannot be deleted because it is used by order processes #{OrderProcess.pluck(:name)}")
+        expect { subject.validate_deletable }.to raise_error(Discard::DiscardError)
+        expect(subject.errors[:base].first).to include("cannot be deleted because it is used by order processes #{OrderProcess.pluck(:name)}")
       end
     end
   end
