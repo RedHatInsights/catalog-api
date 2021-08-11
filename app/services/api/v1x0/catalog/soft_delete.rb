@@ -13,8 +13,8 @@ module Api
           @restore_key = Digest::SHA1.hexdigest(@record.discarded_at.to_s)
 
           self
-        rescue Discard::RecordNotDiscarded
-          raise Discard::RecordNotDiscarded, "#{@record.class} #{@record.id} #{@record.errors[:base].first}"
+        rescue Discard::DiscardError
+          raise Discard::DiscardError, "#{@record.class} #{@record.id} cannot be deleted: #{@record.errors[:base].join('; ')}"
         end
       end
     end
