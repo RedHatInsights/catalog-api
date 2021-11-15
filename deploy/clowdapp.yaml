@@ -70,7 +70,7 @@ objects:
     database:
       name: catalog
     dependencies:
-    - approval
+    - approval-api
     - catalog-inventory
     - rbac
     - sources-api
