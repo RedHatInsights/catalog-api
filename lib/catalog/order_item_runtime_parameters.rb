@@ -22,7 +22,7 @@ module Catalog
       return {} unless @order_item.service_plan_ref
 
       params = service_parameters_raw.slice(*fields.collect { |field| field[:name] })
-      params.collect { |key, value| [key, compute_value(key, value)] }.to_h
+      params.collect { |key, value| [key, compute_value(key, value)] }.to_h.compact
     end
 
     def fields

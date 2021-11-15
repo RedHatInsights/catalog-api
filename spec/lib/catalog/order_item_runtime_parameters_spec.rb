@@ -12,7 +12,7 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :inventory, :c
         :portfolio_item     => portfolio_item,
         :service_plan_ref   => service_plan_ref,
         :artifacts          => artifacts,
-        :service_parameters => {"flexible" => template, "fixed" => "fixed"},
+        :service_parameters => {"flexible" => template, "fixed" => "fixed", "nil" => nil},
         :process_scope      => scope,
         :approval_requests  => [create(:approval_request)]
       )
@@ -46,6 +46,14 @@ describe Catalog::OrderItemRuntimeParameters, :type => [:service, :inventory, :c
           :helperText     => "",
           :initialValue   => "{{product.artifacts.testk}}",
           :isSubstitution => true
+        }, {
+          :name         => "nil",
+          :type         => "string",
+          :label        => "fixed",
+          :component    => "text-field",
+          :helperText   => "",
+          :isRequired   => true,
+          :initialValue => ""
         }]
       end
 
