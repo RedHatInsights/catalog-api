@@ -23,7 +23,9 @@ objects:
     deployments:
     - name: api
       minReplicas: ${{MIN_REPLICAS}}
-      web: true
+      webServices:
+        public:
+          enabled: True
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
         env:
